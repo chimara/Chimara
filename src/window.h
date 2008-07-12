@@ -18,13 +18,15 @@ enum InputRequestType
 
 struct glk_window_struct
 {
-	GNode *window_node;
-
 	glui32 rock;
+	/* Pointer to the node in the global tree that contains this window */
+	GNode *window_node;
+	/* Window parameters */
 	glui32 window_type;
 	GtkWidget *widget;
 	strid_t window_stream;
 	strid_t echo_stream;
+	/* Input request stuff */
 	enum InputRequestType input_request_type;
 	gchar *line_input_buffer;
 	glui32 *line_input_buffer_unicode;

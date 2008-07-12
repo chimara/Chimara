@@ -1,8 +1,6 @@
 #ifndef GLK_H
 #define GLK_H
 
-#include <gtk/gtk.h>
-
 /* glk.h: Header file for Glk API, version 0.7.0.
     Designed by Andrew Plotkin <erkyrath@eblong.com>
     http://www.eblong.com/zarf/glk/index.html
@@ -19,15 +17,16 @@
 /* You may have to edit the definition of glui32 to make sure it's really a
     32-bit unsigned integer type, and glsi32 to make sure it's really a
     32-bit signed integer type. If they're not, horrible things will happen. */
+#include <gtk/gtk.h>
 typedef guint32 glui32;
 typedef gint32 glsi32;
 
 /* These are the compile-time conditionals that reveal various Glk optional
     modules. */
-#define GLK_MODULE_UNICODE
-#define GLK_MODULE_IMAGE
-#define GLK_MODULE_SOUND
-#define GLK_MODULE_HYPERLINKS
+/* #define GLK_MODULE_UNICODE */
+/* #define GLK_MODULE_IMAGE */
+/* #define GLK_MODULE_SOUND */
+/* #define GLK_MODULE_HYPERLINKS */
 
 /* These types are opaque object identifiers. They're pointers to opaque
     C structures, which are defined differently by each library. */
