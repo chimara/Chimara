@@ -1,0 +1,4 @@
+*.o
+*.ui
+*.swp
+gargoyle-gtk

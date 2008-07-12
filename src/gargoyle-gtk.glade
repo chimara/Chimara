@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<!--Generated with glade3 3.4.4 on Sat Jul 12 00:47:27 2008 -->
+<glade-interface>
+  <widget class="GtkWindow" id="gargoyle-gtk">
+    <property name="width_request">300</property>
+    <property name="height_request">600</property>
+    <property name="title" translatable="yes">Gargoyle GTK</property>
+    <signal name="delete_event" handler="gtk_main_quit"/>
+    <child>
+      <widget class="GtkVBox" id="vbox">
+        <property name="visible">True</property>
+        <child>
+          <widget class="GtkMenuBar" id="menubar">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkMenuItem" id="file_menu">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_File</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <widget class="GtkMenu" id="menu1">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="file_open_menu_item">
+                        <property name="visible">True</property>
+                        <property name="tooltip" translatable="yes">Opens an interactive fiction game</property>
+                        <property name="label" translatable="yes">gtk-open</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                        <property name="visible">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="imagemenuitem5">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">gtk-quit</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="gtk_main_quit"/>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkMenuItem" id="edit_menu">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <widget class="GtkMenu" id="menu2">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="edit_cut_menu_item">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">gtk-cut</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="edit_copy_menu_item">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">gtk-copy</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="edit_paste_menu_item">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">gtk-paste</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="edit_delete_menu_item">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">gtk-delete</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkMenuItem" id="game_menu">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Game</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <widget class="GtkMenu" id="menu4">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="game_save_menu_item">
+                        <property name="visible">True</property>
+                        <property name="tooltip" translatable="yes">Saves your progress in the game</property>
+                        <property name="label" translatable="yes">_Save</property>
+                        <property name="use_underline">True</property>
+                        <child internal-child="image">
+                          <widget class="GtkImage" id="menu-item-image13">
+                            <property name="stock">gtk-save</property>
+                          </widget>
+                        </child>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="game_restore_menu_item">
+                        <property name="visible">True</property>
+                        <property name="tooltip" translatable="yes">Restores a previously saved game</property>
+                        <property name="label" translatable="yes">_Restore</property>
+                        <property name="use_underline">True</property>
+                        <child internal-child="image">
+                          <widget class="GtkImage" id="menu-item-image12">
+                            <property name="stock">gtk-open</property>
+                          </widget>
+                        </child>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="game_restart_menu_item">
+                        <property name="visible">True</property>
+                        <property name="tooltip" translatable="yes">Restart the game</property>
+                        <property name="label" translatable="yes">Res_tart</property>
+                        <property name="use_underline">True</property>
+                        <child internal-child="image">
+                          <widget class="GtkImage" id="menu-item-image11">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-refresh</property>
+                          </widget>
+                        </child>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkMenuItem" id="help_menu">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <widget class="GtkMenu" id="menu3">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkImageMenuItem" id="help_about_menu_item">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">gtk-about</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkToolbar" id="toolbar">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkToolButton" id="save_tool_button">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Save</property>
+                <property name="stock_id">gtk-save</property>
+                <signal name="clicked" handler="on_save_tool_button_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="restore_tool_button">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Restore</property>
+                <property name="stock_id">gtk-open</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</glade-interface>
