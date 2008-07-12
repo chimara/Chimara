@@ -4,6 +4,68 @@
 static GNode *root_window = NULL;
 
 /**
+ * glk_window_iterate:
+ * @win: A window, or #NULL.
+ * @rockptr: Return location for the next window's rock, or #NULL.
+ *
+ * Iterates over the list of windows; if @win is #NULL, it returns the first
+ * window, otherwise the next window after @win. If there are no more, it
+ * returns #NULL. The window's rock is stored in @rockptr. If you don't want
+ * the rocks to be returned, you may set @rockptr to #NULL.
+ *
+ * The order in which windows are returned is arbitrary. The root window is
+ * not necessarily first, nor is it necessarily last. The order may change
+ * every time you create or destroy a window, invalidating the iteration.
+ *
+ * Returns: the next window, or #NULL if there are no more.
+ */
+winid_t
+glk_window_iterate(winid_t win, glui32 *rockptr)
+{
+	GNode *retnode;
+	
+	if(win == NULL)
+		retnode = root_window;
+	else
+	{
+		GNode *node = win->window_node;
+		if( G_NODE_IS_LEAF(node) )
+		{
+			while(node && node->next == NULL)
+				node = node->parent;
+			if(node)
+				retnode = node->next;
+			else
+				retnode = NULL;
+		}
+		else
+			retnode = g_node_first_child(node);
+	}
+	winid_t retval = retnode? (winid_t)retnode->data : NULL;
+		
+	/* Store the window's rock in rockptr */
+	if(retval && rockptr)
+		*rockptr = glk_window_get_rock(retval);
+		
+	return retval;
+}
+
+/**
+ * glk_window_get_rock:
+ * @win: A window.
+ * 
+ * Returns the window @win's rock value. Pair windows always have rock 0.
+ *
+ * Returns: A rock value.
+ */
+glui32
+glk_window_get_rock(winid_t win)
+{
+	g_return_val_if_fail(win != NULL, 0);
+	return win->rock;
+}
+
+/**
  * glk_window_open:
  * @split: The window to split to create the new window. Must be 0 if there
  * are no windows yet.
@@ -59,9 +121,21 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 	switch(wintype)
 	{
+		case wintype_Blank:
+		{
+			/* A blank window will be a label without any text */
+			GtkWidget *window = gtk_label_new("");
+			gtk_box_pack_end(vbox, window, TRUE, TRUE, 0);
+			gtk_widget_show(window);
+			
+			new_window->widget = window;
+			/* You can print to a blank window's stream, but it does nothing */
+			new_window->window_stream = window_stream_new(new_window);
+			new_window->echo_stream = NULL;
+		}
+			break;	
 		case wintype_TextBuffer:
 		{
-			/* We need to put these declarations inside their own scope */
 			GtkWidget *scroll_window = gtk_scrolled_window_new(NULL, NULL);
 			GtkWidget *window = gtk_text_view_new();
 			gtk_container_add( GTK_CONTAINER(scroll_window), window );

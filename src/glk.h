@@ -23,10 +23,10 @@ typedef gint32 glsi32;
 
 /* These are the compile-time conditionals that reveal various Glk optional
     modules. */
-/* #define GLK_MODULE_UNICODE */
-/* #define GLK_MODULE_IMAGE */
-/* #define GLK_MODULE_SOUND */
-/* #define GLK_MODULE_HYPERLINKS */
+#define GLK_MODULE_UNICODE
+#define GLK_MODULE_IMAGE
+#define GLK_MODULE_SOUND
+#define GLK_MODULE_HYPERLINKS
 
 /* These types are opaque object identifiers. They're pointers to opaque
     C structures, which are defined differently by each library. */

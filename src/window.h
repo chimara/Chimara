@@ -31,6 +31,7 @@ struct glk_window_struct
 	gchar *line_input_buffer;
 	glui32 *line_input_buffer_unicode;
 	glui32 line_input_buffer_max_len;
+	gboolean mouse_input_requested;
 };
 
 #endif
