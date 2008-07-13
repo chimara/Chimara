@@ -6,6 +6,22 @@ static strid_t current_stream = NULL;
 /* List of streams currently in existence */
 static GList *stream_list = NULL;
 
+/* Internal function: create a window stream to go with window. */
+strid_t
+window_stream_new(winid_t window)
+{
+	/* Create stream and connect it to window */
+	strid_t s = g_new0(struct glk_stream_struct, 1);
+	s->file_mode = filemode_Write;
+	s->stream_type = STREAM_TYPE_WINDOW;
+	s->window = window;
+	/* Add it to the global stream list */
+	stream_list = g_list_prepend(stream_list, s);
+	s->stream_list = stream_list;
+
+	return s;
+}
+
 /**
  * glk_stream_iterate:
  * @str: A stream, or #NULL.
@@ -54,22 +70,6 @@ glk_stream_get_rock(strid_t str)
 	return str->rock;
 }
 
-/* Internal function: create a window stream to go with window. */
-strid_t
-window_stream_new(winid_t window)
-{
-	/* Create stream and connect it to window */
-	strid_t s = g_new0(struct glk_stream_struct, 1);
-	s->file_mode = filemode_Write;
-	s->stream_type = STREAM_TYPE_WINDOW;
-	s->window = window;
-	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, s);
-	s->stream_list = stream_list;
-
-	return s;
-}
-
 /**
  * glk_stream_set_current:
  * @str: An output stream, or NULL.
@@ -89,6 +89,82 @@ glk_stream_set_current(strid_t str)
 	current_stream = str;
 }
 
+/**
+ * glk_stream_get_current:
+ * 
+ * Returns the current stream, or #NULL if there is none.
+ *
+ * Returns: A stream.
+ */
+strid_t
+glk_stream_get_current()
+{
+	return current_stream;
+}
+
+/**
+ * glk_put_char:
+ * @ch: A character in Latin-1 encoding.
+ *
+ * Prints one character @ch to the current stream.
+ */
+void
+glk_put_char(unsigned char ch)
+{
+	/* Illegal to print to the current stream if it is NULL */
+	g_return_if_fail(current_stream != NULL);
+	glk_put_char_stream(current_stream, ch);
+}
+
+/**
+ * glk_put_string:
+ * @s: A null-terminated string in Latin-1 encoding.
+ *
+ * Prints @s to the current stream.
+ */
+void
+glk_put_string(char *s)
+{
+ 	/* Illegal to print to the current stream if it is NULL */
+	g_return_if_fail(current_stream != NULL);
+	glk_put_string_stream(current_stream, s);
+}
+
+/**
+ * glk_put_buffer:
+ * @buf: An array of characters in Latin-1 encoding.
+ * @len: Length of @buf.
+ *
+ * Prints @buf to the current stream.
+ */
+void
+glk_put_buffer(char *buf, glui32 len)
+{
+	/* Illegal to print to the current stream if it is NULL */
+	g_return_if_fail(current_stream != NULL);
+	glk_put_buffer_stream(current_stream, buf, len);
+}
+
+/**
+ * glk_put_char_stream:
+ * @str: An output stream.
+ * @ch: A character in Latin-1 encoding.
+ *
+ * Prints one character @ch to the stream @str. It is illegal for @str to be
+ * #NULL, or an input-only stream.
+ */
+void
+glk_put_char_stream(strid_t str, unsigned char ch)
+{
+	g_return_if_fail(str != NULL);
+	g_return_if_fail(str->file_mode != filemode_Read);
+	
+	/* Convert ch to a null-terminated string, call glk_put_string_stream() */
+	gchar *s = g_strndup(&ch, 1);
+	glk_put_string_stream(str, s);
+	g_free(s);
+}
+
 /* Internal function: change illegal (control) characters in a string to a
 placeholder character. Must free returned string afterwards. */
 static gchar *
@@ -104,40 +180,57 @@ remove_latin1_control_characters(gchar *s)
 	return retval;
 }
 
+/* Internal function: convert a Latin-1 string to a UTF-8 string, replacing
+Latin-1 control characters by a placeholder first. The UTF-8 string must be
+freed afterwards. Returns NULL on error. */
+static gchar *
+convert_latin1_to_utf8(gchar *s)
+{
+	GError *error = NULL;
+	gchar *canonical = remove_latin1_control_characters(s);
+	utf8 = g_convert(canonical, -1, "UTF-8", "ISO-8859-1", NULL, NULL, &error);
+	g_free(canonical);
+	
+	if(utf8 == NULL)
+	{
+		error_dialog(NULL, error, "Error during latin1->utf8 conversion: ");
+		return NULL;
+	}
+	
+	return utf8;
+}
+
+/* Internal function: write a UTF-8 string to a window's text buffer. */
+static void
+write_utf8_to_window(winid_t win, gchar *s)
+{
+	GtkTextBuffer *buffer = 
+		gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter(buffer, &iter);
+	gtk_text_buffer_insert(buffer, &iter, utf8, -1);
+}
+
 /**
- * glk_put_string:
+ * glk_put_string_stream:
+ * @str: An output stream.
  * @s: A null-terminated string in Latin-1 encoding.
  *
- * Prints @s to the current stream.
+ * Prints @s to the stream @str. It is illegal for @str to be #NULL, or an
+ * input-only stream.
  */
 void
-glk_put_string(char *s)
+glk_put_string_stream(strid_t str, char *s)
 {
-	/* Illegal to print to the current stream if it is NULL */
-	g_return_if_fail(current_stream != NULL);
-	
-	GError *error = NULL;
-	gchar *canonical, *utf8;
+	g_return_if_fail(str != NULL);
+	g_return_if_fail(str->file_mode != filemode_Read);
 
-	switch(current_stream->stream_type)
+	switch(str->stream_type)
 	{
 		case STREAM_TYPE_WINDOW:
-			canonical = remove_latin1_control_characters(s);
-			utf8 = g_convert(canonical, -1, "UTF-8", "ISO-8859-1", NULL, NULL, 
-			                 &error);
-			g_free(canonical);
-			
-			if(utf8 == NULL)
-			{
-				g_warning("glk_put_string: "
-					"Error during latin1->utf8 conversion: %s", 
-					error->message);
-				g_error_free(error);
-				return;
-			}
-
 			/* Each window type has a different way of printing to it */
-			switch(current_stream->window->window_type)
+			switch(str->window->window_type)
 			{
 				/* Printing to a these windows' streams does nothing */
 				case wintype_Blank:
@@ -148,25 +241,46 @@ glk_put_string(char *s)
 				/* Text buffer window */	
 				case wintype_TextBuffer:
 				{
-					GtkTextBuffer *buffer = gtk_text_view_get_buffer( 
-						GTK_TEXT_VIEW(current_stream->window->widget) );
-
-					GtkTextIter iter;
-					gtk_text_buffer_get_end_iter(buffer, &iter);
-
-					gtk_text_buffer_insert(buffer, &iter, utf8, -1);
-				}
-					current_stream->write_count += strlen(s);
+					gchar *utf8 = convert_latin1_to_utf8(s);
+					write_utf8_to_window(str->window, utf8);
+					g_free(utf8);
+				}	
+					str->write_count += strlen(s);
 					break;
 				default:
 					g_warning("glk_put_string: "
 						"Writing to this kind of window unsupported.");
 			}
 			
-			g_free(utf8);
+			/* Now write the same buffer to the window's echo stream */
+			if(str->window->echo_stream != NULL)
+				glk_put_string_stream(str->window->echo_stream, s);
+			
 			break;
 		default:
 			g_warning("glk_put_string: "
 				"Writing to this kind of stream unsupported.");	
 	}
 }
+
+/**
+ * glk_put_buffer_stream:
+ * @str: An output stream.
+ * @buf: An array of characters in Latin-1 encoding.
+ * @len: Length of @buf.
+ *
+ * Prints @buf to the stream @str. It is illegal for @str to be #NULL, or an
+ * input-only stream.
+ */
+void
+glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
+{
+	g_return_if_fail(str != NULL);
+	g_return_if_fail(str->file_mode != filemode_Read);
+	
+	/* Convert buf to a null-terminated string, call glk_put_string_stream() */
+	gchar *s = g_strndup(buf, len);
+	glk_put_string_stream(str, s);
+	g_free(s);
+}
+

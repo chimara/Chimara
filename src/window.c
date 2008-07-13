@@ -66,6 +66,76 @@ glk_window_get_rock(winid_t win)
 }
 
 /**
+ * glk_window_get_type:
+ * @win: A window.
+ *
+ * Returns the window @win's type, one of #wintype_Blank, #wintype_Pair,
+ * #wintype_TextBuffer, #wintype_TextGrid, or #wintype_Graphics.
+ *
+ * Returns: The window's type.
+ */
+glui32
+glk_window_get_type(winid_t win)
+{
+	g_return_val_if_fail(win != NULL, 0);
+	return win->wintype;
+}
+
+/**
+ * glk_window_get_parent:
+ * @win: A window.
+ *
+ * Returns the window @win's parent window. If @win is the root window, this
+ * returns #NULL, since the root window has no parent. Remember that the parent
+ * of every window is a pair window; other window types are always childless.
+ *
+ * Returns: A window.
+ */
+winid_t
+glk_window_get_parent(winid_t win)
+{
+	g_return_val_if_fail(win != NULL, NULL);
+	/* Value will also be NULL if win is the root window */
+	return (winid_t)win->window_node->parent->data;
+}
+
+/**
+ * glk_window_get_sibling:
+ * @win: A window.
+ *
+ * Returns the other child of the window @win's parent. If @win is the
+ * root window, this returns #NULL.
+ *
+ * Returns: A window, or NULL.
+ */
+winid_t
+glk_window_get_sibling(winid_t win)
+{
+	g_return_val_if_fail(win != NULL, NULL);
+	
+	if(G_NODE_IS_ROOT(win->window_node))
+		return NULL;
+	if(win->window_node->next)
+		return (winid_t)win->window_node->next;
+	return (winid_t)win->window_node->prev;
+}
+
+/**
+ * glk_window_get_root:
+ * 
+ * Returns the root window. If there are no windows, this returns #NULL.
+ *
+ * Returns: A window, or #NULL.
+ */
+winid_t
+glk_window_get_root()
+{
+	if(root_window == NULL)
+		return NULL;
+	return (winid_t)root_window->data;
+}
+
+/**
  * glk_window_open:
  * @split: The window to split to create the new window. Must be 0 if there
  * are no windows yet.
@@ -133,7 +203,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			new_window->window_stream = window_stream_new(new_window);
 			new_window->echo_stream = NULL;
 		}
-			break;	
+			break;
+			
 		case wintype_TextBuffer:
 		{
 			GtkWidget *scroll_window = gtk_scrolled_window_new(NULL, NULL);
@@ -150,6 +221,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			new_window->line_input_buffer_unicode = NULL;
 		}
 			break;
+			
 		default:
 			g_warning("glk_window_open: unsupported window type");
 			g_free(new_window);
@@ -159,6 +231,39 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	new_window->window_node = root_window;
 
 	return new_window;
+}
+
+/**
+ * glk_window_clear:
+ * @win: A window.
+ *
+ * Erases the window @win.
+ */
+void
+glk_window_clear(winid_t win)
+{
+	g_return_if_fail(win != NULL);
+	
+	switch(win->wintype)
+	{
+		case wintype_Blank:
+			/* do nothing */
+			break;
+			
+		case wintype_TextBuffer:
+			/* delete all text in the window */
+		{
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer( 
+				GTK_TEXT_VIEW(current_stream->window->widget) );
+			GtkTextIter start, end;
+			gtk_text_buffer_get_bounds(buffer, &start, &end);
+			gtk_text_buffer_delete(buffer, &start, &end);
+		}
+			break;
+			
+		default:
+			g_warning("glk_window_clear: unsupported window type");
+	}
 }
 
 /**
@@ -183,6 +288,68 @@ glk_set_window(winid_t win)
  */
 strid_t glk_window_get_stream(winid_t win)
 {
+	g_return_val_if_fail(win != NULL, NULL);
 	return win->window_stream;
+}
+
+/**
+ * glk_window_set_echo_stream:
+ * @win: A window.
+ * @str: A stream to attach to the window, or #NULL.
+ *
+ * Attaches the stream @str to @win as a second stream. Any text printed to the
+ * window is also echoed to this second stream, which is called the window's
+ * "echo stream."
+ *
+ * Effectively, any call to glk_put_char() (or the other output commands) which
+ * is directed to @win's window stream, is replicated to @win's echo stream.
+ * This also goes for the style commands such as glk_set_style().
+ *
+ * Note that the echoing is one-way. You can still print text directly to the
+ * echo stream, and it will go wherever the stream is bound, but it does not
+ * back up and appear in the window.
+ *
+ * It is illegal to set a window's echo stream to be its own window stream,
+ * which would create an infinite loop. It is similarly illegal to create a
+ * longer loop (two or more windows echoing to each other.)
+ *
+ * You can reset a window to stop echoing by setting @str to #NULL.
+ */
+void
+glk_window_set_echo_stream(winid_t win, strid_t str)
+{
+	g_return_if_fail(win != NULL);
+	
+	/* Test for an infinite loop */
+	strid_t next_str;
+	for(next_str = str;
+		next_str != NULL && next_str->stream_type == STREAM_TYPE_WINDOW;
+		next_str = next_str->window->echo_stream)
+	{
+		if(next_str == win->window_stream)
+		{
+			g_warning("glk_window_set_echo_stream: Infinite loop detected");
+			win->echo_stream = NULL;
+			return;
+		}
+	}
+	
+	win->echo_stream = str;	
+}
+
+/**
+ * glk_window_get_echo_stream:
+ * @win: A window.
+ *
+ * Returns the echo stream of window @win. If the window has no echo stream (as
+ * is initially the case) then this returns #NULL.
+ *
+ * Returns: A stream, or #NULL.
+ */
+strid_t
+glk_window_get_echo_stream(winid_t win)
+{
+	g_return_val_if_fail(win != NULL, NULL);
+	return win->echo_stream;
 }
 
