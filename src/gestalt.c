@@ -42,7 +42,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 	{
 		/* Version number */
 		case gestalt_Version:
-			return MAJOR_VERSION << 16 + MINOR_VERSION << 8 + SUB_VERSION;
+			return (MAJOR_VERSION << 16) + (MINOR_VERSION << 8) + SUB_VERSION;
 		
 		/* Which characters can we print? */	
 		case gestalt_CharOutput:

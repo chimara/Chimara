@@ -78,7 +78,7 @@ glui32
 glk_window_get_type(winid_t win)
 {
 	g_return_val_if_fail(win != NULL, 0);
-	return win->wintype;
+	return win->window_type;
 }
 
 /**
@@ -244,7 +244,7 @@ glk_window_clear(winid_t win)
 {
 	g_return_if_fail(win != NULL);
 	
-	switch(win->wintype)
+	switch(win->window_type)
 	{
 		case wintype_Blank:
 			/* do nothing */
@@ -253,8 +253,8 @@ glk_window_clear(winid_t win)
 		case wintype_TextBuffer:
 			/* delete all text in the window */
 		{
-			GtkTextBuffer *buffer = gtk_text_view_get_buffer( 
-				GTK_TEXT_VIEW(current_stream->window->widget) );
+			GtkTextBuffer *buffer = 
+				gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 			GtkTextIter start, end;
 			gtk_text_buffer_get_bounds(buffer, &start, &end);
 			gtk_text_buffer_delete(buffer, &start, &end);

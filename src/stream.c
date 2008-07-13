@@ -160,7 +160,7 @@ glk_put_char_stream(strid_t str, unsigned char ch)
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	/* Convert ch to a null-terminated string, call glk_put_string_stream() */
-	gchar *s = g_strndup(&ch, 1);
+	gchar *s = g_strndup((gchar *)&ch, 1);
 	glk_put_string_stream(str, s);
 	g_free(s);
 }
@@ -187,6 +187,7 @@ static gchar *
 convert_latin1_to_utf8(gchar *s)
 {
 	GError *error = NULL;
+	gchar *utf8;
 	gchar *canonical = remove_latin1_control_characters(s);
 	utf8 = g_convert(canonical, -1, "UTF-8", "ISO-8859-1", NULL, NULL, &error);
 	g_free(canonical);
@@ -209,7 +210,7 @@ write_utf8_to_window(winid_t win, gchar *s)
 
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(buffer, &iter);
-	gtk_text_buffer_insert(buffer, &iter, utf8, -1);
+	gtk_text_buffer_insert(buffer, &iter, s, -1);
 }
 
 /**
