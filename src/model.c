@@ -22,6 +22,13 @@ void glk_main(void)
     
     glk_put_string("Philip en Marijn zijn vet goed.\n");
     glk_put_string(buffer);
+    
+    frefid_t f = glk_fileref_create_by_prompt(fileusage_TextMode, filemode_Write, 0);
+    if( glk_fileref_does_file_exist(f) )
+    	glk_put_string("\n\nFile exists!\n");
+    else
+    	glk_put_string("\n\nFile does not exist!\n");
+    glk_fileref_destroy(f);
 
 	/* Bye bye */
 	glk_exit();
