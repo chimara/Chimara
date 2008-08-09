@@ -31,6 +31,9 @@ struct glk_stream_struct
 	gchar *memory_buffer;
 	glui32 *memory_buffer_unicode;
 	glui32 buffer_len;
+	/* Specific to file streams */
+	FILE *file_pointer;
+	gboolean binary;
 };
 
 strid_t window_stream_new(winid_t window);
