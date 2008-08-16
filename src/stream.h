@@ -9,9 +9,7 @@ enum StreamType
 {
 	STREAM_TYPE_WINDOW,
 	STREAM_TYPE_MEMORY,
-	STREAM_TYPE_FILE,
-	STREAM_TYPE_UNICODE_MEMORY,
-	STREAM_TYPE_UNICODE_FILE
+	STREAM_TYPE_FILE
 };
 
 struct glk_stream_struct
@@ -27,13 +25,17 @@ struct glk_stream_struct
 	enum StreamType stream_type;
 	/* Specific to window stream: the window this stream is connected to */
 	winid_t window;
+	/* For memory and file streams */
+	gboolean unicode;
 	/* Specific to memory streams */
-	gchar *memory_buffer;
-	glui32 *memory_buffer_unicode;
-	glui32 buffer_len;
+	gchar *buffer;
+	glui32 *ubuffer;
+	glui32 mark;
+	glui32 buflen;
 	/* Specific to file streams */
 	FILE *file_pointer;
 	gboolean binary;
+	gchar *filename; /* Displayable filename in UTF-8 for error handling */
 };
 
 strid_t window_stream_new(winid_t window);

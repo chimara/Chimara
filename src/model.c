@@ -15,21 +15,25 @@ void glk_main(void)
     /* Set the current output stream to print to it. */
     glk_set_window(mainwin);
     
-    unsigned char buffer[255];
+    unsigned char buffer[256];
     int i;
-    for(i = 0; i < 255; i++)
-    	buffer[i] = glk_char_to_upper(i + 1);
+    for(i = 0; i < 256; i++)
+    	buffer[i] = glk_char_to_upper(i);
     
     glk_put_string("Philip en Marijn zijn vet goed.\n");
-    glk_put_string(buffer);
+    glk_put_buffer((gchar *)buffer, 256);
     
-    frefid_t f = glk_fileref_create_by_prompt(fileusage_TextMode, filemode_Write, 0);
-    if( glk_fileref_does_file_exist(f) )
-    	glk_put_string("\n\nFile exists!\n");
-    else
-    	glk_put_string("\n\nFile does not exist!\n");
-    glk_fileref_destroy(f);
-
+    frefid_t f = 
+    	glk_fileref_create_by_prompt(fileusage_TextMode, filemode_Write, 0);
+    if(f) {
+		if( glk_fileref_does_file_exist(f) )
+			glk_put_string("\n\nFile exists!\n");
+		else
+			glk_put_string("\n\nFile does not exist!\n");
+		glk_fileref_destroy(f);
+	} else
+		glk_put_string("\n\nCancel was clicked!\n");
+	
 	/* Bye bye */
 	glk_exit();
 }

@@ -1,7 +1,6 @@
 #include "stream.h"
 #include "fileref.h"
-#include <string.h>
-#include <stdio.h>
+#include <glib.h>
 #include <glib/gstdio.h>
 
 /* Global current stream */
@@ -149,148 +148,104 @@ glk_put_buffer(char *buf, glui32 len)
 }
 
 /**
- * glk_put_char_stream:
- * @str: An output stream.
- * @ch: A character in Latin-1 encoding.
+ * glk_stream_open_memory:
+ * @buf: An allocated buffer, or %NULL.
+ * @buflen: Length of @buf.
+ * @fmode: Mode in which the buffer will be opened. Must be one of 
+ * #filemode_Read, #filemode_Write, or #filemode_ReadWrite.
+ * @rock: The new stream's rock value.
  *
- * Prints one character @ch to the stream @str. It is illegal for @str to be
- * #NULL, or an input-only stream.
+ * Opens a stream which reads from or writes to a space in memory. @buf points
+ * to the buffer where output will be read from or written to. @buflen is the
+ * length of the buffer.
+ *
+ * When outputting, if more than @buflen characters are written to the stream,
+ * all of them beyond the buffer length will be thrown away, so as not to
+ * overwrite the buffer. (The character count of the stream will still be
+ * maintained correctly. That is, it will count the number of characters written
+ * into the stream, not the number that fit into the buffer.)
+ *
+ * If @buf is %NULL, or for that matter if @buflen is zero, then <emphasis>
+ * everything</emphasis> written to the stream is thrown away. This may be
+ * useful if you are interested in the character count.
+ *
+ * When inputting, if more than @buflen characters are read from the stream, the
+ * stream will start returning -1 (signalling end-of-file.) If @buf is %NULL,
+ * the stream will always return end-of-file.
+ *
+ * The data is written to the buffer exactly as it was passed to the printing
+ * functions (glk_put_char(), etc.); input functions will read the data exactly
+ * as it exists in memory. No platform-dependent cookery will be done on it.
+ * [You can write a disk file in text mode, but a memory stream is effectively
+ * always in binary mode.]
+ *
+ * Unicode values (characters greater than 255) cannot be written to the buffer.
+ * If you try, they will be stored as 0x3F ("?") characters.
+ *
+ * Whether reading or writing, the contents of the buffer are undefined until
+ * the stream is closed. The library may store the data there as it is written,
+ * or deposit it all in a lump when the stream is closed. It is illegal to
+ * change the contents of the buffer while the stream is open.
  */
-void
-glk_put_char_stream(strid_t str, unsigned char ch)
+strid_t
+glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
-	g_return_if_fail(str != NULL);
-	g_return_if_fail(str->file_mode != filemode_Read);
+	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	/* Convert ch to a null-terminated string, call glk_put_string_stream() */
-	gchar *s = g_strndup((gchar *)&ch, 1);
-	glk_put_string_stream(str, s);
-	g_free(s);
-}
+	strid_t s = g_new0(struct glk_stream_struct, 1);
+	s->rock = rock;
+	s->file_mode = fmode;
+	s->stream_type = STREAM_TYPE_MEMORY;
+	s->buffer = buf;
+	s->mark = 0;
+	s->buflen = buflen;
+	s->unicode = FALSE;
 
-/* Internal function: change illegal (control) characters in a string to a
-placeholder character. Must free returned string afterwards. */
-static gchar *
-remove_latin1_control_characters(gchar *s)
-{
-	gchar *retval = g_strdup(s);
-	unsigned char *ptr;
-	for(ptr = (unsigned char *)retval; *ptr != '\0'; ptr++)
-		if( (*ptr < 32 && *ptr != 10) || (*ptr >= 127 && *ptr <= 159) )
-			*ptr = '?';
-			/* Our placeholder character is '?'; other options are possible,
-			like printing "0x7F" or something */
-	return retval;
-}
+	/* Add it to the global stream list */
+	stream_list = g_list_prepend(stream_list, s);
+	s->stream_list = stream_list;
 
-/* Internal function: convert a Latin-1 string to a UTF-8 string, replacing
-Latin-1 control characters by a placeholder first. The UTF-8 string must be
-freed afterwards. Returns NULL on error. */
-static gchar *
-convert_latin1_to_utf8(gchar *s)
-{
-	GError *error = NULL;
-	gchar *utf8;
-	gchar *canonical = remove_latin1_control_characters(s);
-	utf8 = g_convert(canonical, -1, "UTF-8", "ISO-8859-1", NULL, NULL, &error);
-	g_free(canonical);
-	
-	if(utf8 == NULL)
-	{
-		error_dialog(NULL, error, "Error during latin1->utf8 conversion: ");
-		return NULL;
-	}
-	
-	return utf8;
-}
-
-/* Internal function: write a UTF-8 string to a window's text buffer. */
-static void
-write_utf8_to_window(winid_t win, gchar *s)
-{
-	GtkTextBuffer *buffer = 
-		gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-
-	GtkTextIter iter;
-	gtk_text_buffer_get_end_iter(buffer, &iter);
-	gtk_text_buffer_insert(buffer, &iter, s, -1);
+	return s;
 }
 
 /**
- * glk_put_string_stream:
- * @str: An output stream.
- * @s: A null-terminated string in Latin-1 encoding.
+ * glk_stream_open_memory_uni:
+ * @buf: An allocated buffer, or %NULL.
+ * @buflen: Length of @buf.
+ * @fmode: Mode in which the buffer will be opened. Must be one of 
+ * #filemode_Read, #filemode_Write, or #filemode_ReadWrite.
+ * @rock: The new stream's rock value.
  *
- * Prints @s to the stream @str. It is illegal for @str to be #NULL, or an
- * input-only stream.
+ * Works just like glk_stream_open_memory(), except that the buffer is an array
+ * of 32-bit words, instead of bytes. This allows you to write and read any
+ * Unicode character. The @buflen is the number of words, not the number of
+ * bytes.
  */
-void
-glk_put_string_stream(strid_t str, char *s)
+strid_t
+glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, 
+	glui32 rock)
 {
-	g_return_if_fail(str != NULL);
-	g_return_if_fail(str->file_mode != filemode_Read);
-
-	switch(str->stream_type)
-	{
-		case STREAM_TYPE_WINDOW:
-			/* Each window type has a different way of printing to it */
-			switch(str->window->window_type)
-			{
-				/* Printing to a these windows' streams does nothing */
-				case wintype_Blank:
-				case wintype_Pair:
-				case wintype_Graphics:
-					current_stream->write_count += strlen(s);
-					break;
-				/* Text buffer window */	
-				case wintype_TextBuffer:
-				{
-					gchar *utf8 = convert_latin1_to_utf8(s);
-					write_utf8_to_window(str->window, utf8);
-					g_free(utf8);
-				}	
-					str->write_count += strlen(s);
-					break;
-				default:
-					g_warning("glk_put_string: "
-						"Writing to this kind of window unsupported.");
-			}
-			
-			/* Now write the same buffer to the window's echo stream */
-			if(str->window->echo_stream != NULL)
-				glk_put_string_stream(str->window->echo_stream, s);
-			
-			break;
-		default:
-			g_warning("glk_put_string: "
-				"Writing to this kind of stream unsupported.");	
-	}
-}
-
-/**
- * glk_put_buffer_stream:
- * @str: An output stream.
- * @buf: An array of characters in Latin-1 encoding.
- * @len: Length of @buf.
- *
- * Prints @buf to the stream @str. It is illegal for @str to be #NULL, or an
- * input-only stream.
- */
-void
-glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
-{
-	g_return_if_fail(str != NULL);
-	g_return_if_fail(str->file_mode != filemode_Read);
+	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	/* Convert buf to a null-terminated string, call glk_put_string_stream() */
-	gchar *s = g_strndup(buf, len);
-	glk_put_string_stream(str, s);
-	g_free(s);
+	strid_t s = g_new0(struct glk_stream_struct, 1);
+	s->rock = rock;
+	s->file_mode = fmode;
+	s->stream_type = STREAM_TYPE_MEMORY;
+	s->ubuffer = buf;
+	s->mark = 0;
+	s->buflen = buflen;
+	s->unicode = TRUE;
+
+	/* Add it to the global stream list */
+	stream_list = g_list_prepend(stream_list, s);
+	s->stream_list = stream_list;
+
+	return s;
 }
 
 /* Internal function: create a stream using the given parameters. */
 static strid_t
-stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
+file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 {
 	g_return_val_if_fail(fileref != NULL, NULL);
 	
@@ -342,10 +297,15 @@ stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	}
 	
 	strid_t s = g_new0(struct glk_stream_struct, 1);
+	s->rock = rock;
 	s->file_mode = fmode;
-	s->stream_type = unicode? STREAM_TYPE_UNICODE_FILE : STREAM_TYPE_FILE;
+	s->stream_type = STREAM_TYPE_FILE;
 	s->file_pointer = fp;
 	s->binary = binary;
+	s->unicode = unicode;
+	s->filename = g_filename_to_utf8(fileref->filename, -1, NULL, NULL, NULL);
+	if(s->filename == NULL)
+		s->filename = g_strdup("Unknown file name"); /* fail silently */
 	/* Add it to the global stream list */
 	stream_list = g_list_prepend(stream_list, s);
 	s->stream_list = stream_list;
@@ -380,7 +340,7 @@ stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 strid_t
 glk_stream_open_file(frefid_t fileref, glui32 fmode, glui32 rock)
 {
-	return stream_new(fileref, fmode, rock, FALSE);
+	return file_stream_new(fileref, fmode, rock, FALSE);
 }
 
 /**
@@ -401,6 +361,69 @@ glk_stream_open_file(frefid_t fileref, glui32 fmode, glui32 rock)
 strid_t
 glk_stream_open_file_uni(frefid_t fileref, glui32 fmode, glui32 rock)
 {
-	return stream_new(fileref, fmode, rock, TRUE);
+	return file_stream_new(fileref, fmode, rock, TRUE);
+}
+
+/**
+ * glk_stream_close:
+ * @str: Stream to close.
+ * @result: Pointer to a #stream_result_t, or %NULL.
+ *
+ * Closes the stream @str. The @result argument points to a structure which is
+ * filled in with the final character counts of the stream. If you do not care
+ * about these, you may pass %NULL as the @result argument.
+ *
+ * If @str is the current output stream, the current output stream is set to
+ * %NULL.
+ *
+ * You cannot close window streams; use glk_window_close() instead.
+ */
+void 
+glk_stream_close(strid_t str, stream_result_t *result)
+{
+	g_return_if_fail(str != NULL);
+	
+	/* Free resources associated with one specific type of stream */
+	switch(str->stream_type)
+	{
+		case STREAM_TYPE_WINDOW:
+			g_warning("%s: Attempted to close a window stream. Use glk_window_"
+				"close() instead.", __func__);
+			return;
+			
+		case STREAM_TYPE_MEMORY:
+			/* Do nothing */
+			break;
+			
+		case STREAM_TYPE_FILE:
+			if(fclose(str->file_pointer) != 0)
+				g_warning("%s: Failed to close file '%s'.", __func__, 
+					str->filename);
+			g_free(str->filename);
+			break;
+		default:
+			g_warning("%s: Closing this type of stream not supported.", 
+				__func__);
+			return;
+	}
+	
+	/* Remove the stream from the global stream list */
+	stream_list = g_list_delete_link(stream_list, str->stream_list);
+	/* If it was the current output stream, set that to NULL */
+	if(current_stream == str)
+		current_stream = NULL;
+	/* If it was one or more windows' echo streams, set those to NULL */
+	winid_t win;
+	for(win = glk_window_iterate(NULL, NULL); win; 
+		win = glk_window_iterate(win, NULL))
+		if(win->echo_stream == str)
+			win->echo_stream = NULL;
+	/* Return the character counts */
+	if(result) 
+	{
+		result->readcount = str->read_count;
+		result->writecount = str->write_count;
+	}
+	g_free(str);
 }
 

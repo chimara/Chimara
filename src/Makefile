@@ -8,7 +8,8 @@ SOURCES = main.c \
 		  gestalt.c \
 		  fileref.c fileref.h \
 		  case.c \
-		  model.c
+		  model.c \
+		  strio.c
 OBJECTS = main.o \
 		  callbacks.o \
 		  error.o \
@@ -18,7 +19,8 @@ OBJECTS = main.o \
 		  gestalt.o \
 		  fileref.o \
 		  case.o \
-		  model.o
+		  model.o \
+		  strio.o
 
 CFLAGS = -g -Wall -O0 -export-dynamic `pkg-config --cflags ${PKG_CONFIG}`
 LIBS = -export-dynamic `pkg-config --libs ${PKG_CONFIG}`
