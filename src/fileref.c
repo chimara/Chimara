@@ -69,7 +69,7 @@ fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 	f->filename = g_strdup(filename);
 	f->usage = usage;
 	f->orig_filemode = orig_filemode;
-
+	
 	/* Add it to the global fileref list */
 	fileref_list = g_list_prepend(fileref_list, f);
 	f->fileref_list = fileref_list;

@@ -81,7 +81,7 @@ glk_stream_get_rock(strid_t str)
 void
 glk_stream_set_current(strid_t str)
 {
-	if(str != NULL && str->file_mode != filemode_Write)
+	if(str != NULL && str->file_mode == filemode_Read)
 	{
 		g_warning("glk_stream_set_current: "
 			"Cannot set current stream to non output stream");
@@ -250,7 +250,8 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	g_return_val_if_fail(fileref != NULL, NULL);
 	
 	gchar *modestr;
-	gboolean binary = fileref->usage & fileusage_BinaryMode;
+	/* Binary mode is 0x000, text mode 0x100 */
+	gboolean binary = !(fileref->usage & fileusage_TextMode);
 	switch(fmode) 
 	{
 		case filemode_Read:

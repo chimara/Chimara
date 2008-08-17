@@ -12,27 +12,42 @@ void glk_main(void)
         return; 
     }
     
-    /* Set the current output stream to print to it. */
-    glk_set_window(mainwin);
-    
-    unsigned char buffer[256];
+    char buffer[256];
     int i;
     for(i = 0; i < 256; i++)
-    	buffer[i] = glk_char_to_upper(i);
+    	buffer[i] = (char)glk_char_to_upper(i);
     
-    glk_put_string("Philip en Marijn zijn vet goed.\n");
-    glk_put_buffer((gchar *)buffer, 256);
+    /*frefid_t f = glk_fileref_create_temp(fileusage_BinaryMode, 0);
+    if(f) 
+    {*/
     
-    frefid_t f = 
-    	glk_fileref_create_by_prompt(fileusage_TextMode, filemode_Write, 0);
-    if(f) {
-		if( glk_fileref_does_file_exist(f) )
-			glk_put_string("\n\nFile exists!\n");
-		else
-			glk_put_string("\n\nFile does not exist!\n");
+    char memorybuffer[100];
+    
+	strid_t s = glk_stream_open_memory(memorybuffer, 100, 
+		filemode_ReadWrite, 0);
+	glk_stream_set_current(s);
+	glk_put_char('X');
+	glk_put_string("Philip en Marijn zijn vet goed.\n");
+	glk_put_buffer(buffer, 256);
+
+	glk_stream_set_position(s, 0, seekmode_Start);
+	glk_set_window(mainwin);
+	glk_put_char( glk_get_char_stream(s) );
+	glk_put_char('\n');
+	g_printerr("Line read: %d\n", glk_get_line_stream(s, buffer, 256));
+	glk_put_string(buffer);
+	int count = glk_get_buffer_stream(s, buffer, 256);
+	g_printerr("Buffer read: %d\n", count);
+	glk_put_buffer(buffer, count);		
+	
+	stream_result_t result;
+	glk_stream_close(s, &result);
+	
+	g_printerr("Read count: %d\nWrite count: %d\n", result.readcount,
+		result.writecount);
+/*
 		glk_fileref_destroy(f);
-	} else
-		glk_put_string("\n\nCancel was clicked!\n");
+	}*/
 	
 	/* Bye bye */
 	glk_exit();

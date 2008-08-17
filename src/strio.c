@@ -15,8 +15,12 @@
 /* Internal function: change illegal (control) characters in a string to a
 placeholder character. Must free returned string afterwards. */
 static gchar *
-remove_latin1_control_characters(unsigned char *s, gssize len)
+remove_latin1_control_characters(unsigned char *s, gsize len)
 {
+	/* If len == 0, then return an empty string, not NULL */
+	if(len == 0)
+		return g_strdup("");
+			
 	gchar *retval = g_new0(gchar, len);
 	int i;
 	for(i = 0; i < len; i++)
@@ -33,7 +37,7 @@ remove_latin1_control_characters(unsigned char *s, gssize len)
 Latin-1 control characters by a placeholder first. The UTF-8 string must be
 freed afterwards. Returns NULL on error. */
 static gchar *
-convert_latin1_to_utf8(gchar *s, gssize len)
+convert_latin1_to_utf8(gchar *s, gsize len)
 {
 	GError *error = NULL;
 	gchar *utf8;
@@ -83,8 +87,11 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 				case wintype_TextBuffer:
 				{
 					gchar *utf8 = convert_latin1_to_utf8(buf, len);
-					write_utf8_to_window(str->window, utf8);
-					g_free(utf8);
+					if(utf8)
+					{
+						write_utf8_to_window(str->window, utf8);
+						g_free(utf8);
+					}
 				}	
 					str->write_count += len;
 					break;
@@ -104,12 +111,13 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			{
 				int foo = 0;
 				while(str->mark < str->buflen && foo < len)
-					str->ubuffer[str->mark++] = (glui32)buf[foo++];
+					str->ubuffer[str->mark++] = (unsigned char)buf[foo++];
 			}
 			if(!str->unicode && str->buffer)
 			{
-				memmove(str->buffer + str->mark, buf, 
-					min(len, str->buflen - str->mark));
+				int copycount = min(len, str->buflen - str->mark);
+				memmove(str->buffer + str->mark, buf, copycount);
+				str->mark += copycount;
 			}
 
 			str->write_count += len;
@@ -235,7 +243,7 @@ read_utf8_char_from_file(FILE *fp)
 		if(ch == EOF)
 			return -1;
 		readbuffer[foo] = (gchar)ch;
-		charresult = g_utf8_get_char_validated(readbuffer, foo);
+		charresult = g_utf8_get_char_validated(readbuffer, foo + 1);
 		/* charresult is -1 if invalid, -2 if incomplete, and the unicode code
 		point otherwise */
 	}
@@ -386,6 +394,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				if(str->buffer) /* if not, copycount stays 0 */
 					copycount = min(len, str->buflen - str->mark);
 				memmove(buf, str->buffer + str->mark, copycount);
+				str->mark += copycount;
 			}
 
 			str->read_count += copycount;		
@@ -509,8 +518,13 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 			else
 			{
 				if(str->buffer) /* if not, copycount stays 0 */
-					copycount = min(len, str->buflen - str->mark);
-				memccpy(buf, str->buffer + str->mark, '\n', copycount);
+					copycount = min(len - 1, str->buflen - str->mark);
+				char *endptr = memccpy(buf, str->buffer + str->mark, '\n',
+					copycount);
+				if(endptr) /* newline was found */
+					copycount = endptr - buf; /* Real copy count */
+				buf[copycount] = '\0';
+				str->mark += copycount;
 			}
 			
 			str->read_count += copycount;
