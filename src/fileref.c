@@ -144,10 +144,13 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	/* TODO: Remember current working directory and last used filename
 	for each usage */
 	GtkWidget *chooser;
+
+	gdk_threads_enter();
+
 	switch(fmode)
 	{
 		case filemode_Read:
-			chooser = gtk_file_chooser_dialog_new("Select a file", NULL,
+			chooser = gtk_file_chooser_dialog_new("Select a file to open", NULL,
 				GTK_FILE_CHOOSER_ACTION_OPEN,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
@@ -156,9 +159,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 				GTK_FILE_CHOOSER_ACTION_OPEN);
 			break;
 		case filemode_Write:
-		case filemode_ReadWrite:
-		case filemode_WriteAppend:
-			chooser = gtk_file_chooser_dialog_new("Select a file", NULL,
+			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
 				GTK_FILE_CHOOSER_ACTION_SAVE,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
@@ -168,14 +169,26 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			gtk_file_chooser_set_do_overwrite_confirmation(
 				GTK_FILE_CHOOSER(chooser), TRUE);
 			break;
+		case filemode_ReadWrite:
+		case filemode_WriteAppend:
+			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
+				GTK_FILE_CHOOSER_ACTION_SAVE,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				NULL);
+			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser),
+				GTK_FILE_CHOOSER_ACTION_SAVE);
+			break;
 		default:
 			g_warning("glk_fileref_create_by_prompt: Unsupported mode");
+			gdk_threads_leave();
 			return NULL;
 	}
 	
 	if(gtk_dialog_run( GTK_DIALOG(chooser) ) != GTK_RESPONSE_ACCEPT)
 	{
 		gtk_widget_destroy(chooser);
+		gdk_threads_leave();
 		return NULL;
 	}
 	gchar *filename = 
@@ -183,6 +196,8 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	frefid_t f = fileref_new(filename, rock, usage, fmode);
 	g_free(filename);
 	gtk_widget_destroy(chooser);
+
+	gdk_threads_leave();
 	return f;
 }
 

@@ -59,12 +59,16 @@ convert_latin1_to_utf8(gchar *s, gsize len)
 static void
 write_utf8_to_window(winid_t win, gchar *s)
 {
+	gdk_threads_enter();
+
 	GtkTextBuffer *buffer = 
 		gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(buffer, &iter);
 	gtk_text_buffer_insert(buffer, &iter, s, -1);
+
+	gdk_threads_leave();
 }
 
 /* Internal function: write a UTF-8 buffer with length to a stream. */

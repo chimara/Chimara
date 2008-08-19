@@ -1,3 +1,4 @@
+#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "glk.h"
@@ -11,7 +12,7 @@
 void
 glk_exit(void)
 {
-	gtk_main();
+	g_thread_exit(NULL);
 }
 
 /*

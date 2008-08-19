@@ -36,10 +36,12 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "callbacks.h"
 #include "error.h"
+#include "event.h"
 #include "glk.h"
 
 /*
@@ -69,7 +71,7 @@
 /* The global builder object to be used to request handles to widgets */
 GtkBuilder *builder = NULL;
 	
-GtkWidget*
+static GtkWidget*
 create_window(void)
 {
 	GtkWidget *window;
@@ -84,18 +86,36 @@ create_window(void)
 	return window;
 }
 
+/**
+ * glk_enter:
+ *
+ * Is called to create a new thread in which glk_main() runs.
+ */
+static gpointer
+glk_enter(gpointer data)
+{
+	glk_main();
+	return NULL;
+}
+
 
 int
 main(int argc, char *argv[])
 {
 	GError *error = NULL;
  	GtkWidget *window;
+	GThread *glk_thread;
 
 #ifdef ENABLE_NLS
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);
 #endif
+
+	if( !g_thread_supported() )
+		g_thread_init(NULL);
+
+	gdk_threads_init();
 
 	gtk_set_locale();
 	gtk_init(&argc, &argv);
@@ -109,9 +129,24 @@ main(int argc, char *argv[])
 	window = create_window();
 	gtk_widget_show(window);
 
-	glk_main();
+	events_init();
+
+	/* In een aparte thread of proces */
+	if( (glk_thread = g_thread_create(glk_enter, NULL, TRUE, &error)) == NULL ) {
+		error_dialog(NULL, error, "Error while creating glk thread: ");	
+		g_object_unref( G_OBJECT(builder) );
+		return 1;
+	}
+
+	gdk_threads_enter();
+	gtk_main();
+	gdk_threads_leave();
+
+	event_throw(EVENT_TYPE_QUIT, NULL, 0, 0);	
+	g_thread_join(glk_thread);
 
 	g_object_unref( G_OBJECT(builder) );
+	events_free();
 
 	return 0;
 }

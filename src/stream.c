@@ -269,7 +269,11 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 			modestr = g_strdup(binary? "ab" : "a");
 			break;
 		case filemode_ReadWrite:
-			modestr = g_strdup(binary? "r+b" : "r+");
+			if( g_file_test(fileref->filename, G_FILE_TEST_EXISTS) ) {
+				modestr = g_strdup(binary? "r+b" : "r+");
+			} else {
+				modestr = g_strdup(binary? "w+b" : "w+");
+			}
 			break;
 		default:
 			g_warning("glk_stream_open_file: Invalid file mode");
@@ -286,11 +290,16 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	/* If they opened a file in write mode but didn't specifically get
 	permission to do so, complain if the file already exists */
 	if(fileref->orig_filemode == filemode_Read && fmode != filemode_Read) {
+		gdk_threads_enter();
+
 		GtkWidget *dialog = gtk_message_dialog_new(NULL, 0,
 			GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
 			"File %s already exists. Overwrite?", fileref->filename);
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
+
+		gdk_threads_leave();
+
 		if(response != GTK_RESPONSE_YES) {
 			fclose(fp);
 			return NULL;
@@ -407,7 +416,13 @@ glk_stream_close(strid_t str, stream_result_t *result)
 				__func__);
 			return;
 	}
-	
+
+	stream_close_common(str, result);
+}
+
+void
+stream_close_common(strid_t str, stream_result_t *result)
+{
 	/* Remove the stream from the global stream list */
 	stream_list = g_list_delete_link(stream_list, str->stream_list);
 	/* If it was the current output stream, set that to NULL */
@@ -427,4 +442,3 @@ glk_stream_close(strid_t str, stream_result_t *result)
 	}
 	g_free(str);
 }
-

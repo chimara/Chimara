@@ -31,5 +31,9 @@
  */
 
 #include <gtk/gtk.h>
+#include "error.h"
+#include "event.h"
 
 void on_save_tool_button_clicked(GtkToolButton *toolbutton, gpointer user_data);
+gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+void on_file_quit_activate(GtkMenuItem *menuitem, gpointer user_data);

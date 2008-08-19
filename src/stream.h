@@ -39,5 +39,5 @@ struct glk_stream_struct
 };
 
 strid_t window_stream_new(winid_t window);
-
+void stream_close_common(strid_t str, stream_result_t *result);
 #endif

@@ -182,10 +182,13 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	new_window->rock = rock;
 	new_window->window_type = wintype;
 
+	gdk_threads_enter();
+
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)
 	{
 		error_dialog(NULL, NULL, "Could not find vbox");
+		gdk_threads_leave();
 		return NULL;
 	}
 
@@ -209,6 +212,11 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		{
 			GtkWidget *scroll_window = gtk_scrolled_window_new(NULL, NULL);
 			GtkWidget *window = gtk_text_view_new();
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window) );
+
+			gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(window), GTK_WRAP_WORD_CHAR );
+			gtk_text_view_set_editable( GTK_TEXT_VIEW(window), FALSE );
+
 			gtk_container_add( GTK_CONTAINER(scroll_window), window );
 			gtk_box_pack_end(vbox, scroll_window, TRUE, TRUE, 0);
 			gtk_widget_show_all(scroll_window);
@@ -219,18 +227,61 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			new_window->input_request_type = INPUT_REQUEST_NONE;
 			new_window->line_input_buffer = NULL;
 			new_window->line_input_buffer_unicode = NULL;
+
+			/* Connect signal handlers */
+			new_window->keypress_handler = g_signal_connect( G_OBJECT(window), "key-press-event", G_CALLBACK(on_window_key_press_event), new_window );
+			g_signal_handler_block( G_OBJECT(window), new_window->keypress_handler );
+
+			new_window->insert_text_handler = g_signal_connect_after( G_OBJECT(buffer), "insert-text", G_CALLBACK(after_window_insert_text), new_window );
+			g_signal_handler_block( G_OBJECT(buffer), new_window->insert_text_handler );
+
+			/* Create an editable tag to indicate editable parts of the window (for line input) */
+			gtk_text_buffer_create_tag(buffer, "uneditable", "editable", FALSE, "editable-set", TRUE, NULL);
+
+			/* Mark the position where the user will input text */
+			GtkTextIter end_iter;
+			gtk_text_buffer_get_end_iter(buffer, &end_iter);
+			gtk_text_buffer_create_mark(buffer, "input_position", &end_iter, TRUE);
 		}
 			break;
 			
 		default:
 			g_warning("glk_window_open: unsupported window type");
 			g_free(new_window);
+			gdk_threads_leave();
 			return NULL;
 	}
 
 	new_window->window_node = root_window;
 
+	gdk_threads_leave();
+
 	return new_window;
+}
+
+void
+glk_window_close(winid_t win, stream_result_t *result)
+{
+	g_return_if_fail(win != NULL);
+
+	switch(win->window_type)
+	{
+		case wintype_TextBuffer:
+			gtk_widget_destroy( gtk_widget_get_parent(win->widget) );
+			/* TODO: Cancel all input requests */
+			break;
+
+		case wintype_Blank:
+			gtk_widget_destroy(win->widget);
+			break;
+	}
+
+	stream_close_common(win->window_stream, result);
+
+	g_node_destroy(win->window_node);
+	/* TODO: iterate over child windows, closing them */
+
+	g_free(win);
 }
 
 /**
@@ -253,11 +304,15 @@ glk_window_clear(winid_t win)
 		case wintype_TextBuffer:
 			/* delete all text in the window */
 		{
+			gdk_threads_enter();
+
 			GtkTextBuffer *buffer = 
 				gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 			GtkTextIter start, end;
 			gtk_text_buffer_get_bounds(buffer, &start, &end);
 			gtk_text_buffer_delete(buffer, &start, &end);
+
+			gdk_threads_leave();
 		}
 			break;
 			
@@ -353,3 +408,22 @@ glk_window_get_echo_stream(winid_t win)
 	return win->echo_stream;
 }
 
+void
+glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
+{
+	g_return_if_fail(win != NULL);
+
+	if(widthptr != NULL) {
+		*widthptr = 0;
+	}
+
+	if(heightptr != NULL) {
+		*heightptr = 0;
+	}
+}
+
+void
+glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
+{
+	g_return_if_fail(win != NULL);
+}

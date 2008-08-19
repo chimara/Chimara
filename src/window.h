@@ -6,6 +6,8 @@
 
 #include "stream.h"
 #include "error.h"
+#include "callbacks.h"
+#include "input.h"
 
 enum InputRequestType
 {
@@ -32,6 +34,8 @@ struct glk_window_struct
 	glui32 *line_input_buffer_unicode;
 	glui32 line_input_buffer_max_len;
 	gboolean mouse_input_requested;
+	gulong keypress_handler;
+	gulong insert_text_handler;
 };
 
 #endif

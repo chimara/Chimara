@@ -12,18 +12,19 @@ void glk_main(void)
         return; 
     }
     
+	/*
     char buffer[256];
     int i;
     for(i = 0; i < 256; i++)
     	buffer[i] = (char)glk_char_to_upper(i);
     
-    /*frefid_t f = glk_fileref_create_temp(fileusage_BinaryMode, 0);
+	*/
+	/*
+    frefid_t f = glk_fileref_create_by_prompt(fileusage_BinaryMode, filemode_ReadWrite, 0);
     if(f) 
-    {*/
+    {
     
-    char memorybuffer[100];
-    
-	strid_t s = glk_stream_open_memory(memorybuffer, 100, 
+	strid_t s = glk_stream_open_file(f, 
 		filemode_ReadWrite, 0);
 	glk_stream_set_current(s);
 	glk_put_char('X');
@@ -45,9 +46,28 @@ void glk_main(void)
 	
 	g_printerr("Read count: %d\nWrite count: %d\n", result.readcount,
 		result.writecount);
-/*
 		glk_fileref_destroy(f);
-	}*/
+	}
+	*/
+
+	glk_set_window(mainwin);
+
+	gchar buffer[256] = "blaat";
+	event_t ev;
+	while(1) {
+		glk_put_string("prompt> ");
+		glk_request_line_event(mainwin, buffer, 256, 5);
+		glk_select(&ev);
+		switch(ev.type) {
+			default:
+				printf("Received event:\n");
+				printf("Type: %d\n", ev.type);
+				printf("Win: %d\n", glk_window_get_rock(ev.win));
+				printf("Var1: %d\n", ev.val1);
+				printf("Var2: %d\n", ev.val2);
+		}
+	}
+
 	
 	/* Bye bye */
 	glk_exit();

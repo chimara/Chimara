@@ -30,12 +30,18 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <gtk/gtk.h>
-#include "error.h"
-
 #include "callbacks.h"
-
 
 void on_save_tool_button_clicked(GtkToolButton *toolbutton, gpointer user_data) {
 	error_dialog( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(toolbutton))), NULL, "Not implemented yet" );
 }
+
+gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	gtk_main_quit();
+	return TRUE;
+}
+
+void on_file_quit_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gtk_main_quit();
+}
+

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Sat Jul 12 00:47:27 2008 -->
+<!--Generated with glade3 3.4.4 on Tue Aug 19 20:15:34 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="gargoyle-gtk">
     <property name="width_request">300</property>
     <property name="height_request">600</property>
     <property name="title" translatable="yes">Gargoyle GTK</property>
-    <signal name="delete_event" handler="gtk_main_quit"/>
+    <signal name="delete_event" handler="on_window_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox">
         <property name="visible">True</property>
@@ -22,7 +22,7 @@
                   <widget class="GtkMenu" id="menu1">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkImageMenuItem" id="file_open_menu_item">
+                      <widget class="GtkImageMenuItem" id="file_open">
                         <property name="visible">True</property>
                         <property name="tooltip" translatable="yes">Opens an interactive fiction game</property>
                         <property name="label" translatable="yes">gtk-open</property>
@@ -36,12 +36,12 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem5">
+                      <widget class="GtkImageMenuItem" id="file_quit">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">gtk-quit</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="gtk_main_quit"/>
+                        <signal name="activate" handler="on_file_quit_activate"/>
                       </widget>
                     </child>
                   </widget>
