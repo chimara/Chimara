@@ -248,15 +248,15 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			break;
 			
 		default:
+			gdk_threads_leave();
 			g_warning("%s: unsupported window type", __func__);
 			g_free(win);
-			gdk_threads_leave();
 			return NULL;
 	}
 
-	win->window_node = root_window;
-
 	gdk_threads_leave();
+
+	win->window_node = root_window;
 
 	return win;
 }

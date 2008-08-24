@@ -59,8 +59,7 @@ write_utf8_to_window(winid_t win, gchar *s)
 {
 	gdk_threads_enter();
 
-	GtkTextBuffer *buffer = 
-		gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(buffer, &iter);

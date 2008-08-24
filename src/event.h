@@ -5,9 +5,7 @@
 #include "glk.h"
 
 #define EVENT_QUEUE_MAX_LENGTH (100)
-
-/* Implementation-defined events */
-#define EVENT_TYPE_QUIT (-1)
+#define evtype_Abort (-1)
 
 void events_init();
 void events_free();

@@ -42,6 +42,7 @@
 #include "callbacks.h"
 #include "error.h"
 #include "event.h"
+#include "abort.h"
 #include "glk.h"
 
 /*
@@ -65,8 +66,6 @@
 #  define _(String) (String)
 #  define N_(String) (String)
 #endif
-
-#include "callbacks.h"
 
 /* The global builder object to be used to request handles to widgets */
 GtkBuilder *builder = NULL;
@@ -130,6 +129,7 @@ main(int argc, char *argv[])
 	gtk_widget_show(window);
 
 	events_init();
+	interrupt_init();
 
 	/* In een aparte thread of proces */
 	if( (glk_thread = g_thread_create(glk_enter, NULL, TRUE, &error)) == NULL ) {
@@ -142,11 +142,10 @@ main(int argc, char *argv[])
 	gtk_main();
 	gdk_threads_leave();
 
-	event_throw(EVENT_TYPE_QUIT, NULL, 0, 0);	
+	signal_abort();
 	g_thread_join(glk_thread);
 
 	g_object_unref( G_OBJECT(builder) );
-	events_free();
 
 	return 0;
 }

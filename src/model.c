@@ -2,6 +2,11 @@
 
 static winid_t mainwin = NULL;
 
+void sayit(void)
+{
+	g_printerr("I'm the interrupt handler!\n");
+}
+
 void glk_main(void)
 {
     /* Open the main window. */
@@ -52,11 +57,13 @@ void glk_main(void)
 
 	glk_set_window(mainwin);
 
-	gchar buffer[256] = "blaat";
+	glk_set_interrupt_handler(&sayit);
+
+	gchar buffer[256];
 	event_t ev;
 	while(1) {
 		glk_put_string("prompt> ");
-		glk_request_line_event(mainwin, buffer, 256, 5);
+		glk_request_line_event(mainwin, buffer, 256, 0);
 		glk_select(&ev);
 		switch(ev.type) {
 			default:
@@ -67,7 +74,6 @@ void glk_main(void)
 				printf("Var2: %d\n", ev.val2);
 		}
 	}
-
 	
 	/* Bye bye */
 	glk_exit();

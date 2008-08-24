@@ -12,6 +12,7 @@ SOURCES = main.c \
 		  event.c event.h \
 		  input.c input.h \
 		  style.c \
+		  abort.c abort.h \
 		  first.c
 OBJECTS = main.o \
 		  callbacks.o \
@@ -26,6 +27,7 @@ OBJECTS = main.o \
 		  event.o \
 		  input.o \
 		  style.o \
+		  abort.o \
 		  first.o
 
 CFLAGS = -g -Wall -O0 -export-dynamic `pkg-config --cflags ${PKG_CONFIG}`

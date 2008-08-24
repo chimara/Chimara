@@ -62,10 +62,17 @@ static void verb_unscript(void);
 static void verb_save(void);
 static void verb_restore(void);
 
+void handler(void)
+{
+	fprintf(stderr, "I'm the interrupt handler!\n");
+}
+
 /* The glk_main() function is called by the Glk system; it's the main entry
     point for your program. */
 void glk_main(void)
 {
+	glk_set_interrupt_handler(&handler);
+	
     /* Open the main window. */
     mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 1);
     if (!mainwin) {

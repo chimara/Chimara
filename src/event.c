@@ -1,5 +1,8 @@
 #include "event.h"
+#include "glk.h"
 #include <string.h>
+
+#define EVENT_TIMEOUT_MICROSECONDS (3000000)
 
 static GQueue *event_queue = NULL;
 static GMutex *event_lock = NULL;
@@ -22,26 +25,33 @@ events_init(). */
 void
 events_free()
 {
+	g_mutex_lock(event_lock);
 	g_queue_foreach(event_queue, (GFunc)g_free, NULL);
 	g_queue_free(event_queue);
-	g_mutex_free(event_lock);
 	g_cond_free(event_queue_not_empty);
 	g_cond_free(event_queue_not_full);
+	event_queue = NULL;
+	g_mutex_unlock(event_lock);
+	g_mutex_free(event_lock);
 }
 
 /* Internal function: push an event onto the event queue. If the event queue is
-full, wait for max three seconds and then drop the event. */
+full, wait for max three seconds and then drop the event. If the event queue is
+NULL, i.e. freed, then fail silently. */
 void
 event_throw(glui32 type, winid_t win, glui32 val1, glui32 val2)
 {
+	if(!event_queue)
+		return;
+
 	GTimeVal timeout;
 	g_get_current_time(&timeout);
-	g_time_val_add(&timeout, 3000000); /* 3 Seconds */
+	g_time_val_add(&timeout, EVENT_TIMEOUT_MICROSECONDS);
 
 	g_mutex_lock(event_lock);
 
 	/* Wait for room in the event queue */
-	if( g_queue_get_length(event_queue) >= EVENT_QUEUE_MAX_LENGTH )
+	while( g_queue_get_length(event_queue) >= EVENT_QUEUE_MAX_LENGTH )
 		if( !g_cond_timed_wait(event_queue_not_full, event_lock, &timeout) ) 
 		{
 			/* Drop the event after 3 seconds */
@@ -83,7 +93,7 @@ glk_select(event_t *event)
 	g_mutex_lock(event_lock);
 
 	/* Wait for an event */
-	if( g_queue_is_empty(event_queue) )
+	while( g_queue_is_empty(event_queue) )
 		g_cond_wait(event_queue_not_empty, event_lock);
 
 	event_t *retrieved_event = g_queue_pop_tail(event_queue);
@@ -100,10 +110,10 @@ glk_select(event_t *event)
 	g_cond_signal(event_queue_not_full);
 
 	g_mutex_unlock(event_lock);
-
-	/* Implementation-defined events */
-	switch(event->type) {
-		case EVENT_TYPE_QUIT:
-			g_thread_exit(NULL);
-	}
+	
+	/* Check for interrupt */
+	glk_tick();
+	
+	/* If an abort event was generated, the thread should have exited by now */
+	g_assert(event->type != evtype_Abort);
 }
