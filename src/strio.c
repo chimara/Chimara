@@ -4,8 +4,6 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#define min(x,y) ( (x > y)? y : x )
-
 /*
  *
  **************** WRITING FUNCTIONS ********************************************
@@ -71,15 +69,15 @@ write_utf8_to_window(winid_t win, gchar *s)
 	gdk_threads_leave();
 }
 
-/* Internal function: write a UTF-8 buffer with length to a stream. */
+/* Internal function: write a Latin-1 buffer with length to a stream. */
 static void
 write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 {
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_WINDOW:
 			/* Each window type has a different way of printing to it */
-			switch(str->window->window_type)
+			switch(str->window->type)
 			{
 				/* Printing to these windows' streams does nothing */
 				case wintype_Blank:
@@ -100,8 +98,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 					str->write_count += len;
 					break;
 				default:
-					g_warning("%s: Writing to this kind of window unsupported.",
-						__func__);
+					g_warning("%s: Writing to this kind of window unsupported.", __func__);
 			}
 			
 			/* Now write the same buffer to the window's echo stream */
@@ -119,7 +116,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			}
 			if(!str->unicode && str->buffer)
 			{
-				int copycount = min(len, str->buflen - str->mark);
+				int copycount = MIN(len, str->buflen - str->mark);
 				memmove(str->buffer + str->mark, buf, copycount);
 				str->mark += copycount;
 			}
@@ -155,8 +152,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			str->write_count += len;
 			break;
 		default:
-			g_warning("%s: Writing to this kind of stream unsupported.",
-				__func__);
+			g_warning("%s: Writing to this kind of stream unsupported.", __func__);
 	}
 }
 
@@ -299,10 +295,9 @@ glsi32
 glk_get_char_stream(strid_t str)
 {
 	g_return_val_if_fail(str != NULL, -1);
-	g_return_val_if_fail(str->file_mode == filemode_Read
-		|| str->file_mode == filemode_ReadWrite, -1);
+	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, -1);
 	
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_MEMORY:
 			if(str->unicode)
@@ -354,8 +349,7 @@ glk_get_char_stream(strid_t str)
 				return (ch > 0xFF)? 0x3F : ch;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.",
-				__func__);
+			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
 			return -1;
 	}
 }
@@ -375,19 +369,17 @@ glui32
 glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 {
 	g_return_val_if_fail(str != NULL, 0);
-	g_return_val_if_fail(str->file_mode == filemode_Read
-		|| str->file_mode == filemode_ReadWrite, 0);
+	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
 	g_return_val_if_fail(buf != NULL, 0);
 	
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_MEMORY:
 		{
 			int copycount = 0;
 			if(str->unicode)
 			{
-				while(copycount < len && str->ubuffer 
-					&& str->mark < str->buflen) 
+				while(copycount < len && str->ubuffer && str->mark < str->buflen) 
 				{
 					glui32 ch = str->ubuffer[str->mark++];
 					buf[copycount++] = (ch > 0xFF)? '?' : (char)ch;
@@ -396,7 +388,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 			else
 			{
 				if(str->buffer) /* if not, copycount stays 0 */
-					copycount = min(len, str->buflen - str->mark);
+					copycount = MIN(len, str->buflen - str->mark);
 				memmove(buf, str->buffer + str->mark, copycount);
 				str->mark += copycount;
 			}
@@ -411,14 +403,12 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				{
 					/* Read len characters of 4 bytes each */
 					unsigned char *readbuffer = g_new0(unsigned char, 4 * len);
-					size_t count = fread(readbuffer, sizeof(unsigned char), 
-						4 * len, str->file_pointer);
+					size_t count = fread(readbuffer, sizeof(unsigned char), 4 * len, str->file_pointer);
 					/* If there was an incomplete character */
 					if(count % 4 != 0) 
 					{
 						count -= count % 4;
-						g_warning("%s: Incomplete character in binary Unicode "
-							"file.", __func__);
+						g_warning("%s: Incomplete character in binary Unicode file.", __func__);
 					}
 					
 					str->read_count += count / 4;
@@ -436,8 +426,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				}
 				else /* Regular binary file */
 				{
-					size_t count = fread(buf, sizeof(char), len, 
-						str->file_pointer);
+					size_t count = fread(buf, sizeof(char), len, str->file_pointer);
 					str->read_count += count;
 					return count;
 				}
@@ -457,8 +446,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				return foo;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.",
-				__func__);
+			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
 			return 0;
 	}
 }
@@ -484,11 +472,10 @@ glui32
 glk_get_line_stream(strid_t str, char *buf, glui32 len)
 {
 	g_return_val_if_fail(str != NULL, 0);
-	g_return_val_if_fail(str->file_mode == filemode_Read
-		|| str->file_mode == filemode_ReadWrite, 0);
+	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
 	g_return_val_if_fail(buf != NULL, 0);
 
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_MEMORY:
 		{
@@ -496,14 +483,12 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 			if(str->unicode)
 			{
 				/* Do it character-by-character */
-				while(copycount < len - 1 && str->ubuffer 
-					&& str->mark < str->buflen) 
+				while(copycount < len - 1 && str->ubuffer && str->mark < str->buflen) 
 				{
 					glui32 ch = str->ubuffer[str->mark++];
 					/* Check for Unicode newline; slightly different than
 					in file streams */
-					if(ch == 0x0A || ch == 0x85 || ch == 0x0C || ch == 0x2028 
-						|| ch == 0x2029)
+					if(ch == 0x0A || ch == 0x85 || ch == 0x0C || ch == 0x2028 || ch == 0x2029)
 					{
 						buf[copycount++] = '\n';
 						break;
@@ -522,9 +507,8 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 			else
 			{
 				if(str->buffer) /* if not, copycount stays 0 */
-					copycount = min(len - 1, str->buflen - str->mark);
-				char *endptr = memccpy(buf, str->buffer + str->mark, '\n',
-					copycount);
+					copycount = MIN(len - 1, str->buflen - str->mark);
+				char *endptr = memccpy(buf, str->buffer + str->mark, '\n', copycount);
 				if(endptr) /* newline was found */
 					copycount = endptr - buf; /* Real copy count */
 				buf[copycount] = '\0';
@@ -543,8 +527,7 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 					int foo;
 					for(foo = 0; foo < len - 1; foo++)
 					{
-						glsi32 ch = 
-							read_ucs4be_char_from_file(str->file_pointer);
+						glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
 						if(ch == -1) 
 						{
 							buf[foo] = '\0';
@@ -594,8 +577,7 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 				return foo;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.",
-				__func__);
+			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
 			return 0;
 	}
 }
@@ -631,7 +613,7 @@ glk_stream_get_position(strid_t str)
 {
 	g_return_val_if_fail(str != NULL, 0);
 	
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_MEMORY:
 			return str->mark;
@@ -683,7 +665,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 	g_return_if_fail(!(seekmode == seekmode_Start && pos < 0));
 	g_return_if_fail(!(seekmode == seekmode_End || pos > 0));
 	
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_MEMORY:
 			switch(seekmode)
@@ -712,8 +694,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 			break;
 		}
 		default:
-			g_warning("%s: Seeking not supported on this type of stream.",
-				__func__);
+			g_warning("%s: Seeking not supported on this type of stream.", __func__);
 			return;
 	}
 }

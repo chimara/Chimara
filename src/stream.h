@@ -22,7 +22,7 @@ struct glk_stream_struct
 	glui32 file_mode;
 	glui32 read_count;
 	glui32 write_count;
-	enum StreamType stream_type;
+	enum StreamType type;
 	/* Specific to window stream: the window this stream is connected to */
 	winid_t window;
 	/* For memory and file streams */

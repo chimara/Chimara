@@ -13,31 +13,32 @@ strid_t
 window_stream_new(winid_t window)
 {
 	/* Create stream and connect it to window */
-	strid_t s = g_new0(struct glk_stream_struct, 1);
-	s->file_mode = filemode_Write;
-	s->stream_type = STREAM_TYPE_WINDOW;
-	s->window = window;
+	strid_t str = g_new0(struct glk_stream_struct, 1);
+	str->file_mode = filemode_Write;
+	str->type = STREAM_TYPE_WINDOW;
+	str->window = window;
+	
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, s);
-	s->stream_list = stream_list;
+	stream_list = g_list_prepend(stream_list, str);
+	str->stream_list = stream_list;
 
-	return s;
+	return str;
 }
 
 /**
  * glk_stream_iterate:
- * @str: A stream, or #NULL.
- * @rockptr: Return location for the next window's rock, or #NULL.
+ * @str: A stream, or %NULL.
+ * @rockptr: Return location for the next window's rock, or %NULL.
  *
- * Iterates over the list of streams; if @str is #NULL, it returns the first
+ * Iterates over the list of streams; if @str is %NULL, it returns the first
  * stream, otherwise the next stream after @str. If there are no more, it
- * returns #NULL. The stream's rock is stored in @rockptr. If you don't want
- * the rocks to be returned, you may set @rockptr to #NULL.
+ * returns %NULL. The stream's rock is stored in @rockptr. If you don't want
+ * the rocks to be returned, you may set @rockptr to %NULL.
  *
  * The order in which streams are returned is arbitrary. The order may change
  * every time you create or destroy a stream, invalidating the iteration.
  *
- * Returns: the next stream, or #NULL if there are no more.
+ * Returns: the next stream, or %NULL if there are no more.
  */
 strid_t
 glk_stream_iterate(strid_t str, glui32 *rockptr)
@@ -74,17 +75,18 @@ glk_stream_get_rock(strid_t str)
 
 /**
  * glk_stream_set_current:
- * @str: An output stream, or NULL.
+ * @str: An output stream, or %NULL.
  *
- * Sets the current stream to @str, or to nothing if @str is #NULL.
+ * Sets the current stream to @str, which must be an output stream. You may set
+ * the current stream to %NULL, which means the current stream is not set to
+ * anything. 
  */
 void
 glk_stream_set_current(strid_t str)
 {
 	if(str != NULL && str->file_mode == filemode_Read)
 	{
-		g_warning("glk_stream_set_current: "
-			"Cannot set current stream to non output stream");
+		g_warning("%s: Cannot set current stream to non output stream", __func__);
 		return;
 	}
 
@@ -94,7 +96,7 @@ glk_stream_set_current(strid_t str)
 /**
  * glk_stream_get_current:
  * 
- * Returns the current stream, or #NULL if there is none.
+ * Returns the current stream, or %NULL if there is none.
  *
  * Returns: A stream.
  */
@@ -108,12 +110,12 @@ glk_stream_get_current()
  * glk_put_char:
  * @ch: A character in Latin-1 encoding.
  *
- * Prints one character @ch to the current stream.
+ * Prints one character to the current stream. As with all basic functions, the
+ * character is assumed to be in the Latin-1 character encoding.
  */
 void
 glk_put_char(unsigned char ch)
 {
-	/* Illegal to print to the current stream if it is NULL */
 	g_return_if_fail(current_stream != NULL);
 	glk_put_char_stream(current_stream, ch);
 }
@@ -122,12 +124,17 @@ glk_put_char(unsigned char ch)
  * glk_put_string:
  * @s: A null-terminated string in Latin-1 encoding.
  *
- * Prints @s to the current stream.
+ * Prints a null-terminated string to the current stream. It is exactly
+ * equivalent to:
+ * <informalexample><programlisting>
+ * for (ptr = s; *ptr; ptr++)
+ * 	glk_put_char(*ptr);
+ * </programlisting></informalexample>
+ * However, it may be more efficient.
  */
 void
 glk_put_string(char *s)
 {
- 	/* Illegal to print to the current stream if it is NULL */
 	g_return_if_fail(current_stream != NULL);
 	glk_put_string_stream(current_stream, s);
 }
@@ -137,12 +144,17 @@ glk_put_string(char *s)
  * @buf: An array of characters in Latin-1 encoding.
  * @len: Length of @buf.
  *
- * Prints @buf to the current stream.
+ * Prints a block of characters to the current stream. It is exactly equivalent
+ * to:
+ * <informalexample><programlisting>
+ * for (i = 0; i < len; i++)
+ * 	glk_put_char(buf[i]);
+ * </programlisting></informalexample>
+ * However, it may be more efficient.
  */
 void
 glk_put_buffer(char *buf, glui32 len)
 {
-	/* Illegal to print to the current stream if it is NULL */
 	g_return_if_fail(current_stream != NULL);
 	glk_put_buffer_stream(current_stream, buf, len);
 }
@@ -176,8 +188,8 @@ glk_put_buffer(char *buf, glui32 len)
  * The data is written to the buffer exactly as it was passed to the printing
  * functions (glk_put_char(), etc.); input functions will read the data exactly
  * as it exists in memory. No platform-dependent cookery will be done on it.
- * [You can write a disk file in text mode, but a memory stream is effectively
- * always in binary mode.]
+ * (You can write a disk file in text mode, but a memory stream is effectively
+ * always in binary mode.)
  *
  * Unicode values (characters greater than 255) cannot be written to the buffer.
  * If you try, they will be stored as 0x3F ("?") characters.
@@ -192,20 +204,20 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	strid_t s = g_new0(struct glk_stream_struct, 1);
-	s->rock = rock;
-	s->file_mode = fmode;
-	s->stream_type = STREAM_TYPE_MEMORY;
-	s->buffer = buf;
-	s->mark = 0;
-	s->buflen = buflen;
-	s->unicode = FALSE;
+	strid_t str = g_new0(struct glk_stream_struct, 1);
+	str->rock = rock;
+	str->file_mode = fmode;
+	str->type = STREAM_TYPE_MEMORY;
+	str->buffer = buf;
+	str->mark = 0;
+	str->buflen = buflen;
+	str->unicode = FALSE;
 
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, s);
-	s->stream_list = stream_list;
+	stream_list = g_list_prepend(stream_list, str);
+	str->stream_list = stream_list;
 
-	return s;
+	return str;
 }
 
 /**
@@ -222,25 +234,24 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
  * bytes.
  */
 strid_t
-glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, 
-	glui32 rock)
+glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	strid_t s = g_new0(struct glk_stream_struct, 1);
-	s->rock = rock;
-	s->file_mode = fmode;
-	s->stream_type = STREAM_TYPE_MEMORY;
-	s->ubuffer = buf;
-	s->mark = 0;
-	s->buflen = buflen;
-	s->unicode = TRUE;
+	strid_t str = g_new0(struct glk_stream_struct, 1);
+	str->rock = rock;
+	str->file_mode = fmode;
+	str->type = STREAM_TYPE_MEMORY;
+	str->ubuffer = buf;
+	str->mark = 0;
+	str->buflen = buflen;
+	str->unicode = TRUE;
 
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, s);
-	s->stream_list = stream_list;
+	stream_list = g_list_prepend(stream_list, str);
+	str->stream_list = stream_list;
 
-	return s;
+	return str;
 }
 
 /* Internal function: create a stream using the given parameters. */
@@ -306,21 +317,21 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 		}
 	}
 	
-	strid_t s = g_new0(struct glk_stream_struct, 1);
-	s->rock = rock;
-	s->file_mode = fmode;
-	s->stream_type = STREAM_TYPE_FILE;
-	s->file_pointer = fp;
-	s->binary = binary;
-	s->unicode = unicode;
-	s->filename = g_filename_to_utf8(fileref->filename, -1, NULL, NULL, NULL);
-	if(s->filename == NULL)
-		s->filename = g_strdup("Unknown file name"); /* fail silently */
+	strid_t str = g_new0(struct glk_stream_struct, 1);
+	str->rock = rock;
+	str->file_mode = fmode;
+	str->type = STREAM_TYPE_FILE;
+	str->file_pointer = fp;
+	str->binary = binary;
+	str->unicode = unicode;
+	str->filename = g_filename_to_utf8(fileref->filename, -1, NULL, NULL, NULL);
+	if(str->filename == NULL)
+		str->filename = g_strdup("Unknown file name"); /* fail silently */
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, s);
-	s->stream_list = stream_list;
+	stream_list = g_list_prepend(stream_list, str);
+	str->stream_list = stream_list;
 
-	return s;
+	return str;
 }
 
 /**
@@ -394,7 +405,7 @@ glk_stream_close(strid_t str, stream_result_t *result)
 	g_return_if_fail(str != NULL);
 	
 	/* Free resources associated with one specific type of stream */
-	switch(str->stream_type)
+	switch(str->type)
 	{
 		case STREAM_TYPE_WINDOW:
 			g_warning("%s: Attempted to close a window stream. Use glk_window_"
@@ -420,20 +431,24 @@ glk_stream_close(strid_t str, stream_result_t *result)
 	stream_close_common(str, result);
 }
 
+/* Internal function: Stuff to do upon closing any type of stream. */
 void
 stream_close_common(strid_t str, stream_result_t *result)
 {
 	/* Remove the stream from the global stream list */
 	stream_list = g_list_delete_link(stream_list, str->stream_list);
+	
 	/* If it was the current output stream, set that to NULL */
 	if(current_stream == str)
 		current_stream = NULL;
+		
 	/* If it was one or more windows' echo streams, set those to NULL */
 	winid_t win;
 	for(win = glk_window_iterate(NULL, NULL); win; 
 		win = glk_window_iterate(win, NULL))
 		if(win->echo_stream == str)
 			win->echo_stream = NULL;
+			
 	/* Return the character counts */
 	if(result) 
 	{

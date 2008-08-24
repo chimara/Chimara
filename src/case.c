@@ -35,8 +35,6 @@ glk_char_to_upper(unsigned char ch)
 	return ch;
 }
 
-#ifdef GLK_MODULE_UNICODE
-
 /**
  * glk_buffer_to_lower_case_uni:
  * @buf: A character array in UCS-4.
@@ -104,30 +102,28 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
  * @buf: A character array in UCS-4.
  * @len: Available length of @buf.
  * @numchars: Number of characters in @buf.
- * @lowerrest: #TRUE if the rest of @buf should be lowercased, #FALSE 
+ * @lowerrest: %TRUE if the rest of @buf should be lowercased, %FALSE 
  * otherwise.
  *
  * Converts the first character of @buf to uppercase, if there is such a thing.
- * See glk_buffer_to_lower_case_uni(). If @lowerrest is #TRUE, then the
+ * See glk_buffer_to_lower_case_uni(). If @lowerrest is %TRUE, then the
  * remainder of @buf is lowercased.
  *
  * Returns: The number of characters after conversion.
  */
 glui32
-glk_buffer_to_title_case_uni(glui32 *buf, glui32 len, glui32 numchars, 
-                             glui32 lowerrest)
+glk_buffer_to_title_case_uni(glui32 *buf, glui32 len, glui32 numchars, glui32 lowerrest)
 {
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
 	
 	/* GLib has a function that converts _one_ UCS-4 character to _one_
-	uppercase UCS-4 character; so apparently we don't have to worry about the
+	titlecase UCS-4 character; so apparently we don't have to worry about the
 	string length changing... */
 	*buf = g_unichar_totitle(*buf);
 	/* Call lowercase on the rest of the string */
 	if(lowerrest)
-		return glk_buffer_to_lower_case_uni(buf + 1, len - 1, numchars - 1) +1;
+		return glk_buffer_to_lower_case_uni(buf + 1, len - 1, numchars - 1) + 1;
 	return numchars;
 }
 
-#endif /* GLK_MODULE_UNICODE */

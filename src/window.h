@@ -24,7 +24,7 @@ struct glk_window_struct
 	/* Pointer to the node in the global tree that contains this window */
 	GNode *window_node;
 	/* Window parameters */
-	glui32 window_type;
+	glui32 type;
 	GtkWidget *widget;
 	strid_t window_stream;
 	strid_t echo_stream;
