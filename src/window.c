@@ -1,7 +1,7 @@
 #include "window.h"
+#include "chimara-glk-private.h"
 
-/* Global tree of all windows */
-static GNode *root_window = NULL;
+extern ChimaraGlkPrivate *glk_data;
 
 /**
  * glk_window_iterate:
@@ -25,7 +25,7 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 	GNode *retnode;
 	
 	if(win == NULL)
-		retnode = root_window;
+		retnode = glk_data->root_window;
 	else
 	{
 		GNode *node = win->window_node;
@@ -131,9 +131,9 @@ glk_window_get_sibling(winid_t win)
 winid_t
 glk_window_get_root()
 {
-	if(root_window == NULL)
+	if(glk_data->root_window == NULL)
 		return NULL;
-	return (winid_t)root_window->data;
+	return (winid_t)glk_data->root_window->data;
 }
 
 /**
@@ -163,35 +163,27 @@ winid_t
 glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype, 
                 glui32 rock)
 {
-	extern GtkBuilder *builder;
-
 	if(split)
 	{
 		g_warning("glk_window_open: splitting of windows not implemented");
 		return NULL;
 	}
 
-	if(root_window != NULL)
+	if(glk_data->root_window != NULL)
 	{
 		g_warning("glk_window_open: there is already a window");
 		return NULL;
 	}
+	
+	gdk_threads_enter();
+	
 	/* We only create one window and don't support any more than that */
 	winid_t win = g_new0(struct glk_window_struct, 1);
-	root_window = g_node_new(win);
+	glk_data->root_window = g_node_new(win);
 
 	win->rock = rock;
 	win->type = wintype;
-
-	gdk_threads_enter();
-
-	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
-	if(vbox == NULL)
-	{
-		error_dialog(NULL, NULL, "Could not find vbox");
-		gdk_threads_leave();
-		return NULL;
-	}
+    win->window_node = glk_data->root_window;
 
 	switch(wintype)
 	{
@@ -199,10 +191,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		{
 			/* A blank window will be a label without any text */
 			GtkWidget *label = gtk_label_new("");
-			gtk_box_pack_end(vbox, label, TRUE, TRUE, 0);
 			gtk_widget_show(label);
 			
 			win->widget = label;
+			win->frame = label;
 			/* You can print to a blank window's stream, but it does nothing */
 			win->window_stream = window_stream_new(win);
 			win->echo_stream = NULL;
@@ -219,10 +211,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
 
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
-			gtk_box_pack_end(vbox, scrolledwindow, TRUE, TRUE, 0);
 			gtk_widget_show_all(scrolledwindow);
 
 			win->widget = textview;
+			win->frame = scrolledwindow;
 			win->window_stream = window_stream_new(win);
 			win->echo_stream = NULL;
 			win->input_request_type = INPUT_REQUEST_NONE;
@@ -254,9 +246,11 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			return NULL;
 	}
 
-	gdk_threads_leave();
+    /* Put the frame widget into our container */
+    gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
+    gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 
-	win->window_node = root_window;
+	gdk_threads_leave();
 
 	return win;
 }

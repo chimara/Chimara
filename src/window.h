@@ -25,7 +25,8 @@ struct glk_window_struct
 	GNode *window_node;
 	/* Window parameters */
 	glui32 type;
-	GtkWidget *widget;
+	GtkWidget *widget; /* actual widget that does stuff */
+	GtkWidget *frame; /* container child */
 	strid_t window_stream;
 	strid_t echo_stream;
 	/* Input request stuff */

@@ -37,6 +37,7 @@
 #include <stdio.h>
 
 #include <glib.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 #include "callbacks.h"
@@ -44,66 +45,39 @@
 #include "event.h"
 #include "abort.h"
 #include "glk.h"
+#include "chimara-glk.h"
 
-/*
- * Standard gettext macros.
- */
-#ifdef ENABLE_NLS
-#  include <libintl.h>
-#  undef _
-#  define _(String) dgettext (PACKAGE, String)
-#  ifdef gettext_noop
-#    define N_(String) gettext_noop (String)
-#  else
-#    define N_(String) (String)
-#  endif
-#else
-#  define textdomain(String) (String)
-#  define gettext(String) (String)
-#  define dgettext(Domain,Message) (Message)
-#  define dcgettext(Domain,Message,Type) (Message)
-#  define bindtextdomain(Domain,Directory) (Domain)
-#  define _(String) (String)
-#  define N_(String) (String)
-#endif
-
-/* The global builder object to be used to request handles to widgets */
+/* Global pointers to widgets */
 GtkBuilder *builder = NULL;
-	
-static GtkWidget*
+GtkWidget *window = NULL;
+GtkWidget *glk = NULL;
+
+static void
 create_window(void)
 {
-	GtkWidget *window;
-
 	if( (window = GTK_WIDGET(gtk_builder_get_object(builder, "gargoyle-gtk"))) == NULL ) {
 		error_dialog(NULL, NULL, "Error while getting main window object");
-		return NULL;
+		return;
 	}
 
 	gtk_builder_connect_signals(builder, NULL);
 	
-	return window;
-}
+	glk = chimara_glk_new();
+	
+	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
+	if(vbox == NULL)
+	{
+		error_dialog(NULL, NULL, "Could not find vbox");
+		return;
+	}
 
-/**
- * glk_enter:
- *
- * Is called to create a new thread in which glk_main() runs.
- */
-static gpointer
-glk_enter(gpointer data)
-{
-	glk_main();
-	return NULL;
+	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
 }
-
 
 int
 main(int argc, char *argv[])
 {
 	GError *error = NULL;
- 	GtkWidget *window;
-	GThread *glk_thread;
 
 #ifdef ENABLE_NLS
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
@@ -115,37 +89,32 @@ main(int argc, char *argv[])
 		g_thread_init(NULL);
 
 	gdk_threads_init();
-
+    
 	gtk_set_locale();
 	gtk_init(&argc, &argv);
 
    	builder = gtk_builder_new();
-	if( !gtk_builder_add_from_file(builder, "gargoyle-gtk.ui", &error) ) {
+	if( !gtk_builder_add_from_file(builder, "chimara.ui", &error) ) {
 		error_dialog(NULL, error, "Error while building interface: ");	
 		return 1;
 	}
 
-	window = create_window();
-	gtk_widget_show(window);
+	create_window();
+	gtk_widget_show_all(window);
 
-	events_init();
-	interrupt_init();
+	g_object_unref( G_OBJECT(builder) );
 
-	/* In een aparte thread of proces */
-	if( (glk_thread = g_thread_create(glk_enter, NULL, TRUE, &error)) == NULL ) {
-		error_dialog(NULL, error, "Error while creating glk thread: ");	
-		g_object_unref( G_OBJECT(builder) );
-		return 1;
-	}
+    if( !chimara_glk_run(CHIMARA_GLK(glk), &error) ) {
+        error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
+        return 1;
+    }
 
-	gdk_threads_enter();
+    gdk_threads_enter();
 	gtk_main();
 	gdk_threads_leave();
 
 	signal_abort();
-	g_thread_join(glk_thread);
-
-	g_object_unref( G_OBJECT(builder) );
+	chimara_glk_wait(CHIMARA_GLK(glk));
 
 	return 0;
 }

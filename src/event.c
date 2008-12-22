@@ -2,38 +2,11 @@
 #include "glk.h"
 #include <string.h>
 
+#include "chimara-glk-private.h"
+
+extern ChimaraGlkPrivate *glk_data;
+
 #define EVENT_TIMEOUT_MICROSECONDS (3000000)
-
-static GQueue *event_queue = NULL;
-static GMutex *event_lock = NULL;
-static GCond *event_queue_not_empty = NULL;
-static GCond *event_queue_not_full = NULL;
-
-/* Internal function: initialize the event_queue, locking and signalling 
-objects. */
-void
-events_init()
-{
-	event_queue = g_queue_new();
-	event_lock = g_mutex_new();
-	event_queue_not_empty = g_cond_new();
-	event_queue_not_full = g_cond_new();
-}
-
-/* Internal function: free the event queue and all the objects allocated in
-events_init(). */
-void
-events_free()
-{
-	g_mutex_lock(event_lock);
-	g_queue_foreach(event_queue, (GFunc)g_free, NULL);
-	g_queue_free(event_queue);
-	g_cond_free(event_queue_not_empty);
-	g_cond_free(event_queue_not_full);
-	event_queue = NULL;
-	g_mutex_unlock(event_lock);
-	g_mutex_free(event_lock);
-}
 
 /* Internal function: push an event onto the event queue. If the event queue is
 full, wait for max three seconds and then drop the event. If the event queue is
@@ -41,21 +14,21 @@ NULL, i.e. freed, then fail silently. */
 void
 event_throw(glui32 type, winid_t win, glui32 val1, glui32 val2)
 {
-	if(!event_queue)
+	if(!glk_data->event_queue)
 		return;
 
 	GTimeVal timeout;
 	g_get_current_time(&timeout);
 	g_time_val_add(&timeout, EVENT_TIMEOUT_MICROSECONDS);
 
-	g_mutex_lock(event_lock);
+	g_mutex_lock(glk_data->event_lock);
 
 	/* Wait for room in the event queue */
-	while( g_queue_get_length(event_queue) >= EVENT_QUEUE_MAX_LENGTH )
-		if( !g_cond_timed_wait(event_queue_not_full, event_lock, &timeout) ) 
+	while( g_queue_get_length(glk_data->event_queue) >= EVENT_QUEUE_MAX_LENGTH )
+		if( !g_cond_timed_wait(glk_data->event_queue_not_full, glk_data->event_lock, &timeout) ) 
 		{
 			/* Drop the event after 3 seconds */
-			g_mutex_unlock(event_lock);
+			g_mutex_unlock(glk_data->event_lock);
 			return;
 		}
 
@@ -64,12 +37,12 @@ event_throw(glui32 type, winid_t win, glui32 val1, glui32 val2)
 	event->win = win;
 	event->val1 = val1;
 	event->val2 = val2;
-	g_queue_push_head(event_queue, event);
+	g_queue_push_head(glk_data->event_queue, event);
 
 	/* Signal that there is an event */
-	g_cond_signal(event_queue_not_empty);
+	g_cond_signal(glk_data->event_queue_not_empty);
 
-	g_mutex_unlock(event_lock);
+	g_mutex_unlock(glk_data->event_lock);
 }
 
 /**
@@ -90,16 +63,16 @@ glk_select(event_t *event)
 {
 	g_return_if_fail(event != NULL);
 
-	g_mutex_lock(event_lock);
+	g_mutex_lock(glk_data->event_lock);
 
 	/* Wait for an event */
-	while( g_queue_is_empty(event_queue) )
-		g_cond_wait(event_queue_not_empty, event_lock);
+	while( g_queue_is_empty(glk_data->event_queue) )
+		g_cond_wait(glk_data->event_queue_not_empty, glk_data->event_lock);
 
-	event_t *retrieved_event = g_queue_pop_tail(event_queue);
+	event_t *retrieved_event = g_queue_pop_tail(glk_data->event_queue);
 	if(retrieved_event == NULL)
 	{
-		g_mutex_unlock(event_lock);
+		g_mutex_unlock(glk_data->event_lock);
 		g_warning("%s: Retrieved NULL event from non-empty event queue", __func__);
 		return;
 	}
@@ -107,9 +80,9 @@ glk_select(event_t *event)
 	g_free(retrieved_event);
 
 	/* Signal that the event queue is no longer full */
-	g_cond_signal(event_queue_not_full);
+	g_cond_signal(glk_data->event_queue_not_full);
 
-	g_mutex_unlock(event_lock);
+	g_mutex_unlock(glk_data->event_lock);
 	
 	/* Check for interrupt */
 	glk_tick();

@@ -4,7 +4,7 @@ static winid_t mainwin = NULL;
 
 void sayit(void)
 {
-	g_printerr("I'm the interrupt handler!\n");
+	fprintf(stderr, "I'm the interrupt handler!\n");
 }
 
 void glk_main(void)
@@ -17,21 +17,20 @@ void glk_main(void)
         return; 
     }
     
-	/*
-    char buffer[256];
+	
+/*    char buffer[256];
     int i;
     for(i = 0; i < 256; i++)
     	buffer[i] = (char)glk_char_to_upper(i);
     
-	*/
-	/*
-    frefid_t f = glk_fileref_create_by_prompt(fileusage_BinaryMode, filemode_ReadWrite, 0);
+    frefid_t f = glk_fileref_create_temp(fileusage_BinaryMode, 0);
     if(f) 
     {
     
 	strid_t s = glk_stream_open_file(f, 
 		filemode_ReadWrite, 0);
 	glk_stream_set_current(s);
+	
 	glk_put_char('X');
 	glk_put_string("Philip en Marijn zijn vet goed.\n");
 	glk_put_buffer(buffer, 256);

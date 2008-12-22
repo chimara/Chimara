@@ -4,9 +4,9 @@
 #include <glib/gstdio.h>
 #include "fileref.h"
 #include "error.h"
+#include "chimara-glk-private.h"
 
-/* List of streams currently in existence */
-static GList *fileref_list = NULL;
+extern ChimaraGlkPrivate *glk_data;
 
 /**
  * glk_fileref_iterate:
@@ -31,7 +31,7 @@ glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 	GList *retnode;
 	
 	if(fref == NULL)
-		retnode = fileref_list;
+		retnode = glk_data->fileref_list;
 	else
 		retnode = fref->fileref_list->next;
 	frefid_t retval = retnode? (frefid_t)retnode->data : NULL;
@@ -71,8 +71,8 @@ fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 	f->orig_filemode = orig_filemode;
 	
 	/* Add it to the global fileref list */
-	fileref_list = g_list_prepend(fileref_list, f);
-	f->fileref_list = fileref_list;
+	glk_data->fileref_list = g_list_prepend(glk_data->fileref_list, f);
+	f->fileref_list = glk_data->fileref_list;
 	
 	return f;
 }
@@ -275,7 +275,7 @@ glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
 void
 glk_fileref_destroy(frefid_t fref)
 {
-	fileref_list = g_list_delete_link(fileref_list, fref->fileref_list);
+	glk_data->fileref_list = g_list_delete_link(glk_data->fileref_list, fref->fileref_list);
 	if(fref->filename)
 		g_free(fref->filename);
 	g_free(fref);

@@ -17,7 +17,7 @@
 /* You may have to edit the definition of glui32 to make sure it's really a
     32-bit unsigned integer type, and glsi32 to make sure it's really a
     32-bit signed integer type. If they're not, horrible things will happen. */
-#include <gtk/gtk.h>
+#include <glib.h>
 typedef guint32 glui32;
 typedef gint32 glsi32;
 

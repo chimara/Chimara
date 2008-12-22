@@ -3,10 +3,8 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-/* Global current stream */
-static strid_t current_stream = NULL;
-/* List of streams currently in existence */
-static GList *stream_list = NULL;
+#include "chimara-glk-private.h"
+extern ChimaraGlkPrivate *glk_data;
 
 /* Internal function: create a window stream to go with window. */
 strid_t
@@ -19,8 +17,8 @@ window_stream_new(winid_t window)
 	str->window = window;
 	
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, str);
-	str->stream_list = stream_list;
+	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
+	str->stream_list = glk_data->stream_list;
 
 	return str;
 }
@@ -46,7 +44,7 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
 	GList *retnode;
 	
 	if(str == NULL)
-		retnode = stream_list;
+		retnode = glk_data->stream_list;
 	else
 		retnode = str->stream_list->next;
 	strid_t retval = retnode? (strid_t)retnode->data : NULL;
@@ -90,7 +88,7 @@ glk_stream_set_current(strid_t str)
 		return;
 	}
 
-	current_stream = str;
+	glk_data->current_stream = str;
 }
 
 /**
@@ -103,7 +101,7 @@ glk_stream_set_current(strid_t str)
 strid_t
 glk_stream_get_current()
 {
-	return current_stream;
+	return glk_data->current_stream;
 }
 
 /**
@@ -116,8 +114,8 @@ glk_stream_get_current()
 void
 glk_put_char(unsigned char ch)
 {
-	g_return_if_fail(current_stream != NULL);
-	glk_put_char_stream(current_stream, ch);
+	g_return_if_fail(glk_data->current_stream != NULL);
+	glk_put_char_stream(glk_data->current_stream, ch);
 }
 
 /**
@@ -135,8 +133,8 @@ glk_put_char(unsigned char ch)
 void
 glk_put_string(char *s)
 {
-	g_return_if_fail(current_stream != NULL);
-	glk_put_string_stream(current_stream, s);
+	g_return_if_fail(glk_data->current_stream != NULL);
+	glk_put_string_stream(glk_data->current_stream, s);
 }
 
 /**
@@ -155,8 +153,8 @@ glk_put_string(char *s)
 void
 glk_put_buffer(char *buf, glui32 len)
 {
-	g_return_if_fail(current_stream != NULL);
-	glk_put_buffer_stream(current_stream, buf, len);
+	g_return_if_fail(glk_data->current_stream != NULL);
+	glk_put_buffer_stream(glk_data->current_stream, buf, len);
 }
 
 /**
@@ -214,8 +212,8 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 	str->unicode = FALSE;
 
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, str);
-	str->stream_list = stream_list;
+	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
+	str->stream_list = glk_data->stream_list;
 
 	return str;
 }
@@ -248,8 +246,8 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 	str->unicode = TRUE;
 
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, str);
-	str->stream_list = stream_list;
+	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
+	str->stream_list = glk_data->stream_list;
 
 	return str;
 }
@@ -328,8 +326,8 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	if(str->filename == NULL)
 		str->filename = g_strdup("Unknown file name"); /* fail silently */
 	/* Add it to the global stream list */
-	stream_list = g_list_prepend(stream_list, str);
-	str->stream_list = stream_list;
+	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
+	str->stream_list = glk_data->stream_list;
 
 	return str;
 }
@@ -436,11 +434,11 @@ void
 stream_close_common(strid_t str, stream_result_t *result)
 {
 	/* Remove the stream from the global stream list */
-	stream_list = g_list_delete_link(stream_list, str->stream_list);
+	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
 	
 	/* If it was the current output stream, set that to NULL */
-	if(current_stream == str)
-		current_stream = NULL;
+	if(glk_data->current_stream == str)
+		glk_data->current_stream = NULL;
 		
 	/* If it was one or more windows' echo streams, set those to NULL */
 	winid_t win;

@@ -1,8 +1,11 @@
-#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "glk.h"
 #include "abort.h"
+#include "chimara-glk.h"
+#include "chimara-glk-private.h"
+
+ChimaraGlkPrivate *glk_data = NULL;
 
 /**
  * glk_exit:
@@ -24,8 +27,8 @@
 void
 glk_exit(void)
 {
-	cleanup();
 	g_thread_exit(NULL);
+	glk_data = NULL;
 }
 
 /**
