@@ -46,7 +46,7 @@ convert_latin1_to_utf8(gchar *s, gsize len)
 	
 	if(utf8 == NULL)
 	{
-		error_dialog(NULL, error, "Error during latin1->utf8 conversion: ");
+		g_warning("Error during latin1->utf8 conversion: %s", error->message);
 		return NULL;
 	}
 	

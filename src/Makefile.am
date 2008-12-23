@@ -14,13 +14,14 @@ AM_CFLAGS =\
 	 -Wall\
 	 -g
 
-bin_PROGRAMS = chimara
+bin_PROGRAMS = test-chimara
 
-# First line: User interface sources
-# Second line: Glk program to run
-chimara_SOURCES = \
-	main.c callbacks.c callbacks.h error.c error.h \
-	first.c \
+test_chimara_SOURCES = main.c callbacks.c callbacks.h error.c error.h
+test_chimara_LDADD = $(TEST_LIBS) libchimara.la
+
+lib_LTLIBRARIES = libchimara.la
+
+libchimara_la_SOURCES = \
 	abort.c abort.h \
 	case.c \
 	chimara-glk.c chimara-glk.h chimara-glk-private.h \
@@ -33,8 +34,20 @@ chimara_SOURCES = \
 	strio.c \
 	style.c \
 	window.c window.h
+libchimara_la_LIBADD = $(CHIMARA_LIBS)
+libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_.*|^glk_.*"
+libchimara_includedir = $(includedir)/chimara/chimara
+libchimara_include_HEADERS = chimara-glk.h
 
-chimara_LDADD = $(CHIMARA_LIBS)
+pkglib_LTLIBRARIES = first.la model.la
+
+first_la_SOURCES = first.c
+first_la_LIBADD = libchimara.la
+first_la_LDFLAGS = -module -avoid-version
+
+model_la_SOURCES = model.c
+model_la_LIBADD = libchimara.la
+model_la_LDFLAGS = -module -avoid-version
 
 CLEANFILES = chimara.ui
 

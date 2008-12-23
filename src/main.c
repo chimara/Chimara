@@ -42,9 +42,6 @@
 
 #include "callbacks.h"
 #include "error.h"
-#include "event.h"
-#include "abort.h"
-#include "glk.h"
 #include "chimara-glk.h"
 
 /* Global pointers to widgets */
@@ -104,7 +101,7 @@ main(int argc, char *argv[])
 
 	g_object_unref( G_OBJECT(builder) );
 
-    if( !chimara_glk_run(CHIMARA_GLK(glk), &error) ) {
+    if( !chimara_glk_run(CHIMARA_GLK(glk), ".libs/first.so", &error) ) {
         error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
         return 1;
     }
@@ -113,7 +110,7 @@ main(int argc, char *argv[])
 	gtk_main();
 	gdk_threads_leave();
 
-	signal_abort();
+	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
 
 	return 0;

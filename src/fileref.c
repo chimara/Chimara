@@ -3,7 +3,6 @@
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
 #include "fileref.h"
-#include "error.h"
 #include "chimara-glk-private.h"
 
 extern ChimaraGlkPrivate *glk_data;
@@ -102,14 +101,14 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
 	gint handle = g_file_open_tmp("glkXXXXXX", &filename, &error);
 	if(handle == -1)
 	{
-		error_dialog(NULL, error, "Error creating temporary file: ");
+		g_warning("Error creating temporary file: %s", error->message);
 		if(filename)
 			g_free(filename);
 		return NULL;
 	}
 	if(close(handle) == -1) /* There is no g_close()? */
 	{
-		error_dialog(NULL, NULL, "Error closing temporary file.");
+		g_warning("Error closing temporary file.");
 		if(filename)
 			g_free(filename);
 		return NULL;
@@ -227,7 +226,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		&error);
 	if(osname == NULL)
 	{
-		error_dialog(NULL, error, "Error during latin1->filename conversion: ");
+		g_warning("Error during latin1->filename conversion: %s", error->message);
 		return NULL;
 	}
 
@@ -292,7 +291,7 @@ glk_fileref_delete_file(frefid_t fref)
 {
 	if( glk_fileref_does_file_exist(fref) )
 		if(g_unlink(fref->filename) == -1)
-			error_dialog(NULL, NULL, "Error deleting file %s", fref->filename);
+			g_warning("Error deleting file %s", fref->filename);
 }
 
 /**

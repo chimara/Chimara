@@ -43,7 +43,7 @@ void chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive);
 gboolean chimara_glk_get_interactive(ChimaraGlk *glk);
 void chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect);
 gboolean chimara_glk_get_protect(ChimaraGlk *glk);
-gboolean chimara_glk_run(ChimaraGlk *glk, GError **error);
+gboolean chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error);
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);
 

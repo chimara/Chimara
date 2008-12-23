@@ -2,6 +2,7 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gmodule.h>
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
 #include "glk.h"
@@ -9,6 +10,8 @@
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
+
+typedef void (* glk_main_t) (void);
 
 enum {
     PROP_0,
@@ -278,25 +281,53 @@ chimara_glk_get_protect(ChimaraGlk *glk)
     return priv->protect;
 }
 
-/* glk_enter() is called to create a new thread in which glk_main() runs.  */
+/* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */
 static gpointer
-glk_enter(gpointer glk)
+glk_enter(gpointer glk_main)
 {
-    extern ChimaraGlkPrivate *glk_data;
-    
-    glk_data = CHIMARA_GLK_PRIVATE((ChimaraGlk *)glk);
-	glk_main();
+	((glk_main_t)glk_main)();
 	return NULL;
 }
 
 gboolean
-chimara_glk_run(ChimaraGlk *glk, GError **error)
+chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
 {
     g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
-
+    g_return_val_if_fail(plugin, FALSE);
+    
+    /* Open the module to run */
+    GModule *module;
+    glk_main_t glk_main;
+    g_assert( g_module_supported() );
+    module = g_module_open(plugin, G_MODULE_BIND_LAZY);
+    
+    if(!module)
+    {
+        g_warning( "Error opening module: %s", g_module_error() );
+        return FALSE;
+    }
+    if( !g_module_symbol(module, "glk_main", (gpointer *) &glk_main) )
+    {
+        g_warning( "Error finding glk_main(): %s", g_module_error() );
+        return FALSE;
+    }
+    
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    extern ChimaraGlkPrivate *glk_data;
+    /* Set the thread's private data */
+    /* TODO: Do this with a GPrivate */
+    glk_data = priv;
+    
     /* Run in a separate thread */
-	priv->thread = g_thread_create(glk_enter, glk, TRUE, error);
+	priv->thread = g_thread_create(glk_enter, glk_main, TRUE, error);
+	
+	/* Close module */
+/*	if( !g_module_close(module) )
+	{
+	    g_warning( "Error closing module: %s", g_module_error() );
+	    return FALSE;
+	}*/
+	
 	return !(priv->thread == NULL);
 }
 
@@ -305,7 +336,7 @@ chimara_glk_stop(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
     
-    /* TODO */
+    signal_abort();
 }
 
 void

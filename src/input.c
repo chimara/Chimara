@@ -145,7 +145,7 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 			
 		if(utf8 == NULL)
 		{
-			error_dialog(NULL, error, "Error during unicode->utf8 conversion: ");
+			g_warning("Error during unicode->utf8 conversion: %s", error->message);
 			return;
 		}
 	}
@@ -270,7 +270,7 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 			
 			if(latin1 == NULL)
 			{
-				error_dialog(NULL, error, "Error during utf8->latin1 conversion: ");
+				g_warning("Error during utf8->latin1 conversion: %s", error->message);
 				event_throw(evtype_LineInput, win, 0, 0);
 				return;
 			}
@@ -294,7 +294,7 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 			
 			if(unicode == NULL)
 			{
-				error_dialog(NULL, NULL, "Error during utf8->unicode conversion");
+				g_warning("Error during utf8->unicode conversion");
 				event_throw(evtype_LineInput, win, 0, 0);
 				return;
 			}

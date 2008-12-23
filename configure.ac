@@ -11,6 +11,7 @@ AC_ISC_POSIX
 AC_PROG_CC
 AM_PROG_CC_STDC
 AC_HEADER_STDC
+AC_PROG_LIBTOOL
 
 dnl ***************************************************************************
 dnl Internatinalization
@@ -21,11 +22,12 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 AM_GLIB_GNU_GETTEXT
 IT_PROG_INTLTOOL([0.35.0])
 
-dnl AM_PROG_LIBTOOL
-
-PKG_CHECK_MODULES([CHIMARA], [gtk+-2.0 >= 2.8 gthread-2.0])
+PKG_CHECK_MODULES([CHIMARA], [gtk+-2.0 >= 2.8 gthread-2.0 gmodule-2.0])
 AC_SUBST(CHIMARA_CFLAGS)
 AC_SUBST(CHIMARA_LIBS)
+PKG_CHECK_MODULES([TEST], [gtk+-2.0 >= 2.8])
+AC_SUBST(TEST_CFLAGS)
+AC_SUBST(TEST_LIBS)
 
 ##################################################
 # Check for gtk-doc.
