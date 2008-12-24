@@ -27,8 +27,9 @@ ChimaraGlkPrivate *glk_data = NULL;
 void
 glk_exit(void)
 {
+    g_signal_emit_by_name(glk_data->self, "stopped");
+    glk_data = NULL;
 	g_thread_exit(NULL);
-	glk_data = NULL;
 }
 
 /**

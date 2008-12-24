@@ -6,6 +6,7 @@
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
 #include "glk.h"
+#include "abort.h"
 #include "window.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
@@ -40,6 +41,7 @@ chimara_glk_init(ChimaraGlk *self)
     priv->self = self;
     priv->interactive = TRUE;
     priv->protect = FALSE;
+    priv->program = NULL;
     priv->thread = NULL;
     priv->event_queue = NULL;
     priv->event_lock = NULL;
@@ -112,7 +114,7 @@ chimara_glk_finalize(GObject *object)
 	g_mutex_unlock(priv->abort_lock);
 	g_mutex_free(priv->abort_lock);
 	priv->abort_lock = NULL;
-    
+
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
 
@@ -172,7 +174,11 @@ chimara_glk_forall(GtkContainer *container, gboolean include_internals,
 static void
 chimara_glk_stopped(ChimaraGlk *self)
 {
-	/* TODO: Add default signal handler implementation here */
+    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
+
+    /* Free the plugin */
+	if( priv->program && !g_module_close(priv->program) )
+	    g_warning( "Error closing module: %s", g_module_error() );
 }
 
 static void
@@ -285,7 +291,10 @@ chimara_glk_get_protect(ChimaraGlk *glk)
 static gpointer
 glk_enter(gpointer glk_main)
 {
+    extern ChimaraGlkPrivate *glk_data;
+    g_signal_emit_by_name(glk_data->self, "started");
 	((glk_main_t)glk_main)();
+	g_signal_emit_by_name(glk_data->self, "stopped");
 	return NULL;
 }
 
@@ -295,24 +304,24 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
     g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
     g_return_val_if_fail(plugin, FALSE);
     
+    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    
     /* Open the module to run */
-    GModule *module;
     glk_main_t glk_main;
     g_assert( g_module_supported() );
-    module = g_module_open(plugin, G_MODULE_BIND_LAZY);
+    priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
-    if(!module)
+    if(!priv->program)
     {
         g_warning( "Error opening module: %s", g_module_error() );
         return FALSE;
     }
-    if( !g_module_symbol(module, "glk_main", (gpointer *) &glk_main) )
+    if( !g_module_symbol(priv->program, "glk_main", (gpointer *) &glk_main) )
     {
         g_warning( "Error finding glk_main(): %s", g_module_error() );
         return FALSE;
     }
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+
     extern ChimaraGlkPrivate *glk_data;
     /* Set the thread's private data */
     /* TODO: Do this with a GPrivate */
@@ -320,13 +329,6 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
     
     /* Run in a separate thread */
 	priv->thread = g_thread_create(glk_enter, glk_main, TRUE, error);
-	
-	/* Close module */
-/*	if( !g_module_close(module) )
-	{
-	    g_warning( "Error closing module: %s", g_module_error() );
-	    return FALSE;
-	}*/
 	
 	return !(priv->thread == NULL);
 }

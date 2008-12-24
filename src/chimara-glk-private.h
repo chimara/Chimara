@@ -2,6 +2,7 @@
 #define __CHIMARA_GLK_PRIVATE_H__
 
 #include <glib.h>
+#include <gmodule.h>
 #include "glk.h"
 #include "chimara-glk.h"
 
@@ -16,6 +17,8 @@ struct _ChimaraGlkPrivate {
     gboolean interactive;
     /* Whether file operations are allowed */
     gboolean protect;
+    /* Glk program loaded in widget */
+    GModule *program;
     /* Thread in which Glk program is run */
     GThread *thread;
     /* Event queue and threading stuff */

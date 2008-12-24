@@ -50,6 +50,18 @@ GtkWidget *window = NULL;
 GtkWidget *glk = NULL;
 
 static void
+on_started(ChimaraGlk *glk)
+{
+    g_printerr("Started!\n");
+}
+
+static void
+on_stopped(ChimaraGlk *glk)
+{
+    g_printerr("Stopped!\n");
+}
+
+static void
 create_window(void)
 {
 	if( (window = GTK_WIDGET(gtk_builder_get_object(builder, "gargoyle-gtk"))) == NULL ) {
@@ -60,6 +72,8 @@ create_window(void)
 	gtk_builder_connect_signals(builder, NULL);
 	
 	glk = chimara_glk_new();
+	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);
+	g_signal_connect(glk, "stopped", G_CALLBACK(on_stopped), NULL);
 	
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)
