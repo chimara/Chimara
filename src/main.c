@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 
 	g_object_unref( G_OBJECT(builder) );
 
-    if( !chimara_glk_run(CHIMARA_GLK(glk), ".libs/first.so", &error) ) {
+    if( !chimara_glk_run(CHIMARA_GLK(glk), ".libs/gridtest.so", &error) ) {
         error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
         return 1;
     }

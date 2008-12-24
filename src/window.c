@@ -243,6 +243,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gdk_threads_leave();
 			g_warning("%s: unsupported window type", __func__);
 			g_free(win);
+			g_node_destroy(glk_data->root_window);
+			glk_data->root_window = NULL;
 			return NULL;
 	}
 
