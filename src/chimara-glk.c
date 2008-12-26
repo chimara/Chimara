@@ -130,7 +130,7 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
     /* For now, just pass the size request on to the root Glk window */
     if(priv->root_window) { 
         GtkWidget *child = ((winid_t)(priv->root_window->data))->frame;
-        if(GTK_WIDGET_VISIBLE(child))
+       if(GTK_WIDGET_VISIBLE(child))
             gtk_widget_size_request(child, requisition);
     } else {
         requisition->width = CHIMARA_GLK_MIN_WIDTH;

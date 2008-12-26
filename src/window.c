@@ -195,6 +195,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			
 			win->widget = label;
 			win->frame = label;
+			/* A blank window has no size */
+			win->unit_width = 0;
+			win->unit_height = 0;
 			/* You can print to a blank window's stream, but it does nothing */
 			win->window_stream = window_stream_new(win);
 			win->echo_stream = NULL;
@@ -215,6 +218,12 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 			win->widget = textview;
 			win->frame = scrolledwindow;
+			/* Determine the size of a "0" character in pixels" */
+			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
+			pango_layout_get_pixel_size( zero, &(win->unit_width), &(win->unit_height) );
+			g_object_unref(zero);
+			
+			/* Set the other parameters */
 			win->window_stream = window_stream_new(win);
 			win->echo_stream = NULL;
 			win->input_request_type = INPUT_REQUEST_NONE;
@@ -457,17 +466,46 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 {
 	g_return_if_fail(win != NULL);
 
-	/* TODO: Write this function */
-	/* For a text buffer window: Return the number of rows and columns which
-	would be available _if_ the window was filled with "0" (zero) characters in
-	the "normal" font. */
-	if(widthptr != NULL) {
-		*widthptr = 0;
-	}
-
-	if(heightptr != NULL) {
-		*heightptr = 0;
-	}
+    switch(win->type)
+    {
+        case wintype_Blank:
+            if(widthptr != NULL)
+                *widthptr = 0;
+            if(heightptr != NULL)
+                *heightptr = 0;
+            break;
+            
+        case wintype_TextBuffer:
+            /* TODO: Glk wants to be able to get its windows' sizes as soon as they are created, but GTK doesn't decide on their sizes until they are drawn. The drawing happens somewhere in an idle function. A good method would be to make an educated guess of the window's size using the ChimaraGlk widget's size. */
+            gdk_threads_enter();
+            /*if(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
+            {
+                g_warning("glk_window_get_size: The Glk program requested the size of a window before it was allocated screen space by GTK. The window size is just an educated guess.");
+                guess the size from the parent window;
+                break;
+            } */
+            
+            /* Instead, we wait for GTK to draw the widget. This is probably very slow and should be fixed. */
+            while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
+            {
+                /* Release the GDK lock momentarily */
+                gdk_threads_leave();
+                gdk_threads_enter();
+                while(gtk_events_pending())
+                    gtk_main_iteration();
+            }
+                
+            if(widthptr != NULL)
+                *widthptr = (glui32)(win->widget->allocation.width / win->unit_width);
+            if(heightptr != NULL)
+                *heightptr = (glui32)(win->widget->allocation.height / win->unit_height);
+            gdk_threads_leave();
+            
+            break;
+            
+        default:
+            g_warning("glk_window_get_size: Unsupported window type");
+    }
 }
 
 /**

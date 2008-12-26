@@ -25,8 +25,15 @@ struct glk_window_struct
 	GNode *window_node;
 	/* Window parameters */
 	glui32 type;
-	GtkWidget *widget; /* actual widget that does stuff */
-	GtkWidget *frame; /* container child */
+	/* "widget" is the actual widget with the window's functionality */
+	GtkWidget *widget;
+	/* "frame" is the widget that is the child of the ChimaraGlk container, such 
+	as a scroll window. It may be the same as "widget". */
+	GtkWidget *frame;
+	/* Width and height of the window's size units, in pixels */
+	int unit_width;
+	int unit_height;
+	/* Streams associated with the window */
 	strid_t window_stream;
 	strid_t echo_stream;
 	/* Input request stuff */

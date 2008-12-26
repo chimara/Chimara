@@ -14,10 +14,10 @@ AM_CFLAGS =\
 	 -Wall\
 	 -g
 
-bin_PROGRAMS = test-chimara
+noinst_PROGRAMS = test-chimara
 
 test_chimara_SOURCES = main.c callbacks.c callbacks.h error.c error.h
-test_chimara_LDADD = $(TEST_LIBS) libchimara.la
+test_chimara_LDADD = $(TEST_LIBS) -lchimara
 
 lib_LTLIBRARIES = libchimara.la
 
@@ -40,17 +40,8 @@ libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
 pkglib_LTLIBRARIES = first.la model.la gridtest.la
-
-first_la_SOURCES = first.c
-first_la_LIBADD = libchimara.la
 first_la_LDFLAGS = -module -avoid-version
-
-model_la_SOURCES = model.c
-model_la_LIBADD = libchimara.la
 model_la_LDFLAGS = -module -avoid-version
-
-gridtest_la_SOURCES = gridtest.c
-gridtest_la_LIBADD = libchimara.la
 gridtest_la_LDFLAGS = -module -avoid-version
 
 CLEANFILES = chimara.ui
