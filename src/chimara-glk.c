@@ -236,6 +236,13 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 
 /* PUBLIC FUNCTIONS */
 
+/**
+ * chimara_glk_new:
+ *
+ * Creates and initializes a new #ChimaraGlk widget.
+ *
+ * Return value: a #ChimaraGlk widget, with a floating reference.
+ */
 GtkWidget *
 chimara_glk_new(void)
 {
@@ -251,6 +258,18 @@ chimara_glk_new(void)
     return GTK_WIDGET(self);
 }
 
+/**
+ * chimara_glk_set_interactive:
+ * @glk: a #ChimaraGlk widget
+ * @interactive: whether the widget should expect user input
+ *
+ * Sets the #ChimaraGlk:interactive property of @glk. A Glk widget is normally 
+ * interactive, but in non-interactive mode, keyboard and mouse input is ignored
+ * and the Glk program is controlled by chimara_glk_feed_text(). "More" prompts
+ * when a lot of text is printed to a text buffer are also disabled. This is 
+ * typically used when you wish to control an interpreter program by feeding it
+ * a predefined list of commands.
+ */
 void 
 chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive)
 {
@@ -260,6 +279,15 @@ chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive)
     priv->interactive = interactive;
 }
 
+/**
+ * chimara_glk_get_interactive:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Returns whether @glk is interactive (expecting user input). See 
+ * chimara_glk_set_interactive().
+ *
+ * Return value: %TRUE if @glk is interactive.
+ */
 gboolean 
 chimara_glk_get_interactive(ChimaraGlk *glk)
 {
@@ -269,6 +297,15 @@ chimara_glk_get_interactive(ChimaraGlk *glk)
     return priv->interactive;
 }
 
+/**
+ * chimara_glk_set_protect:
+ * @glk: a #ChimaraGlk widget
+ * @protect: whether the widget should allow the Glk program to do file 
+ * operations
+ *
+ * Sets the #ChimaraGlk:protect property of @glk. In protect mode, the Glk 
+ * program is not allowed to do file operations.
+ */
 void 
 chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect)
 {
@@ -278,6 +315,15 @@ chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect)
     priv->protect = protect;
 }
 
+/**
+ * chimara_glk_get_protect:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Returns whether @glk is in protect mode (banned from doing file operations).
+ * See chimara_glk_set_protect().
+ *
+ * Return value: %TRUE if @glk is in protect mode.
+ */
 gboolean 
 chimara_glk_get_protect(ChimaraGlk *glk)
 {
@@ -298,6 +344,17 @@ glk_enter(gpointer glk_main)
 	return NULL;
 }
 
+/**
+ * chimara_glk_run:
+ * @glk: a #ChimaraGlk widget
+ * @plugin: path to a plugin module compiled with glk.h
+ * @error: location to store a #GError, or %NULL
+ *
+ * Opens a Glk program compiled as a plugin and runs its glk_main() function in
+ * a separate thread. On failure, returns %FALSE and sets @error.
+ *
+ * Return value: %TRUE if the Glk program was started successfully.
+ */
 gboolean
 chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
 {
@@ -333,17 +390,34 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
 	return !(priv->thread == NULL);
 }
 
+/**
+ * chimara_glk_stop:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Signals the Glk program running in @glk to abort. Note that if the program is
+ * caught in an infinite loop in which glk_tick() is not called, this may not
+ * work.
+ */
 void
 chimara_glk_stop(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    
+    /* TODO: check if glk is actually running a program */
     signal_abort();
 }
 
+/**
+ * chimara_glk_wait:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Holds up the main thread and waits for the Glk program running in @glk to 
+ * finish.
+ */
 void
 chimara_glk_wait(ChimaraGlk *glk)
 {
+    g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
+    
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
     g_thread_join(priv->thread);
 }
