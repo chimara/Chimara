@@ -163,15 +163,17 @@ winid_t
 glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype, 
                 glui32 rock)
 {
+	/*
 	if(split)
 	{
 		g_warning("glk_window_open: splitting of windows not implemented");
 		return NULL;
 	}
+	*/
 
-	if(glk_data->root_window != NULL)
+	if(split == NULL && glk_data->root_window != NULL)
 	{
-		g_warning("glk_window_open: there is already a window");
+		g_warning("glk_window_open: there is already a root window");
 		return NULL;
 	}
 	
@@ -179,11 +181,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	
 	/* We only create one window and don't support any more than that */
 	winid_t win = g_new0(struct glk_window_struct, 1);
-	glk_data->root_window = g_node_new(win);
-
 	win->rock = rock;
 	win->type = wintype;
-    win->window_node = glk_data->root_window;
+	win->window_node = g_node_new(win);
 
 	switch(wintype)
 	{
@@ -257,9 +257,78 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			return NULL;
 	}
 
-    /* Put the frame widget into our container */
-    gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
-    gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
+	if(split)
+	{
+		/* When splitting, construct a new parent window
+		 * copying most characteristics from the window that is being split */
+		winid_t pair = g_new0(struct glk_window_struct, 1);
+		pair->rock = 0;
+		pair->type = wintype_Pair;
+		pair->window_node = g_node_new(pair);
+		pair->unit_width = split->unit_width;
+		pair->unit_height = split->unit_height;
+		pair->window_stream = NULL;
+		pair->echo_stream = NULL;
+
+		/* Insert the new window into the window tree */
+		if(split->window_node->parent == NULL)
+		{
+			glk_data->root_window = pair->window_node;
+		} else {
+			g_node_append(split->window_node->parent, pair->window_node);
+			g_node_unlink(split->window_node);
+		}
+
+		/* Keep track of the parent widget of the window that is being split */
+		GtkWidget* old_parent = gtk_widget_get_parent(split->frame);
+		gtk_widget_ref(split->frame);
+		gtk_widget_unparent(split->frame);
+
+		/* Place the windows in the correct order */
+		switch(method & winmethod_DirMask)
+		{
+			case winmethod_Left:
+				pair->widget = gtk_hbox_new(FALSE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
+				g_node_append(pair->window_node, split->window_node);
+				g_node_append(pair->window_node, win->window_node);
+				break;
+			case winmethod_Right:
+				pair->widget = gtk_hbox_new(FALSE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
+				g_node_append(pair->window_node, win->window_node);
+				g_node_append(pair->window_node, split->window_node);
+				break;
+			case winmethod_Above:
+				pair->widget = gtk_vbox_new(FALSE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
+				g_node_append(pair->window_node, split->window_node);
+				g_node_append(pair->window_node, win->window_node);
+				break;
+			case winmethod_Below:
+				pair->widget = gtk_vbox_new(FALSE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
+				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
+				g_node_append(pair->window_node, win->window_node);
+				g_node_append(pair->window_node, split->window_node);
+				break;
+		}
+		gtk_widget_unref(split->frame);
+
+		/* TODO: set the new size of the windows */
+
+		pair->frame = pair->widget;
+		gtk_widget_set_parent(pair->widget, old_parent);
+		gtk_widget_show(pair->widget);
+	} else {
+		/* Set the window as root window */
+		glk_data->root_window = win->window_node;
+		gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
+		gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
+	}
 
 	gdk_threads_leave();
 
@@ -281,26 +350,69 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 void
 glk_window_close(winid_t win, stream_result_t *result)
 {
+	GNode* parent_node;
+
 	g_return_if_fail(win != NULL);
+
+	gdk_threads_enter();
 
 	switch(win->type)
 	{
 		case wintype_TextBuffer:
-			gtk_widget_destroy( gtk_widget_get_parent(win->widget) );
+			gtk_widget_destroy(win->frame);
+
 			/* TODO: Cancel all input requests */
 			break;
 
 		case wintype_Blank:
 			gtk_widget_destroy(win->widget);
 			break;
+
+		case wintype_Pair:
+		{
+			GNode* left_child = g_node_first_child(win->window_node);
+			GNode* right_child = g_node_last_child(win->window_node);
+
+			glk_window_close((winid_t) left_child->data, result);
+			glk_window_close((winid_t) right_child->data, result);
+
+			gtk_widget_destroy(win->widget);
+		}
+			break;
+
+		default:
+			g_warning("%s: unsupported window type", __func__);
+			gdk_threads_leave();
+			return;
 	}
 
 	stream_close_common(win->window_stream, result);
 
-	g_node_destroy(win->window_node);
-	/* TODO: iterate over child windows, closing them */
+	/* Parent window changes from a split window into the sibling window */
+	if( (parent_node = win->window_node->parent) != NULL )
+	{
+		winid_t pair = (winid_t) parent_node->data;
+		if(parent_node->parent == NULL)
+		{
+			if(parent_node->next)
+				glk_data->root_window = parent_node->next;
+			else if(parent_node->prev)
+				glk_data->root_window = parent_node->prev;
+		} else {
+			if(parent_node->next)
+				g_node_append(parent_node->parent, parent_node->next);
+			else if(parent_node->prev)
+				g_node_append(parent_node->parent, parent_node->prev);
+		}
 
+		g_node_unlink(parent_node);
+		g_free(pair);
+	}
+
+	g_node_destroy(win->window_node);
 	g_free(win);
+
+	gdk_threads_leave();
 }
 
 /**
@@ -339,6 +451,7 @@ glk_window_clear(winid_t win)
 	switch(win->type)
 	{
 		case wintype_Blank:
+		case wintype_Pair:
 			/* do nothing */
 			break;
 			
@@ -355,7 +468,7 @@ glk_window_clear(winid_t win)
 			gdk_threads_leave();
 		}
 			break;
-			
+		
 		default:
 			g_warning("glk_window_clear: unsupported window type");
 	}
