@@ -39,10 +39,11 @@ libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_.*|^gl
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
-pkglib_LTLIBRARIES = first.la model.la gridtest.la
+pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la
 first_la_LDFLAGS = -module -avoid-version
 model_la_LDFLAGS = -module -avoid-version
 gridtest_la_LDFLAGS = -module -avoid-version
+splittest_la_LDFLAGS = -module -avoid-version
 
 CLEANFILES = chimara.ui
 

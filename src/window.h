@@ -36,6 +36,9 @@ struct glk_window_struct
 	/* Streams associated with the window */
 	strid_t window_stream;
 	strid_t echo_stream;
+	/* Width and height of the window, in characters (text grids only) */
+	glui32 width;
+	glui32 height;
 	/* Input request stuff */
 	enum InputRequestType input_request_type;
 	gchar *line_input_buffer;

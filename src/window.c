@@ -90,7 +90,7 @@ glk_window_get_type(winid_t win)
  * returns %NULL, since the root window has no parent. Remember that the parent
  * of every window is a pair window; other window types are always childless.
  *
- * Returns: A window.
+ * Returns: A window, or %NULL.
  */
 winid_t
 glk_window_get_parent(winid_t win)
@@ -124,9 +124,9 @@ glk_window_get_sibling(winid_t win)
 /**
  * glk_window_get_root:
  * 
- * Returns the root window. If there are no windows, this returns #NULL.
+ * Returns the root window. If there are no windows, this returns %NULL.
  *
- * Returns: A window, or #NULL.
+ * Returns: A window, or %NULL.
  */
 winid_t
 glk_window_get_root()
@@ -134,6 +134,15 @@ glk_window_get_root()
 	if(glk_data->root_window == NULL)
 		return NULL;
 	return (winid_t)glk_data->root_window->data;
+}
+
+/* Determine the size of a "0" character in pixels */
+static void
+text_window_get_char_size(GtkWidget *textview, int *width, int *height)
+{
+    PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
+    pango_layout_get_pixel_size(zero, width, height);
+    g_object_unref(zero);
 }
 
 /**
@@ -157,7 +166,7 @@ glk_window_get_root()
  * position, size, and type specified by @method, @size, and @wintype. See the
  * Glk documentation for the window placement algorithm.
  *
- * Returns: the new window.
+ * Returns: the new window, or %NULL on error.
  */
 winid_t
 glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype, 
@@ -203,7 +212,55 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->echo_stream = NULL;
 		}
 			break;
+		
+		case wintype_TextGrid:
+		{
+		    GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
+		    GtkWidget *textview = gtk_text_view_new();
+		    GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
+		    
+		    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_NEVER );
+		    
+		    gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_CHAR );
+		    gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
+		    
+		    gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
+		    gtk_widget_show_all(scrolledwindow);
+		    		
+			/* Set the window's font */
+		    /* TODO: Use Pango to pick out a monospace font on the system */
+			PangoFontDescription *font = pango_font_description_from_string("Monospace");
+			gtk_widget_modify_font(textview, font);
+			pango_font_description_free(font);
+		    
+		    win->widget = textview;
+		    win->frame = scrolledwindow;
+		    text_window_get_char_size( textview, &(win->unit_width), &(win->unit_height) );
 			
+			/* Set the other parameters */
+			win->window_stream = window_stream_new(win);
+			win->echo_stream = NULL;
+			win->input_request_type = INPUT_REQUEST_NONE;
+			win->line_input_buffer = NULL;
+			win->line_input_buffer_unicode = NULL;
+			
+			/* Connect signal handlers */
+			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
+			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
+			
+			win->insert_text_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_text_grid_key_press_event), win );
+			g_signal_handler_block( G_OBJECT(textview), win->insert_text_handler );
+			
+			/* Create a tag to indicate uneditable parts of the window (for line input) */
+			gtk_text_buffer_create_tag(textbuffer, "uneditable", "editable",    FALSE, "editable-set", TRUE, NULL);
+			
+			/* Create a tag to indicate an editable field in the window (for line input) */
+			gtk_text_buffer_create_tag(textbuffer, "input_field",
+			    "background", "grey", "background-set", TRUE,
+			    NULL);
+		}
+		    break;
+		
 		case wintype_TextBuffer:
 		{
 			GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
@@ -218,10 +275,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 			win->widget = textview;
 			win->frame = scrolledwindow;
-			/* Determine the size of a "0" character in pixels" */
-			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
-			pango_layout_get_pixel_size( zero, &(win->unit_width), &(win->unit_height) );
-			g_object_unref(zero);
+            text_window_get_char_size( textview, &(win->unit_width), &(win->unit_height) );
 			
 			/* Set the other parameters */
 			win->window_stream = window_stream_new(win);
@@ -330,6 +384,35 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 	}
 
+    /* For text grid windows, wait until GTK draws the window (see note in glk_window_get_size() ), calculate the size and fill the buffer with blanks. */
+    if(wintype == wintype_TextGrid)
+    {
+        while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
+        {
+            /* Release the GDK lock momentarily */
+            gdk_threads_leave();
+            gdk_threads_enter();
+            while(gtk_events_pending())
+                gtk_main_iteration();
+        }
+        win->width = (glui32)(win->widget->allocation.width / win->unit_width);
+        win->height = (glui32)(win->widget->allocation.height / win->unit_height);
+                
+        /* Mark the cursor position */
+        GtkTextIter begin;
+        GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+        gtk_text_buffer_get_start_iter(buffer, &begin);
+        gtk_text_buffer_create_mark(buffer, "cursor_position", &begin, TRUE);
+        
+        /* Fill the buffer with blanks and move the cursor to the upper left */
+        gdk_threads_leave();
+        glk_window_clear(win);
+        gdk_threads_enter();
+        
+        /* Apparently this only works after the window has been realized */
+        gtk_text_view_set_overwrite( GTK_TEXT_VIEW(win->widget), TRUE );
+    }
+
 	gdk_threads_leave();
 
 	return win;
@@ -358,14 +441,14 @@ glk_window_close(winid_t win, stream_result_t *result)
 
 	switch(win->type)
 	{
-		case wintype_TextBuffer:
-			gtk_widget_destroy(win->frame);
-
-			/* TODO: Cancel all input requests */
-			break;
-
 		case wintype_Blank:
 			gtk_widget_destroy(win->widget);
+			break;
+	
+	    case wintype_TextGrid:
+		case wintype_TextBuffer:
+			gtk_widget_destroy(win->frame);
+			/* TODO: Cancel all input requests */
 			break;
 
 		case wintype_Pair:
@@ -454,7 +537,35 @@ glk_window_clear(winid_t win)
 		case wintype_Pair:
 			/* do nothing */
 			break;
-			
+		
+		case wintype_TextGrid:
+		    /* fill the buffer with blanks */
+		{
+		    gdk_threads_enter();
+		    
+            /* Manually put newlines at the end of each row of characters in the buffer; manual newlines make resizing the window's grid easier. */
+            gchar *blanks = g_strnfill(win->width, ' ');
+            gchar **blanklines = g_new0(gchar *, win->height + 1);
+            int count;
+            for(count = 0; count < win->height; count++)
+                blanklines[count] = blanks;
+            blanklines[win->height] = NULL;
+            gchar *text = g_strjoinv("\n", blanklines);
+            g_free(blanklines); /* not g_strfreev() */
+            g_free(blanks);
+            
+            GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+            gtk_text_buffer_set_text(textbuffer, text, -1);
+            g_free(text);
+            
+            GtkTextIter begin;
+            gtk_text_buffer_get_start_iter(textbuffer, &begin);
+            gtk_text_buffer_move_mark_by_name(textbuffer, "cursor_position", &begin);
+		    
+		    gdk_threads_leave();
+		}
+		    break;
+		
 		case wintype_TextBuffer:
 			/* delete all text in the window */
 		{
@@ -588,6 +699,14 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
                 *heightptr = 0;
             break;
             
+        case wintype_TextGrid:
+            /* The text grid caches its width and height */
+            if(widthptr != NULL)
+                *widthptr = win->width;
+            if(heightptr != NULL)
+                *heightptr = win->height;
+            break;
+            
         case wintype_TextBuffer:
             /* TODO: Glk wants to be able to get its windows' sizes as soon as they are created, but GTK doesn't decide on their sizes until they are drawn. The drawing happens somewhere in an idle function. A good method would be to make an educated guess of the window's size using the ChimaraGlk widget's size. */
             gdk_threads_enter();
@@ -656,5 +775,27 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 {
 	g_return_if_fail(win != NULL);
 	g_return_if_fail(win->type == wintype_TextGrid);
-	/* TODO: write this function */
+	
+	/* Calculate actual position if cursor is moved past the right edge */
+	if(xpos >= win->width)
+	{
+	    ypos += xpos / win->width;
+	    xpos %= win->width;
+	}
+	/* Go to the end if the cursor is moved off the bottom edge */
+	if(ypos >= win->height)
+	{
+	    xpos = win->width - 1;
+	    ypos = win->height - 1;
+	}
+	
+	gdk_threads_enter();
+	
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+	GtkTextIter newpos;
+	/* There must actually be a character at xpos, or the following function will choke */
+	gtk_text_buffer_get_iter_at_line_offset(buffer, &newpos, ypos, xpos);
+	gtk_text_buffer_move_mark_by_name(buffer, "cursor_position", &newpos);
+	
+	gdk_threads_leave();
 }

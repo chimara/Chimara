@@ -53,7 +53,49 @@ convert_latin1_to_utf8(gchar *s, gsize len)
 	return utf8;
 }
 
-/* Internal function: write a UTF-8 string to a window's text buffer. */
+/* Internal function: write a UTF-8 string to a text grid window's text buffer. */
+static void
+write_utf8_to_grid(winid_t win, gchar *s)
+{
+    /* Number of characters to insert */
+    glong length = g_utf8_strlen(s, -1);
+    glong chars_left = length;
+    
+    gdk_threads_enter();
+    
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+    GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
+    
+    /* Get cursor position */
+    GtkTextIter start;
+    gtk_text_buffer_get_iter_at_mark(buffer, &start, cursor);
+    /* Spaces available on this line */
+    gint available_space = win->width - gtk_text_iter_get_line_offset(&start);
+    
+    while(chars_left > available_space && !gtk_text_iter_is_end(&start))
+    {
+        GtkTextIter end = start;
+        gtk_text_iter_forward_to_line_end(&end);
+        gtk_text_buffer_delete(buffer, &start, &end);
+        gtk_text_buffer_insert(buffer, &start, s + (length - chars_left), available_space);
+        chars_left -= available_space;
+        gtk_text_iter_forward_line(&start);
+        available_space = win->width;
+    }
+    if(!gtk_text_iter_is_end(&start))
+    {
+        GtkTextIter end = start;
+        gtk_text_iter_forward_chars(&end, chars_left);
+        gtk_text_buffer_delete(buffer, &start, &end);
+        gtk_text_buffer_insert(buffer, &start, s + (length - chars_left), -1);
+    }
+    
+    gtk_text_buffer_move_mark(buffer, cursor, &start);
+    
+    gdk_threads_leave();
+}
+
+/* Internal function: write a UTF-8 string to a text buffer window's text buffer. */
 static void
 write_utf8_to_window(winid_t win, gchar *s)
 {
@@ -84,6 +126,21 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 				case wintype_Graphics:
 					str->write_count += len;
 					break;
+					
+			    /* Text grid window */
+			    case wintype_TextGrid:
+			    {
+			        gchar *utf8 = convert_latin1_to_utf8(buf, len);
+			        if(utf8)
+			        {
+			            /* FIXME: What to do if string contains \n? Split the input string at newlines and write each string separately? */
+			            write_utf8_to_grid(str->window, utf8);
+			            g_free(utf8);
+			        }
+			    }
+			        str->write_count += len;
+			        break;
+					
 				/* Text buffer window */	
 				case wintype_TextBuffer:
 				{

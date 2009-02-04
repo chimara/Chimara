@@ -1,34 +1,76 @@
-#include "stdio.h"
+#include <stdio.h>
+#include <string.h>
 #include "glk.h"
 
 void glk_main(void)
 {
     event_t ev;
-    winid_t mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 0);
+    winid_t mainwin = glk_window_open(0, 0, 0, wintype_TextGrid, 0);
     if(!mainwin)
         return;
     
-	winid_t subwin = glk_window_open(mainwin, winmethod_Right | winmethod_Proportional, 50, wintype_TextBuffer, 1);
-	printf("created new window\n");
     glk_set_window(mainwin);
     glk_put_string("Philip en Marijn zijn vet goed.\n");
-    glk_set_window(subwin);
     glk_put_string("A veeeeeeeeeeeeeeeeeeeeeeeeeeeery looooooooooooooooooooooooong striiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiing.\n");
-
+    
+    int count;
+    for(count = 0; count < 30; count++)
+        glk_put_string("I want to write past the end of this text buffer! ");
     
     guint32 width, height;
     glk_window_get_size(mainwin, &width, &height);
-	printf("got window size\n");
-    fprintf(stderr, "\nWidth: %d\nHeight: %d\n", width, height);
-    
+    fprintf(stderr, "\nWidth: %d\nHeight: %d\nPress a key in the window, not in the terminal.\n", width, height);
     glk_request_char_event(mainwin);
-    //while(1) {
+    while(1) {
         glk_select(&ev);
-        if(ev.type == evtype_CharInput) {
-            glk_window_get_size(mainwin, &width, &height);
-            fprintf(stderr, "\nWidth: %d\nHeight: %d\n", width, height);
-        }
-    //}
-	glk_window_close(subwin, NULL);
-	printf("closed window\n");
+        if(ev.type == evtype_CharInput)
+            break;
+    }
+    
+    glk_window_move_cursor(mainwin, 15, 15);
+    glk_put_string(". . ");
+    glk_window_move_cursor(mainwin, 15, 16);
+    glk_put_string(" . .");
+    glk_window_move_cursor(mainwin, 15, 17);
+    glk_put_string(". . ");
+    glk_window_move_cursor(mainwin, 15, 18);
+    glk_put_string(" . .");
+    fprintf(stderr, "Cursor location test.\nPress another key.\n");
+    glk_request_char_event(mainwin);
+    while(1) {
+        glk_select(&ev);
+        if(ev.type == evtype_CharInput)
+            break;
+    }
+    
+    gchar *buffer = g_malloc0(256);
+    
+    fprintf(stderr, "Line input field until end of line\n");
+    glk_window_move_cursor(mainwin, 10, 20);
+    glk_request_line_event(mainwin, buffer, 256, 0);
+    while(1) {
+        glk_select(&ev);
+        if(ev.type == evtype_LineInput)
+            break;
+    }
+    
+    fprintf(stderr, "Now edit your previous line input\n");
+    glk_window_move_cursor(mainwin, 10, 22);
+    glk_request_line_event(mainwin, buffer, 20, strlen(buffer));
+    while(1) {
+        glk_select(&ev);
+        if(ev.type == evtype_LineInput)
+            break;
+    }
+    
+    fprintf(stderr, "Your string was: '%s'.\nPress another key to clear the window and exit.\n", buffer);
+    glk_request_char_event(mainwin);
+    while(1) {
+        glk_select(&ev);
+        if(ev.type == evtype_CharInput)
+            break;
+    }
+    
+    glk_window_clear(mainwin);
+    g_free(buffer);
 }
