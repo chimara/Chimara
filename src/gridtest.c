@@ -56,7 +56,7 @@ void glk_main(void)
     
     fprintf(stderr, "Now edit your previous line input\n");
     glk_window_move_cursor(mainwin, 10, 22);
-    glk_request_line_event(mainwin, buffer, 20, strlen(buffer));
+    glk_request_line_event(mainwin, buffer, 256, strlen(buffer));
     while(1) {
         glk_select(&ev);
         if(ev.type == evtype_LineInput)

@@ -251,12 +251,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->insert_text_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_text_grid_key_press_event), win );
 			g_signal_handler_block( G_OBJECT(textview), win->insert_text_handler );
 			
-			/* Create a tag to indicate uneditable parts of the window (for line input) */
-			gtk_text_buffer_create_tag(textbuffer, "uneditable", "editable",    FALSE, "editable-set", TRUE, NULL);
-			
 			/* Create a tag to indicate an editable field in the window (for line input) */
 			gtk_text_buffer_create_tag(textbuffer, "input_field",
 			    "background", "grey", "background-set", TRUE,
+			    "editable", TRUE, "editable-set", TRUE,
 			    NULL);
 		}
 		    break;

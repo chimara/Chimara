@@ -37,74 +37,69 @@ glk_request_char_event_uni(winid_t win)
 	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
 }
 
-/* Internal function: Request either latin-1 or unicode line input. */
+/* Internal function: Request either latin-1 or unicode line input, in a text grid window. */
 void
-request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
+text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
-    if(win->type == wintype_TextGrid)
-    {
-        GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
-        GtkTextIter start_iter, end_iter;
-        gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, cursor);
-        
-        /* Determine the maximum length of the line input */
-        gint cursorpos = gtk_text_iter_get_line_offset(&start_iter);
-        gint input_length = MIN(win->width - 1 - cursorpos, win->line_input_buffer_max_len);
-        end_iter = start_iter;
-        gtk_text_iter_set_line_offset(&end_iter, cursorpos + input_length);
-        
-        /* Insert pre-entered text if needed */
-        gchar *text;
-        if(!insert)
-            text = g_strnfill(input_length, ' ');
-        else
-        {
-            gchar *blanks = g_strnfill(input_length - g_utf8_strlen(inserttext, -1), ' ');
-            text = g_strconcat(inserttext, blanks, NULL);
-            g_free(blanks);
-        }            
-        
-        /* Erase the text currently in the input field and replace it with blanks or the insert text, with the editable "input_field" tag */
-        GtkTextIter text_start, text_end;
-        GtkTextTag *uneditable = gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(buffer), "uneditable");
-        gtk_text_buffer_delete(buffer, &start_iter, &end_iter);
-        gtk_text_buffer_get_start_iter(buffer, &text_start);
-        gtk_text_buffer_apply_tag(buffer, uneditable, &text_start, &start_iter);
-        gtk_text_buffer_insert_with_tags_by_name(buffer, &start_iter, text, -1, "input_field", NULL);
-        g_free(text);
-        gtk_text_buffer_get_end_iter(buffer, &text_end);
-        gtk_text_buffer_apply_tag(buffer, uneditable, &start_iter, &text_end);
-
-        gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
-        g_signal_handler_unblock(GTK_TEXT_VIEW(win->widget), win->insert_text_handler);
-    }
-    else if(win->type == wintype_TextBuffer)
-    {
-        /* Move the input_position mark to the end of the window_buffer */
-        GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
-        GtkTextIter end_iter;
-        gtk_text_buffer_get_end_iter(buffer, &end_iter);
-        gtk_text_buffer_move_mark(buffer, input_position, &end_iter);
+    GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
+    GtkTextIter start_iter, end_iter;
+    gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, cursor);
     
-        /* Set the entire contents of the window_buffer as uneditable
-         * (so input can only be entered at the end) */
-        GtkTextIter start_iter;
-        gtk_text_buffer_get_start_iter(buffer, &start_iter);
-        gtk_text_buffer_remove_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
-        gtk_text_buffer_apply_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
-        
-        /* Insert pre-entered text if needed */
-        if(insert)
-            gtk_text_buffer_insert(buffer, &end_iter, inserttext, -1);
-        
-        /* Scroll to input point */
-        gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), input_position);
-        
-        gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
-        g_signal_handler_unblock(buffer, win->insert_text_handler);
-    }
+    /* Determine the maximum length of the line input */
+    gint cursorpos = gtk_text_iter_get_line_offset(&start_iter);
+    gint input_length = MIN(win->width - cursorpos, win->line_input_buffer_max_len);
+    end_iter = start_iter;
+    gtk_text_iter_set_line_offset(&end_iter, cursorpos + input_length);
+    
+    /* Insert pre-entered text if needed */
+    gchar *text;
+    if(!insert)
+        text = g_strnfill(input_length, ' ');
+    else
+    {
+        gchar *blanks = g_strnfill(input_length - g_utf8_strlen(inserttext, -1), ' ');
+        text = g_strconcat(inserttext, blanks, NULL);
+        g_free(blanks);
+    }            
+    
+    /* Erase the text currently in the input field and replace it with blanks or the insert text, with the editable "input_field" tag */
+    gtk_text_buffer_delete(buffer, &start_iter, &end_iter);
+    gtk_text_buffer_insert_with_tags_by_name(buffer, &start_iter, text, -1, "input_field", NULL);
+    g_free(text);
+
+    g_signal_handler_unblock(GTK_TEXT_VIEW(win->widget), win->insert_text_handler);
+}
+    
+/* Internal function: Request either latin-1 or unicode line input, in a text buffer window. */
+void
+text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
+{
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+
+    /* Move the input_position mark to the end of the window_buffer */
+    GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+    GtkTextIter end_iter;
+    gtk_text_buffer_get_end_iter(buffer, &end_iter);
+    gtk_text_buffer_move_mark(buffer, input_position, &end_iter);
+
+    /* Set the entire contents of the window_buffer as uneditable
+     * (so input can only be entered at the end) */
+    GtkTextIter start_iter;
+    gtk_text_buffer_get_start_iter(buffer, &start_iter);
+    gtk_text_buffer_remove_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
+    gtk_text_buffer_apply_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
+    
+    /* Insert pre-entered text if needed */
+    if(insert)
+        gtk_text_buffer_insert(buffer, &end_iter, inserttext, -1);
+    
+    /* Scroll to input point */
+    gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), input_position);
+    
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
+    g_signal_handler_unblock(buffer, win->insert_text_handler);
 }
 
 /**
@@ -139,13 +134,24 @@ glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
 	g_return_if_fail(buf);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+	g_return_if_fail(initlen <= maxlen);
 
 	win->input_request_type = INPUT_REQUEST_LINE;
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
 
 	gchar *inserttext = (initlen > 0)? g_strndup(buf, initlen) : g_strdup("");
-	request_line_event_common(win, maxlen, (initlen > 0), inserttext);
+	switch(win->type)
+	{
+	    case wintype_TextBuffer:
+	        text_buffer_request_line_event_common(win, maxlen, (initlen > 0), inserttext);
+	        break;
+	    case wintype_TextGrid:
+	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), inserttext);
+	        break;
+        default:
+            g_assert_not_reached();
+    }
 	g_free(inserttext);
 }
 
@@ -193,7 +199,17 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	else
 		utf8 = g_strdup("");
 
-	request_line_event_common(win, maxlen, (initlen > 0), utf8);		
+    switch(win->type)
+	{
+	    case wintype_TextBuffer:
+	        text_buffer_request_line_event_common(win, maxlen, (initlen > 0), utf8);
+	        break;
+	    case wintype_TextGrid:
+	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), utf8);
+	        break;
+        default:
+            g_assert_not_reached();
+    }		
 	g_free(utf8);
 }
 
@@ -326,44 +342,127 @@ end_line_input_request(winid_t win, gchar *inserted_text)
     win->input_request_type = INPUT_REQUEST_NONE;
 }
 
+/* Internal function: calculate the bounds of the line input field of a text grid window. Fill them into start_iter and end_iter */
+static void
+text_grid_get_line_input_bounds(winid_t win, GtkTextIter *start_iter, GtkTextIter *end_iter)
+{
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+    /* "cursor_position" is the Glk output cursor position, which is also the position of the start of the line input buffer */
+    GtkTextMark *input_start = gtk_text_buffer_get_mark(buffer, "cursor_position");
+    gtk_text_buffer_get_iter_at_mark(buffer, start_iter, input_start);
+    gint startpos = gtk_text_iter_get_line_offset(start_iter);
+    gint input_length = MIN(win->width - startpos, win->line_input_buffer_max_len);
+    *end_iter = *start_iter;
+    gtk_text_iter_set_line_offset(end_iter, startpos + input_length);
+}
 
-/* Internal function: Callback for signal key-press-event on a text grid window. Only unblocked during line input, so that we can catch the enter key before it inserts an enter into the window. */
+/* Internal function: Retag the input field bounds */
+static void
+text_grid_retag_line_input_bounds(winid_t win)
+{
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+    GtkTextIter start, end, input_start, input_end;
+    text_grid_get_line_input_bounds(win, &input_start, &input_end);
+    gtk_text_buffer_get_start_iter(buffer, &start);
+    gtk_text_buffer_get_end_iter(buffer, &end);
+    gtk_text_buffer_remove_tag_by_name(buffer, "input_field", &start, &end);
+    gtk_text_buffer_apply_tag_by_name(buffer, "input_field", &input_start, &input_end);
+}
+
+/* Internal function: Callback for signal key-press-event on a text grid window. Only unblocked during line input, so that we can catch all the keys that have different functions in text grid line input, before they mess up the window. */
 gboolean
 on_text_grid_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 {
     g_return_val_if_fail(win->type == wintype_TextGrid, FALSE);
     g_return_val_if_fail(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE, FALSE);
     
-    if(event->keyval == GDK_Linefeed || event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)
-    {
-        GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-        GtkTextIter start_iter, end_iter;
-        g_signal_handler_block(GTK_TEXT_VIEW(win->widget), win->insert_text_handler);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
     
-        /* Determine the bounds of the line input */
-        GtkTextMark *cursor = gtk_text_buffer_get_mark(window_buffer, "cursor_position");
-        gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, cursor);
-        gint cursorpos = gtk_text_iter_get_line_offset(&start_iter);
-        gint input_length = MIN(win->width - 1 - cursorpos, win->line_input_buffer_max_len);
-        end_iter = start_iter;
-        gtk_text_iter_set_line_offset(&end_iter, cursorpos + input_length);
+    switch(event->keyval) {
+        /* Backspace deletes the character before the cursor, moves the characters in the rest of the input field back one, and inserts a space at the end */
+        case GDK_BackSpace:
+        {
+            GtkTextIter insert, bound, input_start, input_end;
+            /* Backspace acts like Delete if there is text selected */
+            if( gtk_text_buffer_get_selection_bounds(buffer, &insert, &bound) )
+            {
+                text_grid_get_line_input_bounds(win, &input_start, &input_end);
+                
+                /* Determine whether part of the selected range is in the input field, and if so, what part */
+                gint insert_where = gtk_text_iter_compare(&insert, &input_start);
+                gint bound_where = gtk_text_iter_compare(&bound, &input_start);
+                if(insert_where < 0 && bound_where <= 0)
+                    return FALSE;
+                if(insert_where < 0)
+                    insert = input_start;
+                    
+                insert_where = gtk_text_iter_compare(&insert, &input_end);
+                bound_where = gtk_text_iter_compare(&bound, &input_end);
+                if(insert_where >= 0 && bound_where > 0)
+                    return FALSE;
+                if(bound_where > 0)
+                    bound = input_end;
+                
+                /* insert and bound are now within the input field */
+                gsize num_spaces = gtk_text_iter_get_offset(&bound) - gtk_text_iter_get_offset(&insert);
+                gchar *spaces = g_strnfill(num_spaces, ' ');
+                /* Create a temporary mark with right gravity at the end of the input field */
+                GtkTextMark *input_end_mark = gtk_text_buffer_create_mark(buffer, NULL, &input_end, FALSE);
+                gtk_text_buffer_delete(buffer, &insert, &bound);
+                gtk_text_buffer_get_iter_at_mark(buffer, &input_end, input_end_mark);
+                gtk_text_buffer_delete_mark(buffer, input_end_mark);
+                gtk_text_buffer_insert(buffer, &input_end, spaces, -1);
+                g_free(spaces);
+                text_grid_retag_line_input_bounds(win);
+                
+                return TRUE;
+            }
+            
+            text_grid_get_line_input_bounds(win, &input_start, &input_end);
+            /* if cursor is outside input field, continue as default */
+            if( !gtk_text_iter_in_range(&insert, &input_start, &input_end) )
+                return FALSE;
+            /* if cursor is at start of field, do nothing */
+            if( gtk_text_iter_equal(&insert, &input_start) )
+                return TRUE;
+            gtk_text_iter_backward_cursor_position(&insert);
+            /* Create a temporary mark with right gravity at the end of the input field */
+            GtkTextMark *input_end_mark = gtk_text_buffer_create_mark(buffer, NULL, &input_end, FALSE);
+            gtk_text_buffer_delete(buffer, &insert, &bound);
+            /* Revalidate end iterator */
+            gtk_text_buffer_get_iter_at_mark(buffer, &input_end, input_end_mark);
+            gtk_text_buffer_delete_mark(buffer, input_end_mark);
+            gtk_text_buffer_insert(buffer, &input_end, " ", -1);
+            text_grid_retag_line_input_bounds(win);
+        }
+            return TRUE;
         
-        gchar *inserted_text = g_strchomp( gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE) );
+        /* Various forms of Enter */
+        case GDK_Linefeed:
+        case GDK_Return:
+        case GDK_KP_Enter:
+        {
+            GtkTextIter input_start, input_end, start, end;
+            g_signal_handler_block(GTK_TEXT_VIEW(win->widget), win->insert_text_handler);
         
-        /* Make the buffer uneditable again and remove the special tags */
-        gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-        gtk_text_buffer_get_start_iter(window_buffer, &start_iter);
-        gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-        gtk_text_buffer_remove_tag_by_name(window_buffer, "uneditable", &start_iter, &end_iter);
-        gtk_text_buffer_remove_tag_by_name(window_buffer, "input_field", &start_iter, &end_iter);
-        
-        end_line_input_request(win, inserted_text);
-        g_free(inserted_text);
-        
-        /* Block the enter key */
-        return TRUE; 
+            /* Get the input text */
+            text_grid_get_line_input_bounds(win, &input_start, &input_end);
+            gtk_text_iter_forward_char(&input_end);
+            gchar *inserted_text = g_strchomp( gtk_text_buffer_get_text(buffer, &input_start, &input_end, FALSE) );
+            
+            /* Make the buffer uneditable again and remove the special tags */
+            gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
+            gtk_text_buffer_get_start_iter(buffer, &start);
+            gtk_text_buffer_get_end_iter(buffer, &end);
+            gtk_text_buffer_remove_tag_by_name(buffer, "input_field", &start, &end);
+            
+            end_line_input_request(win, inserted_text);
+            g_free(inserted_text);
+            
+            /* Block the enter key */
+            return TRUE; 
+        }
     }
-    
     return FALSE;
 }
 
