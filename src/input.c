@@ -236,10 +236,20 @@ on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 	/* If this is a text grid window, and line input is active, then redirect the key press to the line input GtkEntry */
 	if( win->type == wintype_TextGrid && (win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE) )
 	{
-		gboolean retval = TRUE;
-		g_signal_emit_by_name(win->input_entry, "key-press-event", event, &retval);
+		if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
+		    || event->keyval == GDK_Down || event->keyval == GDK_KP_Down
+		    || event->keyval == GDK_Left || event->keyval == GDK_KP_Left
+		    || event->keyval == GDK_Right || event->keyval == GDK_KP_Right
+		    || event->keyval == GDK_Tab || event->keyval == GDK_KP_Tab
+		    || event->keyval == GDK_Page_Up || event->keyval == GDK_KP_Page_Up
+		    || event->keyval == GDK_Page_Down || event->keyval == GDK_KP_Page_Down
+		    || event->keyval == GDK_Home || event->keyval == GDK_KP_Home
+		    || event->keyval == GDK_End || event->keyval == GDK_KP_End)
+			return FALSE; /* Don't redirect these keys */
 		gtk_widget_grab_focus(win->input_entry);
 		gtk_editable_set_position(GTK_EDITABLE(win->input_entry), -1);
+		gboolean retval = TRUE;
+		g_signal_emit_by_name(win->input_entry, "key-press-event", event, &retval);
 		return retval; /* Block this key event if the entry handled it */
 	}
 	if(win->input_request_type != INPUT_REQUEST_CHARACTER && 

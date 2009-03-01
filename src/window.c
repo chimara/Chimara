@@ -385,7 +385,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
         }
         win->width = (glui32)(win->widget->allocation.width / win->unit_width);
         win->height = (glui32)(win->widget->allocation.height / win->unit_height);
-                
+		
         /* Mark the cursor position */
         GtkTextIter begin;
         GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
