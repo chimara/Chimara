@@ -83,6 +83,8 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     
     gtk_widget_show(win->input_entry);
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
+	
+	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
 }
     
 /* Internal function: Request either latin-1 or unicode line input, in a text buffer window. */
@@ -227,10 +229,19 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	g_free(utf8);
 }
 
-/* Internal function: Callback for signal key-press-event on a text buffer or text grid window. */
+/* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids, and also in line input on grids, to redirect keystrokes to the line input field. Blocked when not in use. */
 gboolean
 on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
-{    
+{
+	/* If this is a text grid window, and line input is active, then redirect the key press to the line input GtkEntry */
+	if( win->type == wintype_TextGrid && (win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE) )
+	{
+		gboolean retval = TRUE;
+		g_signal_emit_by_name(win->input_entry, "key-press-event", event, &retval);
+		gtk_widget_grab_focus(win->input_entry);
+		gtk_editable_set_position(GTK_EDITABLE(win->input_entry), -1);
+		return retval; /* Block this key event if the entry handled it */
+	}
 	if(win->input_request_type != INPUT_REQUEST_CHARACTER && 
 		win->input_request_type != INPUT_REQUEST_CHARACTER_UNICODE)
 		return FALSE;
@@ -391,7 +402,8 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	
 	gchar *text = g_strdup(gtk_entry_get_text(input_entry));
-	
+	/* Move the focus back into the text view */
+	gtk_widget_grab_focus(win->widget);
 	/* Remove entry widget from text view */
 	/* Should be ok even though this is the widget's own signal handler */
 	gtk_container_remove( GTK_CONTAINER(win->widget), GTK_WIDGET(input_entry) );
@@ -410,6 +422,8 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
     gtk_text_buffer_insert(buffer, &start, text_to_insert, -1);
     g_free(text_to_insert);
     
+	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+	
     end_line_input_request(win, text);
 	g_free(text);
 }
