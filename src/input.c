@@ -378,7 +378,10 @@ end_line_input_request(winid_t win, const gchar *inserted_text)
 }
 
 /* Internal function: Callback for signal insert-text on a text buffer window.
-Runs after the default handler has already inserted the text.*/
+Runs after the default handler has already inserted the text.
+FIXME: This function assumes that newline was the last character typed into the
+window. That assumption is wrong if, for example, text containing a newline was
+pasted into the window. */
 void
 after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win) 
 {
@@ -396,6 +399,7 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
         GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
         gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
         gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
+		gtk_text_iter_backward_cursor_position(&end_iter); /* don't include \n */
         
         inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
 
