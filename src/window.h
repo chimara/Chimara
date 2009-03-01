@@ -45,8 +45,10 @@ struct glk_window_struct
 	glui32 *line_input_buffer_unicode;
 	glui32 line_input_buffer_max_len;
 	gboolean mouse_input_requested;
-	/* Line input field coordinates (text grids only) */
-	
+	/* Line input field (text grids only) */
+	glui32 input_length;
+	GtkTextChildAnchor *input_anchor;
+	GtkWidget *input_entry;
 	/* Signal handlers */
 	gulong keypress_handler;
 	gulong insert_text_handler;

@@ -217,7 +217,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		{
 		    GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 		    GtkWidget *textview = gtk_text_view_new();
-		    GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 		    
 		    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_NEVER );
 		    
@@ -237,7 +236,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    win->frame = scrolledwindow;
 		    text_window_get_char_size( textview, &(win->unit_width), &(win->unit_height) );
 			
-			/* Set the other parameters */
+			/* Set the other parameters (width and height are set later) */
 			win->window_stream = window_stream_new(win);
 			win->echo_stream = NULL;
 			win->input_request_type = INPUT_REQUEST_NONE;
@@ -247,15 +246,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* Connect signal handlers */
 			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
 			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
-			
-			win->insert_text_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_text_grid_key_press_event), win );
-			g_signal_handler_block( G_OBJECT(textview), win->insert_text_handler );
-			
-			/* Create a tag to indicate an editable field in the window (for line input) */
-			gtk_text_buffer_create_tag(textbuffer, "input_field",
-			    "background", "grey", "background-set", TRUE,
-			    "editable", TRUE, "editable-set", TRUE,
-			    NULL);
 		}
 		    break;
 		

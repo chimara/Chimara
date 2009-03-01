@@ -63,7 +63,9 @@ void glk_main(void)
             break;
     }
     
-    fprintf(stderr, "Your string was: '%s'.\nPress another key to clear the window and exit.\n", buffer);
+	gchar *text = g_strndup(buffer, ev.val1);
+    fprintf(stderr, "Your string was: '%s'.\nPress another key to clear the window and exit.\n", text);
+	g_free(text);
     glk_request_char_event(mainwin);
     while(1) {
         glk_select(&ev);
