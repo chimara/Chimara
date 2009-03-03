@@ -1,3 +1,4 @@
+#include "charset.h"
 #include "input.h"
 
 /** glk_request_char_event:
@@ -203,14 +204,9 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 
 	gchar *utf8;
 	if(initlen > 0) {
-		GError *error = NULL;
-		utf8 = g_ucs4_to_utf8(buf, initlen, NULL, NULL, &error);
-			
+		utf8 = convert_ucs4_to_utf8(buf, initlen);
 		if(utf8 == NULL)
-		{
-			g_warning("Error during unicode->utf8 conversion: %s", error->message);
 			return;
-		}
 	}
 	else
 		utf8 = g_strdup("");
@@ -325,14 +321,11 @@ end_line_input_request(winid_t win, const gchar *inserted_text)
     /* Convert the string from UTF-8 to Latin-1 or Unicode */
     if(win->input_request_type == INPUT_REQUEST_LINE) 
     {
-        GError *error = NULL;
-        gchar *latin1;
         gsize bytes_written;
-        latin1 = g_convert_with_fallback(inserted_text, -1, "ISO-8859-1", "UTF-8", "?", NULL, &bytes_written, &error);
+        gchar *latin1 = convert_utf8_to_latin1(inserted_text, &bytes_written);
         
         if(latin1 == NULL)
         {
-            g_warning("Error during utf8->latin1 conversion: %s", error->message);
             event_throw(evtype_LineInput, win, 0, 0);
             return;
         }
@@ -349,21 +342,18 @@ end_line_input_request(winid_t win, const gchar *inserted_text)
     }
     else if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE) 
     {
-        gunichar *unicode;
         glong items_written;
-        unicode = g_utf8_to_ucs4_fast(inserted_text, -1, &items_written);
+        gunichar *unicode = convert_utf8_to_ucs4(inserted_text, &items_written);
         
         if(unicode == NULL)
         {
-            g_warning("Error during utf8->unicode conversion");
             event_throw(evtype_LineInput, win, 0, 0);
             return;
         }
 
         /* Place input in the echo stream */
-        /* TODO: glk_put_string_stream_uni not implemented yet
         if(win->echo_stream != NULL) 
-            glk_put_string_stream_uni(window->echo_stream, unicode);*/
+            glk_put_string_stream_uni(win->echo_stream, unicode);
 
         /* Copy the string (but not the NULL at the end) */
         int copycount = MIN(win->line_input_buffer_max_len, items_written);

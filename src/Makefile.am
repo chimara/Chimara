@@ -24,6 +24,7 @@ lib_LTLIBRARIES = libchimara.la
 libchimara_la_SOURCES = \
 	abort.c abort.h \
 	case.c \
+	charset.c charset.h \
 	chimara-glk.c chimara-glk.h chimara-glk-private.h \
 	event.c event.h \
 	fileref.c fileref.h \
@@ -33,7 +34,8 @@ libchimara_la_SOURCES = \
 	stream.c stream.h \
 	strio.c \
 	style.c \
-	window.c window.h
+	window.c window.h 
+
 libchimara_la_LIBADD = $(CHIMARA_LIBS)
 libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_.*|^glk_.*"
 libchimara_includedir = $(includedir)/chimara/chimara

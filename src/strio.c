@@ -1,3 +1,4 @@
+#include "charset.h"
 #include "stream.h"
 #include <stdio.h>
 #include <string.h>
@@ -9,49 +10,6 @@
  **************** WRITING FUNCTIONS ********************************************
  *
  */
-
-/* Internal function: change illegal (control) characters in a string to a
-placeholder character. Must free returned string afterwards. */
-static gchar *
-remove_latin1_control_characters(unsigned char *s, gsize len)
-{
-	/* If len == 0, then return an empty string, not NULL */
-	if(len == 0)
-		return g_strdup("");
-			
-	gchar *retval = g_new0(gchar, len);
-	int i;
-	for(i = 0; i < len; i++)
-		if( (s[i] < 32 && s[i] != 10) || (s[i] >= 127 && s[i] <= 159) )
-			retval[i] = '?';
-			/* Our placeholder character is '?'; other options are possible,
-			like printing "0x7F" or something */
-		else
-			retval[i] = s[i];
-	return retval;
-}
-
-/* Internal function: convert a Latin-1 string to a UTF-8 string, replacing
-Latin-1 control characters by a placeholder first. The UTF-8 string must be
-freed afterwards. Returns NULL on error. */
-static gchar *
-convert_latin1_to_utf8(gchar *s, gsize len)
-{
-	GError *error = NULL;
-	gchar *utf8;
-	gchar *canonical = remove_latin1_control_characters( (unsigned char *)s,
-		len);
-	utf8 = g_convert(canonical, len, "UTF-8", "ISO-8859-1", NULL, NULL, &error);
-	g_free(canonical);
-	
-	if(utf8 == NULL)
-	{
-		g_warning("Error during latin1->utf8 conversion: %s", error->message);
-		return NULL;
-	}
-	
-	return utf8;
-}
 
 /* Internal function: write a UTF-8 string to a text grid window's text buffer. */
 static void
@@ -131,7 +89,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			    case wintype_TextGrid:
 			    {
 			        gchar *utf8 = convert_latin1_to_utf8(buf, len);
-			        if(utf8)
+			        if(utf8 != NULL)
 			        {
 			            /* FIXME: What to do if string contains \n? Split the input string at newlines and write each string separately? */
 			            write_utf8_to_grid(str->window, utf8);
@@ -145,7 +103,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 				case wintype_TextBuffer:
 				{
 					gchar *utf8 = convert_latin1_to_utf8(buf, len);
-					if(utf8)
+					if(utf8 != NULL)
 					{
 						write_utf8_to_window(str->window, utf8);
 						g_free(utf8);
@@ -185,13 +143,9 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			{
 				if(str->unicode) 
 				{
-					/* Convert to four-byte big-endian */
-					gchar *writebuffer = g_new0(gchar, len * 4);
-					int i;
-					for(i = 0; i < len; i++)
-						writebuffer[i * 4 + 3] = buf[i];
-					fwrite(writebuffer, sizeof(gchar), len * 4, 
-						str->file_pointer);
+					gchar *writebuffer = convert_latin1_to_ucs4be_string(buf, len);
+					fwrite(writebuffer, sizeof(gchar), len * 4, str->file_pointer);
+					g_free(writebuffer);
 				} 
 				else /* Regular file */
 				{
@@ -201,8 +155,116 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			else /* Text mode is the same for Unicode and regular files */
 			{
 				gchar *utf8 = convert_latin1_to_utf8(buf, len);
-				g_fprintf(str->file_pointer, "%s", utf8);
-				g_free(utf8);
+				if(utf8 != NULL)
+				{
+					g_fprintf(str->file_pointer, "%s", utf8);
+					g_free(utf8);
+				}
+			}
+			
+			str->write_count += len;
+			break;
+		default:
+			g_warning("%s: Writing to this kind of stream unsupported.", __func__);
+	}
+}
+
+/* Internal function: write a Unicode buffer with length to a stream. */
+static void
+write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
+{
+	switch(str->type)
+	{
+		case STREAM_TYPE_WINDOW:
+			/* Each window type has a different way of printing to it */
+			switch(str->window->type)
+			{
+				/* Printing to these windows' streams does nothing */
+				case wintype_Blank:
+				case wintype_Pair:
+				case wintype_Graphics:
+					str->write_count += len;
+					break;
+					
+			    /* Text grid window */
+			    case wintype_TextGrid:
+			    {
+			        gchar *utf8 = convert_ucs4_to_utf8(buf, len);
+			        if(utf8 != NULL)
+			        {
+			            /* FIXME: What to do if string contains \n? Split the input string at newlines and write each string separately? */
+			            write_utf8_to_grid(str->window, utf8);
+			            g_free(utf8);
+			        }
+			    }
+			        str->write_count += len;
+			        break;
+					
+				/* Text buffer window */	
+				case wintype_TextBuffer:
+				{
+					gchar *utf8 = convert_ucs4_to_utf8(buf, len);
+					if(utf8 != NULL)
+					{
+						write_utf8_to_window(str->window, utf8);
+						g_free(utf8);
+					}
+				}	
+					str->write_count += len;
+					break;
+				default:
+					g_warning("%s: Writing to this kind of window unsupported.", __func__);
+			}
+			
+			/* Now write the same buffer to the window's echo stream */
+			if(str->window->echo_stream != NULL)
+				write_buffer_to_stream_uni(str->window->echo_stream, buf, len);
+			
+			break;
+			
+		case STREAM_TYPE_MEMORY:
+			if(str->unicode && str->ubuffer)
+			{
+				int copycount = MIN(len, str->buflen - str->mark);
+				memmove(str->ubuffer + str->mark, buf, copycount * sizeof(glui32));
+				str->mark += copycount;
+			}
+			if(!str->unicode && str->buffer)
+			{
+				gchar *latin1 = convert_ucs4_to_latin1_binary(buf, len);
+				int copycount = MIN(len, str->buflen - str->mark);
+				memmove(str->buffer + str->mark, latin1, copycount);
+				g_free(latin1);
+				str->mark += copycount;
+			}
+
+			str->write_count += len;
+			break;
+			
+		case STREAM_TYPE_FILE:
+			if(str->binary) 
+			{
+				if(str->unicode) 
+				{
+					gchar *writebuffer = convert_ucs4_to_ucs4be_string(buf, len);
+					fwrite(writebuffer, sizeof(gchar), len * 4, str->file_pointer);
+					g_free(writebuffer);
+				} 
+				else /* Regular file */
+				{
+					gchar *latin1 = convert_ucs4_to_latin1_binary(buf, len);
+					fwrite(latin1, sizeof(gchar), len, str->file_pointer);
+					g_free(latin1);
+				}
+			}
+			else /* Text mode is the same for Unicode and regular files */
+			{
+				gchar *utf8 = convert_ucs4_to_utf8(buf, len);
+				if(utf8 != NULL) 
+				{
+					g_fprintf(str->file_pointer, "%s", utf8);
+					g_free(utf8);
+				}
 			}
 			
 			str->write_count += len;
@@ -230,6 +292,23 @@ glk_put_char_stream(strid_t str, unsigned char ch)
 }
 
 /**
+ * glk_put_char_stream_uni:
+ * @str: An output stream.
+ * @ch: A Unicode code point.
+ *
+ * Prints one character @ch to the stream @str. It is illegal for @str to be
+ * %NULL, or an input-only stream.
+ */
+void
+glk_put_char_stream_uni(strid_t str, glui32 ch)
+{
+	g_return_if_fail(str != NULL);
+	g_return_if_fail(str->file_mode != filemode_Read);
+	
+	write_buffer_to_stream_uni(str, &ch, 1);
+}
+
+/**
  * glk_put_string_stream:
  * @str: An output stream.
  * @s: A null-terminated string in Latin-1 encoding.
@@ -243,7 +322,29 @@ glk_put_string_stream(strid_t str, char *s)
 	g_return_if_fail(str != NULL);
 	g_return_if_fail(str->file_mode != filemode_Read);
 
-	write_buffer_to_stream(str, (gchar *)s, strlen(s));
+	write_buffer_to_stream(str, s, strlen(s));
+}
+
+/**
+ * glk_put_string_stream_uni:
+ * @str: An output stream.
+ * @s: A null-terminated array of Unicode code points.
+ *
+ * Prints @s to the stream @str. It is illegal for @str to be %NULL, or an
+ * input-only stream.
+ */
+void
+glk_put_string_stream_uni(strid_t str, glui32 *s)
+{
+	g_return_if_fail(str != NULL);
+	g_return_if_fail(str->file_mode != filemode_Read);
+	
+	/* An impromptu strlen() for glui32 arrays */
+	glong len = 0;
+	glui32 *ptr = s;
+	while(*ptr++)
+		len++;
+	write_buffer_to_stream_uni(str, s, len);
 }
 
 /**
@@ -261,7 +362,25 @@ glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
 	g_return_if_fail(str != NULL);
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
-	write_buffer_to_stream(str, (gchar *)buf, len);
+	write_buffer_to_stream(str, buf, len);
+}
+
+/**
+ * glk_put_buffer_stream_uni:
+ * @str: An output stream.
+ * @buf: An array of Unicode code points.
+ * @len: Length of @buf.
+ *
+ * Prints @buf to the stream @str. It is illegal for @str to be %NULL, or an
+ * input-only stream.
+ */
+void
+glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
+{
+	g_return_if_fail(str != NULL);
+	g_return_if_fail(str->file_mode != filemode_Read);
+	
+	write_buffer_to_stream_uni(str, buf, len);
 }
 
 /*
@@ -328,6 +447,69 @@ is_unicode_newline(glsi32 ch, FILE *fp, gboolean utf8)
 	return FALSE;
 }
 
+/* Internal function: Read one character from a stream. Returns a value which
+ can be returned unchanged by glk_get_char_stream_uni(), but 
+ glk_get_char_stream() must replace high values by the placeholder character. */
+glsi32
+get_char_stream_common(strid_t str)
+{
+	switch(str->type)
+	{
+		case STREAM_TYPE_MEMORY:
+			if(str->unicode)
+			{
+				if(!str->ubuffer || str->mark >= str->buflen)
+					return -1;
+				glui32 ch = str->ubuffer[str->mark++];
+				str->read_count++;
+				return ch;
+			}
+			else
+			{
+				if(!str->buffer || str->mark >= str->buflen)
+					return -1;
+				unsigned char ch = str->buffer[str->mark++];
+				str->read_count++;
+				return ch;
+			}
+			break;
+			
+		case STREAM_TYPE_FILE:
+			if(str->binary) 
+			{
+				if(str->unicode) 
+				{
+					glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
+					if(ch == -1)
+						return -1;
+					str->read_count++;
+					return ch;
+				}
+				else /* Regular file */
+				{
+					int ch = fgetc(str->file_pointer);
+					if(ch == EOF)
+						return -1;
+					
+					str->read_count++;
+					return ch;
+				}
+			}
+			else /* Text mode is the same for Unicode and regular files */
+			{
+				glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+				if(ch == -1)
+					return -1;
+					
+				str->read_count++;
+				return ch;
+			}
+		default:
+			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			return -1;
+	}
+}
+
 /**
  * glk_get_char_stream:
  * @str: An input stream.
@@ -353,61 +535,26 @@ glk_get_char_stream(strid_t str)
 	g_return_val_if_fail(str != NULL, -1);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, -1);
 	
-	switch(str->type)
-	{
-		case STREAM_TYPE_MEMORY:
-			if(str->unicode)
-			{
-				if(!str->ubuffer || str->mark >= str->buflen)
-					return -1;
-				glui32 ch = str->ubuffer[str->mark++];
-				str->read_count++;
-				return (ch > 0xFF)? 0x3F : ch;
-			}
-			else
-			{
-				if(!str->buffer || str->mark >= str->buflen)
-					return -1;
-				char ch = str->buffer[str->mark++];
-				str->read_count++;
-				return ch;
-			}
-			break;
-			
-		case STREAM_TYPE_FILE:
-			if(str->binary) 
-			{
-				if(str->unicode) 
-				{
-					glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
-					if(ch == -1)
-						return -1;
-					str->read_count++;
-					return (ch > 0xFF)? 0x3F : ch;
-				}
-				else /* Regular file */
-				{
-					int ch = fgetc(str->file_pointer);
-					if(ch == EOF)
-						return -1;
-					
-					str->read_count++;
-					return ch;
-				}
-			}
-			else /* Text mode is the same for Unicode and regular files */
-			{
-				glsi32 ch = read_utf8_char_from_file(str->file_pointer);
-				if(ch == -1)
-					return -1;
-					
-				str->read_count++;
-				return (ch > 0xFF)? 0x3F : ch;
-			}
-		default:
-			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
-			return -1;
-	}
+	glsi32 ch = get_char_stream_common(str);
+	return (ch > 0xFF)? PLACEHOLDER : ch;
+}
+
+/**
+ * glk_get_char_stream_uni:
+ * @str: An input stream.
+ *
+ * Reads one character from the stream @str. The result will be between 0 and 
+ * 0x7FFFFFFF. If the end of the stream has been reached, the result will be -1.
+ *
+ * Returns: A character value between 0 and 255, or -1 on end of stream.
+ */
+glsi32
+glk_get_char_stream_uni(strid_t str)
+{
+	g_return_val_if_fail(str != NULL, -1);
+	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, -1);
+	
+	return get_char_stream_common(str);
 }
 
 /**
@@ -467,7 +614,6 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 						g_warning("%s: Incomplete character in binary Unicode file.", __func__);
 					}
 					
-					str->read_count += count / 4;
 					int foo;
 					for(foo = 0; foo < count; foo += 4)
 					{
@@ -478,6 +624,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 						buf[foo / 4] = (ch > 255)? 0x3F : (char)ch;
 					}
 					g_free(readbuffer);
+					str->read_count += count / 4;
 					return count / 4;
 				}
 				else /* Regular binary file */
@@ -498,6 +645,105 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 						break;
 					str->read_count++;
 					buf[foo] = (ch > 0xFF)? 0x3F : (gchar)ch;
+				}
+				return foo;
+			}
+		default:
+			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			return 0;
+	}
+}
+
+/**
+ * glk_get_buffer_stream_uni:
+ * @str: An input stream.
+ * @buf: A buffer with space for at least @len Unicode code points.
+ * @len: The number of characters to read.
+ *
+ * Reads @len Unicode characters from @str, unless the end of stream is reached 
+ * first. No terminal null is placed in the buffer.
+ *
+ * Returns: The number of Unicode characters actually read.
+ */
+glui32
+glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
+{
+	g_return_val_if_fail(str != NULL, 0);
+	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
+	g_return_val_if_fail(buf != NULL, 0);
+	
+	switch(str->type)
+	{
+		case STREAM_TYPE_MEMORY:
+		{
+			int copycount = 0;
+			if(str->unicode)
+			{
+				if(str->ubuffer) /* if not, copycount stays 0 */
+					copycount = MIN(len, str->buflen - str->mark);
+				memmove(buf, str->ubuffer + str->mark, copycount * 4);
+				str->mark += copycount;
+			}
+			else
+			{
+				while(copycount < len && str->buffer && str->mark < str->buflen)
+				{
+					unsigned char ch = str->buffer[str->mark++];
+					buf[copycount++] = ch;
+				}
+			}
+
+			str->read_count += copycount;		
+			return copycount;
+		}	
+		case STREAM_TYPE_FILE:
+			if(str->binary) 
+			{
+				if(str->unicode) /* Binary file with 4-byte characters */
+				{
+					/* Read len characters of 4 bytes each */
+					unsigned char *readbuffer = g_new0(unsigned char, 4 * len);
+					size_t count = fread(readbuffer, sizeof(unsigned char), 4 * len, str->file_pointer);
+					/* If there was an incomplete character */
+					if(count % 4 != 0) 
+					{
+						count -= count % 4;
+						g_warning("%s: Incomplete character in binary Unicode file.", __func__);
+					}
+					
+					int foo;
+					for(foo = 0; foo < count; foo += 4)
+						buf[foo / 4] = readbuffer[foo] << 24
+							| readbuffer[foo + 1] << 16
+							| readbuffer[foo + 2] << 8
+							| readbuffer[foo + 3];
+					g_free(readbuffer);
+					str->read_count += count / 4;
+					return count / 4;
+				}
+				else /* Regular binary file */
+				{
+					unsigned char *readbuffer = g_new0(unsigned char, len);
+					size_t count = fread(readbuffer, sizeof(unsigned char), len, str->file_pointer);
+					int foo;
+					for(foo = 0; foo < count; foo++)
+						buf[foo] = readbuffer[foo];
+					g_free(readbuffer);
+					str->read_count += count;
+					return count;
+				}
+			}
+			else /* Text mode is the same for Unicode and regular files */
+			{
+				/* Do it character-by-character */
+				int foo;
+				for(foo = 0; foo < len; foo++)
+				{
+					glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+					if(ch == -1)
+						break;
+					str->read_count++;
+					buf[foo] = ch;
 				}
 				return foo;
 			}
@@ -630,6 +876,144 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 					buf[foo] = (ch > 0xFF)? 0x3F : (char)ch;
 				}
 				buf[len] = '\0';
+				return foo;
+			}
+		default:
+			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			return 0;
+	}
+}
+
+/**
+ * glk_get_line_stream_uni:
+ * @str: An input stream.
+ * @buf: A buffer with space for at least @len Unicode code points.
+ * @len: The number of characters to read, plus one.
+ *
+ * Reads Unicode characters from @str, until either @len - 1 Unicode characters
+ * have been read or a newline has been read. It then puts a terminal null (a
+ * zero value) on the end.
+ *
+ * Returns: The number of characters actually read, including the newline (if
+ * there is one) but not including the terminal null.
+ */
+glui32
+glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
+{
+	g_return_val_if_fail(str != NULL, 0);
+	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
+	g_return_val_if_fail(buf != NULL, 0);
+
+	switch(str->type)
+	{
+		case STREAM_TYPE_MEMORY:
+		{
+			int copycount = 0;
+			if(str->unicode)
+			{
+				/* Do it character-by-character */
+				while(copycount < len - 1 && str->ubuffer && str->mark < str->buflen) 
+				{
+					glui32 ch = str->ubuffer[str->mark++];
+					/* Check for Unicode newline; slightly different than
+					in file streams */
+					if(ch == 0x0A || ch == 0x85 || ch == 0x0C || ch == 0x2028 || ch == 0x2029)
+					{
+						buf[copycount++] = '\n';
+						break;
+					}
+					if(ch == 0x0D)
+					{
+						if(str->ubuffer[str->mark] == 0x0A)
+							str->mark++; /* skip past next newline */
+						buf[copycount++] = '\n';
+						break;
+					}
+					buf[copycount++] = ch;
+				}
+				buf[copycount] = '\0';
+			}
+			else
+			{
+				/* No recourse to memccpy(), so do it character-by-character */
+				while(copycount < len - 1 && str->buffer && str->mark < str->buflen)
+				{
+					gchar ch = str->buffer[str->mark++];
+					/* Check for newline */
+					if(ch == '\n') /* Also check for \r and \r\n? */
+					{
+						buf[copycount++] = '\n';
+						break;
+					}
+					buf[copycount++] = (unsigned char)ch;
+				}
+				buf[copycount] = 0;
+			}
+			
+			str->read_count += copycount;
+			return copycount;
+		}	
+		case STREAM_TYPE_FILE:
+			if(str->binary) 
+			{
+				if(str->unicode) /* Binary file with 4-byte characters */
+				{
+					/* Do it character-by-character */
+					int foo;
+					for(foo = 0; foo < len - 1; foo++)
+					{
+						glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
+						if(ch == -1) 
+						{
+							buf[foo] = 0;
+							return foo - 1;
+						}
+						str->read_count++;
+						if(is_unicode_newline(ch, str->file_pointer, FALSE))
+						{
+							buf[foo] = ch; /* Preserve newline types??? */
+							buf[foo + 1] = 0;
+							return foo;
+						}
+						buf[foo] = ch;
+					}
+					buf[len] = 0;
+					return foo;
+				}
+				else /* Regular binary file */
+				{
+					gchar *readbuffer = g_new0(gchar, len);
+					fgets(readbuffer, len, str->file_pointer);
+					glui32 count = strlen(readbuffer) + 1; /* Copy terminator */
+					int foo;
+					for(foo = 0; foo < count; foo++)
+						buf[foo] = (unsigned char)(readbuffer[foo]);
+					str->read_count += count;
+					return count;
+				}
+			}
+			else /* Text mode is the same for Unicode and regular files */
+			{
+				/* Do it character-by-character */
+				int foo;
+				for(foo = 0; foo < len - 1; foo++)
+				{
+					glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+					if(ch == -1)
+					{
+						buf[foo] = 0;
+						return foo - 1;
+					}
+					str->read_count++;
+					if(is_unicode_newline(ch, str->file_pointer, TRUE))
+					{
+						buf[foo] = ch; /* Preserve newline types??? */
+						buf[foo + 1] = 0;
+						return foo;
+					}
+					buf[foo] = ch;
+				}
+				buf[len] = 0;
 				return foo;
 			}
 		default:

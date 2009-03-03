@@ -119,6 +119,20 @@ glk_put_char(unsigned char ch)
 }
 
 /**
+ * glk_put_char_uni:
+ * @ch: A Unicode code point.
+ *
+ * Prints one character to the current stream. The character is assumed to be a
+ * Unicode code point.
+ */
+void
+glk_put_char_uni(glui32 ch)
+{
+	g_return_if_fail(glk_data->current_stream != NULL);
+	glk_put_char_stream_uni(glk_data->current_stream, ch);
+}
+
+/**
  * glk_put_string:
  * @s: A null-terminated string in Latin-1 encoding.
  *
@@ -135,6 +149,21 @@ glk_put_string(char *s)
 {
 	g_return_if_fail(glk_data->current_stream != NULL);
 	glk_put_string_stream(glk_data->current_stream, s);
+}
+
+/**
+ * glk_put_string_uni:
+ * @s: A zero-terminated string of Unicode code points.
+ * 
+ * Prints a string of Unicode characters to the current stream. It is equivalent
+ * to a series of glk_put_char_uni() calls. A string ends on a #glui32 whose
+ * value is 0.
+ */
+void
+glk_put_string_uni(glui32 *s)
+{
+	g_return_if_fail(glk_data->current_stream != NULL);
+	glk_put_string_stream_uni(glk_data->current_stream, s);
 }
 
 /**
@@ -155,6 +184,21 @@ glk_put_buffer(char *buf, glui32 len)
 {
 	g_return_if_fail(glk_data->current_stream != NULL);
 	glk_put_buffer_stream(glk_data->current_stream, buf, len);
+}
+
+/**
+ * glk_put_buffer_uni:
+ * @buf: An array of Unicode code points.
+ * @len: Length of @buf.
+ *
+ * Prints a block of Unicode characters to the current stream. It is equivalent
+ * to a series of glk_put_char_uni() calls.
+ */
+void
+glk_put_buffer_uni(glui32 *buf, glui32 len)
+{
+	g_return_if_fail(glk_data->current_stream != NULL);
+	glk_put_buffer_stream_uni(glk_data->current_stream, buf, len);
 }
 
 /**

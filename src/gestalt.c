@@ -71,17 +71,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_Version:
 			return (MAJOR_VERSION << 16) + (MINOR_VERSION << 8) + SUB_VERSION;
 		
-		/* Which characters can we print? */	
-		case gestalt_CharOutput:
-			/* All characters are printed as one character, in any case */
-			if(arr && arrlen > 0)
-				*arr = 1;
-			/* Cannot print control chars except \n, or chars > 255 */
-			if( (val < 32 && val != 10) || (val >= 127 && val <= 159) || (val > 255) )
-				return gestalt_CharOutput_CannotPrint;
-			/* Can print all other Latin-1 characters */
-			return gestalt_CharOutput_ExactPrint;
-		
 		/* Which characters can the player type in line input? */
 		case gestalt_LineInput:
 			/* Does not accept control chars */
@@ -95,7 +84,34 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 			if( val < 32 || (val >= 127 && val <= 159) || val == keycode_Unknown )
 				return 0;
 			return 1;
+		
+		/* Which characters can we print? */	
+		case gestalt_CharOutput:
+			/* All characters are printed as one character, in any case */
+			if(arr && arrlen > 0)
+				*arr = 1;
+			/* Cannot print control chars except \n, or chars > 255 */
+			if( (val < 32 && val != 10) || (val >= 127 && val <= 159) || (val > 255) )
+				return gestalt_CharOutput_CannotPrint;
+			/* Can print all other Latin-1 characters */
+			return gestalt_CharOutput_ExactPrint;
+		
+		/* Unicode capabilities present */
+		case gestalt_Unicode:
+			return 1;
 			
+		/* Unsupported capabilities */
+		case gestalt_MouseInput:
+		case gestalt_Timer:
+		case gestalt_Graphics:
+		case gestalt_DrawImage:
+		case gestalt_Sound:
+		case gestalt_SoundVolume:
+		case gestalt_SoundNotify:
+		case gestalt_Hyperlinks:
+		case gestalt_HyperlinkInput:
+		case gestalt_SoundMusic:
+		case gestalt_GraphicsTransparency:
 		/* Selector not supported */	
 		default:
 			return 0;
