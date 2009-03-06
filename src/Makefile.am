@@ -41,7 +41,7 @@ libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_.*|^gl
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
-PLUGIN_LDFLAGS = -no-undefined -module -avoid-version
+PLUGIN_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "glk_main"
 pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la
 first_la_SOURCES = first.c
 first_la_LDFLAGS = $(PLUGIN_LDFLAGS)

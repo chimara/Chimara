@@ -1,8 +1,6 @@
 *.o
 *.ui
 *.swp
-gargoyle-gtk
 Makefile.in
 configure
-intltool-*.in
-
+intltool-*
