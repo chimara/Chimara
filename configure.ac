@@ -16,6 +16,7 @@ AM_INIT_AUTOMAKE([-Wall])
 AC_PROG_CC                 # C compiler
 AC_PROG_INSTALL            # Install
 LT_INIT                    # Libtool
+AC_PROG_LIBTOOL            # Old way of declaring Libtool
 AM_GLIB_GNU_GETTEXT        # Use GLib gettext instead of standard
 IT_PROG_INTLTOOL([0.35.0]) # Intltool
 PKG_PROG_PKG_CONFIG        # pkg_config
