@@ -60,6 +60,17 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     end_iter = start_iter;
     gtk_text_iter_set_line_offset(&end_iter, cursorpos + win->input_length);
     
+	/* If the buffer currently has a selection with one bound in the middle of
+	the input field, then deselect it. Otherwise the input field gets trashed */
+	GtkTextIter start_sel, end_sel;
+	if( gtk_text_buffer_get_selection_bounds(buffer, &start_sel, &end_sel) )
+	{
+		if( gtk_text_iter_in_range(&start_sel, &start_iter, &end_iter) )
+			gtk_text_buffer_place_cursor(buffer, &end_sel);
+		if( gtk_text_iter_in_range(&end_sel, &start_iter, &end_iter) )
+			gtk_text_buffer_place_cursor(buffer, &start_sel);
+	}
+	
     /* Erase the text currently in the input field and replace it with a GtkEntry */
     gtk_text_buffer_delete(buffer, &start_iter, &end_iter);
     win->input_anchor = gtk_text_buffer_create_child_anchor(buffer, &start_iter);
