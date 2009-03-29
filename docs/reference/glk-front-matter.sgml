@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<referenceinfo>
+<title>Glk API Specification</title>
+<subtitle>API version 0.7.0</subtitle>
+<author>
+  <personname>
+    <firstname>Andrew</firstname>
+    <surname>Plotkin</surname>
+  </personname>
+  <email>erkyrath@eblong.com</email>
+</author>
+<copyright>
+  <year>1998&ndash;2004</year>
+  <holder>Andrew Plotkin</holder>
+</copyright>
+<legalnotice>
+You have permission to display, download, and print this document, provided that you do so for personal, non-commercial use only. You may not modify or distribute this document without the author's written permission.
+</legalnotice>
+<releaseinfo>
+The authors of the Chimara library have adapted this document to better fit the format of a GtkDoc reference manual. They have also added notes specific to Chimara's implementation of the Glk API. The original API specification and further Glk information can be found at: <ulink url="http://www.eblong.com/zarf/glk/">http://www.eblong.com/zarf/glk/</ulink>
+</releaseinfo>
+</referenceinfo>

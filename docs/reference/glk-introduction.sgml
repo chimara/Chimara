@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<chapter id="chimara-Introduction"><title>Introduction</title>
+<sect1 id="chimara-What-Glk-Is"><title>What Glk Is</title>
+<para>
+Glk is an attempt to define a portable API (programming interface) for applications with text UIs (user interfaces.)
+</para>
+<para>
+Rather than go into a detailed explanation of what that means, let me give examples from the world of text adventures. TADS and Infocom's Z-machine have nearly identical interface capabilities; each allows a program to...
+<itemizedlist>
+	<listitem><para>print an indefinite stream of text into an output buffer, with some style control</para></listitem>
+	<listitem><para>input a line of text</para></listitem>
+	<listitem><para>display a few lines of text in a small separate window</para></listitem>
+	<listitem><para>store information in a file, or read it in</para></listitem>
+</itemizedlist>
+and so on. However, the implementation of these capabilities vary widely between platforms and operating systems. Furthermore, this variance is transparent to the program (the adventure game.) The game does not care whether output is displayed via a character terminal emulator or a GUI window; nor whether input uses Mac-style mouse editing or EMACS-style control key editing.
+</para>
+<para>
+On the third hand, the user is likely to care deeply about these interface decisions. This is why there are Mac-native interpreters on Macintoshes, pen-controlled interpreters on Newtons and PalmOS PDAs, and so on &mdash; and (ultimately) why there Macintoshes and Palms and X-windows platforms in the first place.
+</para>
+<para>
+On the <emphasis>fourth</emphasis> hand, TADS and Inform are not alone; there is historically a large number of text adventure systems. Most are obsolete or effectively dead; but it is inevitable that more will appear. Users want each living system ported to all the platforms in use. Users also prefer these ports to use the same interface, as much as possible.
+</para>
+<para>
+This all adds up to a pain in the ass.
+</para>
+<para>
+Glk tries to draw a line between the parts of the text adventure world which are identical on all IF systems, and different on different operating systems, from the parts which are unique to each IF system but identical in all OSs. The border between these two worlds is the Glk API.
+</para>
+<para>
+My hope is that a new IF system, or existing ones which are less-supported (Hugo, AGT, etc) can be written using Glk for all input and output function. The IF system would then be in <emphasis>truly</emphasis> portable C. On the other side of the line, there would be a Glk library for each operating system and interface (Macintosh, X-windows, curses-terminal, etc.) Porting the IF system to every platform would be trivial; compile the system, and link in the library.
+</para>
+<para>
+Glk can also serve as a nice interface for applications other than games &mdash; data manglers, quick hacks, or anything else which would normally lack niceties such as editable input, macros, scrolling, or whatever is native to your machine's interface idiom.
+</para>
+</sect1>
+<sect1 id="chimara-What-About-the-Virtual-Machine"><title>What About the Virtual Machine?</title>
+<para>
+You can think of Glk as an IF virtual machine, without the virtual machine part. The <quote>machine</quote> is just portable C code.
+</para>
+<para>
+An IF virtual machine has been designed specifically to go along with Glk. This VM, called Glulx, uses Glk as its interface; each Glk call corresponds to an input/output opcode of the VM.
+</para>
+<para>
+For more discussion of this approach, see <link linkend="chimara-Glk-and-the-Virtual-Machine">Glk and the Virtual Machine</link>. Glulx is documented at <ulink url="http://www.eblong.com/zarf/glulx/">http://www.eblong.com/zarf/glulx</ulink>.
+</para>
+<para>
+Of course, Glk can be used with other IF systems. The advantage of Glulx is that it provides the game author with direct and complete access to the Glk API. Other IF systems typically have an built-in abstract I/O API, which maps only partially onto Glk. For these systems, Glk tends to be a least-common-denominator interface: highly portable, but not necessarily featureful. (Even if Glk has a feature, it may not be available through the layers of abstraction.) 
+</para>
+</sect1>
+<sect1 id="chimara-What-Does-Glk-Not-Do"><title>What Does Glk Not Do?</title>
+<para>
+Glk does not handle the things which should be handled by the program (or the IF system, or the virtual machine) which is linked to Glk. This means that Glk does not address
+<itemizedlist>
+	<listitem><para>parsing</para></listitem>
+	<listitem><para>game object storage</para></listitem>
+	<listitem><para>computation</para></listitem>
+	<listitem><para>text compression</para></listitem>
+</itemizedlist>
+</para>
+</sect1>
+<sect1 id="chimara-Conventions-of-This-Document"><title>Conventions of This Document</title>
+<para>
+This document defines the Glk API. I have tried to specify exactly what everything does, what is legal, what is illegal, and why.
+</para>
+<note><para>
+Sections labeled like this are notes. They do not define anything; they clarify or explain what has already been defined. If there seems to be a conflict, ignore the note and follow the definition.
+</para></note>
+<note><title>WORK</title>
+<para>
+Notes with the label <quote>WORK</quote> are things which I have not yet fully resolved. Your comments requested and welcome.
+</para></note>
+<note><title>Chimara</title>
+<para>
+Notes labeled <quote>Chimara</quote> are specific to Chimara's implementation of the Glk API and are not part of the original Glk API specification.
+</para></note>
+<para>
+This document is written for the point of view of the game programmer &mdash; the person who wants to use the Glk library to print text, input text, and so on. By saying what the Glk library does, of course, this document also defines the task of the Glk programmer &mdash; the person who wants to port the Glk library to a new platform or operating system. If the Glk library guarantees something, the game programmer can rely on it, and the Glk programmer is required to support it. Contrariwise, if the library does not guarantee something, the Glk programmer may handle it however he likes, and the game programmer must not rely on it. If something is illegal, the game programmer must not do it, and the Glk programmer is not required to worry about it. 
+</para>
+<note><para>
+It is preferable, but not required, that the Glk library detect illegal requests and display error messages. The Glk library may simply crash when the game program does something illegal. This is why the game programmer must not do it. Right?
+</para></note>
+<note><title>Chimara</title>
+<para>
+Wherever possible, Chimara checks for anything defined as illegal, and prints a
+warning message to standard error. It tries to recover as gracefully as possible
+so that the program can continue.
+</para></note>
+<para>
+Hereafter, <quote>Glk</quote> or <quote>the library</quote> refers to the Glk library, and <quote>the program</quote> is the game program (or whatever) which is using the Glk library to print text, input text, or whatever. <quote>You</quote> are the person writing the program. <quote>The player</quote> is the person who will use the program/Glk library combination to actually play a game. Or whatever.
+</para>
+<para>
+The Glk API is declared in a C header file called <quote><filename class="headerfile">glk.h</filename></quote>. Please refer to that file when reading this one. 
+</para>
+</sect1>
+<sect1 id="chimara-Credits"><title>Credits</title>
+<para>
+Glk has been a work of many years and many people. If I tried to list everyone who has offered comments and suggestions, I would immediately go blank, forget everyone's name, and become a mute hermit-like creature living in a train tunnel under Oakland. But I must thank those people who have written Glk libraries and linking systems: Matt Kimball, Ross Raszewski, David Kinder, John Elliott, Joe Mason, Stark Springs, and, er, anyone I missed. Look! A train!
+</para>
+<para>
+Evin Robertson wrote the original proposal for the Glk Unicode functions, which I imported nearly verbatim into this document. Thank you.
+</para>
+</sect1>
+</chapter>

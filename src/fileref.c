@@ -9,20 +9,14 @@ extern ChimaraGlkPrivate *glk_data;
 
 /**
  * glk_fileref_iterate:
- * @fref: A file reference, or #NULL.
- * @rockptr: Return location for the next window's rock, or #NULL.
+ * @fref: A file reference, or %NULL.
+ * @rockptr: Return location for the next fileref's rock, or %NULL.
  *
- * Iterates over the list of file references; if @fref is #NULL, it returns the
- * first file reference, otherwise the next file reference after @fref. If 
- * there are no more, it returns #NULL. The file reference's rock is stored in
- * @rockptr. If you don't want the rocks to be returned, you may set @rockptr 
- * to #NULL.
+ * Iterates through all the existing filerefs. See <link
+ * linkend="chimara-Iterating-Through-Opaque-Objects">Iterating Through Opaque
+ * Objects</link>.
  *
- * The order in which file references are returned is arbitrary. The order may
- * change every time you create or destroy a file reference, invalidating the 
- * iteration.
- *
- * Returns: the next file reference, or #NULL if there are no more.
+ * Returns: the next file reference, or %NULL if there are no more.
  */
 frefid_t
 glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
@@ -46,7 +40,8 @@ glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
  * glk_fileref_get_rock:
  * @fref: A file reference.
  * 
- * Returns the file reference @fref's rock value.
+ * Retrieves the file reference @fref's rock value. See <link 
+ * linkend="chimara-Rocks">Rocks</link>.
  *
  * Returns: A rock value.
  */
@@ -78,12 +73,16 @@ fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 
 /**
  * glk_fileref_create_temp:
- * @usage: Bitfield with one or more of the #fileusage_ constants.
+ * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
  * @rock: The new fileref's rock value.
  *
  * Creates a reference to a temporary file. It is always a new file (one which
  * does not yet exist). The file (once created) will be somewhere out of the
  * player's way.
+ *
+ * <note><para>
+ *   This is why no name is specified; the player will never need to know it.
+ * </para></note>
  *
  * A temporary file should never be used for long-term storage. It may be
  * deleted automatically when the program exits, or at some later time, say
@@ -121,18 +120,54 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
 
 /**
  * glk_fileref_create_by_prompt:
- * @usage: Bitfield with one or more of the #fileusage_ constants.
+ * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
  * @fmode: File mode, contolling the dialog's behavior.
  * @rock: The new fileref's rock value.
  *
- * Creates a reference to a file by opening a file chooser dialog. If @fmode is
- * #filemode_Read, then the file must already exist and the user will be asked
- * to select from existing files. If @fmode is #filemode_Write, then the file
- * should not exist; if the user selects an existing file, he or she will be
- * warned that it will be replaced. If @fmode is #filemode_ReadWrite, then the
- * file may or may not exist; if it already exists, the user will be warned
- * that it will be modified. The @fmode argument should generally match the
- * @fmode which will be used to open the file.
+ * Creates a reference to a file by asking the player to locate it. The library
+ * may simply prompt the player to type a name, or may use a platform-native
+ * file navigation tool. (The prompt, if any, is inferred from the usage
+ * argument.)
+ *
+ * <note><title>Chimara</title>
+ * <para>
+ * Chimara uses a <link 
+ * linkend="gtk-GtkFileChooserDialog">GtkFileChooserDialog</link>.
+ * </para></note>
+ *
+ * @fmode must be one of these values:
+ * <variablelist>
+ * <varlistentry>
+ *   <term>#filemode_Read</term>
+ *   <listitem><para>The file must already exist; and the player will be asked
+ *   to select from existing files which match the usage.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>#filemode_Write</term>
+ *   <listitem><para>The file should not exist; if the player selects an
+ *   existing file, he will be warned that it will be replaced.
+ *   </para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>#filemode_ReadWrite</term>
+ *   <listitem><para>The file may or may not exist; if it already exists, the
+ *   player will be warned that it will be modified.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>#filemode_WriteAppend</term>
+ *   <listitem><para>Same behavior as #filemode_ReadWrite.</para></listitem>
+ * </varlistentry>
+ * </variablelist>
+ *
+ * The @fmode argument should generally match the @fmode which will be used to
+ * open the file.
+ *
+ * <note><para>
+ *   It is possible that the prompt or file tool will have a 
+ *   <quote>cancel</quote> option. If the player chooses this,
+ *   glk_fileref_create_by_prompt() will return %NULL. This is a major reason
+ *   why you should make sure the return value is valid before you use it.
+ * </para></note>
  *
  * Returns: A new fileref, or #NULL if the fileref creation failed or the
  * dialog was canceled.
@@ -202,14 +237,42 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 
 /**
  * glk_fileref_create_by_name:
- * @usage: Bitfield with one or more of the #fileusage_ constants.
+ * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
  * @name: A filename.
  * @rock: The new fileref's rock value.
  *
  * This creates a reference to a file with a specific name. The file will be
- * in the same directory as your program, and visible to the player.
+ * in a fixed location relevant to your program, and visible to the player.
  *
- * Returns: A new fileref, or #NULL if the fileref creation failed. 
+ * <note><para>
+ *   This usually means <quote>in the same directory as your program.</quote>
+ * </para></note>
+ * <note><title>Chimara</title>
+ * <para>
+ * In Chimara, the file is created in the current working directory.
+ * </para></note>
+ *
+ * Since filenames are highly platform-specific, you should use
+ * glk_fileref_create_by_name() with care. It is legal to pass any string in the
+ * name argument. However, the library may have to mangle, transform, or
+ * truncate the string to make it a legal native filename. 
+ *
+ * <note><para>
+ *   For example, if you create two filerefs with the names <quote>File</quote>
+ *   and <quote>FILE</quote>, they may wind up pointing to the same file; the
+ *   platform may not support case distinctions in file names. Another example:
+ *   on a platform where file type is specified by filename suffix, the library
+ *   will add an appropriate suffix based on the usage; any suffix in the string
+ *   will be overwritten or added to. For that matter, remember that the period
+ *   is not a legal character in Acorn filenames...
+ * </para></note>
+ *
+ * The most conservative approach is to pass a string of no more than 8
+ * characters, consisting entirely of upper-case letters and numbers, starting
+ * with a letter. You can then be reasonably sure that the resulting filename
+ * will display all the characters you specify &mdash; in some form. 
+ *
+ * Returns: A new fileref, or %NULL if the fileref creation failed. 
  */
 frefid_t
 glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
@@ -242,17 +305,34 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 
 /**
  * glk_fileref_create_from_fileref:
- * @usage: Bitfield with one or more of the #fileusage_ constants.
+ * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
  * @fref: Fileref to copy.
  * @rock: The new fileref's rock value.
  *
  * This copies an existing file reference @fref, but changes the usage. (The
- * original @fref is not modified.)
+ * original fileref is not modified.)
  *
- * If you write to a file in text mode and then read from it in binary mode,
- * the results are platform-dependent.
+ * The use of this function can be tricky. If you change the type of the fileref
+ * (#fileusage_Data, #fileusage_SavedGame, etc), the new reference may or may
+ * not point to the same actual disk file.
  *
- * Returns: A new fileref, or #NULL if the fileref creation failed. 
+ * <note><para>
+ *   This generally depends on whether the platform uses suffixes to indicate
+ *   file type.
+ * </para></note>
+ *
+ * If you do this, and open both file references for writing, the results are
+ * unpredictable. It is safest to change the type of a fileref only if it refers
+ * to a nonexistent file.
+ *
+ * If you change the mode of a fileref (#fileusage_TextMode,
+ * #fileusage_BinaryMode), but leave the rest of the type unchanged, the new
+ * fileref will definitely point to the same disk file as the old one.
+ * 
+ * Obviously, if you write to a file in text mode and then read from it in
+ * binary mode, the results are platform-dependent. 
+ *
+ * Returns: A new fileref, or %NULL if the fileref creation failed. 
  */
 frefid_t
 glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
@@ -264,8 +344,9 @@ glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
  * glk_fileref_destroy:
  * @fref: Fileref to destroy.
  * 
- * Destroys a fileref which you have created. This does not affect the disk
- * file.
+ * Destroys a fileref which you have created. This does <emphasis>not</emphasis>
+ * affect the disk file; it just reclaims the resources allocated by the
+ * <code>glk_fileref_create...</code> function.
  *
  * It is legal to destroy a fileref after opening a file with it (while the
  * file is still open.) The fileref is only used for the opening operation,
@@ -284,7 +365,7 @@ glk_fileref_destroy(frefid_t fref)
  * glk_fileref_delete_file:
  * @fref: A refrence to the file to delete.
  *
- * Deletes the file referred to by @fref. Does not destroy @fref itself.
+ * Deletes the file referred to by @fref. It does not destroy @fref itself.
  */
 void
 glk_fileref_delete_file(frefid_t fref)
@@ -300,7 +381,8 @@ glk_fileref_delete_file(frefid_t fref)
  *
  * Checks whether the file referred to by @fref exists.
  *
- * Returns: #TRUE (1) if @fref refers to an existing file, #FALSE (0) if not.
+ * Returns: %TRUE (1) if @fref refers to an existing file, and %FALSE (0) if 
+ * not.
  */
 glui32
 glk_fileref_does_file_exist(frefid_t fref)

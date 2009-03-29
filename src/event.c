@@ -90,3 +90,4 @@ glk_select(event_t *event)
 	/* If an abort event was generated, the thread should have exited by now */
 	g_assert(event->type != evtype_Abort);
 }
+

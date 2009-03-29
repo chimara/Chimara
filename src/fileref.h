@@ -4,8 +4,15 @@
 #include <gtk/gtk.h>
 #include "glk.h"
 
+/**
+ * glk_fileref_struct:
+ *
+ * This is an opaque structure (see <link linkend="chimara-Opaque-Structures">
+ * Opaque Structures</link> and should not be accessed directly.
+ */
 struct glk_fileref_struct
 {
+	/*< private >*/
 	glui32 rock;
 	/* Pointer to the list node in the global fileref list that contains this
 	fileref */

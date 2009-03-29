@@ -4,7 +4,7 @@
 ### GTK-DOC #########################################################
 # Run before autotools
 echo "Setting up Gtk-Doc"
-gtkdocize || exit 1
+gtkdocize --flavour no-tmpl || exit 1
 
 ### AUTOTOOLS #######################################################
 # Runs autoconf, autoheader, aclocal, automake, autopoint, libtoolize

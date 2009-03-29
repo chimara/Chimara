@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<refentry id="chimara-Windows">
+<refmeta>
+<refentrytitle>Windows</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Windows</refname>
+<refpurpose>Introduction to Glk windows</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+On most platforms, the program/library combination will appear to the player in a window &mdash; either a window which covers the entire screen, or one which shares screen space with other windows in a multi-programming environment. Obviously your program does not have worry about the details of this. The Glk screen space is a rectangle, which you can divide into panels for various purposes. It is these panels which I will refer to as <quote>windows</quote> hereafter.
+</para>
+<para>
+You refer to a window using an opaque C structure pointer. See <link linkend="chimara-Opaque-Objects">Opaque Objects</link>.
+</para>
+<para>
+A window has a type. Currently there are four window types:
+<variablelist>
+<varlistentry>
+	<term>Text buffer windows</term>
+	<listitem><para>
+	A stream of text.
+	</para>
+	<note><para>The <quote>story window</quote> of an Infocom game.
+	</para></note>
+	<para>
+	You can only print at the end of the stream, and input a line of text at the end of the stream.
+	</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term>Text grid windows</term>
+	<listitem><para>
+	A grid of characters in a fixed-width font.
+	</para>
+	<note><para>The <quote>status window</quote> of an Infocom game.
+	</para></note>
+	<para>
+	You can print anywhere in the grid.
+	</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term>Graphics windows</term>
+	<listitem><para>
+	A grid of colored pixels. Graphics windows do not support text input or output, but there are image commands to draw in them.
+	</para>
+	<note><para>This is an optional capability; not all Glk libraries support graphics. See <link linkend="chimara-Testing-for-Graphics-Capabilities">Testing for Graphics Capabilities</link>.
+	</para></note></listitem>
+</varlistentry>
+<varlistentry>
+	<term>Blank windows</term>
+	<listitem><para>A blank window. Blank windows support neither input nor output.
+	</para>
+	<note><para>They exist mostly to be an example of a <quote>generic</quote> window. You are unlikely to want to use them.
+	</para></note></listitem>
+</varlistentry>
+</variablelist>
+</para>
+<para>
+As Glk is an expanding system, more window types may be added in the future. Therefore, it is important to remember that not all window types will necessarily be available under all Glk libraries.
+</para>
+<para>
+There is one other special type of window, the pair window. Pair windows are created by Glk as part of the system of window arrangement. You cannot create them yourself. See <link linkend="wintype-Pair">Pair Windows</link>.
+</para>
+<para>
+Every window has a rock. This is a value you provide when the window is created; you can use it however you want. See <link linkend="chimara-Rocks">Rocks</link>.
+</para>
+<para>
+When Glk starts up, there are no windows.
+</para>
+<note><para>
+When I say there are no windows, I mean there are no Glk windows. In a multiprogramming environment, such as X or MacOS, there may be an application window visible; this is the screen space that will contain all the Glk windows that you create. But at first, this screen space is empty and unused.
+</para></note>
+<para>
+Without a window, you cannot do any kind of input or output; so the first thing you'll want to do is create one. See <link linkend="chimara-Window-Opening-Closing-and-Constraints">Window Opening, Closing, and Constraints</link>.
+</para>
+<para>
+You can create as many windows as you want, of any types. You control their arrangement and sizes through a fairly flexible system of calls. See <link linkend="chimara-Window-Arrangement">Window Arrangement</link>.
+</para>
+<para>
+You can close any windows you want. You can even close all the windows, which returns you to the original startup state.
+</para>
+<para>
+You can request input from any or all windows. Input can be mouse input (on platforms which support a mouse), single-character input, or input of an entire line of text. It is legal to request input from several windows at the same time. The library will have some interface mechanism for the player to control which window he is typing in.
+</para>
+</refsect1>
+</refentry>

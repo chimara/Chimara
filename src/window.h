@@ -18,8 +18,15 @@ enum InputRequestType
 	INPUT_REQUEST_LINE_UNICODE
 };
 
+/**
+ * glk_window_struct:
+ *
+ * This is an opaque structure (see <link linkend="chimara-Opaque-Structures">
+ * Opaque Structures</link> and should not be accessed directly.
+ */
 struct glk_window_struct
 {
+	/*< private >*/
 	glui32 rock;
 	/* Pointer to the node in the global tree that contains this window */
 	GNode *window_node;

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-Other-API-Conventions">
+<refmeta>
+<refentrytitle>Other API Conventions</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Other API Conventions</refname>
+<refpurpose>General information about the Glk API</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+The <filename class="headerfile">glk.h</filename> header file is the same on all platforms, with the sole exception of the typedef of #glui32 and #glsi32. These will always be defined as 32-bit unsigned and signed integer types, which may be <quote><type>long</type></quote> or <quote><type>int</type></quote> or some other C definition.
+</para>
+<para>
+Note that all constants are &num;defines, and all functions are actual function declarations (as opposed to macros.)
+</para>
+<note><para>
+There are a few places where macros would be more efficient &mdash; glk_gestalt() and glk_gestalt_ext(), for example &mdash; but they are not likely to be CPU bottlenecks, and clarity seems more important.
+</para></note>
+<para>
+%FALSE is 0; %TRUE is 1. %NULL is also 0.
+</para>
+<para>
+As stated above, it is illegal to pass %NULL to a function which is expecting a valid object reference, unless the function definition says otherwise.
+</para>
+<para>
+Some functions have pointer arguments, acting as <quote>variable</quote> or <quote>reference</quote> arguments; the function's intent is to return some value in the space pointed to by the argument. Unless the function says otherwise, it is legal to pass a %NULL pointer to indicate that you do not care about that value.
+</para>
+</refsect1>
+</refentry>

@@ -8,14 +8,15 @@ extern ChimaraGlkPrivate *glk_data;
 
 /**
  * glk_set_interrupt_handler:
- * @func: A pointer to a function which takes no argument and returns no result.
+ * @func: A pointer to an interrupt handler function.
  *
- * Specifies an interrupt handler function for cleaning up critical resources.
- * If Glk receives an interrupt, and you have set an interrupt handler, your
- * handler will be called, before the process is shut down.
+ * Sets @func to be the interrupt handler. @func should be a pointer to a 
+ * function which takes no argument and returns no result. If Glk receives an
+ * interrupt, and you have set an interrupt handler, your handler will be 
+ * called, before the process is shut down.
  * 
  * Initially there is no interrupt handler. You can reset to not having any by
- * calling glk_set_interrupt_handler(%NULL).
+ * calling <code>#glk_set_interrupt_handler(%NULL)</code>.
  * 
  * If you call glk_set_interrupt_handler() with a new handler function while an
  * older one is set, the new one replaces the old one. Glk does not try to queue

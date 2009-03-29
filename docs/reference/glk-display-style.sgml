@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-A-Note-on-Display-Style">
+<refmeta>
+<refentrytitle>A Note on Display Style</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>A Note on Display Style</refname>
+<refpurpose>How windows may be displayed on different platforms</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+The way windows are displayed is, of course, entirely up to the Glk library; it depends on what is natural for the player's machine. The borders between windows may be black lines, 3-D bars, rows of <quote><computeroutput>&num;</computeroutput></quote> characters; there may even be no borders at all. 
+</para>
+<note><para>
+This is an important possibility to keep in mind.
+</para></note>
+<para>
+There may be other decorations as well. A text buffer window will often have a scroll bar. The library (or player) may prefer wide margins around each text window. And so on.
+</para>
+<para>
+The library is reponsible for handling these decorations, margins, spaces, and borders. You should never worry about them. You are guaranteed that if you request a fixed size of two rows, your text grid window will have room for two rows of characters &mdash; if there is enough total space. Any margins or borders will be allowed for already. If there <emphasis>isn't</emphasis> enough total space (as in stages 4 and 5 of <link linkend="chimara-Figure-Squeezing-Window">this figure</link>), you lose, of course.
+</para>
+<para>
+How do you know when you're losing? You can call glk_window_get_size() to determine the window size you really got. Obviously, you should draw into your windows based on their real size, not the size you requested. If there's enough space, the requested size and the real size will be identical; but you should not rely on this. Call glk_window_get_size() and check.
+</para>
+</refsect1>
+</refentry>

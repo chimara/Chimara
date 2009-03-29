@@ -28,13 +28,9 @@ window_stream_new(winid_t window)
  * @str: A stream, or %NULL.
  * @rockptr: Return location for the next window's rock, or %NULL.
  *
- * Iterates over the list of streams; if @str is %NULL, it returns the first
- * stream, otherwise the next stream after @str. If there are no more, it
- * returns %NULL. The stream's rock is stored in @rockptr. If you don't want
- * the rocks to be returned, you may set @rockptr to %NULL.
- *
- * The order in which streams are returned is arbitrary. The order may change
- * every time you create or destroy a stream, invalidating the iteration.
+ * Iterates through all the existing streams. See <link
+ * linkend="chimara-Iterating-Through-Opaque-Objects">Iterating Through Opaque
+ * Objects</link>.
  *
  * Returns: the next stream, or %NULL if there are no more.
  */
@@ -60,7 +56,8 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
  * glk_stream_get_rock:
  * @str: A stream.
  * 
- * Returns the stream @str's rock value.
+ * Retrieves the stream @str's rock value. See <link 
+ * linkend="chimara-Rocks">Rocks</link>.
  *
  * Returns: A rock value.
  */
@@ -96,7 +93,7 @@ glk_stream_set_current(strid_t str)
  * 
  * Returns the current stream, or %NULL if there is none.
  *
- * Returns: A stream.
+ * Returns: A stream, or %NULL.
  */
 strid_t
 glk_stream_get_current()
@@ -109,7 +106,8 @@ glk_stream_get_current()
  * @ch: A character in Latin-1 encoding.
  *
  * Prints one character to the current stream. As with all basic functions, the
- * character is assumed to be in the Latin-1 character encoding.
+ * character is assumed to be in the Latin-1 character encoding. See <link
+ * linkend="chimara-Character-Encoding">Character Encoding</link>.
  */
 void
 glk_put_char(unsigned char ch)
@@ -123,7 +121,8 @@ glk_put_char(unsigned char ch)
  * @ch: A Unicode code point.
  *
  * Prints one character to the current stream. The character is assumed to be a
- * Unicode code point.
+ * Unicode code point. See <link linkend="chimara-Character-Encoding">Character
+ * Encoding</link>.
  */
 void
 glk_put_char_uni(glui32 ch)
@@ -137,10 +136,10 @@ glk_put_char_uni(glui32 ch)
  * @s: A null-terminated string in Latin-1 encoding.
  *
  * Prints a null-terminated string to the current stream. It is exactly
- * equivalent to:
+ * equivalent to
  * <informalexample><programlisting>
- * for (ptr = s; *ptr; ptr++)
- * 	glk_put_char(*ptr);
+ * for (ptr = @s; *ptr; ptr++)
+ * 	#glk_put_char(*ptr);
  * </programlisting></informalexample>
  * However, it may be more efficient.
  */
@@ -174,8 +173,8 @@ glk_put_string_uni(glui32 *s)
  * Prints a block of characters to the current stream. It is exactly equivalent
  * to:
  * <informalexample><programlisting>
- * for (i = 0; i < len; i++)
- * 	glk_put_char(buf[i]);
+ * for (i = 0; i < @len; i++)
+ * 	#glk_put_char(@buf[i]);
  * </programlisting></informalexample>
  * However, it may be more efficient.
  */
@@ -213,33 +212,10 @@ glk_put_buffer_uni(glui32 *buf, glui32 len)
  * to the buffer where output will be read from or written to. @buflen is the
  * length of the buffer.
  *
- * When outputting, if more than @buflen characters are written to the stream,
- * all of them beyond the buffer length will be thrown away, so as not to
- * overwrite the buffer. (The character count of the stream will still be
- * maintained correctly. That is, it will count the number of characters written
- * into the stream, not the number that fit into the buffer.)
- *
- * If @buf is %NULL, or for that matter if @buflen is zero, then <emphasis>
- * everything</emphasis> written to the stream is thrown away. This may be
- * useful if you are interested in the character count.
- *
- * When inputting, if more than @buflen characters are read from the stream, the
- * stream will start returning -1 (signalling end-of-file.) If @buf is %NULL,
- * the stream will always return end-of-file.
- *
- * The data is written to the buffer exactly as it was passed to the printing
- * functions (glk_put_char(), etc.); input functions will read the data exactly
- * as it exists in memory. No platform-dependent cookery will be done on it.
- * (You can write a disk file in text mode, but a memory stream is effectively
- * always in binary mode.)
- *
  * Unicode values (characters greater than 255) cannot be written to the buffer.
- * If you try, they will be stored as 0x3F ("?") characters.
+ * If you try, they will be stored as 0x3F (<code>"?"</code>) characters.
  *
- * Whether reading or writing, the contents of the buffer are undefined until
- * the stream is closed. The library may store the data there as it is written,
- * or deposit it all in a lump when the stream is closed. It is illegal to
- * change the contents of the buffer while the stream is open.
+ * Returns: the new stream, or %NULL on error.
  */
 strid_t
 glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
@@ -274,6 +250,8 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
  * of 32-bit words, instead of bytes. This allows you to write and read any
  * Unicode character. The @buflen is the number of words, not the number of
  * bytes.
+ * 
+ * Returns: the new stream, or %NULL on error.
  */
 strid_t
 glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock)
@@ -389,14 +367,12 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
  * already exists, it is truncated down to zero length (an empty file). If
  * @fmode is #filemode_WriteAppend, the file mark is set to the end of the 
  * file.
- * 
- * The file may be written in text or binary mode; this is determined by the
- * @fileref argument. Similarly, platform-dependent attributes such as file 
- * type are determined by @fileref.
  *
  * When writing in binary mode, Unicode values (characters greater than 255)
- * cannot be written to the file. If you try, they will be stored as 0x3F ("?")
- * characters. In text mode, Unicode values are stored in UTF-8.
+ * cannot be written to the file. If you try, they will be stored as 0x3F
+ * (<code>"?"</code>) characters. In text mode, Unicode values may be stored
+ * exactly, approximated, or abbreviated, depending on what the platform's text
+ * files support.
  *
  * Returns: A new stream, or %NULL if the file operation failed.
  */
@@ -417,7 +393,11 @@ glk_stream_open_file(frefid_t fileref, glui32 fmode, glui32 rock)
  * characters are written and read as four-byte (big-endian) values. This
  * allows you to write any Unicode character.
  *
- * In text mode, the file is written and read in UTF-8.
+ * In text mode, the file is written and read in a platform-dependent way, which
+ * may or may not handle all Unicode characters. A text-mode file created with
+ * glk_stream_open_file_uni() may have the same format as a text-mode file
+ * created with glk_stream_open_file(); or it may use a more Unicode-friendly
+ * format.
  *
  * Returns: A new stream, or %NULL if the file operation failed.
  */
@@ -439,7 +419,9 @@ glk_stream_open_file_uni(frefid_t fileref, glui32 fmode, glui32 rock)
  * If @str is the current output stream, the current output stream is set to
  * %NULL.
  *
- * You cannot close window streams; use glk_window_close() instead.
+ * You cannot close window streams; use glk_window_close() instead. See <link
+ * linkend="chimara-Window-Opening-Closing-and-Constraints">Window Opening,
+ * Closing, and Constraints</link>.
  */
 void 
 glk_stream_close(strid_t str, stream_result_t *result)

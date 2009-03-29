@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<refentry id="chimara-Window-Arrangement">
+<refmeta>
+<refentrytitle>Window Arrangement</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Window Arrangement</refname>
+<refpurpose>The Way of Window Arrangement</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+The Way of Window Arrangement is fairly complicated. I'll try to explain it coherently.
+</para>
+<note><para>If you are reading this document to get an overview of Glk, by all means skip forward to <link linkend="chimara-The-Types-of-Windows">The Types of Windows</link>. Come back here later.
+</para></note>
+<para>
+Originally, there are no windows. You can create a window, which will take up the entire available screen area. You can then split this window in two. One of the halves is the original window; the other half is new, and can be of any type you want. You can control whether the new window is left, right, above, or below the original one. You can also control how the split occurs. It can be 50-50, or 70-30, or any other percentage split. Or, you can give a fixed width to the new window, and allow the old one to take up the rest of the available space. Or you can give a fixed width to the old window, and let the new one take up the rest of the space.
+</para>
+<para>
+Now you have two windows. In exactly the same way, you can split either of them &mdash; the original window, or the one you just created. Whichever one you split becomes two, which together take up the same space that the one did before.
+</para>
+<para>
+You can repeat this as often as you want. Every time you split a window, one new window is created. Therefore, the call that does this is called glk_window_open().
+</para>
+<note><para>
+It might have been less confusing to call it <quote>glk_split_window()</quote> &mdash; or it might have been more confusing. I picked one.
+</para></note>
+<para>
+It is important to remember that the order of splitting matters. If you split twice, you don't have a trio of windows; you have a pair with another pair on one side. Mathematically, the window structure is a binary tree.
+</para>
+<para>
+Example time. Say you do two splits, each a 50-50 percentage split. You start with the original window A, and split that into A and B; then you split B into B and C.
+<mediaobject><textobject><phrase>Screen shot 1</phrase></textobject></mediaobject>
+Or, you could split A into A and B, and then split A again into A and C.
+<mediaobject><textobject><phrase>Screen shot 2</phrase></textobject></mediaobject>
+I'm using the simplest possible splits in the examples above. Every split is 50-50, and the new window of the pair is always below the original one (the one that gets split.) You can get fancier than that. Here are three more ways to perform the first example; all of them have the same tree structure, but look different on the screen.
+<mediaobject><textobject><phrase>Screen shot 3</phrase></textobject></mediaobject>
+On the left, we turn the second split (B into B/C) upside down; we put the new window (C) above the old window (B).
+</para>
+<para>
+In the center, we mess with the percentages. The first split (A into A/B) is a 25-75 split, which makes B three times the size of A. The second (B into B/C) is a 33-66 split, which makes C twice the size of B. This looks rather like the second example above, but has a different internal structure.
+</para>
+<para>
+On the right, the second split (B into B/C) is vertical instead of horizontal, with the new window (C) on the left of the old one.
+</para>
+<para>
+The visible windows on the Glk screen are <quote>leaf nodes</quote> of the binary tree; they hang off the ends of the branches in the diagram. There are also the <quote>internal nodes</quote>, the ones at the forks, which are marked as <quote>O</quote>. These are the mysterious pair windows.
+</para>
+<para>
+You don't create pair windows directly; they are created as a consequence of window splits. Whenever you create a new window, a new pair window is also created automatically. In the following two-split process, you can see that when a window is split, it is replaced by a new pair window, and moves down to become one of that <quote>O</quote>'s two children.
+<mediaobject><textobject><phrase>Screen shot 4</phrase></textobject></mediaobject>
+</para>
+<para>
+You can't draw into a pair window. It's completely filled up with the two windows it contains. They're what you should be drawing into.
+</para>
+<para>
+Why have pair windows in the system at all? They're convenient for certain operations. For example, you can close any window at any time; but sometimes you want to close an entire nest of windows at once. In the third stage shown, if you close the lower pair window, it blows away all its descendents &mdash; both B and C &mdash; and leaves just a single window, A, which is what you started with.
+</para>
+<para>
+I'm using some math terminology already, so I'll explain it briefly. The <quote>root</quote> of the tree is the top (math trees, like family trees, grow upside down.) If there's only one window, it's the root; otherwise the root is the topmost <quote>O</quote>. Every pair window has exactly two <quote>children</quote>. Other kinds of windows are leaves on the tree, and have no children. A window's <quote>descendants</quote>, obviously, are its children and grandchildren and great-grandchildren and so on. The <quote>parent</quote> and <quote>ancestors</quote> of a window are exactly what you'd expect. So the root window is the ancestor of every other window.
+</para>
+<para>
+There are Glk functions to determine the root window, and to determine the parent of any given window. Note that every window's parent is a pair window. (Except for the root window, which has no parent.)
+</para>
+</refsect1>
+</refentry>

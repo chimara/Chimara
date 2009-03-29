@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <bookinfo>
+    <title>Chimara Reference Manual</title>
+    <releaseinfo>
+      for Chimara &version;. The latest version of this documentation can be 
+      found on-line at <ulink role="online-location" 
+      url="http://[SERVER]/chimara/index.html">http://[SERVER]/chimara/</ulink>.
+    </releaseinfo>
+  </bookinfo>
+
+  <reference>
+    <title>Chimara API Reference</title>
+    <xi:include href="xml/chimara-glk.xml"/>
+  </reference>
+  
+  <reference>
+    <title>Glk API Specification, version 0.7.0</title>
+    <xi:include href="glk-front-matter.sgml"/>
+    
+    <!-- Chapter 0. Introduction -->
+    <xi:include href="glk-introduction.sgml"/>
+    
+    <!-- Chapter 1. Overall Structure -->
+    <chapter>
+      <title>Overall Structure</title>
+      <!-- For Gtk-Doc post-processed SGML files, look in the xml directory-->
+      <xi:include href="xml/glk-main-function.sgml"/>
+      <xi:include href="xml/glk-exiting.xml"/>
+      <xi:include href="xml/glk-interrupt.xml"/>
+      <xi:include href="xml/glk-tick.xml"/>
+      <xi:include href="xml/glk-types.xml"/>
+      <xi:include href="xml/glk-opaque-objects.xml"/>
+      <xi:include href="xml/glk-gestalt.xml"/>
+      <xi:include href="xml/glk-api-conventions.sgml"/>
+    </chapter>
+    
+    <!-- Chapter 2. Character Encoding -->
+    <chapter>
+      <title>Character Encoding</title>
+      <xi:include href="glk-character-encoding.sgml"/>
+      <xi:include href="xml/glk-output.sgml"/>
+      <xi:include href="xml/glk-line-input.sgml"/>
+      <xi:include href="xml/glk-character-input.xml"/>
+      <xi:include href="xml/glk-case.xml"/>
+    </chapter>
+    
+    <!-- Chapter 3. Windows -->
+    <chapter>
+      <title>Windows</title>
+      <xi:include href="glk-windows.sgml"/>
+      <xi:include href="xml/glk-window-arrangement.sgml"/>
+      <xi:include href="xml/glk-window-opening.xml"/>
+      <xi:include href="xml/glk-window-constraints.xml"/>
+      <xi:include href="xml/glk-display-style.sgml"/>
+      <xi:include href="xml/glk-window-types.xml"/>
+      <xi:include href="xml/glk-echo-streams.xml"/>
+      <xi:include href="xml/glk-window-other.xml"/>
+    </chapter>
+    
+    <!-- Chapter 4. Events -->
+    <chapter>
+      <title>Events</title>
+      <xi:include href="xml/glk-events.xml"/>
+      <xi:include href="xml/glk-character-input-events.xml"/>
+      <xi:include href="xml/glk-line-input-events.xml"/>
+      <!--<xi:include href="xml/glk-mouse-events.xml"/>
+      <xi:include href="xml/glk-timer-events.xml"/>
+      <xi:include href="xml/glk-arrangement-events.sgml"/>
+      <xi:include href="xml/glk-redraw-events.sgml"/>
+      <xi:include href="xml/glk-sound-notify-events.sgml"/>
+      <xi:include href="xml/glk-hyperlink-events.sgml"/>-->
+      <xi:include href="xml/glk-other-events.sgml"/>
+	</chapter>
+	
+	<!-- Chapter 5. Streams -->
+	<chapter>
+	  <title>Streams</title>
+	  <xi:include href="xml/glk-streams.xml"/>
+	  <xi:include href="xml/glk-print.xml"/>
+	  <xi:include href="xml/glk-read.xml"/>
+	  <xi:include href="xml/glk-closing-streams.xml"/>
+	  <xi:include href="xml/glk-stream-positions.xml"/>
+	  <!--<xi:include href="xml/glk-styles.xml"/>-->
+	  <xi:include href="xml/glk-stream-types.xml"/>
+	  <xi:include href="xml/glk-stream-other.xml"/>
+	</chapter>
+	
+	<!-- Chapter 6. File References -->
+	<chapter>
+	  <title>File References</title>
+	  <xi:include href="xml/glk-fileref.xml"/>
+	  <xi:include href="xml/glk-fileref-types.xml"/>      
+      <xi:include href="xml/glk-fileref-other.xml"/>
+    </chapter>
+    
+    <!-- Chapter 7. Graphics -->
+<!--    <chapter>
+      <title>Graphics</title>
+      <xi:include href="xml/glk-image-resources.xml"/>
+      <xi:include href="xml/glk-graphics-windows.xml"/>
+      <xi:include href="xml/glk-graphics-text.xml"/>
+      <xi:include href="xml/glk-graphics-testing.xml"/>
+    </chapter>
+-->    
+    <!-- Chapter 8. Sound -->
+<!--    <chapter>
+      <title>Sound</title>
+      <xi:include href="xml/glk-sound-channels.xml"/>
+      <xi:include href="xml/glk-playing-sounds.xml"/>
+      <xi:include href="xml/glk-sound-other.xml"/>
+      <xi:include href="xml/glk-sound-testing.xml"/>
+    </chapter>
+-->    
+    <!-- Chapter 9. Hyperlinks -->
+<!--    <chapter>
+      <title>Hyperlinks</title>
+      <xi:include href="xml/glk-creating-hyperlinks.xml"/>
+      <xi:include href="xml/glk-accepting-hyperlinks.xml"/>
+      <xi:include href="xml/glk-hyperlinks-testing.xml"/>
+    </chapter>
+-->    
+    <!-- Chapter 10. Porting, Adapting and Other Messy Bits -->
+<!--    <chapter>
+      <title>Porting, Adapting, and Other Messy Bits</title>
+    </chapter>
+-->    
+    <!-- Chapter 11. Appendices -->
+<!--    <appendix>
+      <title>The Dispatch Layer</title>
+    </appendix>
+    
+    <appendix>
+      <title>The Blorb Layer</title>
+    </appendix>
+-->    
+  </reference>
+</book>

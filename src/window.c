@@ -8,14 +8,14 @@ extern ChimaraGlkPrivate *glk_data;
  * @win: A window, or %NULL.
  * @rockptr: Return location for the next window's rock, or %NULL.
  *
- * Iterates over the list of windows; if @win is %NULL, it returns the first
- * window, otherwise the next window after @win. If there are no more, it
- * returns #NULL. The window's rock is stored in @rockptr. If you don't want
- * the rocks to be returned, you may set @rockptr to %NULL.
+ * This function can be used to iterate through the list of all open windows
+ * (including pair windows.) See <link 
+ * linkend="chimara-Iterating-Through-Opaque-Objects">Iterating Through Opaque
+ * Objects</link>.
  *
- * The order in which windows are returned is arbitrary. The root window is
- * not necessarily first, nor is it necessarily last. The order may change
- * every time you create or destroy a window, invalidating the iteration.
+ * As that section describes, the order in which windows are returned is
+ * arbitrary. The root window is not necessarily first, nor is it necessarily
+ * last.
  *
  * Returns: the next window, or %NULL if there are no more.
  */
@@ -55,7 +55,7 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
  * @win: A window.
  * 
  * Returns @win's rock value. Pair windows always have rock 0; all other windows
- * have the rock value you created them with.
+ * return whatever rock value you created them with.
  *
  * Returns: A rock value.
  */
@@ -86,9 +86,10 @@ glk_window_get_type(winid_t win)
  * glk_window_get_parent:
  * @win: A window.
  *
- * Returns the window @win's parent window. If @win is the root window, this
- * returns %NULL, since the root window has no parent. Remember that the parent
- * of every window is a pair window; other window types are always childless.
+ * Returns the window which is the parent of @win. If @win is the root window,
+ * this returns %NULL, since the root window has no parent. Remember that the
+ * parent of every window is a pair window; other window types are always
+ * childless.
  *
  * Returns: A window, or %NULL.
  */
@@ -104,8 +105,8 @@ glk_window_get_parent(winid_t win)
  * glk_window_get_sibling:
  * @win: A window.
  *
- * Returns the other child of the window @win's parent. If @win is the
- * root window, this returns %NULL.
+ * Returns the other child of @win's parent. If @win is the root window, this
+ * returns %NULL.
  *
  * Returns: A window, or %NULL.
  */
@@ -161,10 +162,169 @@ text_window_get_char_size(GtkWidget *textview, int *width, int *height)
  * #wintype_TextBuffer, or #wintype_Graphics.
  * @rock: The new window's rock value.
  *
- * If there are no windows, create a new root window. @split must be 0, and
- * @method and @size are ignored. Otherwise, split window @split into two, with
- * position, size, and type specified by @method, @size, and @wintype. See the
- * Glk documentation for the window placement algorithm.
+ * Creates a new window. If there are no windows, the first three arguments are
+ * meaningless. @split <emphasis>must</emphasis> be 0, and @method and @size
+ * are ignored. @wintype is the type of window you're creating, and @rock is
+ * the rock (see <link linkend="chimara-Rocks">Rocks</link>).
+ *
+ * If any windows exist, new windows must be created by splitting existing
+ * ones. @split is the window you want to split; this <emphasis>must 
+ * not</emphasis> be zero. @method is a mask of constants to specify the
+ * direction and the split method (see below). @size is the size of the split.
+ * @wintype is the type of window you're creating, and @rock is the rock.
+ *
+ * Remember that it is possible that the library will be unable to create a new
+ * window, in which case glk_window_open() will return %NULL.
+ * 
+ * <note><para>
+ *   It is acceptable to gracefully exit, if the window you are creating is an
+ *   important one &mdash; such as your first window. But you should not try to
+ *   perform any window operation on the id until you have tested to make sure
+ *   it is non-zero.
+ * </para></note>
+ * 
+ * The examples we've seen so far have the simplest kind of size control. (Yes,
+ * this is <quote>below</quote>.) Every pair is a percentage split, with 
+ * <inlineequation>
+ *   <alt>X</alt>
+ *   <mathphrase>X</mathphrase>
+ * </inlineequation>
+ * percent going to one side, and 
+ * <inlineequation>
+ *   <alt>(100-X)</alt>
+ *   <mathphrase>(100 - X)</mathphrase>
+ * </inlineequation> 
+ * percent going to the other side. If the player resizes the window, the whole
+ * mess expands, contracts, or stretches in a uniform way.
+ * 
+ * As I said above, you can also make fixed-size splits. This is a little more
+ * complicated, because you have to know how this fixed size is measured.
+ * 
+ * Sizes are measured in a way which is different for each window type. For
+ * example, a text grid window is measured by the size of its fixed-width font.
+ * You can make a text grid window which is fixed at a height of four rows, or
+ * ten columns. A text buffer window is measured by the size of its font.
+ * 
+ * <note><para>
+ *   Remember that different windows may use different size fonts. Even two
+ *   text grid windows may use fixed-size fonts of different sizes.
+ * </para></note>
+ *
+ * Graphics windows are measured in pixels, not characters. Blank windows
+ * aren't measured at all; there's no meaningful way to measure them, and
+ * therefore you can't create a blank window of a fixed size, only of a
+ * proportional (percentage) size.
+ * 
+ * So to create a text buffer window which takes the top 40% of the original
+ * window's space, you would execute
+ * <informalexample><programlisting>
+ * newwin = #glk_window_open(win, #winmethod_Above | #winmethod_Proportional, 40, #wintype_TextBuffer, 0);
+ * </programlisting></informalexample>
+ *
+ * To create a text grid which is always five lines high, at the bottom of the
+ * original window, you would do
+ * <informalexample><programlisting>
+ * newwin = #glk_window_open(win, #winmethod_Below | #winmethod_Fixed, 5, #wintype_TextGrid, 0);
+ * </programlisting></informalexample>
+ * 
+ * Note that the meaning of the @size argument depends on the @method argument.
+ * If the method is #winmethod_Fixed, it also depends on the @wintype argument.
+ * The new window is then called the <quote>key window</quote> of this split,
+ * because its window type determines how the split size is computed.
+ * 
+ * <note><para>
+ *   For #winmethod_Proportional splits, you can still call the new window the
+ *   <quote>key window</quote>. But the key window is not important for
+ *   proportional splits, because the size will always be computed as a simple
+ *   ratio of the available space, not a fixed size of one child window.
+ * </para></note>
+ * 
+ * This system is more or less peachy as long as all the constraints work out.
+ * What happens when there is a conflict? The rules are simple. Size control
+ * always flows down the tree, and the player is at the top. Let's bring out an
+ * example:
+ * <mediaobject><textobject><phrase>Screen shot 5</phrase></textobject>
+ * </mediaobject>
+ * 
+ * First we split A into A and B, with a 50% proportional split. Then we split
+ * A into A and C, with C above, C being a text grid window, and C gets a fixed
+ * size of two rows (as measured in its own font size). A gets whatever remains
+ * of the 50% it had before.
+ * 
+ * Now the player stretches the window vertically.
+ * <mediaobject><textobject><phrase>Screen shot 6</phrase></textobject>
+ * </mediaobject>
+ * 
+ * The library figures: the topmost split, the original A/B split, is 50-50. So
+ * B gets half the screen space, and the pair window next to it (the lower
+ * <quote>O</quote>) gets the other half. Then it looks at the lower 
+ * <quote>O</quote>. C gets two rows; A gets the rest. All done.
+ * 
+ * Then the user maliciously starts squeezing the window down, in stages:
+ * <mediaobject id="chimara-Figure-Squeezing-Window"><textobject><phrase>
+ * Screen shot 7</phrase></textobject></mediaobject>
+ * 
+ * The logic remains the same. B always gets half the space. At stage 3,
+ * there's no room left for A, so it winds up with zero height. Nothing
+ * displayed in A will be visible. At stage 4, there isn't even room in the
+ * upper 50% to give C its two rows; so it only gets one. Finally, C is
+ * squashed out of existence as well.
+ * 
+ * When a window winds up undersized, it remembers what size it should be. In
+ * the example above, A remembers that it should be two rows; if the user
+ * expands the window to the original size, it would return to the original
+ * layout.
+ * 
+ * The downward flow of control is a bit harsh. After all, in stage 4, there's
+ * room for C to have its two rows if only B would give up some of its 50%. But
+ * this does not happen.
+ * 
+ * <note><para>
+ *   This makes life much easier for the Glk library. To determine the
+ *   configuration of a window, it only needs to look at the window's
+ *   ancestors, never at its descendants. So window layout is a simple
+ *   recursive algorithm, no backtracking.
+ * </para></note>
+ * 
+ * What happens when you split a fixed-size window? The resulting pair window
+ * &mdash; that is, the two new parts together &mdash; retain the same size
+ * constraint as the original window that was split. The key window for the
+ * original split is still the key window for that split, even though it's now
+ * a grandchild instead of a child.
+ * 
+ * The easy, and correct, way to think about this is that the size constraint
+ * is stored by a window's parent, not the window itself; and a constraint
+ * consists of a pointer to a key window plus a size value.
+ * 
+ * <mediaobject><textobject><phrase>Screen shot 8</phrase></textobject>
+ * </mediaobject>
+ * After the first split, the new pair window (O1, which covers the whole
+ * screen) knows that its first child (A) is above the second, and gets 50% of
+ * its own area. (A is the key window for this split, but a proportional split
+ * doesn't care about key windows.)
+ * 
+ * After the second split, all this remains true; O1 knows that its first child
+ * gets 50% of its space, and A is O1's key window. But now O1's first child is
+ * O2 instead of A. The newer pair window (O2) knows that its first child (C)
+ * is above the second, and gets a fixed size of two rows. (As measured in C's
+ * font, because C is O2's key window.)
+ * 
+ * If we split C, now, the resulting pair will still be two C-font rows high
+ * &mdash; that is, tall enough for two lines of whatever font C displays. For
+ * the sake of example, we'll do this vertically.
+ * <mediaobject><textobject><phrase>Screen shot 9</phrase></textobject>
+ * </mediaobject>
+ * 
+ * O3 now knows that its children have a 50-50 left-right split. O2 is still
+ * committed to giving its upper child, O3, two C-font rows. Again, this is
+ * because C is O2's key window. 
+ *
+ * <note><para>
+ *   This turns out to be a good idea, because it means that C, the text grid
+ *   window, is still two rows high. If O3 had been a upper-lower split, things
+ *   wouldn't work out so neatly. But the rules would still apply. If you don't
+ *   like this, don't do it.
+ * </para></note>
  *
  * Returns: the new window, or %NULL on error.
  */
@@ -416,7 +576,39 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
  * the same thing.) 
  *
  * The @result argument is filled with the output character count of the window
- * stream.
+ * stream. See <link linkend="chimara-Streams">Streams</link> and <link
+ * linkend="chimara-Closing-Streams">Closing Streams</link>.
+ * 
+ * When you close a window (and it is not the root window), the other window
+ * in its pair takes over all the freed-up area. Let's close D, in the current
+ * example:
+ * <mediaobject><textobject><phrase>Screen shot 10</phrase></textobject>
+ * </mediaobject>
+ * 
+ * Notice what has happened. D is gone. O3 is gone, and its 50-50 left-right
+ * split has gone with it. The other size constraints are unchanged; O2 is
+ * still committed to giving its upper child two rows, as measured in the font
+ * of O2's key window, which is C. Conveniently, O2's upper child is C, just as
+ * it was before we created D. In fact, now that D is gone, everything is back
+ * to the way it was before we created D.
+ * 
+ * But what if we had closed C instead of D? We would have gotten this:
+ * <mediaobject><textobject><phrase>Screen shot 11</phrase></textobject>
+ * </mediaobject>
+ * 
+ * Again, O3 is gone. But D has collapsed to zero height. This is because its
+ * height is controlled by O2, and O2's key window was C, and C is now gone. O2
+ * no longer has a key window at all, so it cannot compute a height for its
+ * upper child, so it defaults to zero.
+ * 
+ * <note><para>
+ *   This may seem to be an inconvenient choice. That is deliberate. You should
+ *   not leave a pair window with no key, and the zero-height default reminds
+ *   you not to. You can use glk_window_set_arrangement() to set a new split
+ *   measurement and key window. See <link 
+ *   linkend="chimara-Changing-Window-Constraints">Changing Window
+ *   Constraints</link>.
+ * </para></note>
  */
 void
 glk_window_close(winid_t win, stream_result_t *result)
@@ -490,26 +682,36 @@ glk_window_close(winid_t win, stream_result_t *result)
  * glk_window_clear:
  * @win: A window.
  *
- * Erases the window @win. The meaning of this depends on the window type.
- *
- * <itemizedlist>
+ * Erases @win. The meaning of this depends on the window type.
+ * <variablelist>
+ * <varlistentry>
+ *  <term>Text buffer</term>
  *  <listitem><para>
- *   Text buffer: This may do any number of things, such as delete all text in 
- *   the window, or print enough blank lines to scroll all text beyond 
- *   visibility, or insert a page-break marker which is treated specially by the
- *   display part of the library.
+ *   This may do any number of things, such as delete all text in the window, or
+ *   print enough blank lines to scroll all text beyond visibility, or insert a
+ *   page-break marker which is treated specially by the display part of the
+ *   library.
  *  </para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *  <term>Text grid</term>
  *  <listitem><para>
- *   Text grid: This will clear the window, filling all positions with blanks.
- *   The window cursor is moved to the top left corner (position 0,0).
+ *   This will clear the window, filling all positions with blanks. The window
+ *   cursor is moved to the top left corner (position 0,0).
  *  </para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *  <term>Graphics</term>
  *  <listitem><para>
- *   Graphics: Clears the entire window to its current background color.
+ *   Clears the entire window to its current background color. See <link
+ *   linkend="chimara-Graphics-Windows">Graphics Windows</link>.
  *  </para></listitem>
- *  <listitem><para>
- *   Other window types: No effect. 
- *  </para></listitem>
- * </itemizedlist>
+ * </varlistentry>
+ * <varlistentry>
+ *  <term>Other window types</term>
+ *  <listitem><para>No effect.</para></listitem>
+ * </varlistentry>
+ * </variablelist>
  *
  * It is illegal to erase a window which has line input pending. 
  */
@@ -578,9 +780,7 @@ glk_window_clear(winid_t win)
  * @win: A window.
  *
  * Sets the current stream to @win's window stream. It is exactly equivalent to
- * <informalexample><programlisting>
- *  glk_stream_set_current(glk_window_get_stream(win))
- * </programlisting></informalexample>
+ * <code>#glk_stream_set_current(#glk_window_get_stream(@win))</code>.
  */
 void
 glk_set_window(winid_t win)
@@ -592,11 +792,16 @@ glk_set_window(winid_t win)
  * glk_window_get_stream:
  * @win: A window.
  *
- * Returns the stream which is associated with @win. Every window has a stream
- * which can be printed to, but this may not be useful, depending on the window
- * type. (For example, printing to a blank window's stream has no effect.)
+ * Returns the stream which is associated with @win. (See <link 
+ * linkend="chimara-Window-Streams">Window Streams</link>.) Every window has a
+ * stream which can be printed to, but this may not be useful, depending on the
+ * window type.
+ * 
+ * <note><para>
+ *   For example, printing to a blank window's stream has no effect.
+ * </para></note>
  *
- * Returns: The window stream.
+ * Returns: A window stream.
  */
 strid_t glk_window_get_stream(winid_t win)
 {
@@ -609,23 +814,14 @@ strid_t glk_window_get_stream(winid_t win)
  * @win: A window.
  * @str: A stream to attach to the window, or %NULL.
  *
- * Attaches the stream @str to @win as a second stream. Any text printed to the
- * window is also echoed to this second stream, which is called the window's
- * "echo stream."
+ * Sets @win's echo stream to @str, which can be any valid output stream. You
+ * can reset a window to stop echoing by calling 
+ * <code>#glk_window_set_echo_stream(@win, %NULL)</code>.
  *
- * Effectively, any call to glk_put_char() (or the other output commands) which
- * is directed to @win's window stream, is replicated to @win's echo stream.
- * This also goes for the style commands such as glk_set_style().
- *
- * Note that the echoing is one-way. You can still print text directly to the
- * echo stream, and it will go wherever the stream is bound, but it does not
- * back up and appear in the window.
- *
- * It is illegal to set a window's echo stream to be its own window stream,
- * which would create an infinite loop. It is similarly illegal to create a
- * longer loop (two or more windows echoing to each other.)
- *
- * You can reset a window to stop echoing by setting @str to %NULL.
+ * It is illegal to set a window's echo stream to be its 
+ * <emphasis>own</emphasis> window stream. That would create an infinite loop,
+ * and is nearly certain to crash the Glk library. It is similarly illegal to
+ * create a longer loop (two or more windows echoing to each other.)
  */
 void
 glk_window_set_echo_stream(winid_t win, strid_t str)
@@ -651,8 +847,8 @@ glk_window_set_echo_stream(winid_t win, strid_t str)
  * glk_window_get_echo_stream:
  * @win: A window.
  *
- * Returns the echo stream of window @win. If the window has no echo stream (as
- * is initially the case) then this returns %NULL.
+ * Returns the echo stream of window @win. Initially, a window has no echo
+ * stream, so <code>#glk_window_get_echo_stream(@win)</code> will return %NULL.
  *
  * Returns: A stream, or %NULL.
  */
@@ -670,8 +866,11 @@ glk_window_get_echo_stream(winid_t win)
  * @heightptr: Pointer to a location to store the window's height, or %NULL.
  *
  * Simply returns the actual size of the window, in its measurement system.
- * Either @widthptr or @heightptr can be %NULL, if you only want one 
- * measurement. (Or, in fact, both, if you want to waste time.)
+ * As described in <link linkend="chimara-Other-API-Conventions">Other API 
+ * Conventions</link>, either @widthptr or @heightptr can be %NULL, if you
+ * only want one measurement. 
+ *
+ * <note><para>Or, in fact, both, if you want to waste time.</para></note>
  */
 void
 glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
@@ -727,7 +926,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             g_warning("glk_window_get_size: Unsupported window type");
     }
 }
-
+ 
 /**
  * glk_window_move_cursor:
  * @win: A text grid window.
@@ -739,9 +938,9 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * beginning of the next line.
  * 
  * If you move the cursor below the last line, or when the cursor reaches the
- * end of the last line, it goes "off the screen" and further output has no
- * effect. You must call glk_window_move_cursor() or glk_window_clear() to move
- * the cursor back into the visible region.
+ * end of the last line, it goes <quote>off the screen</quote> and further
+ * output has no effect. You must call glk_window_move_cursor() or
+ * glk_window_clear() to move the cursor back into the visible region.
  * 
  * <note><para>
  *  Note that the arguments of glk_window_move_cursor() are <type>unsigned 
@@ -754,8 +953,8 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  *  Also note that the output cursor is not necessarily visible. In particular,
  *  when you are requesting line or character input in a grid window, you cannot
  *  rely on the cursor position to prompt the player where input is indicated.
- *  You should print some character prompt at that spot -- a ">" character, for
- *  example.
+ *  You should print some character prompt at that spot &mdash; a 
+ *  <quote>&gt;</quote> character, for example.
  * </para></note>
  */
 void
@@ -787,3 +986,4 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	
 	gdk_threads_leave();
 }
+

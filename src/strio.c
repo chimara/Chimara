@@ -279,8 +279,9 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
  * @str: An output stream.
  * @ch: A character in Latin-1 encoding.
  *
- * Prints one character @ch to the stream @str. It is illegal for @str to be
- * %NULL, or an input-only stream.
+ * The same as glk_put_char(), except that you specify a stream @str to print 
+ * to, instead of using the current stream. It is illegal for @str to be %NULL,
+ * or an input-only stream.
  */
 void
 glk_put_char_stream(strid_t str, unsigned char ch)
@@ -296,7 +297,8 @@ glk_put_char_stream(strid_t str, unsigned char ch)
  * @str: An output stream.
  * @ch: A Unicode code point.
  *
- * Prints one character @ch to the stream @str. It is illegal for @str to be
+ * The same as glk_put_char_uni(), except that you specify a stream @str to
+ * print to, instead of using the current stream. It is illegal for @str to be 
  * %NULL, or an input-only stream.
  */
 void
@@ -313,8 +315,9 @@ glk_put_char_stream_uni(strid_t str, glui32 ch)
  * @str: An output stream.
  * @s: A null-terminated string in Latin-1 encoding.
  *
- * Prints @s to the stream @str. It is illegal for @str to be %NULL, or an
- * input-only stream.
+ * The same as glk_put_string(), except that you specify a stream @str to print 
+ * to, instead of using the current stream. It is illegal for @str to be %NULL,
+ * or an input-only stream.
  */
 void
 glk_put_string_stream(strid_t str, char *s)
@@ -330,8 +333,9 @@ glk_put_string_stream(strid_t str, char *s)
  * @str: An output stream.
  * @s: A null-terminated array of Unicode code points.
  *
- * Prints @s to the stream @str. It is illegal for @str to be %NULL, or an
- * input-only stream.
+ * The same as glk_put_string_uni(), except that you specify a stream @str to
+ * print to, instead of using the current stream. It is illegal for @str to be 
+ * %NULL, or an input-only stream.
  */
 void
 glk_put_string_stream_uni(strid_t str, glui32 *s)
@@ -353,8 +357,9 @@ glk_put_string_stream_uni(strid_t str, glui32 *s)
  * @buf: An array of characters in Latin-1 encoding.
  * @len: Length of @buf.
  *
- * Prints @buf to the stream @str. It is illegal for @str to be %NULL, or an
- * input-only stream.
+ * The same as glk_put_buffer(), except that you specify a stream @str to print 
+ * to, instead of using the current stream. It is illegal for @str to be %NULL,
+ * or an input-only stream.
  */
 void
 glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
@@ -371,8 +376,9 @@ glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
  * @buf: An array of Unicode code points.
  * @len: Length of @buf.
  *
- * Prints @buf to the stream @str. It is illegal for @str to be %NULL, or an
- * input-only stream.
+ * The same as glk_put_buffer_uni(), except that you specify a stream @str to
+ * print to, instead of using the current stream. It is illegal for @str to be 
+ * %NULL, or an input-only stream.
  */
 void
 glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
@@ -514,18 +520,27 @@ get_char_stream_common(strid_t str)
  * glk_get_char_stream:
  * @str: An input stream.
  *
- * Reads one character from the stream @str. (There is no notion of a ``current
- * input stream.'') It is illegal for @str to be %NULL, or an output-only
- * stream.
+ * Reads one character from the stream @str. (There is no notion of a
+ * <quote>current input stream.</quote>) It is illegal for @str to be %NULL, or
+ * an output-only stream.
  *
  * The result will be between 0 and 255. As with all basic text functions, Glk
- * assumes the Latin-1 encoding. If the end of the stream has been reached, the
- * result will be -1. Note that high-bit characters (128..255) are
- * <emphasis>not</emphasis> returned as negative numbers.
+ * assumes the Latin-1 encoding. See <link 
+ * linkend="chimara-Character-Encoding">Character Encoding</link>. If the end
+ * of the stream has been reached, the result will be -1. 
  *
- * If the stream contains Unicode data --- for example, if it was created with
- * glk_stream_open_file_uni() or glk_stream_open_memory_uni() --- then
- * characters beyond 255 will be returned as 0x3F ("?").
+ * <note><para>
+ *   Note that high-bit characters (128..255) are <emphasis>not</emphasis>
+ *   returned as negative numbers.
+ * </para></note>
+ *
+ * If the stream contains Unicode data &mdash; for example, if it was created
+ * with glk_stream_open_file_uni() or glk_stream_open_memory_uni() &mdash; then
+ * characters beyond 255 will be returned as 0x3F (<code>"?"</code>).
+ *
+ * It is usually more efficient to read several characters at once with
+ * glk_get_buffer_stream() or glk_get_line_stream(), as opposed to calling
+ * glk_get_char_stream() several times.
  *
  * Returns: A character value between 0 and 255, or -1 on end of stream.
  */
@@ -546,7 +561,7 @@ glk_get_char_stream(strid_t str)
  * Reads one character from the stream @str. The result will be between 0 and 
  * 0x7FFFFFFF. If the end of the stream has been reached, the result will be -1.
  *
- * Returns: A character value between 0 and 255, or -1 on end of stream.
+ * Returns: A value between 0 and 0x7FFFFFFF, or -1 on end of stream.
  */
 glsi32
 glk_get_char_stream_uni(strid_t str)
@@ -759,14 +774,15 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
  * @buf: A buffer with space for at least @len characters.
  * @len: The number of characters to read, plus one.
  *
- * Reads characters from @str, until either @len - 1 characters have been read
- * or a newline has been read. It then puts a terminal null ('\0') aracter on
+ * Reads characters from @str, until either 
+ * <inlineequation>
+ *   <alt>@len - 1</alt>
+ *   <mathphrase>@len - 1</mathphrase>
+ * </inlineequation>
+ * characters have been read or a newline has been read. It then puts a
+ * terminal null (<code>'\0'</code>) aracter on
  * the end. It returns the number of characters actually read, including the
  * newline (if there is one) but not including the terminal null.
- *
- * It is usually more efficient to read several characters at once with
- * glk_get_buffer_stream() or glk_get_line_stream(), as opposed to calling
- * glk_get_char_stream() several times.
  *
  * Returns: The number of characters actually read.
  */
@@ -890,9 +906,13 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
  * @buf: A buffer with space for at least @len Unicode code points.
  * @len: The number of characters to read, plus one.
  *
- * Reads Unicode characters from @str, until either @len - 1 Unicode characters
- * have been read or a newline has been read. It then puts a terminal null (a
- * zero value) on the end.
+ * Reads Unicode characters from @str, until either 
+ * <inlineequation>
+ *   <alt>@len - 1</alt>
+ *   <mathphrase>@len - 1</mathphrase>
+ * </inlineequation> 
+ * Unicode characters have been read or a newline has been read. It then puts a
+ * terminal null (a zero value) on the end.
  *
  * Returns: The number of characters actually read, including the newline (if
  * there is one) but not including the terminal null.
@@ -1046,6 +1066,11 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
  * a 32-bit word. So in a binary Unicode file, positions are multiples of four
  * bytes.
  *
+ * <note><para>
+ *   If this bothers you, don't use binary Unicode files. I don't think they're
+ *   good for much anyhow.
+ * </para></note>
+ *
  * Returns: position of the read/write mark in @str.
  */
 glui32
@@ -1073,27 +1098,21 @@ glk_stream_get_position(strid_t str)
  * @seekmode: One of #seekmode_Start, #seekmode_Current, or #seekmode_End.
  *
  * Sets the position of the read/write mark in @str. The position is controlled
- * by @pos, and the meaning of @pos is controlled by @seekmode:
- * <itemizedlist>
- *  <listitem>#seekmode_Start: @pos characters after the beginning of the file.
- *  </listitem>
- *  <listitem>#seekmode_Current: @pos characters after the current position
- *  (moving backwards if @pos is negative.)</listitem>
- *  <listitem>#seekmode_End: @pos characters after the end of the file. (@pos
- *  should always be zero or negative, so that this will move backwards to a
- *  position within the file.</listitem>
- * </itemizedlist>
+ * by @pos, and the meaning of @pos is controlled by @seekmode. See the
+ * <code>seekmode_</code> constants below.
+ *
  * It is illegal to specify a position before the beginning or after the end of
  * the file.
  *
- * In binary files, the mark position is exact --- it corresponds with the
+ * In binary files, the mark position is exact &mdash; it corresponds with the
  * number of characters you have read or written. In text files, this mapping 
  * can vary, because of linefeed conventions or other character-set 
- * approximations. glk_stream_set_position() and glk_stream_get_position()
- * measure positions in the platform's native encoding --- after character
- * cookery. Therefore, in a text stream, it is safest to use
- * glk_stream_set_position() only to move to the beginning or end of a file, or
- * to a position determined by glk_stream_get_position().
+ * approximations. See <link linkend="chimara-Streams">Streams</link>.
+ * glk_stream_set_position() and glk_stream_get_position() measure positions in
+ * the platform's native encoding &mdash; after character cookery. Therefore,
+ * in a text stream, it is safest to use glk_stream_set_position() only to move
+ * to the beginning or end of a file, or to a position determined by
+ * glk_stream_get_position().
  *
  * Again, in Latin-1 streams, characters are bytes. In Unicode streams,
  * characters are 32-bit words, or four bytes each.
@@ -1138,4 +1157,4 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 			return;
 	}
 }
- 
+

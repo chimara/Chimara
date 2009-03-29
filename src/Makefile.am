@@ -37,11 +37,11 @@ libchimara_la_SOURCES = \
 	window.c window.h 
 
 libchimara_la_LIBADD = @CHIMARA_LIBS@
-libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_.*|^glk_.*"
+libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_|^glk_"
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
-PLUGIN_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "glk_main"
+PLUGIN_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
 pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la
 first_la_SOURCES = first.c
 first_la_LDFLAGS = $(PLUGIN_LDFLAGS)

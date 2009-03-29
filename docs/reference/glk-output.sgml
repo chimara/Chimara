@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-Output">
+<refmeta>
+<refentrytitle>Output</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Output</refname>
+<refpurpose>Printing basics</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+When you are sending text to a window, or to a file open in text mode, you can print any of the printable Latin-1 characters: 32 to 126, 160 to 255. You can also print the newline character (linefeed, <keycombo action="simul"><keycap function="control">control</keycap><keycap>J</keycap></keycombo>, decimal 10, hex 0x0A.)
+</para>
+<para>
+It is <emphasis>not</emphasis> legal to print any other control characters (0 to 9, 11 to 31, 127 to 159). You may not print even common formatting characters such as tab (<keycombo action="simul"><keycap function="control">control</keycap><keycap>I</keycap></keycombo>), carriage return (<keycombo action="simul"><keycap function="control">control</keycap><keycap>M</keycap></keycombo>), or page break (<keycombo action="simul"><keycap function="control">control</keycap><keycap>L</keycap></keycombo>).
+</para>
+<note><para>
+As usual, the behavior of the library when you print an illegal character is undefined. It is preferable that the library display a numeric code, such as <quote><computeroutput>\177</computeroutput></quote> or <quote><computeroutput>0x7F</computeroutput></quote>, to warn the user that something illegal has occurred. The library may skip illegal characters entirely; but you should not rely on this.
+</para></note>
+<para>
+Printing Unicode characters above 255 is a more complicated matter &mdash; too complicated to be covered precisely by this specification. Refer to the Unicode specification, and good luck to you.
+</para>
+<note><para>
+Unicode combining characters are a particular nuisance. Printing a combining character may alter the appearance of the previous character printed. The library should be prepared to cope with this &mdash; even if the characters are printed by two separate glk_put_char_uni() calls.
+</para></note>
+<para>
+Note that when you are sending data to a file open in binary mode, you can print any byte value, without restriction. See <link linkend="chimara-File-Streams">File Streams</link>.
+</para>
+<para>
+A particular implementation of Glk may not be able to display all the printable characters. It is guaranteed to be able to display the ASCII characters (32 to 126, and the newline 10.) Other characters may be printed correctly, printed as multi-character combinations (such as <quote><computeroutput>ae</computeroutput></quote> for the <quote>&aelig;</quote> ligature), or printed as some placeholder character (such as a bullet or question mark, or even an octal code.) You can test for this using #gestalt_CharOutput.
+</para>
+</refsect1>
+</refentry>

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-Your-Programs-Main-Function">
+<refmeta>
+<refentrytitle>Your Program's Main Function</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Your Program's Main Function</refname>
+<refpurpose>How Glk starts your program</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+The top level of the program &mdash; the <function>main()</function> function in C, for example &mdash; belongs to Glk.
+</para>
+<note><para>
+This means that Glk isn't really a library. In a sense, you are writing a library, which is linked into Glk. This is bizarre to think about, so forget it.
+</para></note>
+<note><title>Chimara</title>
+<para>
+In Chimara, the arrangement is even more bizarre. Chimara <emphasis>is</emphasis> a library, and it runs your Glk program from within a GTK+ graphical application (the <quote>host program</quote>). Chimara treats your program as a plugin, or shared library, and it executes your program in its own thread, displaying windows and output in the GTK+ program.
+</para>
+<para>
+This makes absolutely no difference to you, the Glk <emphasis>programmer</emphasis>; if your program works correctly with a <quote>regular</quote> Glk library, it will also work properly with Chimara. The only difference is in compiling your Glk program.
+</para></note>
+<para>
+You define a function called glk_main(), which the library calls to begin running your program. glk_main() should run until your program is finished, and then return.
+</para>
+<para>
+Glk does all its user-interface work in a function called glk_select(). This function waits for an event &mdash; typically the player's input &mdash; and returns an structure representing that event. This means that your program must have an event loop. In the very simplest case, you could write
+</para>
+<informalexample>
+<programlisting>
+void glk_main()
+{
+    #event_t ev;
+    while (1) {
+        #glk_select(&amp;ev);
+        switch (ev.type) {
+            default:
+                /* do nothing */
+                break;
+        }
+    }
+}
+</programlisting>
+</informalexample>
+<para>
+This is a legal Glk-compatible program. As you might expect, it doesn't do anything. The player will see an empty window, which he can only stare at, or destroy in a platform-defined standard manner.
+</para>
+<note><para>
+<keycombo action="simul"><keycap function="command">Command</keycap><keycap>period</keycap></keycombo> on the Macintosh; a <guimenuitem>kill-window</guimenuitem> menu option in an X window manager; <keycombo action="simul"><keycap function="control">control</keycap><keycap>C</keycap></keycombo> in a curses terminal window.
+</para></note>
+<note><title>Chimara</title>
+<para>
+In Chimara, there is no standard way; the program will stop when the host program calls chimara_glk_stop(). The host program might have a <quote>Stop</quote> button which does this, for example, but it will also generally happen when the #ChimaraGlk widget is destroyed or when the host program ends.
+</para></note>
+<note><para>
+However, this program does not spin wildly and burn CPU time. The glk_select() function waits for an event it can return. Since it only returns events which you have requested, it will wait forever, and grant CPU time to other processes if that's meaningful on the player's machine.
+</para></note>
+<note><para>
+Actually, there are some events which are always reported. More may be defined in future versions of the Glk API. This is why the default response to an event is to do nothing. If you don't recognize the event, ignore it.
+</para></note>
+</refsect1>
+</refentry>

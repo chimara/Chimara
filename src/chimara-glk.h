@@ -20,22 +20,23 @@ G_BEGIN_DECLS
 #define CHIMARA_GLK_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), \
                                      CHIMARA_TYPE_GLK, ChimaraGlkClass))
 
-typedef struct _ChimaraGlk ChimaraGlk;
-typedef struct _ChimaraGlkClass ChimaraGlkClass;
-
-struct _ChimaraGlk {
-    GtkContainer parent_instance;
+/**
+ * ChimaraGlk:
+ * 
+ * This structure contains no public members.
+ */
+typedef struct _ChimaraGlk {
+	GtkContainer parent_instance;
     
-    /* Public members */
-};
+	/*< public >*/
+} ChimaraGlk;
 
-struct _ChimaraGlkClass {
-    GtkContainerClass parent_class;
-    
-    /* Signals */
+typedef struct _ChimaraGlkClass {
+	GtkContainerClass parent_class;
+	/* Signals */
 	void(* stopped) (ChimaraGlk *self);
 	void(* started) (ChimaraGlk *self);
-};
+} ChimaraGlkClass;
 
 GType chimara_glk_get_type(void) G_GNUC_CONST;
 GtkWidget *chimara_glk_new(void);

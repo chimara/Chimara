@@ -12,6 +12,31 @@
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
 
+/**
+ * SECTION:chimara-glk
+ * @short_description: Widget which executes a Glk program
+ * @stability: Unstable
+ * @include: chimara/chimara-glk.h
+ * 
+ * The ChimaraGlk widget opens and runs a Glk program. The program must be
+ * compiled as a plugin module, with a function <function>glk_main()</function>
+ * that the Glk library can hook into.
+ *
+ * On Linux systems, this is a file with a name like 
+ * <filename>plugin.so</filename>. For portability, you can use libtool and 
+ * automake:
+ * <informalexample><programlisting>
+ * pkglib_LTLIBRARIES = plugin.la
+ * plugin_la_SOURCES = plugin.c foo.c bar.c
+ * plugin_la_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
+ * </programlisting></informalexample>
+ * This will produce <filename>plugin.la</filename> which is a text file 
+ * containing the correct plugin file to open (see the relevant section of the
+ * <ulink 
+ * url="http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html">
+ * Libtool manual</ulink>).
+ */
+
 typedef void (* glk_main_t) (void);
 
 enum {
@@ -206,10 +231,24 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     /* Signals */
     klass->stopped = chimara_glk_stopped;
     klass->started = chimara_glk_started;
+    /**
+     * ChimaraGlk::stopped:
+     * @glk: The widget that received the signal
+     *
+     * The ::stopped signal is emitted when the a Glk program finishes
+     * executing in the widget, whether it ended normally, or was interrupted.
+     */ 
     chimara_glk_signals[STOPPED] = g_signal_new("stopped", 
         G_OBJECT_CLASS_TYPE(klass), 0, 
         G_STRUCT_OFFSET(ChimaraGlkClass, stopped), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+	/**
+	 * ChimaraGlk::started:
+	 * @glk: The widget that received the signal
+	 *
+	 * The ::started signal is emitted when a Glk program starts executing in
+	 * the widget.
+	 */
 	chimara_glk_signals[STARTED] = g_signal_new ("started",
 		G_OBJECT_CLASS_TYPE (klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, started), NULL, NULL,
@@ -222,12 +261,28 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
         TRUE,
         G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_LAX_VALIDATION |
         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB);
+    /**
+     * ChimaraGlk:interactive:
+     *
+     * Sets whether the widget is interactive. A Glk widget is normally 
+     * interactive, but in non-interactive mode, keyboard and mouse input are 
+     * ignored and the Glk program is controlled by chimara_glk_feed_text(). 
+     * "More" prompts when a lot of text is printed to a text buffer are also 
+     * disabled. This is typically used when you wish to control an interpreter 
+     * program by feeding it a predefined list of commands.
+     */
     g_object_class_install_property(object_class, PROP_INTERACTIVE, pspec);
     pspec = g_param_spec_boolean("protect", _("Protected"),
         _("Whether the Glk program is barred from doing file operations"),
         FALSE,
         G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_LAX_VALIDATION |
         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB);
+    /**
+     * ChimaraGlk:protect:
+     *
+     * Sets whether the Glk program is allowed to do file operations. In protect
+     * mode, all file operations will fail.
+     */
     g_object_class_install_property(object_class, PROP_PROTECT, pspec);
     
     /* Private data */
@@ -263,12 +318,7 @@ chimara_glk_new(void)
  * @glk: a #ChimaraGlk widget
  * @interactive: whether the widget should expect user input
  *
- * Sets the #ChimaraGlk:interactive property of @glk. A Glk widget is normally 
- * interactive, but in non-interactive mode, keyboard and mouse input is ignored
- * and the Glk program is controlled by chimara_glk_feed_text(). "More" prompts
- * when a lot of text is printed to a text buffer are also disabled. This is 
- * typically used when you wish to control an interpreter program by feeding it
- * a predefined list of commands.
+ * Sets the #ChimaraGlk:interactive property of @glk. 
  */
 void 
 chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive)
@@ -284,7 +334,7 @@ chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive)
  * @glk: a #ChimaraGlk widget
  *
  * Returns whether @glk is interactive (expecting user input). See 
- * chimara_glk_set_interactive().
+ * #ChimaraGlk:interactive.
  *
  * Return value: %TRUE if @glk is interactive.
  */
@@ -320,7 +370,7 @@ chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect)
  * @glk: a #ChimaraGlk widget
  *
  * Returns whether @glk is in protect mode (banned from doing file operations).
- * See chimara_glk_set_protect().
+ * See #ChimaraGlk:protect.
  *
  * Return value: %TRUE if @glk is in protect mode.
  */
@@ -347,8 +397,10 @@ glk_enter(gpointer glk_main)
 /**
  * chimara_glk_run:
  * @glk: a #ChimaraGlk widget
- * @plugin: path to a plugin module compiled with glk.h
- * @error: location to store a #GError, or %NULL
+ * @plugin: path to a plugin module compiled with <filename 
+ * class="header">glk.h</filename>
+ * @error: location to store a <link linkend="glib-GError">GError</link>, or 
+ * %NULL
  *
  * Opens a Glk program compiled as a plugin and runs its glk_main() function in
  * a separate thread. On failure, returns %FALSE and sets @error.

@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-SUBDIRS = src po
+SUBDIRS = src po docs
 
 chimaradocdir = ${prefix}/doc/chimara
 chimaradoc_DATA = \
@@ -24,3 +24,5 @@ dist-hook:
 	done
 
 DISTCLEANFILES = intltool-extract intltool-merge intltool-update
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-Line-Input">
+<refmeta>
+<refentrytitle>Line Input</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Line Input</refname>
+<refpurpose>Reading lines of text</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+You can request that the player enter a line of text. See <link linkend="chimara-Line-Input-Events">Line Input Events</link>.
+</para>
+<para>
+This text will be placed in a buffer of your choice. There is no length field or null terminator in the buffer. (The length of the text is returned as part of the line-input event.)
+</para>
+<para>
+If you use the basic text API, the buffer will contain only printable Latin-1 characters (32 to 126, 160 to 255).
+</para>
+<para>
+A particular implementation of Glk may not be able to accept all Latin-1 printable characters as input. It is guaranteed to be able to accept the ASCII characters (32 to 126.)
+</para>
+<para>
+You can test for this by using the #gestalt_LineInput selector.
+</para>
+</refsect1>
+</refentry>

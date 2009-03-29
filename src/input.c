@@ -1,7 +1,8 @@
 #include "charset.h"
 #include "input.h"
 
-/** glk_request_char_event:
+/** 
+ * glk_request_char_event:
  * @win: A window to request char events from.
  *
  * Request input of a Latin-1 character or special key. A window cannot have 
@@ -21,7 +22,8 @@ glk_request_char_event(winid_t win)
 	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
 }
 
-/** glk_request_char_event_uni:
+/** 
+ * glk_request_char_event_uni:
  * @win: A window to request char events from.
  *
  * Request input of a Unicode character or special key. See 
@@ -431,3 +433,4 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
     end_line_input_request(win, text);
 	g_free(text);
 }
+

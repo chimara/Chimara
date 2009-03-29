@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-Other-Events">
+<refmeta>
+<refentrytitle>Other Events</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Other Events</refname>
+<refpurpose>Events in future versions of Glk</refpurpose>
+</refnamediv>
+<refsect1>
+<para>
+There are currently no other event types defined by Glk. (The <quote>#evtype_None</quote> constant is a placeholder, and is never returned by glk_select().)
+</para>
+<para>
+It is possible that new event types will be defined in the future. 
+</para>
+<note><para>For example, if video or animation capabilities are added to Glk, there would probably be some sort of completion event for them.
+</para></note>
+<note><para>
+This is also why you must put calls to glk_select() in loops. If you tried to read a character by simply writing
+<informalexample><programlisting>
+#glk_request_char_event(win);
+#glk_select(&amp;ev);
+</programlisting></informalexample>
+you might not get a CharInput event back. You could get some not-yet-defined event which happened to occur before the player hit a key. Or, for that matter, a window arrangement event.
+</para></note>
+<note><para>
+It is not generally necessary to put a call to glk_select_poll() in a loop. You usually call glk_select_poll() to update the display or test if an event is available, not to wait for a particular event. However, if you are using sound notification events, and several sounds are playing, it might be important to make sure you knew about all sounds completed at any particular time. You would do this with
+<informalexample><programlisting>
+#glk_select_poll(&amp;ev);
+while (ev.type != #evtype_None) {
+    /* handle event */
+    #glk_select_poll(&amp;ev);
+}
+</programlisting></informalexample>
+</para>
+<para>
+Once glk_select_poll() returns #evtype_None, you should not call it again immediately. Do some work first. If you want to wait for an event, use glk_select(), not a loop of glk_select_poll().
+</para></note>
+</refsect1>
+</refentry>
