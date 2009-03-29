@@ -14,6 +14,7 @@ AM_INIT_AUTOMAKE([-Wall])
 ### DECLARE PROGRAMS ##########################################################
 
 AC_PROG_CC                 # C compiler
+AM_PROG_CC_C_O             # Automake requires this for per-target CFLAGS
 AC_PROG_INSTALL            # Install
 LT_INIT                    # Libtool
 AC_PROG_LIBTOOL            # Old way of declaring Libtool
