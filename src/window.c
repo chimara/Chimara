@@ -1,4 +1,5 @@
 #include "window.h"
+#include "magic.h"
 #include "chimara-glk-private.h"
 
 extern ChimaraGlkPrivate *glk_data;
@@ -22,6 +23,8 @@ extern ChimaraGlkPrivate *glk_data;
 winid_t
 glk_window_iterate(winid_t win, glui32 *rockptr)
 {
+	VALID_WINDOW_OR_NULL(win, return NULL);
+	
 	GNode *retnode;
 	
 	if(win == NULL)
@@ -62,7 +65,7 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 glui32
 glk_window_get_rock(winid_t win)
 {
-	g_return_val_if_fail(win != NULL, 0);
+	VALID_WINDOW(win, return 0);
 	return win->rock;
 }
 
@@ -78,7 +81,7 @@ glk_window_get_rock(winid_t win)
 glui32
 glk_window_get_type(winid_t win)
 {
-	g_return_val_if_fail(win != NULL, 0);
+	VALID_WINDOW(win, return 0);
 	return win->type;
 }
 
@@ -96,7 +99,7 @@ glk_window_get_type(winid_t win)
 winid_t
 glk_window_get_parent(winid_t win)
 {
-	g_return_val_if_fail(win != NULL, NULL);
+	VALID_WINDOW(win, return NULL);
 	/* Value will also be NULL if win is the root window */
 	return (winid_t)win->window_node->parent->data;
 }
@@ -113,7 +116,7 @@ glk_window_get_parent(winid_t win)
 winid_t
 glk_window_get_sibling(winid_t win)
 {
-	g_return_val_if_fail(win != NULL, NULL);
+	VALID_WINDOW(win, return NULL);
 	
 	if(G_NODE_IS_ROOT(win->window_node))
 		return NULL;
@@ -332,17 +335,11 @@ winid_t
 glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype, 
                 glui32 rock)
 {
-	/*
-	if(split)
-	{
-		g_warning("glk_window_open: splitting of windows not implemented");
-		return NULL;
-	}
-	*/
+	VALID_WINDOW_OR_NULL(split, return NULL);
 
 	if(split == NULL && glk_data->root_window != NULL)
 	{
-		g_warning("glk_window_open: there is already a root window");
+		ILLEGAL("Tried to open a new root window, but there is already a root window");
 		return NULL;
 	}
 	
@@ -350,6 +347,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	
 	/* We only create one window and don't support any more than that */
 	winid_t win = g_new0(struct glk_window_struct, 1);
+	win->magic = MAGIC_WINDOW;
 	win->rock = rock;
 	win->type = wintype;
 	win->window_node = g_node_new(win);
@@ -452,7 +450,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			
 		default:
 			gdk_threads_leave();
-			g_warning("%s: unsupported window type", __func__);
+			ILLEGAL_PARAM("Unknown window type: %u", wintype);
 			g_free(win);
 			g_node_destroy(glk_data->root_window);
 			glk_data->root_window = NULL;
@@ -613,9 +611,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 void
 glk_window_close(winid_t win, stream_result_t *result)
 {
+	VALID_WINDOW(win, return);
+	
 	GNode* parent_node;
-
-	g_return_if_fail(win != NULL);
 
 	gdk_threads_enter();
 
@@ -644,7 +642,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 			break;
 
 		default:
-			g_warning("%s: unsupported window type", __func__);
+			ILLEGAL_PARAM("Unknown window type: %u", win->type);
 			gdk_threads_leave();
 			return;
 	}
@@ -661,7 +659,9 @@ glk_window_close(winid_t win, stream_result_t *result)
 				glk_data->root_window = parent_node->next;
 			else if(parent_node->prev)
 				glk_data->root_window = parent_node->prev;
-		} else {
+		} 
+		else 
+		{
 			if(parent_node->next)
 				g_node_append(parent_node->parent, parent_node->next);
 			else if(parent_node->prev)
@@ -673,6 +673,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 	}
 
 	g_node_destroy(win->window_node);
+	win->magic = MAGIC_FREE;
 	g_free(win);
 
 	gdk_threads_leave();
@@ -718,7 +719,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 void
 glk_window_clear(winid_t win)
 {
-	g_return_if_fail(win != NULL);
+	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE);
 	
 	switch(win->type)
@@ -771,7 +772,7 @@ glk_window_clear(winid_t win)
 			break;
 		
 		default:
-			g_warning("glk_window_clear: unsupported window type");
+			ILLEGAL_PARAM("Unknown window type: %d", win->type);
 	}
 }
 
@@ -785,6 +786,7 @@ glk_window_clear(winid_t win)
 void
 glk_set_window(winid_t win)
 {
+	VALID_WINDOW_OR_NULL(win, return);
 	glk_stream_set_current( glk_window_get_stream(win) );
 }
 
@@ -805,7 +807,7 @@ glk_set_window(winid_t win)
  */
 strid_t glk_window_get_stream(winid_t win)
 {
-	g_return_val_if_fail(win != NULL, NULL);
+	VALID_WINDOW(win, return NULL);
 	return win->window_stream;
 }
 
@@ -826,7 +828,8 @@ strid_t glk_window_get_stream(winid_t win)
 void
 glk_window_set_echo_stream(winid_t win, strid_t str)
 {
-	g_return_if_fail(win != NULL);
+	VALID_WINDOW(win, return);
+	VALID_STREAM_OR_NULL(str, return);
 	
 	/* Test for an infinite loop */
 	strid_t next = str;
@@ -834,7 +837,7 @@ glk_window_set_echo_stream(winid_t win, strid_t str)
 	{
 		if(next == win->window_stream)
 		{
-			g_warning("%s: Infinite loop detected", __func__);
+			ILLEGAL("Infinite loop detected");
 			win->echo_stream = NULL;
 			return;
 		}
@@ -855,7 +858,7 @@ glk_window_set_echo_stream(winid_t win, strid_t str)
 strid_t
 glk_window_get_echo_stream(winid_t win)
 {
-	g_return_val_if_fail(win != NULL, NULL);
+	VALID_WINDOW(win, return NULL);
 	return win->echo_stream;
 }
 
@@ -875,7 +878,7 @@ glk_window_get_echo_stream(winid_t win)
 void
 glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 {
-	g_return_if_fail(win != NULL);
+	VALID_WINDOW(win, return);
 
     switch(win->type)
     {
@@ -923,7 +926,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             break;
             
         default:
-            g_warning("glk_window_get_size: Unsupported window type");
+            ILLEGAL_PARAM("Unknown window type: %u", win->type);
     }
 }
  
@@ -960,7 +963,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 void
 glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 {
-	g_return_if_fail(win != NULL);
+	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_TextGrid);
 	
 	/* Calculate actual position if cursor is moved past the right edge */

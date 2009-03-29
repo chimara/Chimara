@@ -1,5 +1,7 @@
 #include "charset.h"
+#include "magic.h"
 #include "stream.h"
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
@@ -112,7 +114,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 					str->write_count += len;
 					break;
 				default:
-					g_warning("%s: Writing to this kind of window unsupported.", __func__);
+					ILLEGAL_PARAM("Unknown window type: %u", str->window->type);
 			}
 			
 			/* Now write the same buffer to the window's echo stream */
@@ -165,7 +167,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			str->write_count += len;
 			break;
 		default:
-			g_warning("%s: Writing to this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
 	}
 }
 
@@ -213,7 +215,7 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 					str->write_count += len;
 					break;
 				default:
-					g_warning("%s: Writing to this kind of window unsupported.", __func__);
+					ILLEGAL_PARAM("Unknown window type: %u", str->window->type);
 			}
 			
 			/* Now write the same buffer to the window's echo stream */
@@ -270,7 +272,7 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 			str->write_count += len;
 			break;
 		default:
-			g_warning("%s: Writing to this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
 	}
 }
 
@@ -286,7 +288,7 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 void
 glk_put_char_stream(strid_t str, unsigned char ch)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	write_buffer_to_stream(str, (gchar *)&ch, 1);
@@ -304,7 +306,7 @@ glk_put_char_stream(strid_t str, unsigned char ch)
 void
 glk_put_char_stream_uni(strid_t str, glui32 ch)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	write_buffer_to_stream_uni(str, &ch, 1);
@@ -322,7 +324,7 @@ glk_put_char_stream_uni(strid_t str, glui32 ch)
 void
 glk_put_string_stream(strid_t str, char *s)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(str->file_mode != filemode_Read);
 
 	write_buffer_to_stream(str, s, strlen(s));
@@ -340,7 +342,7 @@ glk_put_string_stream(strid_t str, char *s)
 void
 glk_put_string_stream_uni(strid_t str, glui32 *s)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	/* An impromptu strlen() for glui32 arrays */
@@ -364,7 +366,7 @@ glk_put_string_stream_uni(strid_t str, glui32 *s)
 void
 glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	write_buffer_to_stream(str, buf, len);
@@ -383,7 +385,7 @@ glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
 void
 glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	write_buffer_to_stream_uni(str, buf, len);
@@ -447,7 +449,8 @@ is_unicode_newline(glsi32 ch, FILE *fp, gboolean utf8)
 		glsi32 ch2 = utf8? read_utf8_char_from_file(fp) : 
 			read_ucs4be_char_from_file(fp);
 		if(ch2 != 0x0A)
-			fseek(fp, utf8? -1 : -4, SEEK_CUR);
+			if(fseek(fp, utf8? -1 : -4, SEEK_CUR) == -1);
+				WARNING_S("Seek failed on stream", g_strerror(errno) );
 		return TRUE;
 	}
 	return FALSE;
@@ -511,7 +514,7 @@ get_char_stream_common(strid_t str)
 				return ch;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Reading illegal on stream type: %u", str->type);
 			return -1;
 	}
 }
@@ -547,7 +550,7 @@ get_char_stream_common(strid_t str)
 glsi32
 glk_get_char_stream(strid_t str)
 {
-	g_return_val_if_fail(str != NULL, -1);
+	VALID_STREAM(str, return -1);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, -1);
 	
 	glsi32 ch = get_char_stream_common(str);
@@ -566,7 +569,7 @@ glk_get_char_stream(strid_t str)
 glsi32
 glk_get_char_stream_uni(strid_t str)
 {
-	g_return_val_if_fail(str != NULL, -1);
+	VALID_STREAM(str, return -1);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, -1);
 	
 	return get_char_stream_common(str);
@@ -586,7 +589,7 @@ glk_get_char_stream_uni(strid_t str)
 glui32
 glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 {
-	g_return_val_if_fail(str != NULL, 0);
+	VALID_STREAM(str, return 0);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
 	g_return_val_if_fail(buf != NULL, 0);
 	
@@ -626,7 +629,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 					if(count % 4 != 0) 
 					{
 						count -= count % 4;
-						g_warning("%s: Incomplete character in binary Unicode file.", __func__);
+						WARNING("Incomplete character in binary Unicode file");
 					}
 					
 					int foo;
@@ -664,7 +667,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				return foo;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Reading illegal on stream type: %u", str->type);
 			return 0;
 	}
 }
@@ -683,7 +686,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 glui32
 glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 {
-	g_return_val_if_fail(str != NULL, 0);
+	VALID_STREAM(str, return 0);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
 	g_return_val_if_fail(buf != NULL, 0);
 	
@@ -723,7 +726,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 					if(count % 4 != 0) 
 					{
 						count -= count % 4;
-						g_warning("%s: Incomplete character in binary Unicode file.", __func__);
+						WARNING("Incomplete character in binary Unicode file");
 					}
 					
 					int foo;
@@ -763,7 +766,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				return foo;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Reading illegal on stream type: %u", str->type);
 			return 0;
 	}
 }
@@ -789,7 +792,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 glui32
 glk_get_line_stream(strid_t str, char *buf, glui32 len)
 {
-	g_return_val_if_fail(str != NULL, 0);
+	VALID_STREAM(str, return 0);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
 	g_return_val_if_fail(buf != NULL, 0);
 
@@ -895,7 +898,7 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 				return foo;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Reading illegal on stream type: %u", str->type);
 			return 0;
 	}
 }
@@ -920,7 +923,7 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 glui32
 glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 {
-	g_return_val_if_fail(str != NULL, 0);
+	VALID_STREAM(str, return 0);
 	g_return_val_if_fail(str->file_mode == filemode_Read || str->file_mode == filemode_ReadWrite, 0);
 	g_return_val_if_fail(buf != NULL, 0);
 
@@ -1037,7 +1040,7 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				return foo;
 			}
 		default:
-			g_warning("%s: Reading from this kind of stream unsupported.", __func__);
+			ILLEGAL_PARAM("Reading illegal on stream type: %u", str->type);
 			return 0;
 	}
 }
@@ -1076,7 +1079,7 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 glui32
 glk_stream_get_position(strid_t str)
 {
-	g_return_val_if_fail(str != NULL, 0);
+	VALID_STREAM(str, return 0);
 	
 	switch(str->type)
 	{
@@ -1085,8 +1088,7 @@ glk_stream_get_position(strid_t str)
 		case STREAM_TYPE_FILE:
 			return ftell(str->file_pointer);
 		default:
-			g_warning("%s: Seeking not supported on this type of stream.",
-				__func__);
+			ILLEGAL_PARAM("Seeking illegal on stream type: %u", str->type);
 			return 0;
 	}
 }
@@ -1120,7 +1122,7 @@ glk_stream_get_position(strid_t str)
 void
 glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	g_return_if_fail(!(seekmode == seekmode_Start && pos < 0));
 	g_return_if_fail(!(seekmode == seekmode_End || pos > 0));
 	
@@ -1133,7 +1135,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 				case seekmode_Current: str->mark += pos; break;
 				case seekmode_End:     str->mark = str->buflen + pos; break;
 				default:
-					g_assert_not_reached();
+					g_return_if_reached();
 					return;
 			}
 			break;
@@ -1146,14 +1148,15 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 				case seekmode_Current: whence = SEEK_CUR; break;
 				case seekmode_End:     whence = SEEK_END; break;
 				default:
-					g_assert_not_reached();
+					g_return_if_reached();
 					return;
 			}
-			fseek(str->file_pointer, pos, whence);
+			if(fseek(str->file_pointer, pos, whence) == -1)
+				WARNING("Seek failed on file stream");
 			break;
 		}
 		default:
-			g_warning("%s: Seeking not supported on this type of stream.", __func__);
+			ILLEGAL_PARAM("Seeking illegal on stream type: %u", str->type);
 			return;
 	}
 }

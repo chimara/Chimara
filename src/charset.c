@@ -1,4 +1,5 @@
 #include "charset.h"
+#include "magic.h"
 #include <glib.h>
 
 /* Internal function: change illegal (control) characters in a string to a
@@ -33,7 +34,7 @@ convert_latin1_to_utf8(const gchar *s, const gsize len)
 	g_free(canonical);
 	
 	if(retval == NULL)
-		g_warning("Error during latin1->utf8 conversion: %s", error->message);
+		IO_WARNING("Error during latin1->utf8 conversion of string", s, error->message);
 	
 	return retval;
 }
@@ -63,7 +64,7 @@ convert_utf8_to_latin1(const gchar *s, gsize *bytes_written)
 	gchar *retval = g_convert_with_fallback(s, -1, "ISO-8859-1", "UTF-8", PLACEHOLDER_STRING, NULL, bytes_written, &error);
 	
 	if(retval == NULL)
-		g_warning("Error during utf8->latin1 conversion: %s", error->message);
+		IO_WARNING("Error during utf8->latin1 conversion of string", s, error->message);
 
 	return retval;
 }
@@ -78,7 +79,7 @@ convert_utf8_to_ucs4(const gchar *s, glong *items_written)
 	gunichar *retval = g_utf8_to_ucs4_fast(s, -1, items_written);
 	
 	if(retval == NULL)
-		g_warning("Error during utf8->unicode conversion");
+		WARNING_S("Error during utf8->unicode conversion of string", s);
 
 	return retval;
 }
@@ -92,7 +93,7 @@ convert_ucs4_to_utf8(const gunichar *buf, const glong len)
 	gchar *retval = g_ucs4_to_utf8(buf, len, NULL, NULL, &error);
 		
 	if(retval == NULL)
-		g_warning("Error during unicode->utf8 conversion: %s", error->message);
+		WARNING_S("Error during unicode->utf8 conversion", error->message);
 		
 	return retval;
 }

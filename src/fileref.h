@@ -13,7 +13,7 @@
 struct glk_fileref_struct
 {
 	/*< private >*/
-	glui32 rock;
+	glui32 magic, rock;
 	/* Pointer to the list node in the global fileref list that contains this
 	fileref */
 	GList* fileref_list;

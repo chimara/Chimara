@@ -1,25 +1,38 @@
 #include "stream.h"
 #include "fileref.h"
+#include "magic.h"
+#include <errno.h>
+#include <stdio.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 
 #include "chimara-glk-private.h"
 extern ChimaraGlkPrivate *glk_data;
 
+/* Internal function: create a stream with a specified rock value */
+static strid_t
+stream_new_common(glui32 rock, glui32 fmode, enum StreamType type)
+{
+	strid_t str = g_new0(struct glk_stream_struct, 1);
+	str->magic = MAGIC_STREAM;
+	str->rock = rock;
+	str->file_mode = fmode;
+	str->type = type;
+		
+	/* Add it to the global stream list */
+	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
+	str->stream_list = glk_data->stream_list;
+	
+	return str;
+}
+
 /* Internal function: create a window stream to go with window. */
 strid_t
 window_stream_new(winid_t window)
 {
 	/* Create stream and connect it to window */
-	strid_t str = g_new0(struct glk_stream_struct, 1);
-	str->file_mode = filemode_Write;
-	str->type = STREAM_TYPE_WINDOW;
+	strid_t str = stream_new_common(0, filemode_Write, STREAM_TYPE_WINDOW);
 	str->window = window;
-	
-	/* Add it to the global stream list */
-	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
-	str->stream_list = glk_data->stream_list;
-
 	return str;
 }
 
@@ -37,6 +50,8 @@ window_stream_new(winid_t window)
 strid_t
 glk_stream_iterate(strid_t str, glui32 *rockptr)
 {
+	VALID_STREAM_OR_NULL(str, return NULL);
+	
 	GList *retnode;
 	
 	if(str == NULL)
@@ -64,7 +79,7 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
 glui32
 glk_stream_get_rock(strid_t str)
 {
-	g_return_val_if_fail(str != NULL, 0);
+	VALID_STREAM(str, return 0);
 	return str->rock;
 }
 
@@ -79,9 +94,11 @@ glk_stream_get_rock(strid_t str)
 void
 glk_stream_set_current(strid_t str)
 {
+	VALID_STREAM_OR_NULL(str, return);
+	
 	if(str != NULL && str->file_mode == filemode_Read)
 	{
-		g_warning("%s: Cannot set current stream to non output stream", __func__);
+		ILLEGAL("Cannot set current stream to non output stream");
 		return;
 	}
 
@@ -112,7 +129,7 @@ glk_stream_get_current()
 void
 glk_put_char(unsigned char ch)
 {
-	g_return_if_fail(glk_data->current_stream != NULL);
+	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_char_stream(glk_data->current_stream, ch);
 }
 
@@ -127,7 +144,7 @@ glk_put_char(unsigned char ch)
 void
 glk_put_char_uni(glui32 ch)
 {
-	g_return_if_fail(glk_data->current_stream != NULL);
+	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_char_stream_uni(glk_data->current_stream, ch);
 }
 
@@ -146,7 +163,7 @@ glk_put_char_uni(glui32 ch)
 void
 glk_put_string(char *s)
 {
-	g_return_if_fail(glk_data->current_stream != NULL);
+	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_string_stream(glk_data->current_stream, s);
 }
 
@@ -161,7 +178,7 @@ glk_put_string(char *s)
 void
 glk_put_string_uni(glui32 *s)
 {
-	g_return_if_fail(glk_data->current_stream != NULL);
+	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_string_stream_uni(glk_data->current_stream, s);
 }
 
@@ -181,7 +198,7 @@ glk_put_string_uni(glui32 *s)
 void
 glk_put_buffer(char *buf, glui32 len)
 {
-	g_return_if_fail(glk_data->current_stream != NULL);
+	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_buffer_stream(glk_data->current_stream, buf, len);
 }
 
@@ -196,7 +213,7 @@ glk_put_buffer(char *buf, glui32 len)
 void
 glk_put_buffer_uni(glui32 *buf, glui32 len)
 {
-	g_return_if_fail(glk_data->current_stream != NULL);
+	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_buffer_stream_uni(glk_data->current_stream, buf, len);
 }
 
@@ -222,19 +239,11 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	strid_t str = g_new0(struct glk_stream_struct, 1);
-	str->rock = rock;
-	str->file_mode = fmode;
-	str->type = STREAM_TYPE_MEMORY;
+	strid_t str = stream_new_common(rock, fmode, STREAM_TYPE_MEMORY);
 	str->buffer = buf;
 	str->mark = 0;
 	str->buflen = buflen;
 	str->unicode = FALSE;
-
-	/* Add it to the global stream list */
-	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
-	str->stream_list = glk_data->stream_list;
-
 	return str;
 }
 
@@ -258,19 +267,11 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	strid_t str = g_new0(struct glk_stream_struct, 1);
-	str->rock = rock;
-	str->file_mode = fmode;
-	str->type = STREAM_TYPE_MEMORY;
+	strid_t str = stream_new_common(rock, fmode, STREAM_TYPE_MEMORY);
 	str->ubuffer = buf;
 	str->mark = 0;
 	str->buflen = buflen;
 	str->unicode = TRUE;
-
-	/* Add it to the global stream list */
-	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
-	str->stream_list = glk_data->stream_list;
-
 	return str;
 }
 
@@ -278,7 +279,7 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 static strid_t
 file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 {
-	g_return_val_if_fail(fileref != NULL, NULL);
+	VALID_FILEREF(fileref, return NULL);
 	
 	gchar *modestr;
 	/* Binary mode is 0x000, text mode 0x100 */
@@ -287,8 +288,7 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	{
 		case filemode_Read:
 			if(!g_file_test(fileref->filename, G_FILE_TEST_EXISTS)) {
-				g_warning("glk_stream_open_file: Tried to open a file in read "
-						  "mode that didn't exist!");
+				ILLEGAL_PARAM("Tried to open a nonexistent file, '%s', in read mode", fileref->filename);
 				return NULL;
 			}
 			modestr = g_strdup(binary? "rb" : "r");
@@ -307,14 +307,14 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 			}
 			break;
 		default:
-			g_warning("glk_stream_open_file: Invalid file mode");
+			ILLEGAL_PARAM("Invalid file mode: %u", fmode);
 			return NULL;
 	}
 	
 	FILE *fp = g_fopen(fileref->filename, modestr);
 	g_free(modestr);
 	if(fp == NULL) {
-		g_warning("glk_stream_open_file: Error opening file");
+		IO_WARNING( "Error opening file", fileref->filename, g_strerror(errno) );
 		return NULL;
 	}
 	
@@ -325,31 +325,26 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 
 		GtkWidget *dialog = gtk_message_dialog_new(NULL, 0,
 			GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-			"File %s already exists. Overwrite?", fileref->filename);
+			"File '%s' already exists. Overwrite?", fileref->filename);
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 
 		gdk_threads_leave();
 
 		if(response != GTK_RESPONSE_YES) {
-			fclose(fp);
+			if(fclose(fp) != 0)
+				IO_WARNING( "Error closing file", fileref->filename, g_strerror(errno) );
 			return NULL;
 		}
 	}
 	
-	strid_t str = g_new0(struct glk_stream_struct, 1);
-	str->rock = rock;
-	str->file_mode = fmode;
-	str->type = STREAM_TYPE_FILE;
+	strid_t str = stream_new_common(rock, fmode, STREAM_TYPE_FILE);
 	str->file_pointer = fp;
 	str->binary = binary;
 	str->unicode = unicode;
 	str->filename = g_filename_to_utf8(fileref->filename, -1, NULL, NULL, NULL);
 	if(str->filename == NULL)
 		str->filename = g_strdup("Unknown file name"); /* fail silently */
-	/* Add it to the global stream list */
-	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
-	str->stream_list = glk_data->stream_list;
 
 	return str;
 }
@@ -426,14 +421,13 @@ glk_stream_open_file_uni(frefid_t fileref, glui32 fmode, glui32 rock)
 void 
 glk_stream_close(strid_t str, stream_result_t *result)
 {
-	g_return_if_fail(str != NULL);
+	VALID_STREAM(str, return);
 	
 	/* Free resources associated with one specific type of stream */
 	switch(str->type)
 	{
 		case STREAM_TYPE_WINDOW:
-			g_warning("%s: Attempted to close a window stream. Use glk_window_"
-				"close() instead.", __func__);
+			ILLEGAL("Attempted to close a window stream. Use glk_window_close() instead.");
 			return;
 			
 		case STREAM_TYPE_MEMORY:
@@ -442,13 +436,11 @@ glk_stream_close(strid_t str, stream_result_t *result)
 			
 		case STREAM_TYPE_FILE:
 			if(fclose(str->file_pointer) != 0)
-				g_warning("%s: Failed to close file '%s'.", __func__, 
-					str->filename);
+				IO_WARNING( "Failed to close file", str->filename, g_strerror(errno) );
 			g_free(str->filename);
 			break;
 		default:
-			g_warning("%s: Closing this type of stream not supported.", 
-				__func__);
+			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
 			return;
 	}
 
@@ -479,5 +471,7 @@ stream_close_common(strid_t str, stream_result_t *result)
 		result->readcount = str->read_count;
 		result->writecount = str->write_count;
 	}
+	
+	str->magic = MAGIC_FREE;
 	g_free(str);
 }

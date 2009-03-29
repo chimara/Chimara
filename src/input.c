@@ -1,4 +1,5 @@
 #include "charset.h"
+#include "magic.h"
 #include "input.h"
 
 /** 
@@ -14,7 +15,7 @@
 void
 glk_request_char_event(winid_t win)
 {
-	g_return_if_fail(win);
+	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
@@ -32,7 +33,7 @@ glk_request_char_event(winid_t win)
 void
 glk_request_char_event_uni(winid_t win)
 {
-	g_return_if_fail(win);
+	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
@@ -148,7 +149,7 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
 void
 glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
 {
-	g_return_if_fail(win);
+	VALID_WINDOW(win, return);
 	g_return_if_fail(buf);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
@@ -167,8 +168,6 @@ glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
 	    case wintype_TextGrid:
 	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), inserttext);
 	        break;
-        default:
-            g_assert_not_reached();
     }
 	g_free(inserttext);
 }
@@ -194,7 +193,7 @@ glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
 void
 glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initlen)
 {
-	g_return_if_fail(win);
+	VALID_WINDOW(win, return);
 	g_return_if_fail(buf);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
@@ -221,8 +220,6 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	    case wintype_TextGrid:
 	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), utf8);
 	        break;
-        default:
-            g_assert_not_reached();
     }		
 	g_free(utf8);
 }
@@ -364,7 +361,7 @@ end_line_input_request(winid_t win, const gchar *inserted_text)
         event_throw(evtype_LineInput, win, copycount, 0);
     }
     else 
-        g_warning("%s: Wrong input request type.", __func__);
+        WARNING("Wrong input request type");
 
     win->input_request_type = INPUT_REQUEST_NONE;
 }

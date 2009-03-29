@@ -1,8 +1,10 @@
+#include <errno.h>
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
 #include "fileref.h"
+#include "magic.h"
 #include "chimara-glk-private.h"
 
 extern ChimaraGlkPrivate *glk_data;
@@ -21,6 +23,8 @@ extern ChimaraGlkPrivate *glk_data;
 frefid_t
 glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 {
+	VALID_FILEREF_OR_NULL(fref, return NULL);
+	
 	GList *retnode;
 	
 	if(fref == NULL)
@@ -48,7 +52,7 @@ glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 glui32
 glk_fileref_get_rock(frefid_t fref)
 {
-	g_return_val_if_fail(fref != NULL, 0);
+	VALID_FILEREF(fref, return 0);
 	return fref->rock;
 }
 
@@ -59,6 +63,7 @@ fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 	g_return_val_if_fail(filename != NULL, NULL);
 
 	frefid_t f = g_new0(struct glk_fileref_struct, 1);
+	f->magic = MAGIC_FILEREF;
 	f->rock = rock;
 	f->filename = g_strdup(filename);
 	f->usage = usage;
@@ -100,14 +105,14 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
 	gint handle = g_file_open_tmp("glkXXXXXX", &filename, &error);
 	if(handle == -1)
 	{
-		g_warning("Error creating temporary file: %s", error->message);
+		WARNING_S("Error creating temporary file", error->message);
 		if(filename)
 			g_free(filename);
 		return NULL;
 	}
-	if(close(handle) == -1) /* There is no g_close()? */
+	if(close(handle) == -1) /* There is no g_close() */
 	{
-		g_warning("Error closing temporary file.");
+		IO_WARNING( "Error closing temporary file", filename, g_strerror(errno) );
 		if(filename)
 			g_free(filename);
 		return NULL;
@@ -214,7 +219,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 				GTK_FILE_CHOOSER_ACTION_SAVE);
 			break;
 		default:
-			g_warning("glk_fileref_create_by_prompt: Unsupported mode");
+			ILLEGAL_PARAM("Unknown file mode: %u", fmode);
 			gdk_threads_leave();
 			return NULL;
 	}
@@ -289,7 +294,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		&error);
 	if(osname == NULL)
 	{
-		g_warning("Error during latin1->filename conversion: %s", error->message);
+		WARNING_S("Error during latin1->filename conversion", error->message);
 		return NULL;
 	}
 
@@ -337,6 +342,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 frefid_t
 glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
 {
+	VALID_FILEREF(fref, return NULL);
 	return fileref_new(fref->filename, rock, usage, fref->orig_filemode);
 }
 
@@ -355,9 +361,13 @@ glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
 void
 glk_fileref_destroy(frefid_t fref)
 {
+	VALID_FILEREF(fref, return);
+	
 	glk_data->fileref_list = g_list_delete_link(glk_data->fileref_list, fref->fileref_list);
 	if(fref->filename)
 		g_free(fref->filename);
+	
+	fref->magic = MAGIC_FREE;
 	g_free(fref);
 }
 
@@ -370,9 +380,10 @@ glk_fileref_destroy(frefid_t fref)
 void
 glk_fileref_delete_file(frefid_t fref)
 {
+	VALID_FILEREF(fref, return);
 	if( glk_fileref_does_file_exist(fref) )
 		if(g_unlink(fref->filename) == -1)
-			g_warning("Error deleting file %s", fref->filename);
+			IO_WARNING( "Error deleting file", fref->filename, g_strerror(errno) );
 }
 
 /**
@@ -387,6 +398,7 @@ glk_fileref_delete_file(frefid_t fref)
 glui32
 glk_fileref_does_file_exist(frefid_t fref)
 {
+	VALID_FILEREF(fref, return 0);
 	if( g_file_test(fref->filename, G_FILE_TEST_EXISTS) )
 		return 1;
 	return 0;

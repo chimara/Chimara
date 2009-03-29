@@ -1,4 +1,5 @@
 #include "event.h"
+#include "magic.h"
 #include "glk.h"
 #include <string.h>
 
@@ -73,7 +74,7 @@ glk_select(event_t *event)
 	if(retrieved_event == NULL)
 	{
 		g_mutex_unlock(glk_data->event_lock);
-		g_warning("%s: Retrieved NULL event from non-empty event queue", __func__);
+		WARNING("Retrieved NULL event from non-empty event queue");
 		return;
 	}
 	memcpy(event, retrieved_event, sizeof(event_t));

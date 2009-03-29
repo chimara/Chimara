@@ -21,7 +21,7 @@ enum StreamType
 struct glk_stream_struct
 {
 	/*< private >*/
-	glui32 rock;
+	glui32 magic, rock;
 	/* Pointer to the list node in the global stream list that contains this
 	stream */
 	GList* stream_list;

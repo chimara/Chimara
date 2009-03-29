@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+AM_CFLAGS = -Wall
+
 data_DATA = chimara.ui
 
 noinst_PROGRAMS = test-chimara
@@ -9,7 +11,7 @@ test_chimara_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\"
-test_chimara_CFLAGS = @TEST_CFLAGS@
+test_chimara_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_chimara_LDADD = @TEST_LIBS@ -lchimara
 
 lib_LTLIBRARIES = libchimara.la
@@ -23,12 +25,15 @@ libchimara_la_SOURCES = \
 	fileref.c fileref.h \
 	gestalt.c \
 	glk.c glk.h \
+	magic.c magic.h \
 	input.c input.h \
 	stream.c stream.h \
 	strio.c \
 	style.c \
 	window.c window.h 
-libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ 
+libchimara_la_CPPFLAGS = \
+	-DG_LOG_DOMAIN=\"Chimara\"
+libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
 libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_|^glk_"
 libchimara_includedir = $(includedir)/chimara/chimara

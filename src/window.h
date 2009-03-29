@@ -27,7 +27,7 @@ enum InputRequestType
 struct glk_window_struct
 {
 	/*< private >*/
-	glui32 rock;
+	glui32 magic, rock;
 	/* Pointer to the node in the global tree that contains this window */
 	GNode *window_node;
 	/* Window parameters */
