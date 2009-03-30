@@ -11,8 +11,8 @@
 #define MAGIC_FILEREF  0x46494C45 /* "FILE" */
 #define MAGIC_SCHANNEL 0x53434841 /* "SCHA" */
 
-gboolean magic_is_valid_or_null(const glui32 goodmagic, const glui32 realmagic, const gchar *function);
-gboolean magic_is_valid(const void *obj, const glui32 goodmagic, const glui32 realmagic, const gchar *function);
+G_GNUC_INTERNAL gboolean magic_is_valid_or_null(const glui32 goodmagic, const glui32 realmagic, const gchar *function);
+G_GNUC_INTERNAL gboolean magic_is_valid(const void *obj, const glui32 goodmagic, const glui32 realmagic, const gchar *function);
 
 #define VALID_MAGIC(obj, goodmagic, die) \
 	if( !magic_is_valid(obj, goodmagic, obj->magic, G_STRFUNC) ) die

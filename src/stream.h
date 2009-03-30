@@ -45,6 +45,6 @@ struct glk_stream_struct
 	gchar *filename; /* Displayable filename in UTF-8 for error handling */
 };
 
-strid_t window_stream_new(winid_t window);
-void stream_close_common(strid_t str, stream_result_t *result);
+G_GNUC_INTERNAL strid_t window_stream_new(winid_t window);
+G_GNUC_INTERNAL void stream_close_common(strid_t str, stream_result_t *result);
 #endif

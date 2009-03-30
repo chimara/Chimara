@@ -34,7 +34,7 @@ glk_set_interrupt_handler(void (*func)(void))
 
 /* Internal function: abort this Glk program, freeing resources and calling the
 user's interrupt handler. */
-void
+static void
 abort_glk()
 {
 	if(glk_data->interrupt_handler)
@@ -69,5 +69,3 @@ check_for_abort()
 	}
 	g_mutex_unlock(glk_data->abort_lock);
 }
-
-

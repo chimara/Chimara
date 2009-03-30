@@ -9,7 +9,8 @@
 #include "window.h"
 #include "event.h"
 
-gboolean on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win);
-void after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win);
-void on_input_entry_activate(GtkEntry *input_entry, winid_t win);
+G_GNUC_INTERNAL gboolean on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win);
+G_GNUC_INTERNAL void after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win);
+G_GNUC_INTERNAL void on_input_entry_activate(GtkEntry *input_entry, winid_t win);
+
 #endif
