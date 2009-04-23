@@ -4,7 +4,7 @@
 SUBDIRS = src po docs
 
 chimaradocdir = ${prefix}/doc/chimara
-chimaradoc_DATA = \
+dist_chimaradoc_DATA = \
 	README\
 	COPYING\
 	AUTHORS\
@@ -12,16 +12,11 @@ chimaradoc_DATA = \
 	INSTALL\
 	NEWS
 
-EXTRA_DIST = $(chimaradoc_DATA) \
-	intltool-extract.in intltool-merge.in intltool-update.in
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = chimara.pc chimara-plugin.pc
 
-# Copy all the spec files. Of cource, only one is actually used.
-dist-hook:
-	for specfile in *.spec; do \
-		if test -f $$specfile; then \
-			cp -p $$specfile $(distdir); \
-		fi \
-	done
+EXTRA_DIST = intltool-extract.in intltool-merge.in intltool-update.in \
+	chimara.pc.in chimara-plugin.pc.in
 
 DISTCLEANFILES = intltool-extract intltool-merge intltool-update
 

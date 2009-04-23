@@ -16,7 +16,9 @@ AM_INIT_AUTOMAKE([-Wall])
 AC_PROG_CC                 # C compiler
 AM_PROG_CC_C_O             # Automake requires this for per-target CFLAGS
 AC_PROG_INSTALL            # Install
-LT_INIT                    # Libtool
+LT_INIT                    # Libtool 2.2.6 and up
+#LT_INIT([dlopen])         # Should call it this way, but
+#LT_PREREQ([2.2.6])        # ...goddamn Fedora 10 still has 1.5
 AC_PROG_LIBTOOL            # Old way of declaring Libtool
 AM_GLIB_GNU_GETTEXT        # Use GLib gettext instead of standard
 IT_PROG_INTLTOOL([0.35.0]) # Intltool
@@ -31,22 +33,26 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 
 ### CHECK FOR LIBRARIES #######################################################
 
+GTK_REQUIRED_VERSION=2.8
+GLIB_REQUIRED_VERSION=2.6
+
+AC_SUBST(GTK_REQUIRED_VERSION)
+AC_SUBST(GLIB_REQUIRED_VERSION)
+
 # Libraries needed to build Chimara library
 PKG_CHECK_MODULES([CHIMARA], [
-	glib-2.0 >= 2.6
-	gtk+-2.0 >= 2.8 
+	glib-2.0 >= $GLIB_REQUIRED_VERSION
+	gtk+-2.0 >= $GTK_REQUIRED_VERSION
 	gthread-2.0 
 	gmodule-2.0
 ])
-AC_SUBST(CHIMARA_CFLAGS)
-AC_SUBST(CHIMARA_LIBS)
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
-	gtk+-2.0 >= 2.8 
+	gtk+-2.0 >= $GTK_REQUIRED_VERSION 
 	gmodule-2.0
 ])
-AC_SUBST(TEST_CFLAGS)
-AC_SUBST(TEST_LIBS)
+# GLib CFLAGS for plugins
+PKG_CHECK_MODULES([GLIB], [glib-2.0 >= $GLIB_REQUIRED_VERSION])
 
 ### GTK-DOC ###################################################################
 
@@ -61,6 +67,8 @@ AC_CONFIG_HEADERS([config.h])
 # List of other files for Autoconf to output
 AC_CONFIG_FILES([
 Makefile
+chimara.pc
+chimara-plugin.pc
 src/Makefile
 docs/Makefile
 docs/reference/Makefile

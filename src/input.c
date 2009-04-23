@@ -42,7 +42,7 @@ glk_request_char_event_uni(winid_t win)
 }
 
 /* Internal function: Request either latin-1 or unicode line input, in a text grid window. */
-void
+static void
 text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
@@ -103,7 +103,7 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 }
     
 /* Internal function: Request either latin-1 or unicode line input, in a text buffer window. */
-void
+static void
 text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );

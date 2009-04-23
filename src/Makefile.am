@@ -35,20 +35,28 @@ libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\"
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
-libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^chimara_glk_|^glk_"
+libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^(chimara_)?glk_"
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
-PLUGIN_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
-noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la
+pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la
+PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
+
 first_la_SOURCES = first.c
-first_la_LDFLAGS = $(PLUGIN_LDFLAGS)
+first_la_CFLAGS = @GLIB_CFLAGS@
+first_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+
 model_la_SOURCES = model.c
-model_la_LDFLAGS = $(PLUGIN_LDFLAGS)
+model_la_CFLAGS = @GLIB_CFLAGS@
+model_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+
 gridtest_la_SOURCES = gridtest.c
-gridtest_la_LDFLAGS = $(PLUGIN_LDFLAGS)
+gridtest_la_CFLAGS = @GLIB_CFLAGS@
+gridtest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+
 splittest_la_SOURCES = splittest.c
-splittest_la_LDFLAGS = $(PLUGIN_LDFLAGS)
+splittest_la_CFLAGS = @GLIB_CFLAGS@
+splittest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 CLEANFILES = chimara.ui
 

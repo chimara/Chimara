@@ -459,7 +459,7 @@ is_unicode_newline(glsi32 ch, FILE *fp, gboolean utf8)
 /* Internal function: Read one character from a stream. Returns a value which
  can be returned unchanged by glk_get_char_stream_uni(), but 
  glk_get_char_stream() must replace high values by the placeholder character. */
-glsi32
+static glsi32
 get_char_stream_common(strid_t str)
 {
 	switch(str->type)
