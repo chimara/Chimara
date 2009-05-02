@@ -140,15 +140,6 @@ glk_window_get_root()
 	return (winid_t)glk_data->root_window->data;
 }
 
-/* Determine the size of a "0" character in pixels */
-static void
-text_window_get_char_size(GtkWidget *textview, int *width, int *height)
-{
-    PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
-    pango_layout_get_pixel_size(zero, width, height);
-    g_object_unref(zero);
-}
-
 /**
  * glk_window_open:
  * @split: The window to split to create the new window. Must be 0 if there
@@ -389,7 +380,12 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    
 		    win->widget = textview;
 		    win->frame = scrolledwindow;
-		    text_window_get_char_size( textview, &(win->unit_width), &(win->unit_height) );
+			
+			/* Determine the size of a "0" character in pixels */
+			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
+			pango_layout_set_font_description(zero, glk_data->monospace_font_desc);
+			pango_layout_get_pixel_size(zero, &(win->unit_width), &(win->unit_height));
+			g_object_unref(zero);
 			
 			/* Set the other parameters (width and height are set later) */
 			win->window_stream = window_stream_new(win);
@@ -421,7 +417,12 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			
 			win->widget = textview;
 			win->frame = scrolledwindow;
-            text_window_get_char_size( textview, &(win->unit_width), &(win->unit_height) );
+			
+			/* Determine the size of a "0" character in pixels */
+			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
+			pango_layout_set_font_description(zero, glk_data->default_font_desc);
+			pango_layout_get_pixel_size(zero, &(win->unit_width), &(win->unit_height));
+			g_object_unref(zero);
 			
 			/* Set the other parameters */
 			win->window_stream = window_stream_new(win);

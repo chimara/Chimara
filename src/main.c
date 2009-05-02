@@ -72,8 +72,8 @@ create_window(void)
 	gtk_builder_connect_signals(builder, NULL);
 	
 	glk = chimara_glk_new();
-	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Utopia 12");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Courier 10");
+	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Sans 11");
+	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 10");
 	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);
 	g_signal_connect(glk, "stopped", G_CALLBACK(on_stopped), NULL);
 	
@@ -117,7 +117,7 @@ main(int argc, char *argv[])
 
 	g_object_unref( G_OBJECT(builder) );
 
-    if( !chimara_glk_run(CHIMARA_GLK(glk), ".libs/first.so", &error) ) {
+    if( !chimara_glk_run(CHIMARA_GLK(glk), ".libs/gridtest.so", &error) ) {
         error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
         return 1;
     }
