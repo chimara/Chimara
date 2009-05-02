@@ -385,10 +385,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    gtk_widget_show_all(scrolledwindow);
 		    		
 			/* Set the window's font */
-		    /* TODO: Use Pango to pick out a monospace font on the system */
-			PangoFontDescription *font = pango_font_description_from_string("Monospace");
-			gtk_widget_modify_font(textview, font);
-			pango_font_description_free(font);
+			gtk_widget_modify_font(textview, glk_data->monospace_font_desc);
 		    
 		    win->widget = textview;
 		    win->frame = scrolledwindow;
@@ -419,6 +416,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
 			gtk_widget_show_all(scrolledwindow);
 
+			/* Set the window's font */
+			gtk_widget_modify_font(textview, glk_data->default_font_desc);
+			
 			win->widget = textview;
 			win->frame = scrolledwindow;
             text_window_get_char_size( textview, &(win->unit_width), &(win->unit_height) );

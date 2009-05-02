@@ -45,6 +45,7 @@ PKG_CHECK_MODULES([CHIMARA], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION
 	gthread-2.0 
 	gmodule-2.0
+	pango
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [

@@ -5,6 +5,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <pango/pango.h>
 
 G_BEGIN_DECLS
 
@@ -44,6 +45,12 @@ void chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive);
 gboolean chimara_glk_get_interactive(ChimaraGlk *glk);
 void chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect);
 gboolean chimara_glk_get_protect(ChimaraGlk *glk);
+void chimara_glk_set_default_font_description(ChimaraGlk *glk, PangoFontDescription *font);
+void chimara_glk_set_default_font_string(ChimaraGlk *glk, const gchar *font);
+PangoFontDescription *chimara_glk_get_default_font_description(ChimaraGlk *glk);
+void chimara_glk_set_monospace_font_description(ChimaraGlk *glk, PangoFontDescription *font);
+void chimara_glk_set_monospace_font_string(ChimaraGlk *glk, const gchar *font);
+PangoFontDescription *chimara_glk_get_monospace_font_description(ChimaraGlk *glk);
 gboolean chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error);
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);

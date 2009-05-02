@@ -3,6 +3,7 @@
 
 #include <glib.h>
 #include <gmodule.h>
+#include <pango/pango.h>
 #include "glk.h"
 #include "chimara-glk.h"
 
@@ -17,6 +18,10 @@ struct _ChimaraGlkPrivate {
     gboolean interactive;
     /* Whether file operations are allowed */
     gboolean protect;
+	/* Font description of proportional font */
+	PangoFontDescription *default_font_desc;
+	/* Font description of monospace font */
+	PangoFontDescription *monospace_font_desc;
     /* Glk program loaded in widget */
     GModule *program;
     /* Thread in which Glk program is run */
