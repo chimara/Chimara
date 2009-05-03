@@ -585,14 +585,49 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
  *   Constraints</link>.
  * </para></note>
  */
-void
-glk_window_close(winid_t win, stream_result_t *result)
-{
-	VALID_WINDOW(win, return);
 
-	/* First close the window stream before trashing the window tree */
+static void
+dump_window_tree(GNode *node)
+{
+	if(node == NULL) {
+		g_printerr("NULL");
+		return;
+	}
+	g_printerr("[");
+	switch(((winid_t)node->data)->type) {
+		case wintype_Pair:
+			g_printerr("Pair ");
+			dump_window_tree(node->children);
+			dump_window_tree(node->children->next);
+			g_printerr("]");
+			break;
+		case wintype_TextBuffer:
+			g_printerr("Buffer]");
+			break;
+		case wintype_TextGrid:
+			g_printerr("Grid]");
+			break;
+		case wintype_Blank:
+			g_printerr("Blank]");
+			break;
+		default:
+			g_printerr("Fucked up - %d]", ((winid_t)node->data)->type);
+	}
+}
+
+static void
+close_window_streams_below(winid_t win, stream_result_t *result)
+{
+	if(win->type == wintype_Pair) {
+		close_window_streams_below(win->window_node->children->data, NULL);
+		close_window_streams_below(win->window_node->children->next->data, NULL);
+	}
 	stream_close_common(win->window_stream, result);
-	
+}
+
+static void
+destroy_widgets_below(winid_t win)
+{
 	switch(win->type)
 	{
 		case wintype_Blank:
@@ -610,23 +645,50 @@ glk_window_close(winid_t win, stream_result_t *result)
 			break;
 
 		case wintype_Pair:
-		{
-			GNode *left = win->window_node->children;
-			GNode *right = win->window_node->children->next;
-			glk_window_close(left->data, NULL);
-			glk_window_close(right->data, NULL);
-		}
+			destroy_widgets_below(win->window_node->children->data);
+			destroy_widgets_below(win->window_node->children->next->data);
 			break;
 
 		default:
 			ILLEGAL_PARAM("Unknown window type: %u", win->type);
 			return;
 	}
+}
 
-	/* Parent window changes from a split window into the sibling window */	
+static void
+free_winids_below(winid_t win)
+{
+	if(win->type == wintype_Pair) {
+		free_winids_below(win->window_node->children->data);
+		free_winids_below(win->window_node->children->next->data);
+	}
+	win->magic = MAGIC_FREE;
+	g_free(win);
+}
+
+void
+glk_window_close(winid_t win, stream_result_t *result)
+{
+	VALID_WINDOW(win, return);
+	
+	/* First close all the window streams before trashing the window tree */
+	close_window_streams_below(win, result);
+	
+	/* Then destroy the widgets of this window and below */
+	destroy_widgets_below(win);
+	
+	/* Then free the winid_t structures below this node, but not this one itself */
+	if(win->type == wintype_Pair) {
+		free_winids_below(win->window_node->children->data);
+		free_winids_below(win->window_node->children->next->data);
+	}
+	/* So now we should be left with a skeleton tree hanging off this node */	
+	
+	/* Parent window changes from a split window into the sibling window */
+	/* The parent of any window is either a pair window or NULL */
 	GNode *pair_node = win->window_node->parent;
 	g_node_destroy(win->window_node);
-	/* If win was not the root window, or was not unhooked from the tree: */
+	/* If win was not the root window: */
 	if(pair_node != NULL)
 	{
 		gboolean new_child_on_left = ( pair_node == g_node_first_sibling(pair_node) );
@@ -653,13 +715,16 @@ glk_window_close(winid_t win, stream_result_t *result)
 		
 		pair->magic = MAGIC_FREE;
 		g_free(pair);
+	} 
+	else /* it was the root window */
+	{
+		glk_data->root_window = NULL;
 	}
 
 	win->magic = MAGIC_FREE;
 	g_free(win);
 
 	/* Schedule a redraw */
-	gdk_threads_enter();
 	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
 	gdk_threads_leave();
 }
