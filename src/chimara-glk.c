@@ -263,24 +263,16 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 			switch(win->split_method & winmethod_DirMask)
 			{
 				case winmethod_Left:
-					child1.width = win->constraint_size * win->key_window->unit_width;
-					if(child1.width > allocation->width - spacing)
-						child1.width = allocation->width - spacing;
+					child1.width = CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing);
 					break;
 				case winmethod_Right:
-					child2.width = win->constraint_size * win->key_window->unit_width;
-					if(child2.width > allocation->width - spacing)
-						child2.width = allocation->width - spacing;
+					child2.width = CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing);
 					break;
 				case winmethod_Above:
-					child1.height = win->constraint_size * win->key_window->unit_height;
-					if(child1.height > allocation->height - spacing)
-						child1.height = allocation->height - spacing;
+					child1.height = CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing);
 					break;
 				case winmethod_Below:
-					child2.height = win->constraint_size * win->key_window->unit_height;
-					if(child2.height > allocation->height - spacing)
-						child2.height = allocation->height - spacing;
+					child2.height = CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing);
 					break;
 			}
 		}
@@ -359,12 +351,8 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		GtkAllocation child;
 		child.x = allocation->x + GTK_CONTAINER(widget)->border_width;
 		child.y = allocation->y + GTK_CONTAINER(widget)->border_width;
-		child.width = allocation->width - 2 * GTK_CONTAINER(widget)->border_width;
-		child.height = allocation->height - 2 * GTK_CONTAINER(widget)->border_width;
-		if(child.width < 0)
-			child.width = 0;
-		if(child.height < 0)
-			child.height = 0;
+		child.width = CLAMP(allocation->width - 2 * GTK_CONTAINER(widget)->border_width, 0, allocation->width);
+		child.height = CLAMP(allocation->height - 2 * GTK_CONTAINER(widget)->border_width, 0, allocation->height);
 		allocate_recurse(priv->root_window->data, &child, priv->spacing);
 	}
 }
