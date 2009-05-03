@@ -47,6 +47,8 @@ PKG_CHECK_MODULES([CHIMARA], [
 	gmodule-2.0
 	pango
 ])
+CHIMARA_LIBS="$CHIMARA_LIBS -lm"
+AC_SUBST(CHIMARA_LIBS)
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION 

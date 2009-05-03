@@ -336,7 +336,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	
 	gdk_threads_enter();
 	
-	/* We only create one window and don't support any more than that */
+	/* Create the new window */
 	winid_t win = g_new0(struct glk_window_struct, 1);
 	win->magic = MAGIC_WINDOW;
 	win->rock = rock;
@@ -406,6 +406,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			GtkWidget *textview = gtk_text_view_new();
 			GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 
+			gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+			
 			gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_WORD_CHAR );
 			gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
 
@@ -463,14 +465,18 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		/* When splitting, construct a new parent window
 		 * copying most characteristics from the window that is being split */
 		winid_t pair = g_new0(struct glk_window_struct, 1);
+		pair->magic = MAGIC_WINDOW;
 		pair->rock = 0;
 		pair->type = wintype_Pair;
 		pair->window_node = g_node_new(pair);
-		pair->unit_width = split->unit_width;
-		pair->unit_height = split->unit_height;
 		pair->window_stream = NULL;
 		pair->echo_stream = NULL;
 
+		/* The pair window must know about its children's split method */
+		pair->key_window = win;
+		pair->split_method = method;
+		pair->constraint_size = size;
+		
 		/* Insert the new window into the window tree */
 		if(split->window_node->parent == NULL)
 		{
@@ -479,57 +485,29 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_node_append(split->window_node->parent, pair->window_node);
 			g_node_unlink(split->window_node);
 		}
-
-		/* Keep track of the parent widget of the window that is being split */
-		GtkWidget* old_parent = gtk_widget_get_parent(split->frame);
-		gtk_widget_ref(split->frame);
-		gtk_widget_unparent(split->frame);
-
 		/* Place the windows in the correct order */
 		switch(method & winmethod_DirMask)
 		{
 			case winmethod_Left:
-				pair->widget = gtk_hbox_new(FALSE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
-				g_node_append(pair->window_node, split->window_node);
+			case winmethod_Above:
 				g_node_append(pair->window_node, win->window_node);
+				g_node_append(pair->window_node, split->window_node);
 				break;
 			case winmethod_Right:
-				pair->widget = gtk_hbox_new(FALSE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
-				g_node_append(pair->window_node, win->window_node);
-				g_node_append(pair->window_node, split->window_node);
-				break;
-			case winmethod_Above:
-				pair->widget = gtk_vbox_new(FALSE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
-				g_node_append(pair->window_node, split->window_node);
-				g_node_append(pair->window_node, win->window_node);
-				break;
 			case winmethod_Below:
-				pair->widget = gtk_vbox_new(FALSE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), win->frame, TRUE, TRUE, 0);
-				gtk_box_pack_end(GTK_BOX(pair->widget), split->frame, TRUE, TRUE, 0);
-				g_node_append(pair->window_node, win->window_node);
 				g_node_append(pair->window_node, split->window_node);
+				g_node_append(pair->window_node, win->window_node);
 				break;
 		}
-		gtk_widget_unref(split->frame);
 
-		/* TODO: set the new size of the windows */
-
-		pair->frame = pair->widget;
-		gtk_widget_set_parent(pair->widget, old_parent);
-		gtk_widget_show(pair->widget);
 	} else {
 		/* Set the window as root window */
 		glk_data->root_window = win->window_node;
-		gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
-		gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 	}
+
+	/* Set the window as a child of the Glk widget */
+	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
+	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 
     /* For text grid windows, wait until GTK draws the window (see note in glk_window_get_size() ), calculate the size and fill the buffer with blanks. */
     if(wintype == wintype_TextGrid)
@@ -555,9 +533,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
         gdk_threads_leave();
         glk_window_clear(win);
         gdk_threads_enter();
-        
-        /* Apparently this only works after the window has been realized */
-        gtk_text_view_set_overwrite( GTK_TEXT_VIEW(win->widget), TRUE );
     }
 
 	gdk_threads_leave();
@@ -613,70 +588,78 @@ void
 glk_window_close(winid_t win, stream_result_t *result)
 {
 	VALID_WINDOW(win, return);
+
+	/* First close the window stream before trashing the window tree */
+	stream_close_common(win->window_stream, result);
 	
-	GNode* parent_node;
-
-	gdk_threads_enter();
-
 	switch(win->type)
 	{
 		case wintype_Blank:
-			gtk_widget_destroy(win->widget);
+			gdk_threads_enter();
+			gtk_widget_unparent(win->widget);
+			gdk_threads_leave();
 			break;
 	
 	    case wintype_TextGrid:
 		case wintype_TextBuffer:
-			gtk_widget_destroy(win->frame);
+			gdk_threads_enter();
+			gtk_widget_unparent(win->frame);
+			gdk_threads_leave();
 			/* TODO: Cancel all input requests */
 			break;
 
 		case wintype_Pair:
 		{
-			GNode* left_child = g_node_first_child(win->window_node);
-			GNode* right_child = g_node_last_child(win->window_node);
-
-			glk_window_close((winid_t) left_child->data, result);
-			glk_window_close((winid_t) right_child->data, result);
-
-			gtk_widget_destroy(win->widget);
+			GNode *left = win->window_node->children;
+			GNode *right = win->window_node->children->next;
+			glk_window_close(left->data, NULL);
+			glk_window_close(right->data, NULL);
 		}
 			break;
 
 		default:
 			ILLEGAL_PARAM("Unknown window type: %u", win->type);
-			gdk_threads_leave();
 			return;
 	}
 
-	stream_close_common(win->window_stream, result);
-
-	/* Parent window changes from a split window into the sibling window */
-	if( (parent_node = win->window_node->parent) != NULL )
+	/* Parent window changes from a split window into the sibling window */	
+	GNode *pair_node = win->window_node->parent;
+	g_node_destroy(win->window_node);
+	/* If win was not the root window, or was not unhooked from the tree: */
+	if(pair_node != NULL)
 	{
-		winid_t pair = (winid_t) parent_node->data;
-		if(parent_node->parent == NULL)
+		gboolean new_child_on_left = ( pair_node == g_node_first_sibling(pair_node) );
+		GNode *sibling_node = pair_node->children; /* only one child left */
+		GNode *new_parent_node = pair_node->parent;
+		g_node_unlink(pair_node);
+		g_node_unlink(sibling_node);
+		/* pair_node and sibling_node should now be totally unconnected to the tree */
+		
+		if(new_parent_node == NULL)
 		{
-			if(parent_node->next)
-				glk_data->root_window = parent_node->next;
-			else if(parent_node->prev)
-				glk_data->root_window = parent_node->prev;
+			glk_data->root_window = sibling_node;
 		} 
 		else 
 		{
-			if(parent_node->next)
-				g_node_append(parent_node->parent, parent_node->next);
-			else if(parent_node->prev)
-				g_node_append(parent_node->parent, parent_node->prev);
+			if(new_child_on_left)
+				g_node_prepend(new_parent_node, sibling_node);
+			else
+				g_node_append(new_parent_node, sibling_node);
 		}
 
-		g_node_unlink(parent_node);
+		winid_t pair = (winid_t) pair_node->data;
+		g_node_destroy(pair_node);
+		
+		pair->magic = MAGIC_FREE;
 		g_free(pair);
 	}
 
-	g_node_destroy(win->window_node);
 	win->magic = MAGIC_FREE;
 	g_free(win);
 
+	/* Schedule a redraw */
+	gdk_threads_enter();
+	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
 	gdk_threads_leave();
 }
 
@@ -884,6 +867,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
     switch(win->type)
     {
         case wintype_Blank:
+		case wintype_Pair:
             if(widthptr != NULL)
                 *widthptr = 0;
             if(heightptr != NULL)

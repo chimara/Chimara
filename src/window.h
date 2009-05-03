@@ -46,6 +46,10 @@ struct glk_window_struct
 	/* Width and height of the window, in characters (text grids only) */
 	glui32 width;
 	glui32 height;
+	/* Window split data (pair windows only) */
+	winid_t key_window;
+	glui32 split_method;
+	glui32 constraint_size;
 	/* Input request stuff */
 	enum InputRequestType input_request_type;
 	gchar *line_input_buffer;

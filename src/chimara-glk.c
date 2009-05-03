@@ -1,5 +1,6 @@
 /* licensing and copyright information here */
 
+#include <math.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <gmodule.h>
@@ -164,6 +165,59 @@ chimara_glk_finalize(GObject *object)
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
 
+/* Internal function: Recursively get the Glk window tree's size request */
+static void
+request_recurse(winid_t win, GtkRequisition *requisition)
+{
+	if(win->type == wintype_Pair)
+	{
+		/* Get children's size requests */
+		GtkRequisition child1, child2;
+		request_recurse(win->window_node->children->data, &child1);
+		request_recurse(win->window_node->children->next->data, &child2);
+		
+		/* If the split is fixed, get the size of the fixed child */
+		if((win->split_method & winmethod_DivisionMask) == winmethod_Fixed)
+		{
+			switch(win->split_method & winmethod_DirMask)
+			{
+				case winmethod_Left:
+					child1.width = win->constraint_size * win->key_window->unit_width;
+					break;
+				case winmethod_Right:
+					child2.width = win->constraint_size * win->key_window->unit_width;
+					break;
+				case winmethod_Above:
+					child1.height = win->constraint_size * win->key_window->unit_height;
+					break;
+				case winmethod_Below:
+					child2.height = win->constraint_size * win->key_window->unit_height;
+					break;
+			}
+		}
+		
+		/* Add the children's requests */
+		switch(win->split_method & winmethod_DirMask)
+		{
+			case winmethod_Left:
+			case winmethod_Right:
+				requisition->width = child1.width + child2.width;
+				requisition->height = MAX(child1.height, child2.height);
+				break;
+			case winmethod_Above:
+			case winmethod_Below:
+				requisition->width = MAX(child1.width, child2.width);
+				requisition->height = child1.height + child2.height;
+				break;
+		}
+	}
+	
+	/* For non-pair windows, just use the size that GTK requests */
+	else
+		gtk_widget_size_request(win->frame, requisition);
+}
+
+/* Overrides gtk_widget_size_request */
 static void
 chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
 {
@@ -174,16 +228,109 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
     
     /* For now, just pass the size request on to the root Glk window */
-    if(priv->root_window) { 
-        GtkWidget *child = ((winid_t)(priv->root_window->data))->frame;
-       if(GTK_WIDGET_VISIBLE(child))
-            gtk_widget_size_request(child, requisition);
-    } else {
+    if(priv->root_window)
+		request_recurse(priv->root_window->data, requisition);
+	else {
         requisition->width = CHIMARA_GLK_MIN_WIDTH;
         requisition->height = CHIMARA_GLK_MIN_HEIGHT;
     }
 }
 
+/* Recursively give the Glk windows their allocated space */
+static void
+allocate_recurse(winid_t win, GtkAllocation *allocation)
+{
+	if(win->type == wintype_Pair)
+	{
+		GtkAllocation child1, child2;
+		child1.x = allocation->x;
+		child1.y = allocation->y;
+		
+		if((win->split_method & winmethod_DivisionMask) == winmethod_Fixed)
+		{
+			switch(win->split_method & winmethod_DirMask)
+			{
+				case winmethod_Left:
+					child1.width = win->constraint_size * win->key_window->unit_width;
+					if(child1.width > allocation->width)
+						child1.width = allocation->width;
+					break;
+				case winmethod_Right:
+					child2.width = win->constraint_size * win->key_window->unit_width;
+					if(child2.width > allocation->width)
+						child2.width = allocation->width;
+					break;
+				case winmethod_Above:
+					child1.height = win->constraint_size * win->key_window->unit_height;
+					if(child1.height > allocation->height)
+						child1.height = allocation->height;
+					break;
+				case winmethod_Below:
+					child2.height = win->constraint_size * win->key_window->unit_height;
+					if(child2.height > allocation->height)
+						child2.height = allocation->height;
+					break;
+			}
+		}
+		else /* proportional */
+		{
+			switch(win->split_method & winmethod_DirMask)
+			{
+				case winmethod_Left:
+					child1.width = (glui32)ceil((win->constraint_size / 100.0) * allocation->width);
+					break;
+				case winmethod_Right:
+					child2.width = (glui32)ceil((win->constraint_size / 100.0) * allocation->width);
+					break;
+				case winmethod_Above:
+					child1.height = (glui32)ceil((win->constraint_size / 100.0) * allocation->height);
+					break;
+				case winmethod_Below:
+					child2.height = (glui32)ceil((win->constraint_size / 100.0) * allocation->height);
+					break;
+			}
+		}
+		
+		/* Fill in the rest of the size requisitions according to the child specified above */
+		switch(win->split_method & winmethod_DirMask)
+		{
+			case winmethod_Left:
+				child2.width = allocation->width - child1.width;
+				child2.x = child1.x + child1.width;
+				child2.y = child1.y;
+				child1.height = child2.height = allocation->height;
+				break;
+			case winmethod_Right:
+				child1.width = allocation->width - child2.width;
+				child2.x = child1.x + child1.width;
+				child2.y = child1.y;
+				child1.height = child2.height = allocation->height;
+				break;
+			case winmethod_Above:
+				child2.height = allocation->height - child1.height;
+				child2.x = child1.x;
+				child2.y = child1.y + child1.height;
+				child1.width = child2.width = allocation->width;
+				break;
+			case winmethod_Below:
+				child1.height = allocation->height - child2.height;
+				child2.x = child1.x;
+				child2.y = child1.y + child1.height;
+				child1.width = child2.width = allocation->width;
+				break;
+		}
+		
+		/* Recurse */
+		allocate_recurse(win->window_node->children->data, &child1);
+		allocate_recurse(win->window_node->children->next->data, &child2);
+	}
+	
+	/* For non-pair windows, just give them the size */
+	else
+		gtk_widget_size_allocate(win->frame, allocation);
+}
+
+/* Overrides gtk_widget_size_allocate */
 static void
 chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 {
@@ -195,26 +342,38 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     
     widget->allocation = *allocation;
             
-    if(priv->root_window) {
-        GtkWidget *child = ((winid_t)(priv->root_window->data))->frame;
-        if(GTK_WIDGET_VISIBLE(child))
-            gtk_widget_size_allocate(child, allocation);
-    }
+    if(priv->root_window)
+		allocate_recurse(priv->root_window->data, allocation);
 }
 
+/* Recursively invoke callback() on the GtkWidget of each non-pair window in the tree */
 static void
-chimara_glk_forall(GtkContainer *container, gboolean include_internals,
-    GtkCallback callback, gpointer callback_data)
+forall_recurse(winid_t win, GtkCallback callback, gpointer callback_data)
+{
+	if(win->type == wintype_Pair)
+	{
+		forall_recurse(win->window_node->children->data, callback, callback_data);
+		forall_recurse(win->window_node->children->next->data, callback, callback_data);
+	}
+	else
+		(*callback)(win->frame, callback_data);
+}
+
+/* Overrides gtk_container_forall */
+static void
+chimara_glk_forall(GtkContainer *container, gboolean include_internals, GtkCallback callback, gpointer callback_data)
 {
     g_return_if_fail(container);
     g_return_if_fail(CHIMARA_IS_GLK(container));
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(container);
     
-    if(priv->root_window) {
-        GtkWidget *child = ((winid_t)(priv->root_window->data))->frame;
-        (*callback)(child, callback_data);
-    }
+	/* All the children are "internal" */
+	if(!include_internals)
+		return;
+	
+    if(priv->root_window)
+		forall_recurse(priv->root_window->data, callback, callback_data);
 }
 
 static void
