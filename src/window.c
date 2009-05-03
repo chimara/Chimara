@@ -469,7 +469,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		pair->rock = 0;
 		pair->type = wintype_Pair;
 		pair->window_node = g_node_new(pair);
-		pair->window_stream = NULL;
+		/* You can print to a pair window's window stream, but it has no effect */
+		pair->window_stream = window_stream_new(pair);
 		pair->echo_stream = NULL;
 
 		/* The pair window must know about its children's split method */
