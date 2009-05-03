@@ -46,7 +46,8 @@ enum {
     PROP_INTERACTIVE,
     PROP_PROTECT,
 	PROP_DEFAULT_FONT_DESCRIPTION,
-	PROP_MONOSPACE_FONT_DESCRIPTION
+	PROP_MONOSPACE_FONT_DESCRIPTION,
+	PROP_SPACING
 };
 
 enum {
@@ -106,6 +107,9 @@ chimara_glk_set_property(GObject *object, guint prop_id, const GValue *value, GP
 		case PROP_MONOSPACE_FONT_DESCRIPTION:
 			chimara_glk_set_monospace_font_description( glk, (PangoFontDescription *)g_value_get_pointer(value) );
 			break;
+		case PROP_SPACING:
+			chimara_glk_set_spacing( glk, g_value_get_uint(value) );
+			break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
@@ -129,6 +133,9 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
 			break;
 		case PROP_MONOSPACE_FONT_DESCRIPTION:
 			g_value_set_pointer(value, priv->monospace_font_desc);
+			break;
+		case PROP_SPACING:
+			g_value_set_uint(value, priv->spacing);
 			break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -167,14 +174,14 @@ chimara_glk_finalize(GObject *object)
 
 /* Internal function: Recursively get the Glk window tree's size request */
 static void
-request_recurse(winid_t win, GtkRequisition *requisition)
+request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
 {
 	if(win->type == wintype_Pair)
 	{
 		/* Get children's size requests */
 		GtkRequisition child1, child2;
-		request_recurse(win->window_node->children->data, &child1);
-		request_recurse(win->window_node->children->next->data, &child2);
+		request_recurse(win->window_node->children->data, &child1, spacing);
+		request_recurse(win->window_node->children->next->data, &child2, spacing);
 		
 		/* If the split is fixed, get the size of the fixed child */
 		if((win->split_method & winmethod_DivisionMask) == winmethod_Fixed)
@@ -201,13 +208,13 @@ request_recurse(winid_t win, GtkRequisition *requisition)
 		{
 			case winmethod_Left:
 			case winmethod_Right:
-				requisition->width = child1.width + child2.width;
+				requisition->width = child1.width + child2.width + spacing;
 				requisition->height = MAX(child1.height, child2.height);
 				break;
 			case winmethod_Above:
 			case winmethod_Below:
 				requisition->width = MAX(child1.width, child2.width);
-				requisition->height = child1.height + child2.height;
+				requisition->height = child1.height + child2.height + spacing;
 				break;
 		}
 	}
@@ -230,7 +237,7 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
     /* For now, just pass the size request on to the root Glk window */
     if(priv->root_window) 
 	{
-		request_recurse(priv->root_window->data, requisition);
+		request_recurse(priv->root_window->data, requisition, priv->spacing);
 		requisition->width += 2 * GTK_CONTAINER(widget)->border_width;
 		requisition->height += 2 * GTK_CONTAINER(widget)->border_width;
 	} 
@@ -243,7 +250,7 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
 
 /* Recursively give the Glk windows their allocated space */
 static void
-allocate_recurse(winid_t win, GtkAllocation *allocation)
+allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 {
 	if(win->type == wintype_Pair)
 	{
@@ -257,41 +264,42 @@ allocate_recurse(winid_t win, GtkAllocation *allocation)
 			{
 				case winmethod_Left:
 					child1.width = win->constraint_size * win->key_window->unit_width;
-					if(child1.width > allocation->width)
-						child1.width = allocation->width;
+					if(child1.width > allocation->width - spacing)
+						child1.width = allocation->width - spacing;
 					break;
 				case winmethod_Right:
 					child2.width = win->constraint_size * win->key_window->unit_width;
-					if(child2.width > allocation->width)
-						child2.width = allocation->width;
+					if(child2.width > allocation->width - spacing)
+						child2.width = allocation->width - spacing;
 					break;
 				case winmethod_Above:
 					child1.height = win->constraint_size * win->key_window->unit_height;
-					if(child1.height > allocation->height)
-						child1.height = allocation->height;
+					if(child1.height > allocation->height - spacing)
+						child1.height = allocation->height - spacing;
 					break;
 				case winmethod_Below:
 					child2.height = win->constraint_size * win->key_window->unit_height;
-					if(child2.height > allocation->height)
-						child2.height = allocation->height;
+					if(child2.height > allocation->height - spacing)
+						child2.height = allocation->height - spacing;
 					break;
 			}
 		}
 		else /* proportional */
 		{
+			gdouble fraction = win->constraint_size / 100.0;
 			switch(win->split_method & winmethod_DirMask)
 			{
 				case winmethod_Left:
-					child1.width = (glui32)ceil((win->constraint_size / 100.0) * allocation->width);
+					child1.width = (glui32) ceil( fraction * (allocation->width - spacing) );
 					break;
 				case winmethod_Right:
-					child2.width = (glui32)ceil((win->constraint_size / 100.0) * allocation->width);
+					child2.width = (glui32) ceil( fraction * (allocation->width - spacing) );
 					break;
 				case winmethod_Above:
-					child1.height = (glui32)ceil((win->constraint_size / 100.0) * allocation->height);
+					child1.height = (glui32) ceil( fraction * (allocation->height - spacing) );
 					break;
 				case winmethod_Below:
-					child2.height = (glui32)ceil((win->constraint_size / 100.0) * allocation->height);
+					child2.height = (glui32) ceil( fraction * (allocation->height - spacing) );
 					break;
 			}
 		}
@@ -300,34 +308,34 @@ allocate_recurse(winid_t win, GtkAllocation *allocation)
 		switch(win->split_method & winmethod_DirMask)
 		{
 			case winmethod_Left:
-				child2.width = allocation->width - child1.width;
-				child2.x = child1.x + child1.width;
+				child2.width = allocation->width - spacing - child1.width;
+				child2.x = child1.x + child1.width + spacing;
 				child2.y = child1.y;
 				child1.height = child2.height = allocation->height;
 				break;
 			case winmethod_Right:
-				child1.width = allocation->width - child2.width;
-				child2.x = child1.x + child1.width;
+				child1.width = allocation->width - spacing - child2.width;
+				child2.x = child1.x + child1.width + spacing;
 				child2.y = child1.y;
 				child1.height = child2.height = allocation->height;
 				break;
 			case winmethod_Above:
-				child2.height = allocation->height - child1.height;
+				child2.height = allocation->height - spacing - child1.height;
 				child2.x = child1.x;
-				child2.y = child1.y + child1.height;
+				child2.y = child1.y + child1.height + spacing;
 				child1.width = child2.width = allocation->width;
 				break;
 			case winmethod_Below:
-				child1.height = allocation->height - child2.height;
+				child1.height = allocation->height - spacing - child2.height;
 				child2.x = child1.x;
-				child2.y = child1.y + child1.height;
+				child2.y = child1.y + child1.height + spacing;
 				child1.width = child2.width = allocation->width;
 				break;
 		}
 		
 		/* Recurse */
-		allocate_recurse(win->window_node->children->data, &child1);
-		allocate_recurse(win->window_node->children->next->data, &child2);
+		allocate_recurse(win->window_node->children->data, &child1, spacing);
+		allocate_recurse(win->window_node->children->next->data, &child2, spacing);
 	}
 	
 	/* For non-pair windows, just give them the size */
@@ -353,7 +361,11 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		child.y = allocation->y + GTK_CONTAINER(widget)->border_width;
 		child.width = allocation->width - 2 * GTK_CONTAINER(widget)->border_width;
 		child.height = allocation->height - 2 * GTK_CONTAINER(widget)->border_width;
-		allocate_recurse(priv->root_window->data, &child);
+		if(child.width < 0)
+			child.width = 0;
+		if(child.height < 0)
+			child.height = 0;
+		allocate_recurse(priv->root_window->data, &child, priv->spacing);
 	}
 }
 
@@ -451,11 +463,6 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
     /* Properties */
-    GParamSpec *pspec;
-    pspec = g_param_spec_boolean("interactive", _("Interactive"),
-        _("Whether user input is expected in the Glk program"),
-        TRUE,
-        G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS);
     /**
      * ChimaraGlk:interactive:
      *
@@ -466,21 +473,24 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * buffer are also disabled. This is typically used when you wish to control
 	 * an interpreter program by feeding it a predefined list of commands.
      */
-    g_object_class_install_property(object_class, PROP_INTERACTIVE, pspec);
-    pspec = g_param_spec_boolean("protect", _("Protected"),
-        _("Whether the Glk program is barred from doing file operations"),
-        FALSE,
-        G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS);
-    /**
+    g_object_class_install_property( object_class, PROP_INTERACTIVE, 
+		g_param_spec_boolean("interactive", _("Interactive"),
+        _("Whether user input is expected in the Glk program"),
+        TRUE,
+        G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
+
+	/**
      * ChimaraGlk:protect:
      *
      * Sets whether the Glk program is allowed to do file operations. In protect
      * mode, all file operations will fail.
      */
-    g_object_class_install_property(object_class, PROP_PROTECT, pspec);
-    pspec = g_param_spec_pointer("default-font-description", _("Default Font"),
-		_("Font description of the default proportional font"),
-		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(object_class, PROP_PROTECT, 
+		g_param_spec_boolean("protect", _("Protected"),
+        _("Whether the Glk program is barred from doing file operations"),
+        FALSE,
+        G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
+
 	/* We can't use G_PARAM_CONSTRUCT on these because then the constructor will
 	 initialize them with NULL */
 	/**
@@ -492,10 +502,11 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * Default value: font description created from the string 
 	 * <quote>Sans</quote>
 	 */
-	g_object_class_install_property(object_class, PROP_DEFAULT_FONT_DESCRIPTION, pspec);
-	pspec = g_param_spec_pointer("monospace-font-description", _("Monospace Font"),
-		_("Font description of the default monospace font"),
-		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS);
+	g_object_class_install_property(object_class, PROP_DEFAULT_FONT_DESCRIPTION, 
+		g_param_spec_pointer("default-font-description", _("Default Font"),
+		_("Font description of the default proportional font"),
+		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
+
 	/**
 	 * ChimaraGlk:monospace-font-description:
 	 *
@@ -505,7 +516,22 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * Default value: font description created from the string 
 	 * <quote>Monospace</quote>
 	 */
-	g_object_class_install_property(object_class, PROP_MONOSPACE_FONT_DESCRIPTION, pspec);
+	g_object_class_install_property(object_class, PROP_MONOSPACE_FONT_DESCRIPTION, 
+		g_param_spec_pointer("monospace-font-description", _("Monospace Font"),
+		_("Font description of the default monospace font"),
+		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
+
+	/**
+	 * ChimaraGlk:spacing:
+	 *
+	 * The amount of space between the Glk windows.
+	 */
+	g_object_class_install_property(object_class, PROP_SPACING,
+		g_param_spec_uint("spacing", _("Spacing"),
+		_("The amount of space between Glk windows"),
+		0, G_MAXUINT, 0,
+		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
+	
     /* Private data */
     g_type_class_add_private(klass, sizeof(ChimaraGlkPrivate));
 }
@@ -655,6 +681,7 @@ chimara_glk_set_default_font_string(ChimaraGlk *glk, const gchar *font)
 	
 /**
  * chimara_glk_get_default_font_description:
+ * @glk: a #ChimaraGlk widget
  * 
  * Returns @glk's default proportional font.
  *
@@ -721,6 +748,7 @@ chimara_glk_set_monospace_font_string(ChimaraGlk *glk, const gchar *font)
 	
 /**
  * chimara_glk_get_monospace_font_description:
+ * @glk: a #ChimaraGlk widget
  * 
  * Returns @glk's default monospace font.
  *
@@ -734,6 +762,40 @@ chimara_glk_get_monospace_font_description(ChimaraGlk *glk)
 	
 	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	return pango_font_description_copy(priv->monospace_font_desc);
+}
+
+/**
+ * chimara_glk_set_spacing:
+ * @glk: a #ChimaraGlk widget
+ * @spacing: the number of pixels to put between Glk windows
+ *
+ * Sets the #ChimaraGlk:spacing property of @glk, which is the border width in
+ * pixels between Glk windows.
+ */
+void 
+chimara_glk_set_spacing(ChimaraGlk *glk, guint spacing)
+{
+	g_return_if_fail( glk || CHIMARA_IS_GLK(glk) );
+	
+	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	priv->spacing = spacing;
+}
+
+/**
+ * chimara_glk_get_spacing:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Gets the value set by chimara_glk_set_spacing().
+ *
+ * Return value: pixels of spacing between Glk windows
+ */
+guint 
+chimara_glk_get_spacing(ChimaraGlk *glk)
+{
+	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), 0);
+	
+	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	return priv->spacing;
 }
 
 /* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */

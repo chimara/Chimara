@@ -51,6 +51,8 @@ PangoFontDescription *chimara_glk_get_default_font_description(ChimaraGlk *glk);
 void chimara_glk_set_monospace_font_description(ChimaraGlk *glk, PangoFontDescription *font);
 void chimara_glk_set_monospace_font_string(ChimaraGlk *glk, const gchar *font);
 PangoFontDescription *chimara_glk_get_monospace_font_description(ChimaraGlk *glk);
+void chimara_glk_set_spacing(ChimaraGlk *glk, guint spacing);
+guint chimara_glk_get_spacing(ChimaraGlk *glk);
 gboolean chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error);
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);
