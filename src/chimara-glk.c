@@ -228,11 +228,16 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
     
     /* For now, just pass the size request on to the root Glk window */
-    if(priv->root_window)
+    if(priv->root_window) 
+	{
 		request_recurse(priv->root_window->data, requisition);
-	else {
-        requisition->width = CHIMARA_GLK_MIN_WIDTH;
-        requisition->height = CHIMARA_GLK_MIN_HEIGHT;
+		requisition->width += 2 * GTK_CONTAINER(widget)->border_width;
+		requisition->height += 2 * GTK_CONTAINER(widget)->border_width;
+	} 
+	else 
+	{
+        requisition->width = CHIMARA_GLK_MIN_WIDTH + 2 * GTK_CONTAINER(widget)->border_width;
+        requisition->height = CHIMARA_GLK_MIN_HEIGHT + 2 * GTK_CONTAINER(widget)->border_width;
     }
 }
 
@@ -342,8 +347,14 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     
     widget->allocation = *allocation;
             
-    if(priv->root_window)
-		allocate_recurse(priv->root_window->data, allocation);
+    if(priv->root_window) {
+		GtkAllocation child;
+		child.x = allocation->x + GTK_CONTAINER(widget)->border_width;
+		child.y = allocation->y + GTK_CONTAINER(widget)->border_width;
+		child.width = allocation->width - 2 * GTK_CONTAINER(widget)->border_width;
+		child.height = allocation->height - 2 * GTK_CONTAINER(widget)->border_width;
+		allocate_recurse(priv->root_window->data, &child);
+	}
 }
 
 /* Recursively invoke callback() on the GtkWidget of each non-pair window in the tree */
