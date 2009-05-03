@@ -541,6 +541,60 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	return win;
 }
 
+/* Internal function: close the window streams of this window and all its children */
+static void
+close_window_streams_below(winid_t win, stream_result_t *result)
+{
+	if(win->type == wintype_Pair) {
+		close_window_streams_below(win->window_node->children->data, NULL);
+		close_window_streams_below(win->window_node->children->next->data, NULL);
+	}
+	stream_close_common(win->window_stream, result);
+}
+
+/* Internal function: destroy this window's GTK widgets and those of all its children */
+static void
+destroy_widgets_below(winid_t win)
+{
+	switch(win->type)
+	{
+		case wintype_Blank:
+			gdk_threads_enter();
+			gtk_widget_unparent(win->widget);
+			gdk_threads_leave();
+			break;
+	
+	    case wintype_TextGrid:
+		case wintype_TextBuffer:
+			gdk_threads_enter();
+			gtk_widget_unparent(win->frame);
+			gdk_threads_leave();
+			/* TODO: Cancel all input requests */
+			break;
+
+		case wintype_Pair:
+			destroy_widgets_below(win->window_node->children->data);
+			destroy_widgets_below(win->window_node->children->next->data);
+			break;
+
+		default:
+			ILLEGAL_PARAM("Unknown window type: %u", win->type);
+			return;
+	}
+}
+
+/* Internal function: free the winid_t structure of this window and those of all its children */
+static void
+free_winids_below(winid_t win)
+{
+	if(win->type == wintype_Pair) {
+		free_winids_below(win->window_node->children->data);
+		free_winids_below(win->window_node->children->next->data);
+	}
+	win->magic = MAGIC_FREE;
+	g_free(win);
+}
+
 /**
  * glk_window_close:
  * @win: Window to close.
@@ -585,87 +639,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
  *   Constraints</link>.
  * </para></note>
  */
-
-static void
-dump_window_tree(GNode *node)
-{
-	if(node == NULL) {
-		g_printerr("NULL");
-		return;
-	}
-	g_printerr("[");
-	switch(((winid_t)node->data)->type) {
-		case wintype_Pair:
-			g_printerr("Pair ");
-			dump_window_tree(node->children);
-			dump_window_tree(node->children->next);
-			g_printerr("]");
-			break;
-		case wintype_TextBuffer:
-			g_printerr("Buffer]");
-			break;
-		case wintype_TextGrid:
-			g_printerr("Grid]");
-			break;
-		case wintype_Blank:
-			g_printerr("Blank]");
-			break;
-		default:
-			g_printerr("Fucked up - %d]", ((winid_t)node->data)->type);
-	}
-}
-
-static void
-close_window_streams_below(winid_t win, stream_result_t *result)
-{
-	if(win->type == wintype_Pair) {
-		close_window_streams_below(win->window_node->children->data, NULL);
-		close_window_streams_below(win->window_node->children->next->data, NULL);
-	}
-	stream_close_common(win->window_stream, result);
-}
-
-static void
-destroy_widgets_below(winid_t win)
-{
-	switch(win->type)
-	{
-		case wintype_Blank:
-			gdk_threads_enter();
-			gtk_widget_unparent(win->widget);
-			gdk_threads_leave();
-			break;
-	
-	    case wintype_TextGrid:
-		case wintype_TextBuffer:
-			gdk_threads_enter();
-			gtk_widget_unparent(win->frame);
-			gdk_threads_leave();
-			/* TODO: Cancel all input requests */
-			break;
-
-		case wintype_Pair:
-			destroy_widgets_below(win->window_node->children->data);
-			destroy_widgets_below(win->window_node->children->next->data);
-			break;
-
-		default:
-			ILLEGAL_PARAM("Unknown window type: %u", win->type);
-			return;
-	}
-}
-
-static void
-free_winids_below(winid_t win)
-{
-	if(win->type == wintype_Pair) {
-		free_winids_below(win->window_node->children->data);
-		free_winids_below(win->window_node->children->next->data);
-	}
-	win->magic = MAGIC_FREE;
-	g_free(win);
-}
-
 void
 glk_window_close(winid_t win, stream_result_t *result)
 {
