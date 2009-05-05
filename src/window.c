@@ -541,20 +541,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	return win;
 }
 
-/* Internal function: close the window streams of this window and all its children */
+/* Internal function: destroy this window's GTK widgets, window streams, 
+ and those of all its children */
 static void
-close_window_streams_below(winid_t win, stream_result_t *result)
-{
-	if(win->type == wintype_Pair) {
-		close_window_streams_below(win->window_node->children->data, NULL);
-		close_window_streams_below(win->window_node->children->next->data, NULL);
-	}
-	stream_close_common(win->window_stream, result);
-}
-
-/* Internal function: destroy this window's GTK widgets and those of all its children */
-static void
-destroy_widgets_below(winid_t win)
+destroy_windows_below(winid_t win, stream_result_t *result)
 {
 	switch(win->type)
 	{
@@ -573,14 +563,15 @@ destroy_widgets_below(winid_t win)
 			break;
 
 		case wintype_Pair:
-			destroy_widgets_below(win->window_node->children->data);
-			destroy_widgets_below(win->window_node->children->next->data);
+			destroy_windows_below(win->window_node->children->data, NULL);
+			destroy_windows_below(win->window_node->children->next->data, NULL);
 			break;
 
 		default:
 			ILLEGAL_PARAM("Unknown window type: %u", win->type);
 			return;
 	}
+	stream_close_common(win->window_stream, result);
 }
 
 /* Internal function: free the winid_t structure of this window and those of all its children */
@@ -644,11 +635,9 @@ glk_window_close(winid_t win, stream_result_t *result)
 {
 	VALID_WINDOW(win, return);
 	
-	/* First close all the window streams before trashing the window tree */
-	close_window_streams_below(win, result);
-	
-	/* Then destroy the widgets of this window and below */
-	destroy_widgets_below(win);
+	/* First close all the window streams and destroy the widgets of this window
+	 and below, before trashing the window tree */
+	destroy_windows_below(win, result);
 	
 	/* Then free the winid_t structures below this node, but not this one itself */
 	if(win->type == wintype_Pair) {
@@ -698,6 +687,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 	g_free(win);
 
 	/* Schedule a redraw */
+	gdk_threads_enter();
 	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
 	gdk_threads_leave();
 }
