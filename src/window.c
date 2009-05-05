@@ -510,33 +510,25 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 
+	gdk_threads_leave();
+	
     /* For text grid windows, wait until GTK draws the window (see note in glk_window_get_size() ), calculate the size and fill the buffer with blanks. */
     if(wintype == wintype_TextGrid)
     {
-        while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
-        {
-            /* Release the GDK lock momentarily */
-            gdk_threads_leave();
-            gdk_threads_enter();
-            while(gtk_events_pending())
-                gtk_main_iteration();
-        }
-        win->width = (glui32)(win->widget->allocation.width / win->unit_width);
-        win->height = (glui32)(win->widget->allocation.height / win->unit_height);
+		/* Force the window to be drawn and cache its size */
+        glk_window_get_size(win, NULL, NULL);
 		
-        /* Mark the cursor position */
+        /* Create the cursor position mark */
+		gdk_threads_enter();
         GtkTextIter begin;
         GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
         gtk_text_buffer_get_start_iter(buffer, &begin);
         gtk_text_buffer_create_mark(buffer, "cursor_position", &begin, TRUE);
-        
-        /* Fill the buffer with blanks and move the cursor to the upper left */
         gdk_threads_leave();
+		
+        /* Fill the buffer with blanks and move the cursor to the upper left */
         glk_window_clear(win);
-        gdk_threads_enter();
     }
-
-	gdk_threads_leave();
 
 	return win;
 }
@@ -904,7 +896,20 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             break;
             
         case wintype_TextGrid:
-            /* The text grid caches its width and height */
+			gdk_threads_enter();
+			/* Wait for the window to be drawn, and then cache the width and height */
+			while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
+		    {
+		        /* Release the GDK lock momentarily */
+		        gdk_threads_leave();
+		        gdk_threads_enter();
+		        while(gtk_events_pending())
+		            gtk_main_iteration();
+		    }
+		    win->width = (glui32)(win->widget->allocation.width / win->unit_width);
+		    win->height = (glui32)(win->widget->allocation.height / win->unit_height);
+            gdk_threads_leave();
+			
             if(widthptr != NULL)
                 *widthptr = win->width;
             if(heightptr != NULL)

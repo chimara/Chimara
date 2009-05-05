@@ -330,7 +330,68 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		allocate_recurse(win->window_node->children->next->data, &child2, spacing);
 	}
 	
-	/* For non-pair windows, just give them the size */
+	else if(win->type == wintype_TextGrid)
+	{
+		/* Pass the size allocation on to the framing widget */
+		gtk_widget_size_allocate(win->frame, allocation);
+		/* It says in the spec that when a text grid window is resized smaller,
+		 the bottom or right area is thrown away; when it is resized larger, the
+		 bottom or right area is filled with blanks. */
+		glui32 newwidth = (glui32)(win->widget->allocation.width / win->unit_width);
+		glui32 newheight = (glui32)(win->widget->allocation.height / win->unit_height);
+		gint line;
+		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		GtkTextIter start, end;
+	
+		for(line = 0; line < win->height; line++)
+		{
+			gtk_text_buffer_get_iter_at_line(textbuffer, &start, line);
+			if(line > newheight)
+			{
+				end = start;
+				gtk_text_iter_forward_to_line_end(&end);
+				gtk_text_iter_forward_char(&end);
+				gtk_text_buffer_delete(textbuffer, &start, &end);
+				break;
+			}
+			if(newwidth > win->width)
+			{
+				gchar *spaces = g_strnfill(newwidth - win->width, ' ');
+				gtk_text_iter_forward_to_line_end(&start);
+				gtk_text_buffer_insert(textbuffer, &start, spaces, -1);
+				g_free(spaces);
+			}
+			else if(newwidth < win->width)
+			{
+				end = start;
+				gtk_text_iter_forward_chars(&start, newwidth);
+				gtk_text_iter_forward_to_line_end(&end);
+				gtk_text_buffer_delete(textbuffer, &start, &end);
+			}
+		}
+		if(newheight > win->height)
+		{
+			gchar *blanks = g_strnfill(win->width, ' ');
+		    gchar **blanklines = g_new0(gchar *, (newheight - win->height) + 1);
+		    int count;
+		    for(count = 0; count < newheight - win->height; count++)
+		        blanklines[count] = blanks;
+		    blanklines[newheight - win->height] = NULL;
+		    gchar *text = g_strjoinv("\n", blanklines);
+		    g_free(blanklines); /* not g_strfreev() */
+		    g_free(blanks);
+		    
+			gtk_text_buffer_get_end_iter(textbuffer, &start);
+			gtk_text_buffer_insert(textbuffer, &start, "\n", -1);
+		    gtk_text_buffer_insert(textbuffer, &start, text, -1);
+		    g_free(text);
+		}
+	
+		win->width = newwidth;
+		win->height = newheight;
+	}
+	
+	/* For non-pair, non-text-grid windows, just give them the size */
 	else
 		gtk_widget_size_allocate(win->frame, allocation);
 }
