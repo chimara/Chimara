@@ -364,22 +364,17 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		
 		case wintype_TextGrid:
 		{
-		    GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 		    GtkWidget *textview = gtk_text_view_new();
-		    
-		    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_NEVER );
-		    
+
 		    gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_CHAR );
 		    gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
-		    
-		    gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
-		    gtk_widget_show_all(scrolledwindow);
+			gtk_widget_show(textview);
 		    		
 			/* Set the window's font */
 			gtk_widget_modify_font(textview, glk_data->monospace_font_desc);
 		    
 		    win->widget = textview;
-		    win->frame = scrolledwindow;
+		    win->frame = textview;
 			
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
@@ -460,6 +455,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			return NULL;
 	}
 
+	/* Set the minimum size to "as small as possible" so it doesn't depend on
+	 the size of the window contents */
+	gtk_widget_set_size_request(win->widget, 0, 0);
+	
 	if(split)
 	{
 		/* When splitting, construct a new parent window
