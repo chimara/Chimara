@@ -346,7 +346,8 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		for(line = 0; line < win->height; line++)
 		{
 			gtk_text_buffer_get_iter_at_line(textbuffer, &start, line);
-			if(line > newheight)
+			/* If this line is going to fall off the bottom, delete it */
+			if(line >= newheight)
 			{
 				end = start;
 				gtk_text_iter_forward_to_line_end(&end);
@@ -354,6 +355,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				gtk_text_buffer_delete(textbuffer, &start, &end);
 				break;
 			}
+			/* If this line is not long enough, add spaces on the end */
 			if(newwidth > win->width)
 			{
 				gchar *spaces = g_strnfill(newwidth - win->width, ' ');
@@ -361,6 +363,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				gtk_text_buffer_insert(textbuffer, &start, spaces, -1);
 				g_free(spaces);
 			}
+			/* But if it's too long, delete characters from the end */
 			else if(newwidth < win->width)
 			{
 				end = start;
@@ -368,7 +371,9 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				gtk_text_iter_forward_to_line_end(&end);
 				gtk_text_buffer_delete(textbuffer, &start, &end);
 			}
+			/* Note: if the widths are equal, do nothing */
 		}
+		/* Add blank lines if there aren't enough lines to fit the new size */
 		if(newheight > win->height)
 		{
 			gchar *blanks = g_strnfill(win->width, ' ');

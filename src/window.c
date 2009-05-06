@@ -480,10 +480,13 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		
 		/* Insert the new window into the window tree */
 		if(split->window_node->parent == NULL)
-		{
 			glk_data->root_window = pair->window_node;
-		} else {
-			g_node_append(split->window_node->parent, pair->window_node);
+		else 
+		{
+			if( split->window_node == g_node_first_sibling(split->window_node) )
+				g_node_prepend(split->window_node->parent, pair->window_node);
+			else
+				g_node_append(split->window_node->parent, pair->window_node);
 			g_node_unlink(split->window_node);
 		}
 		/* Place the windows in the correct order */
