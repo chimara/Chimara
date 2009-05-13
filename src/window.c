@@ -458,6 +458,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	/* Set the minimum size to "as small as possible" so it doesn't depend on
 	 the size of the window contents */
 	gtk_widget_set_size_request(win->widget, 0, 0);
+	gtk_widget_set_size_request(win->frame, 0, 0);
 	
 	if(split)
 	{
@@ -645,7 +646,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 	
 	/* If any pair windows have this window or its children as a key window,
 	 set their key window to NULL */
-	g_node_traverse(glk_data->root_window, G_IN_ORDER, G_TRAVERSE_NON_LEAVES, -1, remove_key_windows, win);
+	g_node_traverse(glk_data->root_window, G_IN_ORDER, G_TRAVERSE_NON_LEAVES, -1, (GNodeTraverseFunc)remove_key_windows, win);
 	
 	/* Close all the window streams and destroy the widgets of this window
 	 and below, before trashing the window tree */
