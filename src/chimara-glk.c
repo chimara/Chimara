@@ -189,16 +189,24 @@ request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
 			switch(win->split_method & winmethod_DirMask)
 			{
 				case winmethod_Left:
-					child1.width = win->constraint_size * win->key_window->unit_width;
+					child1.width = win->key_window?
+						win->constraint_size * win->key_window->unit_width
+						: 0;
 					break;
 				case winmethod_Right:
-					child2.width = win->constraint_size * win->key_window->unit_width;
+					child2.width = win->key_window?
+						win->constraint_size * win->key_window->unit_width
+						: 0;
 					break;
 				case winmethod_Above:
-					child1.height = win->constraint_size * win->key_window->unit_height;
+					child1.height = win->key_window?
+						win->constraint_size * win->key_window->unit_height
+						: 0;
 					break;
 				case winmethod_Below:
-					child2.height = win->constraint_size * win->key_window->unit_height;
+					child2.height = win->key_window?
+						win->constraint_size * win->key_window->unit_height
+						: 0;
 					break;
 			}
 		}
@@ -260,19 +268,29 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		
 		if((win->split_method & winmethod_DivisionMask) == winmethod_Fixed)
 		{
+			/* If the key window has been closed, then default to 0; otherwise
+			 use the key window to determine the size */
 			switch(win->split_method & winmethod_DirMask)
 			{
 				case winmethod_Left:
-					child1.width = CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing);
+					child1.width = win->key_window? 
+						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing) 
+						: 0;
 					break;
 				case winmethod_Right:
-					child2.width = CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing);
+					child2.width = win->key_window? 
+						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing)
+						: 0;
 					break;
 				case winmethod_Above:
-					child1.height = CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing);
+					child1.height = win->key_window? 
+						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing)
+						: 0;
 					break;
 				case winmethod_Below:
-					child2.height = CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing);
+					child2.height = win->key_window?
+						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing)
+						: 0;
 					break;
 			}
 		}

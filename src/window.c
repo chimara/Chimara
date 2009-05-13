@@ -514,12 +514,15 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 	gdk_threads_leave();
 	
-    /* For text grid windows, wait until GTK draws the window (see note in glk_window_get_size() ), calculate the size and fill the buffer with blanks. */
+	/* For blank or pair windows, this is almost a no-op. For text grid and
+	 text buffer windows, this will wait for GTK to draw the window. Otherwise,
+	 opening a window and getting its size immediately will give you the wrong
+	 size. */
+	glk_window_get_size(win, NULL, NULL);
+	
+    /* For text grid windows, fill the buffer with blanks. */
     if(wintype == wintype_TextGrid)
     {
-		/* Force the window to be drawn and cache its size */
-        glk_window_get_size(win, NULL, NULL);
-		
         /* Create the cursor position mark */
 		gdk_threads_enter();
         GtkTextIter begin;
@@ -533,6 +536,17 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
     }
 
 	return win;
+}
+
+/* Internal function: if node's key window is closing_win or one of its
+ children, set node's key window to NULL. */
+static gboolean 
+remove_key_windows(GNode *node, winid_t closing_win)
+{
+	winid_t win = (winid_t)node->data;
+	if(win->key_window && (win->key_window == closing_win || g_node_is_ancestor(closing_win->window_node, win->key_window->window_node)))
+		win->key_window = NULL;
+	return FALSE; /* Don't stop the traversal */
 }
 
 /* Internal function: destroy this window's GTK widgets, window streams, 
@@ -629,7 +643,11 @@ glk_window_close(winid_t win, stream_result_t *result)
 {
 	VALID_WINDOW(win, return);
 	
-	/* First close all the window streams and destroy the widgets of this window
+	/* If any pair windows have this window or its children as a key window,
+	 set their key window to NULL */
+	g_node_traverse(glk_data->root_window, G_IN_ORDER, G_TRAVERSE_NON_LEAVES, -1, remove_key_windows, win);
+	
+	/* Close all the window streams and destroy the widgets of this window
 	 and below, before trashing the window tree */
 	destroy_windows_below(win, result);
 	
