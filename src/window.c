@@ -563,7 +563,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	/* Set the window as a child of the Glk widget */
 	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
-
+	gdk_window_process_all_updates();
+	
 	gdk_threads_leave();
 	
 	/* For blank or pair windows, this is almost a no-op. For text grid and
@@ -771,6 +772,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 	/* Schedule a redraw */
 	gdk_threads_enter();
 	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
+	gdk_window_process_all_updates();
 	gdk_threads_leave();
 }
 
@@ -988,6 +990,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
         case wintype_TextGrid:
 			gdk_threads_enter();
 			/* Wait for the window to be drawn, and then cache the width and height */
+			gdk_window_process_all_updates();
 			while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
 		    {
 		        /* Release the GDK lock momentarily */
@@ -996,7 +999,8 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 		        while(gtk_events_pending())
 		            gtk_main_iteration();
 		    }
-		    win->width = (glui32)(win->widget->allocation.width / win->unit_width);
+		    
+			win->width = (glui32)(win->widget->allocation.width / win->unit_width);
 		    win->height = (glui32)(win->widget->allocation.height / win->unit_height);
             gdk_threads_leave();
 			
@@ -1017,7 +1021,8 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             } */
             
             /* Instead, we wait for GTK to draw the widget. This is probably very slow and should be fixed. */
-            while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
+            gdk_window_process_all_updates();
+			while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
             {
                 /* Release the GDK lock momentarily */
                 gdk_threads_leave();
