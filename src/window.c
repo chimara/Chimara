@@ -417,7 +417,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		{
 		    GtkWidget *textview = gtk_text_view_new();
 
-		    gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_CHAR );
+		    gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_NONE );
 		    gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
 			gtk_widget_show(textview);
 		    		
