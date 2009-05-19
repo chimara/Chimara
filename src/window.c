@@ -237,8 +237,17 @@ glk_window_get_root()
  * What happens when there is a conflict? The rules are simple. Size control
  * always flows down the tree, and the player is at the top. Let's bring out an
  * example:
- * <mediaobject><textobject><phrase>Screen shot 5</phrase></textobject>
- * </mediaobject>
+ * <informaltable frame="none"><tgroup cols="2"><tbody><row>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig5-7a.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *      O
+ *     / \
+ *    O   B
+ *   / \
+ *  A   C
+ * </literallayout></textobject></mediaobject></entry>
+ * </row></tbody></tgroup></informaltable>
  * 
  * First we split A into A and B, with a 50% proportional split. Then we split
  * A into A and C, with C above, C being a text grid window, and C gets a fixed
@@ -246,8 +255,8 @@ glk_window_get_root()
  * of the 50% it had before.
  * 
  * Now the player stretches the window vertically.
- * <mediaobject><textobject><phrase>Screen shot 6</phrase></textobject>
- * </mediaobject>
+ * <informalfigure><mediaobject><imageobject><imagedata fileref="fig6.png"/>
+ * </imageobject></mediaobject></informalfigure>
  * 
  * The library figures: the topmost split, the original A/B split, is 50-50. So
  * B gets half the screen space, and the pair window next to it (the lower
@@ -255,8 +264,18 @@ glk_window_get_root()
  * <quote>O</quote>. C gets two rows; A gets the rest. All done.
  * 
  * Then the user maliciously starts squeezing the window down, in stages:
- * <mediaobject id="chimara-Figure-Squeezing-Window"><textobject><phrase>
- * Screen shot 7</phrase></textobject></mediaobject>
+ * <informaltable frame="none"><tgroup cols="5"><tbody><row valign="top">
+ * <entry><mediaobject><imageobject><imagedata fileref="fig5-7a.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig7b.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig7c.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig7d.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig7e.png"/>
+ * </imageobject></mediaobject></entry>
+ * </row></tbody></tgroup></informaltable>
  * 
  * The logic remains the same. B always gets half the space. At stage 3,
  * there's no room left for A, so it winds up with zero height. Nothing
@@ -290,8 +309,29 @@ glk_window_get_root()
  * is stored by a window's parent, not the window itself; and a constraint
  * consists of a pointer to a key window plus a size value.
  * 
- * <mediaobject><textobject><phrase>Screen shot 8</phrase></textobject>
- * </mediaobject>
+ * <informaltable frame="none"><tgroup cols="6"><tbody><row>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig8a.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *  A   
+ * </literallayout></textobject></mediaobject></entry>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig8b.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *    O1  
+ *   / \  
+ *  A   B 
+ * </literallayout></textobject></mediaobject></entry> 
+ * <entry><mediaobject><imageobject><imagedata fileref="fig8c.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *      O1  
+ *     / \  
+ *    O2  B 
+ *   / \    
+ *  A   C   
+ * </literallayout></textobject></mediaobject></entry> 
+ * </row></tbody></tgroup></informaltable>
  * After the first split, the new pair window (O1, which covers the whole
  * screen) knows that its first child (A) is above the second, and gets 50% of
  * its own area. (A is the key window for this split, but a proportional split
@@ -306,8 +346,19 @@ glk_window_get_root()
  * If we split C, now, the resulting pair will still be two C-font rows high
  * &mdash; that is, tall enough for two lines of whatever font C displays. For
  * the sake of example, we'll do this vertically.
- * <mediaobject><textobject><phrase>Screen shot 9</phrase></textobject>
- * </mediaobject>
+ * <informaltable frame="none"><tgroup cols="2"><tbody><row>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig9.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *      O1
+ *     / \
+ *    O2  B
+ *   / \
+ *  A   O3
+ *     / \
+ *    C   D
+ * </literallayout></textobject></mediaobject></entry> 
+ * </row></tbody></tgroup></informaltable>
  * 
  * O3 now knows that its children have a 50-50 left-right split. O2 is still
  * committed to giving its upper child, O3, two C-font rows. Again, this is
@@ -611,8 +662,17 @@ free_winids_below(winid_t win)
  * When you close a window (and it is not the root window), the other window
  * in its pair takes over all the freed-up area. Let's close D, in the current
  * example:
- * <mediaobject><textobject><phrase>Screen shot 10</phrase></textobject>
- * </mediaobject>
+ * <informaltable frame="none"><tgroup cols="2"><tbody><row>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig10.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *      O1
+ *     / \
+ *    O2  B
+ *   / \
+ *  A   C
+ * </literallayout></textobject></mediaobject></entry> 
+ * </row></tbody></tgroup></informaltable>
  * 
  * Notice what has happened. D is gone. O3 is gone, and its 50-50 left-right
  * split has gone with it. The other size constraints are unchanged; O2 is
@@ -622,8 +682,17 @@ free_winids_below(winid_t win)
  * to the way it was before we created D.
  * 
  * But what if we had closed C instead of D? We would have gotten this:
- * <mediaobject><textobject><phrase>Screen shot 11</phrase></textobject>
- * </mediaobject>
+ * <informaltable frame="none"><tgroup cols="2"><tbody><row>
+ * <entry><mediaobject><imageobject><imagedata fileref="fig11.png"/>
+ * </imageobject></mediaobject></entry>
+ * <entry><mediaobject><textobject><literallayout class="monospaced">
+ *      O1
+ *     / \
+ *    O2  B
+ *   / \
+ *  A   D
+ * </literallayout></textobject></mediaobject></entry> 
+ * </row></tbody></tgroup></informaltable>
  * 
  * Again, O3 is gone. But D has collapsed to zero height. This is because its
  * height is controlled by O2, and O2's key window was C, and C is now gone. O2

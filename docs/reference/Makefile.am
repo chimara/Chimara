@@ -51,7 +51,27 @@ IGNORE_HFILES = chimara-glk-private.h \
 	callbacks.h error.h
 
 # Images to copy into HTML directory.
-HTML_IMAGES = 
+HTML_IMAGES = \
+	$(srcdir)/images/fig1.png \
+	$(srcdir)/images/fig2.png \
+	$(srcdir)/images/fig3a.png \
+	$(srcdir)/images/fig3b.png \
+	$(srcdir)/images/fig3c.png \
+	$(srcdir)/images/fig4a.png \
+	$(srcdir)/images/fig4b.png \
+	$(srcdir)/images/fig4c.png \
+	$(srcdir)/images/fig5-7a.png \
+	$(srcdir)/images/fig6.png \
+	$(srcdir)/images/fig7b.png \
+	$(srcdir)/images/fig7c.png \
+	$(srcdir)/images/fig7d.png \
+	$(srcdir)/images/fig7e.png \
+	$(srcdir)/images/fig8a.png \
+	$(srcdir)/images/fig8b.png \
+	$(srcdir)/images/fig8c.png \
+	$(srcdir)/images/fig9.png \
+	$(srcdir)/images/fig10.png \
+	$(srcdir)/images/fig11.png
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 content_files = version.xml \

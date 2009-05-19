@@ -37,11 +37,40 @@ It is important to remember that the order of splitting matters. If you split tw
 </para>
 <para>
 Example time. Say you do two splits, each a 50-50 percentage split. You start with the original window A, and split that into A and B; then you split B into B and C.
-<mediaobject><textobject><phrase>Screen shot 1</phrase></textobject></mediaobject>
+<informaltable frame="none"><tgroup cols="2"><tbody><row>
+<entry><mediaobject><imageobject><imagedata fileref="fig1.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><textobject><literallayout class="monospaced">
+   O
+  / \
+ A   O
+    / \
+   B   C
+</literallayout></textobject></mediaobject></entry>
+</row></tbody></tgroup></informaltable>
 Or, you could split A into A and B, and then split A again into A and C.
-<mediaobject><textobject><phrase>Screen shot 2</phrase></textobject></mediaobject>
+<informaltable frame="none"><tgroup cols="2"><tbody><row>
+<entry><mediaobject><imageobject><imagedata fileref="fig2.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><textobject><literallayout class="monospaced">
+     O
+    / \
+   O   B
+  / \
+ A   C
+</literallayout></textobject></mediaobject></entry>
+</row></tbody></tgroup></informaltable>
 I'm using the simplest possible splits in the examples above. Every split is 50-50, and the new window of the pair is always below the original one (the one that gets split.) You can get fancier than that. Here are three more ways to perform the first example; all of them have the same tree structure, but look different on the screen.
-<mediaobject><textobject><phrase>Screen shot 3</phrase></textobject></mediaobject>
+<informaltable frame="none"><tgroup cols="4"><tbody><row>
+<entry><mediaobject><imageobject><imagedata fileref="fig3a.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><imageobject><imagedata fileref="fig3b.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><imageobject><imagedata fileref="fig3c.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><textobject><literallayout class="monospaced">
+   O
+  / \
+ A   O
+    / \
+   B   C
+</literallayout></textobject></mediaobject></entry>
+</row></tbody></tgroup></informaltable>
 On the left, we turn the second split (B into B/C) upside down; we put the new window (C) above the old window (B).
 </para>
 <para>
@@ -55,7 +84,28 @@ The visible windows on the Glk screen are <quote>leaf nodes</quote> of the binar
 </para>
 <para>
 You don't create pair windows directly; they are created as a consequence of window splits. Whenever you create a new window, a new pair window is also created automatically. In the following two-split process, you can see that when a window is split, it is replaced by a new pair window, and moves down to become one of that <quote>O</quote>'s two children.
-<mediaobject><textobject><phrase>Screen shot 4</phrase></textobject></mediaobject>
+<informaltable frame="none"><tgroup cols="2"><tbody><row>
+<entry><mediaobject><imageobject><imagedata fileref="fig4a.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><textobject><literallayout class="monospaced">
+   A
+</literallayout></textobject></mediaobject></entry>
+</row><row>
+<entry><mediaobject><imageobject><imagedata fileref="fig4b.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><textobject><literallayout class="monospaced">
+   O
+  / \
+ A   B
+</literallayout></textobject></mediaobject></entry>
+</row><row>
+<entry><mediaobject><imageobject><imagedata fileref="fig4c.png"/></imageobject></mediaobject></entry>
+<entry><mediaobject><textobject><literallayout class="monospaced">
+   O
+  / \
+ A   O
+    / \
+   B   C
+</literallayout></textobject></mediaobject></entry>
+</row></tbody></tgroup></informaltable>
 </para>
 <para>
 You can't draw into a pair window. It's completely filled up with the two windows it contains. They're what you should be drawing into.
