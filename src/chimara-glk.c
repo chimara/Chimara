@@ -27,11 +27,11 @@
  * On Linux systems, this is a file with a name like 
  * <filename>plugin.so</filename>. For portability, you can use libtool and 
  * automake:
- * <informalexample><programlisting>
+ * |[
  * pkglib_LTLIBRARIES = plugin.la
  * plugin_la_SOURCES = plugin.c foo.c bar.c
  * plugin_la_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
- * </programlisting></informalexample>
+ * ]|
  * This will produce <filename>plugin.la</filename> which is a text file 
  * containing the correct plugin file to open (see the relevant section of the
  * <ulink 

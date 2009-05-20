@@ -211,15 +211,11 @@ glk_window_get_root()
  * 
  * So to create a text buffer window which takes the top 40% of the original
  * window's space, you would execute
- * <informalexample><programlisting>
- * newwin = #glk_window_open(win, #winmethod_Above | #winmethod_Proportional, 40, #wintype_TextBuffer, 0);
- * </programlisting></informalexample>
+ * |[ newwin = #glk_window_open(win, #winmethod_Above | #winmethod_Proportional, 40, #wintype_TextBuffer, 0); ]|
  *
  * To create a text grid which is always five lines high, at the bottom of the
  * original window, you would do
- * <informalexample><programlisting>
- * newwin = #glk_window_open(win, #winmethod_Below | #winmethod_Fixed, 5, #wintype_TextGrid, 0);
- * </programlisting></informalexample>
+ * |[ newwin = #glk_window_open(win, #winmethod_Below | #winmethod_Fixed, 5, #wintype_TextGrid, 0); ]|
  * 
  * Note that the meaning of the @size argument depends on the @method argument.
  * If the method is #winmethod_Fixed, it also depends on the @wintype argument.
@@ -563,7 +559,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	/* Set the window as a child of the Glk widget */
 	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
-	gdk_window_process_all_updates();
 	
 	gdk_threads_leave();
 	

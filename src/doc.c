@@ -176,9 +176,9 @@
  * <para>
  * For each class of opaque objects, there is an iterate function, which you can
  * use to obtain a list of all existing objects of that class. It takes the form
- * <informalexample><programlisting>
+ * |[
  * <replaceable>CLASS</replaceable>id_t glk_<replaceable>CLASS</replaceable>_iterate(<replaceable>CLASS</replaceable>id_t <parameter>obj</parameter>, #glui32 *<parameter>rockptr</parameter>);
- * </programlisting></informalexample>
+ * ]|
  * ...where <code><replaceable>CLASS</replaceable></code> represents one of the
  * opaque object classes. 
  * </para>
@@ -202,13 +202,13 @@
  * </para>
  * <para>
  * You usually use this as follows:
- * <informalexample><programlisting>
+ * |[
  * obj = glk_<replaceable>CLASS</replaceable>_iterate(NULL, NULL);
  * while (obj) {
  *    /* ...do something with obj... *<!-- -->/
  *    obj = glk_<replaceable>CLASS</replaceable>_iterate(obj, NULL);
  * }
- * </programlisting></informalexample>
+ * ]|
  * </para>
  * <para>
  * If you create or destroy objects inside this loop, obviously, the results are
@@ -772,10 +772,10 @@
  *
  * For an example of the gestalt mechanism, consider the selector
  * #gestalt_Version. If you do
- * <informalexample><programlisting>
+ * |[
  * #glui32 res;
  * res = #glk_gestalt(#gestalt_Version, 0);
- * </programlisting></informalexample>
+ * ]|
  * <code>res</code> will be set to a 32-bit number which encodes the version of
  * the Glk spec which the library implements. The upper 16 bits stores the major
  * version number; the next 8 bits stores the minor version number; the low 8 
@@ -788,10 +788,10 @@
  * The current Glk specification version is 0.7.0, so this selector will return
  * 0x00000700.
  *
- * <informalexample><programlisting>
+ * |[
  * #glui32 res;
  * res = #glk_gestalt_ext(#gestalt_Version, 0, NULL, 0);
- * </programlisting></informalexample>
+ * ]|
  * does exactly the same thing. Note that, in either case, the second argument 
  * is not used; so you should always pass 0 to avoid future surprises.
  */
@@ -801,10 +801,10 @@
  *
  * If you set <code>ch</code> to a character code, or a special code (from
  * 0xFFFFFFFF down), and call
- * <informalexample><programlisting>
+ * |[
  * #glui32 res;
  * res = #glk_gestalt(#gestalt_CharInput, ch);
- * </programlisting></informalexample>
+ * ]|
  * then <code>res</code> will be %TRUE (1) if that character can be typed by
  * the player in character input, and %FALSE (0) if not. See <link
  * linkend="chimara-Character-Input">Character Input</link>.
@@ -814,10 +814,10 @@
  * gestalt_LineInput:
  *
  * If you set <code>ch</code> to a character code, and call
- * <informalexample><programlisting>
+ * |[
  * #glui32 res;
  * res = #glk_gestalt(#gestalt_LineInput, ch);
- * </programlisting></informalexample>
+ * ]|
  * then <code>res</code> will be %TRUE (1) if that character can be typed by the
  * player in line input, and %FALSE (0) if not. Note that if <code>ch</code> is 
  * a nonprintable Latin-1 character (0 to 31, 127 to 159), then this is 
@@ -829,10 +829,10 @@
  * gestalt_CharOutput:
  *
  * If you set <code>ch</code> to a character code (Latin-1 or higher), and call
- * <informalexample><programlisting>
+ * |[
  * #glui32 res, len;
  * res = #glk_gestalt_ext(#gestalt_CharOutput, ch, &amp;len, 1);
- * </programlisting></informalexample>
+ * ]|
  * then <code>res</code> will be one of #gestalt_CharOutput_CannotPrint,
  * #gestalt_CharOutput_ExactPrint, or #gestalt_CharOutput_ApproxPrint (see 
  * below.)
@@ -859,15 +859,11 @@
  *   Make sure you do not get confused by signed byte values. If you set a
  *   <quote><type>char</type></quote> variable <code>ch</code> to 0xFE, the 
  *   small-thorn character (&thorn;), and then call
- *   <informalexample><programlisting>
- *   res = #glk_gestalt(#gestalt_CharOutput, ch);
- *   </programlisting></informalexample>
+ *   |[ res = #glk_gestalt(#gestalt_CharOutput, ch); ]|
  *   then (by the definition of C/C++) <code>ch</code> will be sign-extended to
  *   0xFFFFFFFE, which is not a legitimate character, even in Unicode. You 
  *   should write
- *   <informalexample><programlisting>
- *   res = #glk_gestalt(#gestalt_CharOutput, (unsigned char)ch);
- *   </programlisting></informalexample>
+ *   |[ res = #glk_gestalt(#gestalt_CharOutput, (unsigned char)ch); ]|
  *   instead.
  * </para></note>
  * <note><para>
@@ -915,10 +911,10 @@
  * The basic text functions will be available in every Glk library. The Unicode
  * functions may or may not be available. Before calling them, you should use
  * the following gestalt selector:
- * <informalexample><programlisting>
+ * |[
  * glui32 res;
  * res = #glk_gestalt(#gestalt_Unicode, 0);
- * </programlisting></informalexample>
+ * ]|
  * 
  * This returns 1 if the Unicode functions are available. If it returns 0, you
  * should not try to call them. They may print nothing, print gibberish, or
