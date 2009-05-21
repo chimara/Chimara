@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <assert.h>
 #include "glk.h"
 
 void glk_main(void)
@@ -17,7 +19,7 @@ void glk_main(void)
     for(count = 0; count < 30; count++)
         glk_put_string("I want to write past the end of this text buffer! ");
     
-    guint32 width, height;
+    glui32 width, height;
     glk_window_get_size(mainwin, &width, &height);
     fprintf(stderr, "\nWidth: %d\nHeight: %d\nPress a key in the window, not in the terminal.\n", width, height);
     glk_request_char_event(mainwin);
@@ -43,7 +45,8 @@ void glk_main(void)
             break;
     }
     
-    gchar *buffer = g_malloc0(256);
+    char *buffer = calloc(256, sizeof(char));
+    assert(buffer);
     
     fprintf(stderr, "Line input field until end of line\n");
     glk_window_move_cursor(mainwin, 10, 20);
@@ -63,9 +66,12 @@ void glk_main(void)
             break;
     }
     
-	gchar *text = g_strndup(buffer, ev.val1);
+	char *text = calloc(ev.val1 + 1, sizeof(char));
+	assert(text);
+	strncpy(text, buffer, ev.val1);
+	text[ev.val1] = '\0';
     fprintf(stderr, "Your string was: '%s'.\nPress another key to clear the window and exit.\n", text);
-	g_free(text);
+	free(text);
     glk_request_char_event(mainwin);
     while(1) {
         glk_select(&ev);
@@ -74,5 +80,5 @@ void glk_main(void)
     }
     
     glk_window_clear(mainwin);
-    g_free(buffer);
+    free(buffer);
 }

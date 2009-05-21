@@ -43,19 +43,15 @@ pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la
 PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
 
 first_la_SOURCES = first.c
-first_la_CFLAGS = @GLIB_CFLAGS@
 first_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 model_la_SOURCES = model.c
-model_la_CFLAGS = @GLIB_CFLAGS@
 model_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 gridtest_la_SOURCES = gridtest.c
-gridtest_la_CFLAGS = @GLIB_CFLAGS@
 gridtest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 splittest_la_SOURCES = splittest.c
-splittest_la_CFLAGS = @GLIB_CFLAGS@
 splittest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 CLEANFILES = chimara.ui

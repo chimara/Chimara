@@ -1,3 +1,4 @@
+#include <stddef.h> /* Surprisingly, the only symbol needed is NULL */
 #include "glk.h"
 
 /* Version of the Glk specification implemented by this library */
