@@ -5,6 +5,7 @@
 #include <gmodule.h>
 #include <pango/pango.h>
 #include "glk.h"
+#include "gi_blorb.h"
 #include "chimara-glk.h"
 
 G_BEGIN_DECLS
@@ -48,6 +49,10 @@ struct _ChimaraGlkPrivate {
     GList *stream_list;
 	/* Current timer */
 	guint timer_id;
+	/* Current resource blorb map */
+	giblorb_map_t *resource_map;
+	/* File stream pointing to the blorb used as current resource map */
+	strid_t *resource_file;
 };
 
 #define CHIMARA_GLK_PRIVATE(obj) \

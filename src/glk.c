@@ -4,6 +4,7 @@
 #include "abort.h"
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
+#include "gi_blorb.h"
 
 ChimaraGlkPrivate *glk_data = NULL;
 
@@ -45,6 +46,12 @@ glk_exit(void)
 
 	/* Stop any timers */
 	glk_request_timer_events(0);
+
+	/* Close any open resource files */
+	if(glk_data->resource_map != NULL) {
+		giblorb_destroy_map(glk_data->resource_map);
+		glk_stream_close(glk_data->resource_file, NULL);
+	}
 
     glk_data = NULL;
 	g_thread_exit(NULL);
