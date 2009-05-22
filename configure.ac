@@ -76,6 +76,9 @@ Makefile
 chimara.pc
 chimara-plugin.pc
 src/Makefile
+interpreters/Makefile
+interpreters/frotz/Makefile
+interpreters/nitfol/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml

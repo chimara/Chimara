@@ -33,7 +33,8 @@ libchimara_la_SOURCES = \
 	timer.c timer.h \
 	window.c window.h \
 	gi_blorb.c gi_blorb.h \
-	resource.c resource.h
+	resource.c resource.h \
+	glkstart.h
 libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\"
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)

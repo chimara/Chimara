@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-SUBDIRS = src po docs
+SUBDIRS = src interpreters docs po
 
 chimaradocdir = ${prefix}/doc/chimara
 dist_chimaradoc_DATA = \
