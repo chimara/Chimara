@@ -2,6 +2,10 @@
 #include "magic.h"
 #include "input.h"
 
+/* Forward declarations */
+static int flush_text_buffer(winid_t win);
+static int flush_text_grid(winid_t win);
+
 /** 
  * glk_request_char_event:
  * @win: A window to request char events from.
