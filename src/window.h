@@ -8,6 +8,8 @@
 #include "error.h"
 #include "callbacks.h"
 #include "input.h"
+#include "style.h"
+
 
 enum InputRequestType
 {

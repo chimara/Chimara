@@ -52,7 +52,7 @@ struct _ChimaraGlkPrivate {
 	/* Current resource blorb map */
 	giblorb_map_t *resource_map;
 	/* File stream pointing to the blorb used as current resource map */
-	strid_t *resource_file;
+	strid_t resource_file;
 };
 
 #define CHIMARA_GLK_PRIVATE(obj) \

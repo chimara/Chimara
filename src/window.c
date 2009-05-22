@@ -486,6 +486,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			(for line input) */
 			gtk_text_buffer_create_tag(textbuffer, "uneditable", "editable", FALSE, "editable-set", TRUE, NULL);
 
+			/* Create the default styles available to the window stream */
+			style_init_textbuffer(textbuffer);
+
 			/* Mark the position where the user will input text */
 			GtkTextIter end;
 			gtk_text_buffer_get_end_iter(textbuffer, &end);

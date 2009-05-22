@@ -77,7 +77,7 @@ write_utf8_to_window(winid_t win, gchar *s)
 
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(buffer, &iter);
-	gtk_text_buffer_insert(buffer, &iter, s, -1);
+	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, s, -1, win->window_stream->style, NULL);
 
 	gdk_threads_leave();
 }

@@ -33,6 +33,7 @@ window_stream_new(winid_t window)
 	/* Create stream and connect it to window */
 	strid_t str = stream_new_common(0, filemode_Write, STREAM_TYPE_WINDOW);
 	str->window = window;
+	str->style = "normal";
 	return str;
 }
 

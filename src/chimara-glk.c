@@ -923,7 +923,7 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
     /* Set the thread's private data */
     /* TODO: Do this with a GPrivate */
     glk_data = priv;
-    
+
     /* Run in a separate thread */
 	priv->thread = g_thread_create(glk_enter, glk_main, TRUE, error);
 	

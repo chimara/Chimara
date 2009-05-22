@@ -43,6 +43,8 @@ struct glk_stream_struct
 	FILE *file_pointer;
 	gboolean binary;
 	gchar *filename; /* Displayable filename in UTF-8 for error handling */
+
+	gchar *style; /* Name of the current style */
 };
 
 G_GNUC_INTERNAL strid_t window_stream_new(winid_t window);

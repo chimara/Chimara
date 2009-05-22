@@ -29,11 +29,11 @@ libchimara_la_SOURCES = \
 	input.c input.h \
 	stream.c stream.h \
 	strio.c \
-	style.c \
 	timer.c timer.h \
 	window.c window.h \
 	gi_blorb.c gi_blorb.h \
 	resource.c resource.h \
+	style.c style.h \
 	glkstart.h
 libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\"
