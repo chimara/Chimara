@@ -450,15 +450,22 @@ flush_text_buffer(winid_t win)
 	VALID_WINDOW(win, return 0);
 	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
 
-	GtkTextIter start_iter, end_iter;
+	GtkTextIter start_iter, end_iter, last_character;
 
 	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
 	gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
 	gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-	gtk_text_iter_backward_cursor_position(&end_iter); /* don't include \n */
-	
+	gtk_text_buffer_get_end_iter(window_buffer, &last_character);
+	gtk_text_iter_backward_cursor_position(&last_character);
+
+	gchar* last_char = gtk_text_buffer_get_text(window_buffer, &last_character, &end_iter, FALSE);
+
+	if( strchr(last_char, '\n') != NULL )
+		gtk_text_iter_backward_cursor_position(&end_iter);
+
 	gchar* inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
+
 	int chars_written = write_to_window_buffer(win, inserted_text);
 	g_free(inserted_text);
 
