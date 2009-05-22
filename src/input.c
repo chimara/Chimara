@@ -475,7 +475,7 @@ flush_text_grid(winid_t win)
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	
-	gchar *text = g_strdup(gtk_entry_get_text(win->input_entry));
+	gchar *text = g_strdup( gtk_entry_get_text(GTK_ENTRY(win->input_entry)) );
 	/* Move the focus back into the text view */
 	gtk_widget_grab_focus(win->widget);
 	/* Remove entry widget from text view */
