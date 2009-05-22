@@ -30,6 +30,7 @@ libchimara_la_SOURCES = \
 	stream.c stream.h \
 	strio.c \
 	style.c \
+	timer.c timer.h \
 	window.c window.h 
 libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\"
@@ -39,7 +40,7 @@ libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^(chimara_)?glk_"
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
-pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la
+pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la
 PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
 
 first_la_SOURCES = first.c
@@ -53,6 +54,10 @@ gridtest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 splittest_la_SOURCES = splittest.c
 splittest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+
+multiwin_la_SOURCES = multiwin.c
+multiwin_la_CFLAGS = @GLIB_CFLAGS@
+multiwin_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 CLEANFILES = chimara.ui
 

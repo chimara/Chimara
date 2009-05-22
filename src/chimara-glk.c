@@ -86,6 +86,7 @@ chimara_glk_init(ChimaraGlk *self)
     priv->fileref_list = NULL;
     priv->current_stream = NULL;
     priv->stream_list = NULL;
+	priv->timer_id = 0;
 }
 
 static void

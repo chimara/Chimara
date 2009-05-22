@@ -46,6 +46,8 @@ struct _ChimaraGlkPrivate {
     strid_t current_stream;
     /* List of streams currently in existence */
     GList *stream_list;
+	/* Current timer */
+	guint timer_id;
 };
 
 #define CHIMARA_GLK_PRIVATE(obj) \

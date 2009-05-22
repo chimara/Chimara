@@ -41,6 +41,21 @@ glk_request_char_event_uni(winid_t win)
 	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
 }
 
+/**
+ * glk_cancel_char_event:
+ * @win: A window to cancel the latest char event request on.
+ *
+ * Cancels the last char event request on the given window.
+ */
+void
+glk_cancel_char_event(winid_t win)
+{
+	/* TODO: write me */
+	VALID_WINDOW(win, return);
+	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
+	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+}
+
 /* Internal function: Request either latin-1 or unicode line input, in a text grid window. */
 static void
 text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
@@ -233,6 +248,33 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	        break;
     }		
 	g_free(utf8);
+}
+
+/**
+ * glk_cancel_line_event:
+ * @win: A text buffer or text grid window to cancel line input on.
+ * @event: Will be filled in if the user had already input something.
+ *
+ * This cancels a pending request for line input. (Either Latin-1 or Unicode.)
+ *
+ * The event pointed to by the event argument will be filled in as if the
+ * player had hit enter, and the input composed so far will be stored in the
+ * buffer; see below. If you do not care about this information, pass NULL as
+ * the event argument. (The buffer will still be filled.) 
+ *
+ * For convenience, it is legal to call glk_cancel_line_event() even if there
+ * is no line input request on that window. The event type will be set to
+ * evtype_None in this case.
+ */
+void
+glk_cancel_line_event(winid_t win, event_t *event)
+{
+	/* TODO: write me */
+	VALID_WINDOW(win, return);
+	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
+	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+
+	event = NULL;
 }
 
 /* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids, and also in line input on grids, to redirect keystrokes to the line input field. Blocked when not in use. */

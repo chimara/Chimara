@@ -99,10 +99,13 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		/* Unicode capabilities present */
 		case gestalt_Unicode:
 			return 1;
+
+		/* Timer capabilities present */
+		case gestalt_Timer:
+			return 1;
 			
 		/* Unsupported capabilities */
 		case gestalt_MouseInput:
-		case gestalt_Timer:
 		case gestalt_Graphics:
 		case gestalt_DrawImage:
 		case gestalt_Sound:
