@@ -7,7 +7,6 @@ Name: Chimara
 Description: Multi-session Glk library, with interactive fiction plugins
 Version: @PACKAGE_VERSION@
 URL: http://no.public.website.yet
-Requires: glib-2.0
 Libs: -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
 Cflags: -I${includedir}/chimara
 

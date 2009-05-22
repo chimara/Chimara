@@ -56,7 +56,6 @@ splittest_la_SOURCES = splittest.c
 splittest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 multiwin_la_SOURCES = multiwin.c
-multiwin_la_CFLAGS = @GLIB_CFLAGS@
 multiwin_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 CLEANFILES = chimara.ui

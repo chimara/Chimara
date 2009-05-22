@@ -25,6 +25,11 @@ IT_PROG_INTLTOOL([0.35.0]) # Intltool
 PKG_PROG_PKG_CONFIG        # pkg_config
 GTK_DOC_CHECK(1.9)         # Gtk-Doc
 
+### TYPES #####################################################################
+
+AC_TYPE_INT32_T
+AC_TYPE_UINT32_T
+
 ### INTERNATIONALIZATION ######################################################
 
 GETTEXT_PACKAGE=chimara
@@ -54,8 +59,6 @@ PKG_CHECK_MODULES([TEST], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION 
 	gmodule-2.0
 ])
-# GLib CFLAGS for plugins
-PKG_CHECK_MODULES([GLIB], [glib-2.0 >= $GLIB_REQUIRED_VERSION])
 
 ### GTK-DOC ###################################################################
 
