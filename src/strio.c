@@ -17,6 +17,12 @@
 static void
 write_utf8_to_grid(winid_t win, gchar *s)
 {
+	if(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+	{
+		ILLEGAL("Tried to print to a text grid window with line input pending.");
+		return;
+	}
+	
     /* Number of characters to insert */
     glong length = g_utf8_strlen(s, -1);
     glong chars_left = length;
@@ -59,6 +65,12 @@ write_utf8_to_grid(winid_t win, gchar *s)
 static void
 write_utf8_to_window(winid_t win, gchar *s)
 {
+	if(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+	{
+		ILLEGAL("Tried to print to a text buffer window with line input pending.");
+		return;
+	}
+	
 	gdk_threads_enter();
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
