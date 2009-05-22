@@ -276,15 +276,18 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 void
 glk_cancel_line_event(winid_t win, event_t *event)
 {
-	/* TODO: write me */
 	VALID_WINDOW(win, return);
-	g_return_if_fail(win->input_request_type != INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
-	event->type = evtype_None;
-	event->win = win;
-	event->val1 = 0;
-	event->val2 = 0;
+	if(event != NULL) {
+		event->type = evtype_None;
+		event->win = win;
+		event->val1 = 0;
+		event->val2 = 0;
+	}
+
+	if(win->input_request_type == INPUT_REQUEST_NONE)
+		return;
 
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 
@@ -299,7 +302,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
 		chars_written = flush_text_buffer(win);
 	}
 
-	if(chars_written > 0) {
+	if(event != NULL && chars_written > 0) {
 		event->type = evtype_LineInput;
 		event->val1 = chars_written;
 	}
