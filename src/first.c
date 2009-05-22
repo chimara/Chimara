@@ -61,6 +61,8 @@ static void verb_script(void);
 static void verb_unscript(void);
 static void verb_save(void);
 static void verb_restore(void);
+static void verb_alert(void);
+static void verb_notice(void);
 
 /* The glk_main() function is called by the Glk system; it's the main entry
     point for your program. */
@@ -213,6 +215,12 @@ void glk_main(void)
         else if (str_eq(cmd, "unscript")) {
             verb_unscript();
         }
+        else if (str_eq(cmd, "alert")) {
+            verb_alert();
+        }
+        else if (str_eq(cmd, "notice")) {
+            verb_notice();
+        }
         else {
             glk_put_string("I don't understand the command \"");
             glk_put_string(cmd);
@@ -315,6 +323,8 @@ static void verb_help(void)
     glk_put_string("UNSCRIPT: Turn off transcripting.\n");
     glk_put_string("SAVE: Write fake data to a save file.\n");
     glk_put_string("RESTORE: Read it back in.\n");
+    glk_put_string("ALERT: Print a frightful message.\n");
+    glk_put_string("NOTICE: Print an interesting message.\n");
     glk_put_string("QUIT: Quit and exit.\n");
 }
 
@@ -399,8 +409,8 @@ static void verb_quote(void)
     /* Print some quote. */
     glk_set_window(quotewin);
     glk_set_style(style_BlockQuote);
-    glk_put_string("Tomorrow probably never rose or set\n"
-        "Or went out and bought cheese, or anything like that\n"
+    glk_put_string("Tomorrow probably never rose ");
+	glk_put_string("or set\n Or went out and bought cheese, or anything like that\n"
         "And anyway, what light through yonder quote box breaks\n"
         "Handle to my hand?\n");
     glk_put_string("              -- Fred\n");
@@ -413,7 +423,11 @@ static void verb_move(void)
     current_room = (current_room+1) % 2;
     need_look = TRUE;
     
-    glk_put_string("You walk for a while.\n");
+    glk_put_string("You ");
+	glk_set_style(style_Emphasized);
+	glk_put_string("walk");
+   	glk_set_style(style_Normal);
+	glk_put_string(" for a while.\n");
 }
 
 static void verb_quit(void)
@@ -556,6 +570,21 @@ static void verb_restore(void)
     
     glk_put_string("Game restored.\n");
 }
+
+void verb_alert()
+{
+	glk_set_style(style_Alert);
+	glk_put_string("O noes!\n");
+	glk_set_style(style_Normal);
+}
+
+void verb_notice()
+{
+	glk_set_style(style_Note);
+	glk_put_string("The answer... is 42!\n");
+	glk_set_style(style_Normal);
+}
+
 
 /* simple string length test */
 static int str_len(char *s1)
