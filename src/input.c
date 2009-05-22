@@ -171,9 +171,8 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
  * (This may not be %NULL.) @maxlen is the length of this space, in bytes; the
  * library will not accept more characters than this. If @initlen is nonzero,
  * then the first @initlen bytes of @buf will be entered as pre-existing input
- * &mdash; just as if the player had typed them himself. (The player can 
- * continue composing after this pre-entered input, or delete it or edit as 
- * usual.)
+ * &mdash; just as if the player had typed them himself. (The player can continue
+ * composing after this pre-entered input, or delete it or edit as usual.)
  * 
  * The contents of the buffer are undefined until the input is completed (either
  * by a line input event, or glk_cancel_line_event(). The library may or may not
@@ -258,62 +257,6 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	g_free(utf8);
 }
 
-/* Internal function: cancel a line input request, for both text grid and text buffer windows. */
-static void
-cancel_line_input_request(winid_t win, const gchar *inserted_text, event_t *event)
-{
-	if(event)
-	{
-		event->type = evtype_LineInput;
-		event->win = win;
-		event->val1 = event->val2 = 0;
-	}
-	
-    /* Convert the string from UTF-8 to Latin-1 or Unicode */
-    if(win->input_request_type == INPUT_REQUEST_LINE) 
-    {
-	    win->input_request_type = INPUT_REQUEST_NONE;
-		
-        gsize bytes_written;
-        gchar *latin1 = convert_utf8_to_latin1(inserted_text, &bytes_written);
-        
-        if(latin1 == NULL)
-            return;
-
-        /* Place input in the echo stream */
-        if(win->echo_stream != NULL) 
-            glk_put_string_stream(win->echo_stream, latin1);
-
-        /* Copy the string (bytes_written does not include the NULL at the end) */
-        int copycount = MIN(win->line_input_buffer_max_len, bytes_written);
-        memcpy(win->line_input_buffer, latin1, copycount);
-        g_free(latin1);
-        if(event)
-			event->val1 = copycount;
-    }
-    else if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE) 
-    {
-        glong items_written;
-        gunichar *unicode = convert_utf8_to_ucs4(inserted_text, &items_written);
-        
-        if(unicode == NULL)
-            return;
-
-        /* Place input in the echo stream */
-        if(win->echo_stream != NULL) 
-            glk_put_string_stream_uni(win->echo_stream, unicode);
-
-        /* Copy the string (but not the NULL at the end) */
-        int copycount = MIN(win->line_input_buffer_max_len, items_written);
-        memcpy(win->line_input_buffer_unicode, unicode, copycount * sizeof(gunichar));
-        g_free(unicode);
-        if(event)
-			event->val1 = copycount;
-    }
-    else 
-        WARNING("Wrong input request type");
-}
-
 /**
  * glk_cancel_line_event:
  * @win: A text buffer or text grid window to cancel line input on.
@@ -321,10 +264,10 @@ cancel_line_input_request(winid_t win, const gchar *inserted_text, event_t *even
  *
  * This cancels a pending request for line input. (Either Latin-1 or Unicode.)
  *
- * The event pointed to by the @event argument will be filled in as if the
- * player had hit <keycap>enter</keycap>, and the input composed so far will be 
- * stored in the buffer; see below. If you do not care about this information, 
- * pass %NULL as the @event argument. (The buffer will still be filled.) 
+ * The event pointed to by the event argument will be filled in as if the
+ * player had hit <keycap>enter</keycap>, and the input composed so far will be stored in the
+ * buffer; see below. If you do not care about this information, pass %NULL as
+ * the @event argument. (The buffer will still be filled.) 
  *
  * For convenience, it is legal to call glk_cancel_line_event() even if there
  * is no line input request on that window. The event type will be set to
@@ -333,65 +276,32 @@ cancel_line_input_request(winid_t win, const gchar *inserted_text, event_t *even
 void
 glk_cancel_line_event(winid_t win, event_t *event)
 {
+	/* TODO: write me */
 	VALID_WINDOW(win, return);
+	g_return_if_fail(win->input_request_type != INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
-	if(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
-	{
-		if(win->type == wintype_TextBuffer)
-		{
-			/* Remove signal handlers */
-			GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-			g_signal_handler_block(window_buffer, win->insert_text_handler);
-		
-			/* Make the window uneditable again and retrieve the text that was input */
-			gchar *inserted_text;
-			GtkTextIter start_iter, end_iter;
+	event->type = evtype_None;
+	event->win = win;
+	event->val1 = 0;
+	event->val2 = 0;
 
-		    gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-		    GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
-		    gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
-		    gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-			gtk_text_iter_backward_cursor_position(&end_iter); /* don't include \n */
-		    
-		    inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
+	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 
-		    cancel_line_input_request(win, inserted_text, event);
-		    g_free(inserted_text);
-		}
-		else if(win->type == wintype_TextGrid)
-		{
-			GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-	
-			gchar *text = g_strdup( gtk_entry_get_text( GTK_ENTRY(win->input_entry) ) );
-			/* Move the focus back into the text view */
-			gtk_widget_grab_focus(win->widget);
-			/* Remove entry widget from text view */
-			gtk_container_remove(GTK_CONTAINER(win->widget), win->input_entry);
-			win->input_entry = NULL;
-			/* Delete the child anchor */
-			GtkTextIter start, end;
-			gtk_text_buffer_get_iter_at_child_anchor(buffer, &start, win->input_anchor);
-			end = start;
-			gtk_text_iter_forward_char(&end); /* Point after the child anchor */
-			gtk_text_buffer_delete(buffer, &start, &end);
-			win->input_anchor = NULL;
-	
-			gchar *spaces = g_strnfill(win->input_length - g_utf8_strlen(text, -1), ' ');
-			gchar *text_to_insert = g_strconcat(text, spaces, NULL);
-			g_free(spaces);
-			gtk_text_buffer_insert(buffer, &start, text_to_insert, -1);
-			g_free(text_to_insert);
-		
-			g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
-	
-			cancel_line_input_request(win, text, event);
-			g_free(text);
-		}
+	if(win->type == wintype_TextGrid) {
+		/* No possible input, we're done here */
+		return;
 	}
-	else
-		if(event)
-			event->type = evtype_None;
+
+	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+	g_signal_handler_block(window_buffer, win->insert_text_handler);
+
+	/* Retrieve possible input */
+	int chars_written = flush_text_buffer(win);
+	if(chars_written > 0) {
+		event->type = evtype_LineInput;
+		event->val1 = chars_written;
+	}
 }
 
 /* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids, and also in line input on grids, to redirect keystrokes to the line input field. Blocked when not in use. */
@@ -484,58 +394,74 @@ on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 }
 
 /* Internal function: finish handling a line input request, for both text grid and text buffer windows. */
-static void
-end_line_input_request(winid_t win, const gchar *inserted_text)
+static int
+write_to_window_buffer(winid_t win, const gchar *inserted_text)
 {
+	int copycount = 0;
+
     /* Convert the string from UTF-8 to Latin-1 or Unicode */
     if(win->input_request_type == INPUT_REQUEST_LINE) 
     {
-		win->input_request_type = INPUT_REQUEST_NONE;
-		
         gsize bytes_written;
         gchar *latin1 = convert_utf8_to_latin1(inserted_text, &bytes_written);
         
         if(latin1 == NULL)
-        {
-            event_throw(evtype_LineInput, win, 0, 0);
-            return;
-        }
+            return 0;
 
         /* Place input in the echo stream */
         if(win->echo_stream != NULL) 
             glk_put_string_stream(win->echo_stream, latin1);
 
         /* Copy the string (bytes_written does not include the NULL at the end) */
-        int copycount = MIN(win->line_input_buffer_max_len, bytes_written);
+        copycount = MIN(win->line_input_buffer_max_len, bytes_written);
         memcpy(win->line_input_buffer, latin1, copycount);
         g_free(latin1);
-        event_throw(evtype_LineInput, win, copycount, 0);
     }
     else if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE) 
     {
-		win->input_request_type = INPUT_REQUEST_NONE;
-		
         glong items_written;
         gunichar *unicode = convert_utf8_to_ucs4(inserted_text, &items_written);
         
         if(unicode == NULL)
-        {
-            event_throw(evtype_LineInput, win, 0, 0);
-            return;
-        }
+            return 0;
 
         /* Place input in the echo stream */
         if(win->echo_stream != NULL) 
             glk_put_string_stream_uni(win->echo_stream, unicode);
 
         /* Copy the string (but not the NULL at the end) */
-        int copycount = MIN(win->line_input_buffer_max_len, items_written);
+        copycount = MIN(win->line_input_buffer_max_len, items_written);
         memcpy(win->line_input_buffer_unicode, unicode, copycount * sizeof(gunichar));
         g_free(unicode);
-        event_throw(evtype_LineInput, win, copycount, 0);
     }
     else 
         WARNING("Wrong input request type");
+
+    win->input_request_type = INPUT_REQUEST_NONE;
+	return copycount;
+}
+
+/* Internal function: Retrieves the input of a TextBuffer window and stores it in the window buffer.
+ * Returns the number of characters written, suitable for inclusion in a line input event. */
+static int
+flush_text_buffer(winid_t win)
+{
+	VALID_WINDOW(win, return 0);
+	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
+
+	GtkTextIter start_iter, end_iter;
+
+	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
+	gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
+	gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
+	gtk_text_iter_backward_cursor_position(&end_iter); /* don't include \n */
+	
+	gchar* inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
+	int chars_written = write_to_window_buffer(win, inserted_text);
+	g_free(inserted_text);
+
+	return chars_written;
 }
 
 /* Internal function: Callback for signal insert-text on a text buffer window.
@@ -553,19 +479,10 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 		g_signal_handler_block(window_buffer, win->insert_text_handler);
 		
 		/* Make the window uneditable again and retrieve the text that was input */
-		gchar *inserted_text;
-		GtkTextIter start_iter, end_iter;
-
         gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-        GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
-        gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
-        gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-		gtk_text_iter_backward_cursor_position(&end_iter); /* don't include \n */
-        
-        inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
 
-        end_line_input_request(win, inserted_text);
-        g_free(inserted_text);
+        int chars_written = flush_text_buffer(win);
+		event_throw(evtype_LineInput, win, chars_written, 0);
 	}
 }
 
@@ -599,7 +516,8 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
     
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 	
-    end_line_input_request(win, text);
+    int chars_written = write_to_window_buffer(win, text);
+	event_throw(evtype_LineInput, win, chars_written, 0);
 	g_free(text);
 }
 

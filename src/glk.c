@@ -42,6 +42,10 @@ void
 glk_exit(void)
 {
     g_signal_emit_by_name(glk_data->self, "stopped");
+
+	/* Stop any timers */
+	glk_request_timer_events(0);
+
     glk_data = NULL;
 	g_thread_exit(NULL);
 }
