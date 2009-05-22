@@ -288,16 +288,17 @@ glk_cancel_line_event(winid_t win, event_t *event)
 
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 
+	int chars_written = 0;
+
 	if(win->type == wintype_TextGrid) {
-		/* No possible input, we're done here */
-		return;
+		g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+		chars_written = flush_text_grid(win);
+	} else if(win->type == wintype_TextBuffer) {
+		GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		g_signal_handler_block(window_buffer, win->insert_text_handler);
+		chars_written = flush_text_buffer(win);
 	}
 
-	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-	g_signal_handler_block(window_buffer, win->insert_text_handler);
-
-	/* Retrieve possible input */
-	int chars_written = flush_text_buffer(win);
 	if(chars_written > 0) {
 		event->type = evtype_LineInput;
 		event->val1 = chars_written;
@@ -464,6 +465,43 @@ flush_text_buffer(winid_t win)
 	return chars_written;
 }
 
+/* Internal function: Retrieves the input of a TextGrid window and stores it in the window buffer.
+ * Returns the number of characters written, suitable for inclusion in a line input event. */
+static int
+flush_text_grid(winid_t win)
+{
+	VALID_WINDOW(win, return 0);
+	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
+
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+	
+	gchar *text = g_strdup(gtk_entry_get_text(win->input_entry));
+	/* Move the focus back into the text view */
+	gtk_widget_grab_focus(win->widget);
+	/* Remove entry widget from text view */
+	/* Should be ok even though this is the widget's own signal handler */
+	gtk_container_remove( GTK_CONTAINER(win->widget), GTK_WIDGET(win->input_entry) );
+	win->input_entry = NULL;
+	/* Delete the child anchor */
+	GtkTextIter start, end;
+	gtk_text_buffer_get_iter_at_child_anchor(buffer, &start, win->input_anchor);
+	end = start;
+	gtk_text_iter_forward_char(&end); /* Point after the child anchor */
+	gtk_text_buffer_delete(buffer, &start, &end);
+	win->input_anchor = NULL;
+	
+    gchar *spaces = g_strnfill(win->input_length - g_utf8_strlen(text, -1), ' ');
+    gchar *text_to_insert = g_strconcat(text, spaces, NULL);
+	g_free(spaces);
+    gtk_text_buffer_insert(buffer, &start, text_to_insert, -1);
+    g_free(text_to_insert);
+    
+    int chars_written = write_to_window_buffer(win, text);
+	g_free(text);
+
+	return chars_written;
+}
+
 /* Internal function: Callback for signal insert-text on a text buffer window.
 Runs after the default handler has already inserted the text.
 FIXME: This function assumes that newline was the last character typed into the
@@ -491,33 +529,9 @@ in a text grid window. */
 void
 on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 {
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-	
-	gchar *text = g_strdup(gtk_entry_get_text(input_entry));
-	/* Move the focus back into the text view */
-	gtk_widget_grab_focus(win->widget);
-	/* Remove entry widget from text view */
-	/* Should be ok even though this is the widget's own signal handler */
-	gtk_container_remove( GTK_CONTAINER(win->widget), GTK_WIDGET(input_entry) );
-	win->input_entry = NULL;
-	/* Delete the child anchor */
-	GtkTextIter start, end;
-	gtk_text_buffer_get_iter_at_child_anchor(buffer, &start, win->input_anchor);
-	end = start;
-	gtk_text_iter_forward_char(&end); /* Point after the child anchor */
-	gtk_text_buffer_delete(buffer, &start, &end);
-	win->input_anchor = NULL;
-	
-    gchar *spaces = g_strnfill(win->input_length - g_utf8_strlen(text, -1), ' ');
-    gchar *text_to_insert = g_strconcat(text, spaces, NULL);
-	g_free(spaces);
-    gtk_text_buffer_insert(buffer, &start, text_to_insert, -1);
-    g_free(text_to_insert);
-    
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
-	
-    int chars_written = write_to_window_buffer(win, text);
+
+	int chars_written = flush_text_grid(win);
 	event_throw(evtype_LineInput, win, chars_written, 0);
-	g_free(text);
 }
 
