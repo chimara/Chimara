@@ -19,8 +19,5 @@ nitfol_la_SOURCES = automap.c solve.c infix.c debug.c inform.c quetzal.c \
 	$(SOUND)
 nitfol_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
-# TODO: Remove this later, see issue #6
-nitfol_la_CFLAGS = -I../../src
-
 nitfoldocdir = $(datadir)/doc/$(PACKAGE)/nitfol
 dist_nitfoldoc_DATA = ChangeLog COPYING INSTALL README

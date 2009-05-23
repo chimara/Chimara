@@ -10,7 +10,7 @@
 #include <dirent.h>
 #include <limits.h>
 #include "nitfol.h"
-#include "glkstart.h"
+#include <libchimara/glkstart.h>
 
 static char *game_filename = NULL;
 

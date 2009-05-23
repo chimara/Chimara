@@ -42,7 +42,7 @@
 
 #include "callbacks.h"
 #include "error.h"
-#include "chimara-glk.h"
+#include <libchimara/chimara-glk.h>
 
 /* Global pointers to widgets */
 GtkBuilder *builder = NULL;

@@ -6,7 +6,6 @@
 
 #include "stream.h"
 #include "error.h"
-#include "callbacks.h"
 #include "input.h"
 #include "style.h"
 

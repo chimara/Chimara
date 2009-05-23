@@ -19,7 +19,7 @@
 */
 #include "nitfol.h"
 
-#include "gi_blorb.h"
+#include <libchimara/gi_blorb.h>
 
 
 static void set_zfile(strid_t file)

@@ -7,7 +7,7 @@
 # tarballname)
 AC_INIT([chimara], [0.1])
 # Sanity check to make sure we are running Autoconf from the right directory
-AC_CONFIG_SRCDIR(src/chimara-glk.c)
+AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
 # Initialize Automake
 AM_INIT_AUTOMAKE([-Wall])
 
@@ -75,10 +75,11 @@ AC_CONFIG_FILES([
 Makefile
 chimara.pc
 chimara-plugin.pc
-src/Makefile
+libchimara/Makefile
 interpreters/Makefile
 interpreters/frotz/Makefile
 interpreters/nitfol/Makefile
+tests/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml

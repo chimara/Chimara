@@ -24,7 +24,7 @@
 #include <time.h>        /* For time() */
 #include <ctype.h>       /* for isspace, isgraph, etc. */
 #include <limits.h>
-#include "glk.h"
+#include <libchimara/glk.h>
 #define GLK_EOF ((glsi32) -1)
 
 #define NITFOL_MAJOR 0
@@ -328,7 +328,7 @@ typedef enum { OBJ_GET_INFO, OBJ_RECEIVE, OBJ_MOVE } watchinfo;
 #include "z_io.h"
 
 #include "no_snd.h"
-#include "gi_blorb.h"
+#include <libchimara/gi_blorb.h>
 #include "no_graph.h"
 #include "no_blorb.h"
 

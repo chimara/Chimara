@@ -28,10 +28,10 @@
 
 #include "frotz.h"
 
-#include "glk.h"
+#include <libchimara/glk.h>
 #include "glkio.h"
-#include "glkstart.h"
-#include "gi_blorb.h"
+#include <libchimara/glkstart.h>
+#include <libchimara/gi_blorb.h>
 
 extern void seed_random (int);
 extern void restart_screen (void);

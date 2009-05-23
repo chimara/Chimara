@@ -1,5 +1,5 @@
 #include "nitfol.h"
-#include "gi_blorb.h"
+#include <libchimara/gi_blorb.h>
 
 /* Link this in only if your glk doesn't support blorb */
 

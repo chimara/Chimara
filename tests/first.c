@@ -1,4 +1,4 @@
-#include "glk.h"
+#include <libchimara/glk.h>
 
 /* model.c: Model program for Glk API, version 0.5.
     Designed by Andrew Plotkin <erkyrath@eblong.com>

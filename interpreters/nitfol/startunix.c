@@ -1,6 +1,6 @@
 #line 228 "opt2glkc.pl"
 #include "nitfol.h"
-#include "glkstart.h"
+#include <libchimara/glkstart.h>
 #ifdef DEBUGGING
 #include <signal.h>
 #endif

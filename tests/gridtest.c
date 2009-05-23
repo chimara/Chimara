@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "glk.h"
+#include <libchimara/glk.h>
 
 void glk_main(void)
 {

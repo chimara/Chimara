@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "glk.h"
+#include <libchimara/glk.h>
 
 #define SPACE_FACTOR 1.8
 
