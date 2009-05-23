@@ -476,3 +476,12 @@ stream_close_common(strid_t str, stream_result_t *result)
 	str->magic = MAGIC_FREE;
 	g_free(str);
 }
+
+strid_t
+glkunix_stream_open_pathname(char *pathname, glui32 usage, glui32 rock)
+{
+	printf("making new fileref: %s\n", pathname);
+	frefid_t fileref = fileref_new(pathname, rock, usage, filemode_ReadWrite);
+	printf("makeing new stream:\n");
+	return file_stream_new(fileref, filemode_ReadWrite, rock, FALSE);
+}

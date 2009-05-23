@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include "glk.h"
 #include "window.h"
+#include "fileref.h"
 
 enum StreamType
 {

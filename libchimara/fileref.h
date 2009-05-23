@@ -25,4 +25,5 @@ struct glk_fileref_struct
 	glui32 usage;
 };
 
+G_GNUC_INTERNAL frefid_t fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode);
 #endif

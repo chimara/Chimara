@@ -27,7 +27,7 @@ libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\"
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
-libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^(chimara_)?glk_"
+libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^(glk_|chimara_glk_|glkunix_|giblorb_)"
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 

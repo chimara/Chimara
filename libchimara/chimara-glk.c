@@ -10,6 +10,7 @@
 #include "glk.h"
 #include "abort.h"
 #include "window.h"
+#include "glkstart.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
@@ -40,6 +41,7 @@
  */
 
 typedef void (* glk_main_t) (void);
+typedef void (* glkunix_startup_code_t) (glkunix_startup_t*);
 
 enum {
     PROP_0,
@@ -876,6 +878,7 @@ static gpointer
 glk_enter(gpointer glk_main)
 {
     extern ChimaraGlkPrivate *glk_data;
+
     g_signal_emit_by_name(glk_data->self, "started");
 	((glk_main_t)glk_main)();
 	g_signal_emit_by_name(glk_data->self, "stopped");
@@ -896,15 +899,17 @@ glk_enter(gpointer glk_main)
  * Return value: %TRUE if the Glk program was started successfully.
  */
 gboolean
-chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
+chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError **error)
 {
     g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
     g_return_val_if_fail(plugin, FALSE);
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
     
+
     /* Open the module to run */
     glk_main_t glk_main;
+	glkunix_startup_code_t glkunix_startup_code;
     g_assert( g_module_supported() );
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
@@ -923,6 +928,15 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, GError **error)
     /* Set the thread's private data */
     /* TODO: Do this with a GPrivate */
     glk_data = priv;
+
+    if( g_module_symbol(priv->program, "glkunix_startup_code", (gpointer *) &glkunix_startup_code) )
+    {
+		glkunix_startup_t data;
+		data.argc = argc;
+		data.argv = argv;
+
+		glkunix_startup_code(&data);
+    }
 
     /* Run in a separate thread */
 	priv->thread = g_thread_create(glk_enter, glk_main, TRUE, error);

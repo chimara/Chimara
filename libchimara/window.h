@@ -5,7 +5,6 @@
 #include "glk.h"
 
 #include "stream.h"
-#include "error.h"
 #include "input.h"
 #include "style.h"
 

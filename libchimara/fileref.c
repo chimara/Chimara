@@ -57,7 +57,7 @@ glk_fileref_get_rock(frefid_t fref)
 }
 
 /* Internal function: create a fileref using the given parameters. */
-static frefid_t
+frefid_t
 fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 {
 	g_return_val_if_fail(filename != NULL, NULL);
