@@ -14,6 +14,7 @@ libchimara_la_SOURCES = \
 	gestalt.c \
 	glk.c glk.h \
 	magic.c magic.h \
+	mouse.c \
 	input.c input.h \
 	stream.c stream.h \
 	strio.c \
