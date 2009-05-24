@@ -83,6 +83,8 @@ chimara_glk_init(ChimaraGlk *self)
     priv->event_queue_not_full = NULL;
     priv->abort_lock = NULL;
     priv->abort_signalled = FALSE;
+	priv->arrange_lock = NULL;
+	priv->ignore_next_arrange_event = FALSE;
     priv->interrupt_handler = NULL;
     priv->root_window = NULL;
     priv->fileref_list = NULL;
@@ -168,6 +170,13 @@ chimara_glk_finalize(GObject *object)
 	g_mutex_free(priv->abort_lock);
 	priv->abort_lock = NULL;
 
+	/* Free the window arrangement signalling */
+	g_mutex_lock(priv->arrange_lock);
+	/* Make sure no other thread is busy with this */
+	g_mutex_unlock(priv->arrange_lock);
+	g_mutex_free(priv->arrange_lock);
+	priv->arrange_lock = NULL;
+	
 	/* Free private data */
 	pango_font_description_free(priv->default_font_desc);
 	pango_font_description_free(priv->monospace_font_desc);
@@ -259,8 +268,10 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
     }
 }
 
-/* Recursively give the Glk windows their allocated space */
-static void
+/* Recursively give the Glk windows their allocated space. Returns a window
+ containing all children of this window that must be redrawn, or NULL if there 
+ are no children that require redrawing. */
+static winid_t
 allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 {
 	if(win->type == wintype_Pair)
@@ -347,8 +358,13 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		}
 		
 		/* Recurse */
-		allocate_recurse(win->window_node->children->data, &child1, spacing);
-		allocate_recurse(win->window_node->children->next->data, &child2, spacing);
+		winid_t arrange1 = allocate_recurse(win->window_node->children->data, &child1, spacing);
+		winid_t arrange2 = allocate_recurse(win->window_node->children->next->data, &child2, spacing);
+		if(arrange1 == NULL)
+			return arrange2;
+		if(arrange2 == NULL)
+			return arrange1;
+		return win;
 	}
 	
 	else if(win->type == wintype_TextGrid)
@@ -413,13 +429,15 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		    g_free(text);
 		}
 	
+		gboolean arrange = !(win->width == newwidth && win->height == newheight);
 		win->width = newwidth;
 		win->height = newheight;
+		return arrange? win : NULL;
 	}
 	
 	/* For non-pair, non-text-grid windows, just give them the size */
-	else
-		gtk_widget_size_allocate(win->frame, allocation);
+	gtk_widget_size_allocate(win->frame, allocation);
+	return NULL;
 }
 
 /* Overrides gtk_widget_size_allocate */
@@ -440,7 +458,19 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		child.y = allocation->y + GTK_CONTAINER(widget)->border_width;
 		child.width = CLAMP(allocation->width - 2 * GTK_CONTAINER(widget)->border_width, 0, allocation->width);
 		child.height = CLAMP(allocation->height - 2 * GTK_CONTAINER(widget)->border_width, 0, allocation->height);
-		allocate_recurse(priv->root_window->data, &child, priv->spacing);
+		winid_t arrange = allocate_recurse(priv->root_window->data, &child, priv->spacing);
+		
+		/* arrange points to a window that contains all text grid and graphics
+		 windows which have been resized */
+		g_mutex_lock(priv->arrange_lock);
+		if(!priv->ignore_next_arrange_event)
+		{
+			if(arrange)
+				event_throw(evtype_Arrange, arrange == priv->root_window->data? NULL : arrange, 0, 0);
+		}
+		else
+			priv->ignore_next_arrange_event = FALSE;
+		g_mutex_unlock(priv->arrange_lock);
 	}
 }
 
@@ -631,6 +661,7 @@ chimara_glk_new(void)
     priv->event_queue_not_empty = g_cond_new();
     priv->event_queue_not_full = g_cond_new();
     priv->abort_lock = g_mutex_new();
+	priv->arrange_lock = g_mutex_new();
     
     return GTK_WIDGET(self);
 }

@@ -561,7 +561,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		glk_data->root_window = win->window_node;
 	}
 
-	/* Set the window as a child of the Glk widget */
+	/* Set the window as a child of the Glk widget, don't trigger an arrange event */
+	g_mutex_lock(glk_data->arrange_lock);
+	glk_data->ignore_next_arrange_event = TRUE;
+	g_mutex_unlock(glk_data->arrange_lock);
 	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 	
@@ -603,23 +606,19 @@ remove_key_windows(GNode *node, winid_t closing_win)
 }
 
 /* Internal function: destroy this window's GTK widgets, window streams, 
- and those of all its children */
+ and those of all its children. GDK threads must be locked. */
 static void
 destroy_windows_below(winid_t win, stream_result_t *result)
 {
 	switch(win->type)
 	{
 		case wintype_Blank:
-			gdk_threads_enter();
 			gtk_widget_unparent(win->widget);
-			gdk_threads_leave();
 			break;
 	
 	    case wintype_TextGrid:
 		case wintype_TextBuffer:
-			gdk_threads_enter();
 			gtk_widget_unparent(win->frame);
-			gdk_threads_leave();
 			/* TODO: Cancel all input requests */
 			break;
 
@@ -714,6 +713,8 @@ glk_window_close(winid_t win, stream_result_t *result)
 {
 	VALID_WINDOW(win, return);
 	
+	gdk_threads_enter(); /* Prevent redraw while we're trashing the window */
+	
 	/* If any pair windows have this window or its children as a key window,
 	 set their key window to NULL */
 	g_node_traverse(glk_data->root_window, G_IN_ORDER, G_TRAVERSE_NON_LEAVES, -1, (GNodeTraverseFunc)remove_key_windows, win);
@@ -770,9 +771,10 @@ glk_window_close(winid_t win, stream_result_t *result)
 	g_free(win);
 
 	/* Schedule a redraw */
-	gdk_threads_enter();
+	g_mutex_lock(glk_data->arrange_lock);
+	glk_data->ignore_next_arrange_event = TRUE;
+	g_mutex_unlock(glk_data->arrange_lock);
 	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
-	gdk_window_process_all_updates();
 	gdk_threads_leave();
 }
 
@@ -1129,8 +1131,10 @@ glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keyw
 
 	/* Tell GTK to rearrange the windows */
 	gdk_threads_enter();
+	g_mutex_lock(glk_data->arrange_lock);
+	glk_data->ignore_next_arrange_event = TRUE;
+	g_mutex_unlock(glk_data->arrange_lock);
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
-	gdk_window_process_all_updates();
 	gdk_threads_leave();
 }
 
