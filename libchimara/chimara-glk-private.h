@@ -39,6 +39,8 @@ struct _ChimaraGlkPrivate {
     gboolean abort_signalled;
 	/* Window arrangement locks */
 	GMutex *arrange_lock;
+	GCond *rearranged;
+	gboolean needs_rearrange;
 	gboolean ignore_next_arrange_event;
     /* User-defined interrupt handler */
     void (*interrupt_handler)(void);

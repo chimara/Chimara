@@ -563,34 +563,24 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 	/* Set the window as a child of the Glk widget, don't trigger an arrange event */
 	g_mutex_lock(glk_data->arrange_lock);
+	glk_data->needs_rearrange = TRUE;
 	glk_data->ignore_next_arrange_event = TRUE;
 	g_mutex_unlock(glk_data->arrange_lock);
 	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 	
-	gdk_threads_leave();
-	
-	/* For blank or pair windows, this is almost a no-op. For text grid and
-	 text buffer windows, this will wait for GTK to draw the window. Otherwise,
-	 opening a window and getting its size immediately will give you the wrong
-	 size. */
-	glk_window_get_size(win, NULL, NULL);
-	
     /* For text grid windows, fill the buffer with blanks. */
     if(wintype == wintype_TextGrid)
     {
         /* Create the cursor position mark */
-		gdk_threads_enter();
         GtkTextIter begin;
         GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
         gtk_text_buffer_get_start_iter(buffer, &begin);
         gtk_text_buffer_create_mark(buffer, "cursor_position", &begin, TRUE);
-        gdk_threads_leave();
-		
-        /* Fill the buffer with blanks and move the cursor to the upper left */
-        glk_window_clear(win);
-    }
+	}
 
+	gdk_threads_leave();
+    glk_window_clear(win);
 	return win;
 }
 
@@ -768,6 +758,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 
 	/* Schedule a redraw */
 	g_mutex_lock(glk_data->arrange_lock);
+	glk_data->needs_rearrange = TRUE;
 	glk_data->ignore_next_arrange_event = TRUE;
 	g_mutex_unlock(glk_data->arrange_lock);
 	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
@@ -827,6 +818,12 @@ glk_window_clear(winid_t win)
 		case wintype_TextGrid:
 		    /* fill the buffer with blanks */
 		{
+			/* Wait for the window's size to be updated */
+			g_mutex_lock(glk_data->arrange_lock);
+			if(glk_data->needs_rearrange)
+				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+			g_mutex_unlock(glk_data->arrange_lock);
+			
 		    gdk_threads_enter();
 		    
             /* Manually put newlines at the end of each row of characters in the buffer; manual newlines make resizing the window's grid easier. */
@@ -986,18 +983,14 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             break;
             
         case wintype_TextGrid:
+			/* Wait until the window's size is current */
+			g_mutex_lock(glk_data->arrange_lock);
+			if(glk_data->needs_rearrange)
+				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+			g_mutex_unlock(glk_data->arrange_lock);
+			
 			gdk_threads_enter();
-			/* Wait for the window to be drawn, and then cache the width and height */
-			gdk_window_process_all_updates();
-			while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
-		    {
-		        /* Release the GDK lock momentarily */
-		        gdk_threads_leave();
-		        gdk_threads_enter();
-		        while(gtk_events_pending())
-		            gtk_main_iteration();
-		    }
-		    
+			/* Cache the width and height */
 			win->width = (glui32)(win->widget->allocation.width / win->unit_width);
 		    win->height = (glui32)(win->widget->allocation.height / win->unit_height);
             gdk_threads_leave();
@@ -1009,26 +1002,13 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             break;
             
         case wintype_TextBuffer:
-            /* TODO: Glk wants to be able to get its windows' sizes as soon as they are created, but GTK doesn't decide on their sizes until they are drawn. The drawing happens somewhere in an idle function. A good method would be to make an educated guess of the window's size using the ChimaraGlk widget's size. */
+            /* Wait until the window's size is current */
+			g_mutex_lock(glk_data->arrange_lock);
+			if(glk_data->needs_rearrange)
+				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+			g_mutex_unlock(glk_data->arrange_lock);
+			
             gdk_threads_enter();
-            /*if(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
-            {
-                g_warning("glk_window_get_size: The Glk program requested the size of a window before it was allocated screen space by GTK. The window size is just an educated guess.");
-                guess the size from the parent window;
-                break;
-            } */
-            
-            /* Instead, we wait for GTK to draw the widget. This is probably very slow and should be fixed. */
-            gdk_window_process_all_updates();
-			while(win->widget->allocation.width == 1 && win->widget->allocation.height == 1)
-            {
-                /* Release the GDK lock momentarily */
-                gdk_threads_leave();
-                gdk_threads_enter();
-                while(gtk_events_pending())
-                    gtk_main_iteration();
-            }
-                
             if(widthptr != NULL)
                 *widthptr = (glui32)(win->widget->allocation.width / win->unit_width);
             if(heightptr != NULL)
@@ -1128,6 +1108,7 @@ glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keyw
 	/* Tell GTK to rearrange the windows */
 	gdk_threads_enter();
 	g_mutex_lock(glk_data->arrange_lock);
+	glk_data->needs_rearrange = TRUE;
 	glk_data->ignore_next_arrange_event = TRUE;
 	g_mutex_unlock(glk_data->arrange_lock);
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
@@ -1193,6 +1174,12 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_TextGrid);
 	
+	/* Wait until the window's size is current */
+	g_mutex_lock(glk_data->arrange_lock);
+	if(glk_data->needs_rearrange)
+		g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+	g_mutex_unlock(glk_data->arrange_lock);
+
 	/* Don't do anything if the window is shrunk down to nothing */
 	if(win->width == 0 || win->height == 0)
 		return;

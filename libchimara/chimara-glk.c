@@ -84,6 +84,8 @@ chimara_glk_init(ChimaraGlk *self)
     priv->abort_lock = NULL;
     priv->abort_signalled = FALSE;
 	priv->arrange_lock = NULL;
+	priv->rearranged = NULL;
+	priv->needs_rearrange = FALSE;
 	priv->ignore_next_arrange_event = FALSE;
     priv->interrupt_handler = NULL;
     priv->root_window = NULL;
@@ -172,7 +174,7 @@ chimara_glk_finalize(GObject *object)
 
 	/* Free the window arrangement signalling */
 	g_mutex_lock(priv->arrange_lock);
-	/* Make sure no other thread is busy with this */
+	g_cond_free(priv->rearranged);
 	g_mutex_unlock(priv->arrange_lock);
 	g_mutex_free(priv->arrange_lock);
 	priv->arrange_lock = NULL;
@@ -470,6 +472,8 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		}
 		else
 			priv->ignore_next_arrange_event = FALSE;
+		priv->needs_rearrange = FALSE;
+		g_cond_signal(priv->rearranged);
 		g_mutex_unlock(priv->arrange_lock);
 	}
 }
@@ -662,6 +666,7 @@ chimara_glk_new(void)
     priv->event_queue_not_full = g_cond_new();
     priv->abort_lock = g_mutex_new();
 	priv->arrange_lock = g_mutex_new();
+	priv->rearranged = g_cond_new();
     
     return GTK_WIDGET(self);
 }
