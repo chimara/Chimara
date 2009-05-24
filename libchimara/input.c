@@ -290,7 +290,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
 		event->val2 = 0;
 	}
 
-	if(win->input_request_type == INPUT_REQUEST_NONE)
+	if(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE)
 		return;
 
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );

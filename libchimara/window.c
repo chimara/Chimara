@@ -613,13 +613,9 @@ destroy_windows_below(winid_t win, stream_result_t *result)
 	switch(win->type)
 	{
 		case wintype_Blank:
-			gtk_widget_unparent(win->widget);
-			break;
-	
 	    case wintype_TextGrid:
 		case wintype_TextBuffer:
 			gtk_widget_unparent(win->frame);
-			/* TODO: Cancel all input requests */
 			break;
 
 		case wintype_Pair:
