@@ -1136,7 +1136,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 {
 	VALID_STREAM(str, return);
 	g_return_if_fail(!(seekmode == seekmode_Start && pos < 0));
-	g_return_if_fail(!(seekmode == seekmode_End || pos > 0));
+	g_return_if_fail(!(seekmode == seekmode_End && pos > 0));
 	
 	switch(str->type)
 	{
