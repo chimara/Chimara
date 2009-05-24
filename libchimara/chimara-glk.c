@@ -11,6 +11,7 @@
 #include "abort.h"
 #include "window.h"
 #include "glkstart.h"
+#include "glkunix.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
@@ -41,7 +42,7 @@
  */
 
 typedef void (* glk_main_t) (void);
-typedef void (* glkunix_startup_code_t) (glkunix_startup_t*);
+typedef int (* glkunix_startup_code_t) (glkunix_startup_t*);
 
 enum {
     PROP_0,
@@ -93,6 +94,8 @@ chimara_glk_init(ChimaraGlk *self)
     priv->current_stream = NULL;
     priv->stream_list = NULL;
 	priv->timer_id = 0;
+	priv->in_startup = FALSE;
+	priv->current_dir = NULL;
 }
 
 static void
@@ -182,6 +185,7 @@ chimara_glk_finalize(GObject *object)
 	/* Free private data */
 	pango_font_description_free(priv->default_font_desc);
 	pango_font_description_free(priv->monospace_font_desc);
+	g_free(priv->current_dir);
 	
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
@@ -926,11 +930,18 @@ glk_enter(gpointer glk_main)
  * @glk: a #ChimaraGlk widget
  * @plugin: path to a plugin module compiled with <filename 
  * class="header">glk.h</filename>
+ * @argc: Number of command line arguments in @argv
+ * @argv: Array of command line arguments to pass to the plugin
  * @error: location to store a <link linkend="glib-GError">GError</link>, or 
  * %NULL
  *
- * Opens a Glk program compiled as a plugin and runs its glk_main() function in
+ * Opens a Glk program compiled as a plugin. Sorts out its command line
+ * arguments from #glkunix_arguments, calls its startup function
+ * glkunix_startup_code(), and then calls its main function glk_main() in
  * a separate thread. On failure, returns %FALSE and sets @error.
+ *
+ * The plugin must at least export a glk_main() function; #glkunix_arguments and
+ * glkunix_startup_code() are optional.
  *
  * Return value: %TRUE if the Glk program was started successfully.
  */
@@ -942,7 +953,6 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
     
-
     /* Open the module to run */
     glk_main_t glk_main;
 	glkunix_startup_code_t glkunix_startup_code;
@@ -960,20 +970,43 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
         return FALSE;
     }
 
-    extern ChimaraGlkPrivate *glk_data;
+	extern ChimaraGlkPrivate *glk_data;
     /* Set the thread's private data */
     /* TODO: Do this with a GPrivate */
     glk_data = priv;
-
+	
     if( g_module_symbol(priv->program, "glkunix_startup_code", (gpointer *) &glkunix_startup_code) )
     {
 		glkunix_startup_t data;
-		data.argc = argc;
-		data.argv = argv;
+		glkunix_argumentlist_t *glkunix_arguments;
+		gboolean startup_succeeded;
 
-		glkunix_startup_code(&data);
+		if( !(g_module_symbol(priv->program, "glkunix_arguments", (gpointer *) &glkunix_arguments) && parse_command_line(glkunix_arguments, argc, argv, &data)) )
+		{
+			/* arguments could not be parsed, so create data ourselves */
+			data.argc = 1;
+			data.argv = g_new0(gchar *, 1);
+		}
+
+		/* Set the program name */
+		data.argv[0] = g_strdup(plugin);
+		
+		priv->in_startup = TRUE;
+		startup_succeeded = glkunix_startup_code(&data);
+		priv->in_startup = FALSE;
+		
+		gchar **ptr = data.argv;
+		while(*ptr++)
+			g_free(*ptr);
+		g_free(data.argv);
+		
+		if(!startup_succeeded)
+		{
+			chimara_glk_stopped(glk);
+			return FALSE;
+		}
     }
-
+	
     /* Run in a separate thread */
 	priv->thread = g_thread_create(glk_enter, glk_main, TRUE, error);
 	

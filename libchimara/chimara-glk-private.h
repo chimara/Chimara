@@ -15,6 +15,8 @@ typedef struct _ChimaraGlkPrivate ChimaraGlkPrivate;
 struct _ChimaraGlkPrivate {
     /* Pointer back to the widget itself for use in thread */
     ChimaraGlk *self;
+
+	/* *** Widget properties *** */
     /* Whether user input is expected */
     gboolean interactive;
     /* Whether file operations are allowed */
@@ -25,6 +27,8 @@ struct _ChimaraGlkPrivate {
 	PangoFontDescription *monospace_font_desc;
 	/* Spacing between Glk windows */
 	guint spacing;
+
+	/* *** Threading data *** */
     /* Glk program loaded in widget */
     GModule *program;
     /* Thread in which Glk program is run */
@@ -42,6 +46,8 @@ struct _ChimaraGlkPrivate {
 	GCond *rearranged;
 	gboolean needs_rearrange;
 	gboolean ignore_next_arrange_event;
+
+	/* *** Glk library data *** */
     /* User-defined interrupt handler */
     void (*interrupt_handler)(void);
     /* Global tree of all windows */
@@ -58,6 +64,12 @@ struct _ChimaraGlkPrivate {
 	giblorb_map_t *resource_map;
 	/* File stream pointing to the blorb used as current resource map */
 	strid_t resource_file;
+
+	/* *** Platform-dependent Glk library data *** */
+	/* Flag for functions to find out if they are being called from startup code */
+	gboolean in_startup;
+	/* "Current directory" for creating filerefs */
+	gchar *current_dir;
 };
 
 #define CHIMARA_GLK_PRIVATE(obj) \

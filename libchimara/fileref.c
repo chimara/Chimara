@@ -137,7 +137,8 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * <note><title>Chimara</title>
  * <para>
  * Chimara uses a <link 
- * linkend="gtk-GtkFileChooserDialog">GtkFileChooserDialog</link>.
+ * linkend="gtk-GtkFileChooserDialog">GtkFileChooserDialog</link>. The default
+ * starting location for the dialog may be set with glkunix_set_base_file().
  * </para></note>
  *
  * @fmode must be one of these values:
@@ -224,6 +225,9 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			return NULL;
 	}
 	
+	if(glk_data->current_dir)
+		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), glk_data->current_dir);
+	
 	if(gtk_dialog_run( GTK_DIALOG(chooser) ) != GTK_RESPONSE_ACCEPT)
 	{
 		gtk_widget_destroy(chooser);
@@ -254,7 +258,8 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  * </para></note>
  * <note><title>Chimara</title>
  * <para>
- * In Chimara, the file is created in the current working directory.
+ * In Chimara, the file is created in the directory last set by 
+ * glkunix_set_base_file(), and otherwise in the current working directory.
  * </para></note>
  *
  * Since filenames are highly platform-specific, you should use
@@ -284,6 +289,14 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 {
 	g_return_val_if_fail(name != NULL && strlen(name) > 0, NULL);
 
+	/* Do any string-munging here to remove illegal Latin-1 characters from 
+	filename. On ext3, the only illegal characters are '/' and '\0'. */
+	
+	char *ptr = name;
+	while(*ptr++)
+		if(*ptr == '/')
+			*ptr = '_';
+	
 	/* Find out what encoding filenames are in */
 	const gchar **charsets; /* Do not free */
 	g_get_filename_charsets(&charsets);
@@ -297,14 +310,16 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		WARNING_S("Error during latin1->filename conversion", error->message);
 		return NULL;
 	}
-
-	/* Do any string-munging here to remove illegal characters from filename.
-	On ext3, the only illegal characters are '/' and '\0'. TODO: Should this
-	function be allowed to reference files in other directories, or should we
-	disallow '/'? */
-
-	frefid_t f = fileref_new(osname, rock, usage, filemode_ReadWrite);
+	
+	gchar *path;
+	if(glk_data->current_dir)
+		path = g_build_filename(glk_data->current_dir, osname, NULL);
+	else
+		path = g_strdup(osname);
 	g_free(osname);
+	
+	frefid_t f = fileref_new(path, rock, usage, filemode_ReadWrite);
+	g_free(path);
 	return f;
 }
 

@@ -49,5 +49,7 @@ struct glk_stream_struct
 };
 
 G_GNUC_INTERNAL strid_t window_stream_new(winid_t window);
+G_GNUC_INTERNAL strid_t file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode);
 G_GNUC_INTERNAL void stream_close_common(strid_t str, stream_result_t *result);
+
 #endif

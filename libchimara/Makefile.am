@@ -13,6 +13,7 @@ libchimara_la_SOURCES = \
 	fileref.c fileref.h \
 	gestalt.c \
 	glk.c glk.h \
+	glkunix.c glkunix.h \
 	magic.c magic.h \
 	mouse.c \
 	input.c input.h \
@@ -32,4 +33,4 @@ libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^(glk_|chimara_glk_
 libchimara_includedir = $(includedir)/chimara/chimara
 libchimara_include_HEADERS = chimara-glk.h
 
-EXTRA_DIST = doc.c
+EXTRA_DIST = doc.c glkstart.c
