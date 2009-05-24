@@ -323,6 +323,57 @@ void glk_main(void)
 	center_text(win_d, "D");
 	wait_for_key(win_a);
 	
+	fprintf(stderr, "Consider the example above, where D had collapsed to\n"
+			"zero height. Say D was a text buffer window. You could make a\n"
+			"more useful layout:\n\n");
+	winid_t o2 = glk_window_get_parent(win_d);
+	glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, 3, win_d);
+	center_text(win_a, "A");
+	center_text(win_b, "B");
+	center_text(win_d, "D");
+	wait_for_key(win_a);
+	
+	fprintf(stderr, "If you later wanted to expand D to five rows:\n\n");
+	glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, 5, NULL);
+	center_text(win_a, "A");
+	center_text(win_b, "B");
+	center_text(win_d, "D");
+	wait_for_key(win_a);
+	
+	fprintf(stderr, "This changes the constraint to be on the lower child of\n"
+			"O2, which is A. The key window is still D; so A would then be\n"
+			"three rows high as measured in D's font, and D would get the\n"
+			"rest of O2's space. That may not be what you want.\n\n");
+	glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, 3, NULL);
+	center_text(win_a, "A");
+	center_text(win_b, "B");
+	center_text(win_d, "D");
+	wait_for_key(win_a);
+	
+	fprintf(stderr, "To set A to be three rows high as measured in A's font,\n"
+			"you would do:\n\n");
+	glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, 3, win_a);
+	center_text(win_a, "A");
+	center_text(win_b, "B");
+	center_text(win_d, "D");
+	wait_for_key(win_a);
+	
+	fprintf(stderr, "Or you could change O2 to a proportional split:\n\n");
+	glk_window_set_arrangement(o2, winmethod_Below | winmethod_Proportional, 30,
+							   NULL);
+	center_text(win_a, "A");
+	center_text(win_b, "B");
+	center_text(win_d, "D");
+	wait_for_key(win_a);
+	
+	fprintf(stderr, "Or:\n\n");
+	glk_window_set_arrangement(o2, winmethod_Above | winmethod_Proportional, 70,
+							   NULL);
+	center_text(win_a, "A");
+	center_text(win_b, "B");
+	center_text(win_d, "D");
+	wait_for_key(win_a);
+	
 	glk_window_close(win_d, NULL);
 	glk_window_close(win_b, NULL);
 	glk_window_clear(win_a);

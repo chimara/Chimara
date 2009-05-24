@@ -374,6 +374,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
                 glui32 rock)
 {
 	VALID_WINDOW_OR_NULL(split, return NULL);
+	g_return_val_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)), NULL);
+	g_return_val_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size >= 100), NULL);	
 
 	if(split == NULL && glk_data->root_window != NULL)
 	{
@@ -1041,7 +1043,120 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             ILLEGAL_PARAM("Unknown window type: %u", win->type);
     }
 }
- 
+
+/**
+ * glk_window_set_arrangement:
+ * @win: a pair window to rearrange.
+ * @method: new method of size computation. One of #winmethod_Above, 
+ * #winmethod_Below, #winmethod_Left, or #winmethod_Right OR'ed with 
+ * #winmethod_Fixed or #winmethod_Proportional.
+ * @size: new size constraint, in percentage points if @method is
+ * #winmethod_Proportional, otherwise in characters if @win's type is 
+ * #wintype_TextBuffer or #wintype_TextGrid, or pixels if @win's type is
+ * #wintype_Graphics.
+ * @keywin: new key window, or %NULL to leave the key window unchanged.
+ *
+ * Changes the size of an existing split &mdash; that is, it changes the 
+ * constraint of a given pair window.
+ * 
+ * Consider the example above, where D has collapsed to zero height. Say D was a
+ * text buffer window. You could make a more useful layout by doing
+ * |[
+ * #winid_t o2;
+ * o2 = #glk_window_get_parent(d);
+ * glk_window_set_arrangement(o2, #winmethod_Above | #winmethod_Fixed, 3, d);
+ * ]|
+ * That would set D (the upper child of O2) to be O2's key window, and give it a
+ * fixed size of 3 rows.
+ * 
+ * If you later wanted to expand D, you could do
+ * |[ glk_window_set_arrangement(o2, #winmethod_Above | #winmethod_Fixed, 5, NULL); ]|
+ * That expands D to five rows. Note that, since O2's key window is already set 
+ * to D, it is not necessary to provide the @keywin argument; you can pass %NULL
+ * to mean <quote>leave the key window unchanged.</quote>
+ * 
+ * If you do change the key window of a pair window, the new key window 
+ * <emphasis>must</emphasis> be a descendant of that pair window. In the current
+ * example, you could change O2's key window to be A, but not B. The key window
+ * also cannot be a pair window itself.
+ * 
+ * |[ glk_window_set_arrangement(o2, #winmethod_Below | #winmethod_Fixed, 3, NULL); ]|
+ * This changes the constraint to be on the <emphasis>lower</emphasis> child of 
+ * O2, which is A. The key window is still D; so A would then be three rows high
+ * as measured in D's font, and D would get the rest of O2's space. That may not
+ * be what you want. To set A to be three rows high as measured in A's font, you
+ * would do
+ * |[ glk_window_set_arrangement(o2, #winmethod_Below | #winmethod_Fixed, 3, a); ]|
+ * 
+ * Or you could change O2 to a proportional split:
+ * |[ glk_window_set_arrangement(o2, #winmethod_Below | #winmethod_Proportional, 30, NULL); ]|
+ * or
+ * |[ glk_window_set_arrangement(o2, #winmethod_Above | #winmethod_Proportional, 70, NULL); ]|
+ * These do exactly the same thing, since 30&percnt; above is the same as 
+ * 70&percnt; below. You don't need to specify a key window with a proportional
+ * split, so the @keywin argument is %NULL. (You could actually specify either A
+ * or D as the key window, but it wouldn't affect the result.)
+ * 
+ * Whatever constraint you set, glk_window_get_size() will tell you the actual 
+ * window size you got.
+ * 
+ * Note that you can resize windows, but you can't flip or rotate them. You 
+ * can't move A above D, or change O2 to a vertical split where A is left or 
+ * right of D. 
+ * <note><para>
+ *   To get this effect you could close one of the windows, and re-split the 
+ *   other one with glk_window_open().
+ * </para></note>
+ */
+void
+glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keywin)
+{
+	VALID_WINDOW(win, return);
+	VALID_WINDOW_OR_NULL(keywin, return);
+	g_return_if_fail(win->type == wintype_Pair);
+	if(keywin)
+	{
+		g_return_if_fail(keywin->type != wintype_Pair);
+		g_return_if_fail(g_node_is_ancestor(win->window_node, keywin->window_node));
+	}
+	g_return_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)));
+	g_return_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size >= 100));
+	
+	win->split_method = method;
+	win->constraint_size = size;
+	if(keywin)
+		win->key_window = keywin;
+
+	/* Tell GTK to rearrange the windows */
+	gdk_threads_enter();
+	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
+	gdk_window_process_all_updates();
+	gdk_threads_leave();
+}
+
+/**
+ * glk_window_get_arrangement:
+ * @win: a pair window.
+ * @methodptr: return location for the constraint flags of @win, or %NULL.
+ * @sizeptr: return location for the constraint size of @win, or %NULL.
+ * @keywinptr: return location for the key window of @win, or %NULL.
+ *
+ * Queries the constraint of a given pair window.
+ */
+void
+glk_window_get_arrangement(winid_t win, glui32 *methodptr, glui32 *sizeptr, winid_t *keywinptr)
+{
+	VALID_WINDOW(win, return);
+	g_return_if_fail(win->type == wintype_Pair);
+	
+	if(methodptr)
+		*methodptr = win->split_method;
+	if(sizeptr)
+		*sizeptr = win->constraint_size;
+	if(keywinptr)
+		*keywinptr = win->key_window;
+}
+
 /**
  * glk_window_move_cursor:
  * @win: A text grid window.
