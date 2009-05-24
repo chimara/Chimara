@@ -375,7 +375,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 {
 	VALID_WINDOW_OR_NULL(split, return NULL);
 	g_return_val_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)), NULL);
-	g_return_val_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size >= 100), NULL);	
+	g_return_val_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100), NULL);	
 
 	if(split == NULL && glk_data->root_window != NULL)
 	{
@@ -1120,7 +1120,7 @@ glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keyw
 		g_return_if_fail(g_node_is_ancestor(win->window_node, keywin->window_node));
 	}
 	g_return_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)));
-	g_return_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size >= 100));
+	g_return_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100));
 	
 	win->split_method = method;
 	win->constraint_size = size;
