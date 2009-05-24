@@ -195,3 +195,8 @@ glk_stylehint_set(glui32 wintype, glui32 style, glui32 hint, glsi32 val)
 		}
 	}
 }
+
+void
+glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
+{
+}
