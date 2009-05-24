@@ -16,7 +16,7 @@ DOC_MAIN_SGML_FILE = $(DOC_MODULE)-docs.sgml
 # The directory containing the source code. Relative to $(srcdir).
 # gtk-doc will search all .c & .h files beneath here for inline comments
 # documenting the functions and macros.
-DOC_SOURCE_DIR = ../../src
+DOC_SOURCE_DIR = ../../libchimara
 
 # Extra options to pass to gtkdoc-scangobj. Not normally needed.
 SCANGOBJ_OPTIONS = 
@@ -39,16 +39,15 @@ MKHTML_OPTIONS =
 FIXXREF_OPTIONS = 
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
-HFILE_GLOB = $(top_srcdir)/src/*.h
-CFILE_GLOB = $(top_srcdir)/src/*.c
+HFILE_GLOB = $(top_srcdir)/libchimara/*.h
+CFILE_GLOB = $(top_srcdir)/libchimara/*.c
 
 # Extra headers to include when scanning, which are not under DOC_SOURCE_DIR
 EXTRA_HFILES = 
 
 # Header files to ignore when scanning. Use base file name, no paths
 IGNORE_HFILES = chimara-glk-private.h \
-	abort.h charset.h event.h input.h stream.h window.h \
-	callbacks.h error.h
+	abort.h charset.h event.h input.h stream.h window.h
 
 # Images to copy into HTML directory.
 HTML_IMAGES = \
@@ -102,7 +101,7 @@ expand_content_files = \
 # Only needed if you are using gtkdoc-scangobj to dynamically query widget
 # signals and properties.
 GTKDOC_CFLAGS = -I$(top_srcdir) $(CHIMARA_CFLAGS)
-GTKDOC_LIBS =  $(top_builddir)/src/libchimara.la
+GTKDOC_LIBS =  $(top_builddir)/libchimara/libchimara.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
