@@ -1193,6 +1193,10 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_TextGrid);
 	
+	/* Don't do anything if the window is shrunk down to nothing */
+	if(win->width == 0 || win->height == 0)
+		return;
+	
 	/* Calculate actual position if cursor is moved past the right edge */
 	if(xpos >= win->width)
 	{
