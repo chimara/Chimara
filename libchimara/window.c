@@ -873,12 +873,13 @@ glk_window_clear(winid_t win)
  * @win: A window.
  *
  * Sets the current stream to @win's window stream. It is exactly equivalent to
- * <code>#glk_stream_set_current(#glk_window_get_stream(@win))</code>.
+ * |[ #glk_stream_set_current(#glk_window_get_stream(@win)) ]| 
+ * See <link linkend="chimara-Streams">Streams</link>.
  */
 void
 glk_set_window(winid_t win)
 {
-	VALID_WINDOW_OR_NULL(win, return);
+	VALID_WINDOW(win, return);
 	glk_stream_set_current( glk_window_get_stream(win) );
 }
 
