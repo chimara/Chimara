@@ -582,22 +582,22 @@ giblorb_resdesc_t *giblorb_bsearch(giblorb_resdesc_t *sample,
 /* Boring utility functions. If your platform doesn't support ANSI 
     malloc(), feel free to edit these however you like. */
 
-#include <stdlib.h> /* The OS-native header file -- you can edit 
+#include <glib.h> /* The OS-native header file -- you can edit 
     this too. */
 
 static void *giblorb_malloc(glui32 len)
 {
-    return malloc(len);
+    return g_malloc(len);
 }
 
 static void *giblorb_realloc(void *ptr, glui32 len)
 {
-    return realloc(ptr, len);
+    return g_realloc(ptr, len);
 }
 
 static void giblorb_free(void *ptr)
 {
-    free(ptr);
+    g_free(ptr);
 }
 
 
