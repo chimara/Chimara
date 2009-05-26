@@ -144,24 +144,24 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * @fmode must be one of these values:
  * <variablelist>
  * <varlistentry>
- *   <term>#filemode_Read</term>
+ *   <term>%filemode_Read</term>
  *   <listitem><para>The file must already exist; and the player will be asked
  *   to select from existing files which match the usage.</para></listitem>
  * </varlistentry>
  * <varlistentry>
- *   <term>#filemode_Write</term>
+ *   <term>%filemode_Write</term>
  *   <listitem><para>The file should not exist; if the player selects an
  *   existing file, he will be warned that it will be replaced.
  *   </para></listitem>
  * </varlistentry>
  * <varlistentry>
- *   <term>#filemode_ReadWrite</term>
+ *   <term>%filemode_ReadWrite</term>
  *   <listitem><para>The file may or may not exist; if it already exists, the
  *   player will be warned that it will be modified.</para></listitem>
  * </varlistentry>
  * <varlistentry>
- *   <term>#filemode_WriteAppend</term>
- *   <listitem><para>Same behavior as #filemode_ReadWrite.</para></listitem>
+ *   <term>%filemode_WriteAppend</term>
+ *   <listitem><para>Same behavior as %filemode_ReadWrite.</para></listitem>
  * </varlistentry>
  * </variablelist>
  *
@@ -333,7 +333,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
  * original fileref is not modified.)
  *
  * The use of this function can be tricky. If you change the type of the fileref
- * (#fileusage_Data, #fileusage_SavedGame, etc), the new reference may or may
+ * (%fileusage_Data, %fileusage_SavedGame, etc), the new reference may or may
  * not point to the same actual disk file.
  *
  * <note><para>
@@ -345,8 +345,8 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
  * unpredictable. It is safest to change the type of a fileref only if it refers
  * to a nonexistent file.
  *
- * If you change the mode of a fileref (#fileusage_TextMode,
- * #fileusage_BinaryMode), but leave the rest of the type unchanged, the new
+ * If you change the mode of a fileref (%fileusage_TextMode,
+ * %fileusage_BinaryMode), but leave the rest of the type unchanged, the new
  * fileref will definitely point to the same disk file as the old one.
  * 
  * Obviously, if you write to a file in text mode and then read from it in

@@ -68,12 +68,8 @@
       <xi:include href="xml/glk-events.xml"/>
       <xi:include href="xml/glk-character-input-events.xml"/>
       <xi:include href="xml/glk-line-input-events.xml"/>
-      <!--<xi:include href="xml/glk-mouse-events.xml"/>
+      <!--<xi:include href="xml/glk-mouse-events.xml"/>-->
       <xi:include href="xml/glk-timer-events.xml"/>
-      <xi:include href="xml/glk-arrangement-events.sgml"/>
-      <xi:include href="xml/glk-redraw-events.sgml"/>
-      <xi:include href="xml/glk-sound-notify-events.sgml"/>
-      <xi:include href="xml/glk-hyperlink-events.sgml"/>-->
       <xi:include href="xml/glk-other-events.sgml"/>
 	</chapter>
 	
@@ -85,7 +81,9 @@
 	  <xi:include href="xml/glk-read.xml"/>
 	  <xi:include href="xml/glk-closing-streams.xml"/>
 	  <xi:include href="xml/glk-stream-positions.xml"/>
-	  <!--<xi:include href="xml/glk-styles.xml"/>-->
+	  <xi:include href="xml/glk-styles.xml"/>
+	  <xi:include href="xml/glk-stylehints.xml"/>
+	  <!--<xi:include href="xml/glk-style-measure.xml"/>-->
 	  <xi:include href="xml/glk-stream-types.xml"/>
 	  <xi:include href="xml/glk-stream-other.xml"/>
 	</chapter>
@@ -125,18 +123,26 @@
     </chapter>
 -->    
     <!-- Chapter 10. Porting, Adapting and Other Messy Bits -->
-<!--    <chapter>
-      <title>Porting, Adapting, and Other Messy Bits</title>
-    </chapter>
--->    
+    <xi:include href="glk-porting.sgml"/>
+   
     <!-- Chapter 11. Appendices -->
 <!--    <appendix>
       <title>The Dispatch Layer</title>
     </appendix>
-    
+-->    
     <appendix>
       <title>The Blorb Layer</title>
+      <xi:include href="blorb.sgml"/>
+      <xi:include href="xml/blorb-program.xml"/>
+      <xi:include href="blorb-library.sgml"/>
+      <xi:include href="xml/blorb-layer.xml"/>
+      <xi:include href="xml/blorb-errors.xml"/>
     </appendix>
--->    
+    
+    <appendix>
+     <title>Glk Extensions</title>
+     <xi:include href="xml/glkext-startup.xml"/>
+     <xi:include href="xml/glkext-unix.xml"/>
+    </appendix>
   </reference>
 </book>

@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<chapter id="chimara-Porting-Adapting-and-Other-Messy-Bits">
+<title>Porting, Adapting, and Other Messy Bits</title>
+<para>
+Life is not perfect, and neither are our toys. In a world of perfect toys, a Glk program could compile with any Glk library and run without human intervention. Guess what.
+</para>
+<sect1 id="chimara-Startup-Options"><title>Startup Options</title>
+<para>
+One large grey area is starting up, startup files, and other program options. It is easy to assume that all C programs run with the <code>(argc, argv)</code> model &mdash; that all the information they need comes as an array of strings at startup time. This is sometimes true. But in a GUI system, files are often opened by clicking, options are specified in dialog boxes, and so on; and this does not necessarily happen at the beginning of <function>main()</function>.
+</para>
+<para>
+Therefore, Glk does not try to pass an <code>(argc, argv)</code> list to your <function>glk_main()</function>. Nor does it provide a portable API for startup files and options. 
+</para>
+<note><para>
+Doing that well would require API calls to parse command-line arguments of various types, and then also design and handle dialog boxes. It would go far beyond the level of complexity which Glk aspires to.
+</para></note>
+<para>
+Instead, startup files and options are handled in an <emphasis>entirely platform-dependent</emphasis> manner. You, as the author of a Glk program, must describe how your program should behave. As your program is ported to various Glk libraries, each porter must decide how to implement that behavior on the platform in question. The library should store the options and files in global variables, where your <function>glk_main()</function> routine can read them.
+</para>
+<para>
+It is reasonable to modularize this code, and call it the <quote>startup code</quote>. But the startup code is not necessarily a single function, and it certainly does not have well-defined arguments such as an <code>(argc, argv)</code> list. You can consider that your startup behavior is divided into the messy part, which is nonportable and goes in the startup code, and the clean part, which is entirely Glk-portable and goes at the beginning of <function>glk_main()</function>.
+</para>
+<para>
+This is not as much of a mess as it sounds. Many programs, and almost all IF programs, follow one of a few simple models.
+<itemizedlist>
+<listitem><para>The simple model: There are no startup files. The program just starts running when invoked.</para></listitem>
+<listitem><para>The game-file model: The program begins running when it is handed a single file of a particular type. On command-line systems, this comes as a filename in a command-line option. On GUI systems, it will usually be a platform-native event which contains a file reference.</para></listitem>
+</itemizedlist>
+</para>
+<para>
+Any Glk library will be able to support these two models, probably through compile-time options. The details will vary. 
+</para>
+<note><para>
+For one notable case, the Mac Glk library has two possible behaviors when compiled with the game-file model. If the player double-clicks a game file, the library calls <function>glk_main()</function> immediately. If the player double-clicks the application icon, the library allows the player to wait, perhaps adjusting preferences; it only calls <function>glk_main()</function> after the game file is selected through a file dialog.
+</para></note>
+<note><para>
+In fact, if life were this simple, it would be worth adding these models to the Glk API somehow. Unfortunately, it's not. Consider AGT: the <quote>game file</quote> is actually about ten separate files with related filenames, in the same directory. Glk does not contain API calls to do precise file and pathname manipulation; it is too complicated an area to support. So this situation must be handled non-portably.
+</para></note>
+<para>
+More complicated models are also possible. You might want to accept files through GUI events at any time, not just at startup. This could be handled by defining a new Glk event type, and having the library send such an event when a platform-native icon-click is detected. You would then have to decide how the situation should be handled in a command-line Glk library. But that is inherent in your task as a program author.
+</para>
+<para>
+Options and preferences are a separate problem. Most often, a command-line library will handle them with command-line arguments, and a GUI library will handle them with a dialog box. Ideally, you should describe how both cases should behave &mdash; list the command-line arguments, and perhaps how they could be labelled in a dialog.
+</para>
+<note><para>
+This is unlikely to be very complicated. Although who knows.
+</para></note>
+<para>
+Remember that the Glk library is likely to have some options of its own &mdash; matters of display styles and so on. A command-line library will probably have a simple API to extract its own options and pass the rest on to the startup code. 
+</para>
+</sect1>
+<sect1 id="chimara-Going-Outside-the-Glk-API">
+<title>Going Outside the Glk API</title>
+<para>
+Nonportable problems are not limited to the start of execution. There is also the question of OS services which are not represented in Glk. The ANSI C libraries are so familiar that they seem universal, but they are actually not necessarily present. Palmtop platforms such as PalmOS are particularly good at leaving out ANSI libraries.
+</para>
+<sect2 id="chimara-Memory-Management"><title>Memory Management</title>
+<para>
+Everyone uses <function>malloc()</function>, <function>realloc()</function>, and <function>free()</function>. However, some platforms have a native memory-management API which may be more suitable in porting your program.
+</para>
+<para>
+The <function>malloc()</function> system is simple; it can probably be implemented as a layer on top of whatever native API is available. So you don't absolutely have to worry about this. However, it can't hurt to group all your <function>malloc()</function> and <function>free()</function> calls in one part of your program, so that a porter can easily change them all if it turns out to be a good idea. 
+</para>
+</sect2>
+<sect2 id="chimara-String-Manipulation"><title>String Manipulation</title>
+<para>
+This is more of a nuisance, because the set of string functions varies quite a bit between platforms. Consider <function>bcopy()</function>, <function>memcpy()</function>, and <function>memmove()</function>; <function>stricmp()</function> and <function>strcasecmp()</function>; <function>strchr()</function> and <function>index()</function>; and so on. And again, on a palmtop machine, none of these may be available. The maximally safe course is to implement what you need yourself.
+</para>
+<note><para>
+See the <filename>model.c</filename> program for an example; it implements its own <function>str_eq()</function> and <function>str_len()</function>.
+</para></note>
+<para>
+The maximally safe course is also a pain in the butt, and may well be inefficient (a platform may have a <function>memcpy()</function> which is highly optimized for large moves.) That's porting in the big city.
+</para>
+<note><para>
+By the way, the next person I see who <code>#define</code>s <function>memmove()</function> as <function>memcpy()</function> when a real <function>memmove()</function> isn't available, gets slapped in the face with a lead-lined rubber salmon.
+</para></note>
+</sect2>
+<sect2 id="chimara-File-Handling"><title>File Handling</title>
+<para>
+This is the real nuisance, because Glk provides a limited set of stream and file functions. And yet there are all these beautiful ANSI stdio calls, which have all these clever tricks &mdash; <function>ungetc()</function>, fast macro <function>fgetc()</function>, formatted <function>fprintf()</function>, not to mention the joys of direct pathname manipulation. Why bother with the Glk calls?
+</para>
+<para>
+The problem is, the stdio library really isn't always the best choice. PalmOS and Newton simply don't use stdio. The Mac has a stdio library built on top of its native file API, but it's a large extra library which porters may not wish to link in.
+</para>
+<para>
+There's also the problem of hooking into the Glk API. Window output goes through Glk streams.
+</para>
+<note><para>
+It would have been lovely to use the stdio API for that, but it's not generally possible.
+</para></note>
+<para>
+As usual, it's a judgement call. If you have a large existing pile of source code which you're porting, and it uses a lot of icky stdio features like <function>ungetc()</function>, it may be better not to bother changing everything to the Glk file API. If you're starting from scratch, using the Glk calls will probably be cleaner. 
+</para>
+</sect2>
+<sect2 id="chimara-Private-Extensions-to-Glk">
+<title>Private Extensions to Glk</title>
+<para>
+Sometimes &mdash; hopefully rarely &mdash; there's stuff you just gotta do.
+</para>
+<para>
+Explicit pathname modification is one possible case. Creating or deleting directories. New Glk event types caused by interface events. Control over pull-down menus.
+</para>
+<para>
+Like startup code, you just have to decide what you want, and ask your porters to port it. These are the non-portable parts of your task. As I said, that's porting in the big city.
+</para>
+<para>
+If an extension or new function is so useful that everyone is implementing it, I'll consider adding it to the Glk API (as an optional capability, with a Gestalt selector and everything.) I'm flexible. In a morally correct manner, of course. 
+</para>
+</sect2>
+</sect1>
+<sect1 id="chimara-Glk-and-the-Virtual-Machine">
+<title>Glk and the Virtual Machine</title>
+<para>
+Most IF games are built on a virtual machine, such as the Z-machine or the TADS runtime structure. Building a virtual machine which uses Glk as its interface is somewhat more complicated than writing a single Glk program.
+</para>
+<para>
+The question to ask is: what API will be exported to the game author &mdash; the person writing a program to run on the VM?
+</para>
+<sect2 id="chimara-Implementing-a-Higher-Layer-Over-Glk">
+<title>Implementing a Higher Layer over Glk</title>
+<para>
+Thus far, each virtual machine has had its own built-in I/O API. Most of them have identical basic capabilities &mdash; read lines of input, display a stream of output, show a status line of some sort, and so on. This commonality, of course, is the ground from which Glk sprouted in the first place.
+</para>
+<para>
+If the I/O API is a subset of the capabilities of Glk, it can be implemented as a layer on top of Glk. In this way, an existing VM can often be ported to Glk without any change visible to the author. Standard TADS can be ported in this way; the V5/8 Z-machine can as well (with the sole exception, as far as I know, of colored text.) 
+</para>
+</sect2>
+<sect2 id="chimara-Glk-as-a-VM-s-Native-API">
+<title>Glk as a VM's Native API</title>
+<para>
+The other approach is to use Glk as the virtual machine's own I/O API, and provide it directly to the game author. The Glulx virtual machine is built this way. This is inherently more powerful, since it allows access to all of Glk, instead of a subset. As Glk is designed to be easily expandable, and will gain new (optional) capabilities over time, this approach also allows a VM to gain capabilities over time without much upheaval.
+</para>
+<note><para>
+To a certain extent, Glk was designed for this use more than any other. For example, this is why all Glk function arguments are either pointers or 32-bit integers, and why all Glk API structures are effectively arrays of same. It is also why the iterator functions exist; a VM's entire memory space may be reset by an <quote>undo</quote> or <quote>restore</quote> command, and it would then have to, ah, take inventory of its streams and windows and filerefs.
+</para></note>
+<note><para>
+This is also another reason why Glk provides file API calls. A VM can provide Glk as the game author's entire access to the file system, as well as the author's entire access to the display system. The VM will then be simpler, more modular, not as tied into the native OS &mdash; all that good stuff.
+</para></note>
+<note><para>
+The Society of C Pedants wishes me to point out that the structures in the Glk API aren't really arrays of 32-bit integers. A structure made up entirely of 32-bit integers can still be padded weirdly by a C compiler. This problem is solved cleanly by the dispatch layer; see below.
+</para></note>
+<para>
+The mechanics of this are tricky, because Glk has many API calls, and more will be added over time.
+</para>
+<para>
+In a VM with a limited number of opcodes, it may be best to allocate a single <quote>Glk</quote> opcode, with a variable number of arguments, the first of which is a function selector. (Glulx does this.) Allow at least 16 bits for this selector; there may be more than 256 Glk calls someday. (For a list of standard selectors for Glk calls, see <link linkend="chimara-Table-of-Selectors">Table of Selectors</link>.)
+</para>
+<para>
+In a VM with a large opcode space, you could reserve a 16-bit range of opcodes for Glk.
+</para>
+<para>
+It may also be feasible to extend the function-call mechanism in some way, to include the range of Glk functions.
+</para>
+<para>
+In any case, the API still has to be exported to the game author in whatever language is compiled to the VM. Ideally, this can be done as a set of function calls.
+</para>
+<note><para>
+But it doesn't have to be. The Inform compiler, for example, can accept assembly opcodes in-line with Inform source code. It's nearly as convenient to let the author type in opcodes as function calls.
+</para></note>
+<para>
+There is a further complication when new calls are added to Glk. This should not be a major problem. The compiler is mapping Glk calls one-to-one to its own functions or opcodes, so this should be a matter of adding to a fixed list somewhere in the compiler and releasing an upgrade.
+</para>
+<para>
+Alternatively, if the compiler has some way to define new opcodes, even this much effort is not necessary.
+</para>
+<note><para>
+The Inform compiler is designed this way; the game author can define new opcodes and use them. So if a new call has been added to Glk, and it has been implemented in the interpreter with a known selector, it can be used in Inform immediately, without a compiler upgrade.
+</para></note>
+<para>
+Or, you can provide a completely dynamic interface to the Glk API. This is the province of the Glk dispatch layer, which is not part of Glk proper; it rests on top. See <link linkend="chimara-The-Dispatch-Layer">The Dispatch Layer</link>. 
+</para>
+</sect2>
+</sect1>
+</chapter>

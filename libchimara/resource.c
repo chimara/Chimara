@@ -4,15 +4,17 @@ extern ChimaraGlkPrivate *glk_data;
 
 /**
  * giblorb_set_resource_map:
- * @file The file stream to read the resource map from
+ * @file: The file stream to read the resource map from
  *
  * This function tells the library that the file is indeed the Blorby source
  * of all resource goodness. Whenever your program calls an image or sound
  * function, such as glk_image_draw(), the library will search this file for
  * the resource you request. 
  *
- * Do not close the stream after calling this function. The library is
- * responsible for closing the stream at shutdown time.
+ * Do <emphasis>not</emphasis> close the stream after calling this function. 
+ * The library is responsible for closing the stream at shutdown time.
+ *
+ * Returns: a Blorb error code.
  */
 giblorb_err_t
 giblorb_set_resource_map(strid_t file)
@@ -40,8 +42,10 @@ giblorb_set_resource_map(strid_t file)
 /**
  * giblorb_get_resource_map:
  * 
- * This function returns the current resource map being used. Returns NULL
- * if #giblorb_set_resource_map() has not been called yet.
+ * This function returns the current resource map being used. Returns %NULL
+ * if giblorb_set_resource_map() has not been called yet.
+ *
+ * Returns: a resource map, or %NULL.
  */
 giblorb_map_t*
 giblorb_get_resource_map()

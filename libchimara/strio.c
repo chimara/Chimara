@@ -1109,7 +1109,7 @@ glk_stream_get_position(strid_t str)
  * glk_stream_set_position:
  * @str: A file or memory stream.
  * @pos: The position to set the mark to, relative to @seekmode.
- * @seekmode: One of #seekmode_Start, #seekmode_Current, or #seekmode_End.
+ * @seekmode: One of %seekmode_Start, %seekmode_Current, or %seekmode_End.
  *
  * Sets the position of the read/write mark in @str. The position is controlled
  * by @pos, and the meaning of @pos is controlled by @seekmode. See the

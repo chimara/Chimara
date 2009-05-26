@@ -624,7 +624,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * ChimaraGlk:monospace-font-description:
 	 *
 	 * Pointer to a #PangoFontDescription describing the default monospace font,
-	 * to be used in text grid windows and #style_Preformatted, for example.
+	 * to be used in text grid windows and %style_Preformatted, for example.
 	 *
 	 * Default value: font description created from the string 
 	 * <quote>Monospace</quote>

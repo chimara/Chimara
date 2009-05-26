@@ -275,7 +275,7 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
  *
  * For convenience, it is legal to call glk_cancel_line_event() even if there
  * is no line input request on that window. The event type will be set to
- * #evtype_None in this case.
+ * %evtype_None in this case.
  */
 void
 glk_cancel_line_event(winid_t win, event_t *event)

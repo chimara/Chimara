@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-The-Blorb-Layer">
+<refmeta>
+<refentrytitle>The Blorb Layer</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>The Blorb Layer</refname>
+<refpurpose>Loading resources from a Blorb file</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+The material described in this section is not part of the Glk API per se. It is an external layer which allows the library to load resources (images and sounds) from a file specified by your program. The Blorb file format is a standard IF resource archive.
+</para>
+<para>
+The Glk spec does not require that resources be stored in a Blorb file. It says only that the library knows how to load them and use them, when you so request. However, Blorb is the recommended way to supply portable resources. Most Glk libraries will support Blorb, using the interface defined in this section.
+</para>
+<para>
+For the complete Blorb specification and tools for Blorb file manipulation, see:
+<ulink role="online-location" url="http://www.eblong.com/zarf/blorb/">http://www.eblong.com/zarf/blorb/</ulink>
+</para>
+<refsect2 id="chimara-How-This-Works">
+<title>How This Works</title>
+<para>
+The Blorb layer is implemented in a C source file, <filename>gi_blorb.c</filename>, and its header, <filename class="headerfile">gi_blorb.h</filename>. This code is (mostly) platform-independent &mdash; it is identical in every library, just as the <filename class="headerfile">glk.h</filename> header file is identical in every library. Each library author who wants to support Blorb should download the <filename>gi_blorb.c</filename> and <filename class="headerfile">gi_blorb.h</filename> files from the Glk web site, and compile them unchanged into the library.
+</para>
+<para>
+Most of the functions defined in <filename class="headerfile">gi_blorb.h</filename> are intended for the library. If you are writing a Glk program, you can ignore them all, except for <link linkend="giblorb-set-resource-map"><function>giblorb_set_resource_map()</function></link>; see <link linkend="chimara-What-the-Program-Does">What the Program Does</link>. If you are implementing a Glk library, you can use this API to find and load resource data. 
+</para>
+</refsect2>
+</refsect1>
+</refentry>

@@ -156,7 +156,7 @@ glk_put_char_uni(glui32 ch)
  * Prints a null-terminated string to the current stream. It is exactly
  * equivalent to
  * |[
- * for (ptr = @s; *ptr; ptr++)
+ * for (ptr = s; *ptr; ptr++)
  * 	#glk_put_char(*ptr);
  * ]|
  * However, it may be more efficient.
@@ -191,8 +191,8 @@ glk_put_string_uni(glui32 *s)
  * Prints a block of characters to the current stream. It is exactly equivalent
  * to:
  * |[
- * for (i = 0; i < @len; i++)
- * 	#glk_put_char(@buf[i]);
+ * for (i = 0; i < len; i++)
+ * 	#glk_put_char(buf[i]);
  * ]|
  * However, it may be more efficient.
  */
@@ -223,7 +223,7 @@ glk_put_buffer_uni(glui32 *buf, glui32 len)
  * @buf: An allocated buffer, or %NULL.
  * @buflen: Length of @buf.
  * @fmode: Mode in which the buffer will be opened. Must be one of 
- * #filemode_Read, #filemode_Write, or #filemode_ReadWrite.
+ * %filemode_Read, %filemode_Write, or %filemode_ReadWrite.
  * @rock: The new stream's rock value.
  *
  * Opens a stream which reads from or writes to a space in memory. @buf points
@@ -253,7 +253,7 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
  * @buf: An allocated buffer, or %NULL.
  * @buflen: Length of @buf.
  * @fmode: Mode in which the buffer will be opened. Must be one of 
- * #filemode_Read, #filemode_Write, or #filemode_ReadWrite.
+ * %filemode_Read, %filemode_Write, or %filemode_ReadWrite.
  * @rock: The new stream's rock value.
  *
  * Works just like glk_stream_open_memory(), except that the buffer is an array
@@ -353,15 +353,15 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 /**
  * glk_stream_open_file:
  * @fileref: Indicates the file which will be opened.
- * @fmode: Mode in which the file will be opened. Can be any of #filemode_Read,
- * #filemode_Write, #filemode_WriteAppend, or #filemode_ReadWrite.
+ * @fmode: Mode in which the file will be opened. Can be any of %filemode_Read,
+ * %filemode_Write, %filemode_WriteAppend, or %filemode_ReadWrite.
  * @rock: The new stream's rock value.
  *
  * Opens a stream which reads to or writes from a disk file. If @fmode is
- * #filemode_Read, the file must already exist; for the other modes, an empty
- * file is created if none exists. If @fmode is #filemode_Write, and the file
+ * %filemode_Read, the file must already exist; for the other modes, an empty
+ * file is created if none exists. If @fmode is %filemode_Write, and the file
  * already exists, it is truncated down to zero length (an empty file). If
- * @fmode is #filemode_WriteAppend, the file mark is set to the end of the 
+ * @fmode is %filemode_WriteAppend, the file mark is set to the end of the 
  * file.
  *
  * When writing in binary mode, Unicode values (characters greater than 255)
@@ -381,8 +381,8 @@ glk_stream_open_file(frefid_t fileref, glui32 fmode, glui32 rock)
 /**
  * glk_stream_open_file_uni:
  * @fileref: Indicates the file which will be opened.
- * @fmode: Mode in which the file will be opened. Can be any of #filemode_Read,
- * #filemode_Write, #filemode_WriteAppend, or #filemode_ReadWrite.
+ * @fmode: Mode in which the file will be opened. Can be any of %filemode_Read,
+ * %filemode_Write, %filemode_WriteAppend, or %filemode_ReadWrite.
  * @rock: The new stream's rock value.
  *
  * This works just like glk_stream_open_file(), except that in binary mode,

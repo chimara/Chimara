@@ -305,12 +305,6 @@ seekmode_End
 <TITLE>Styles</TITLE>
 glk_set_style
 glk_set_style_stream
-<SUBSECTION Suggesting the Appearance of Styles>
-glk_stylehint_set
-glk_stylehint_clear
-<SUBSECTION Testing the Appearance of Styles>
-glk_style_distinguish
-glk_style_measure
 <SUBSECTION Constants>
 style_Normal
 style_Emphasized
@@ -324,6 +318,14 @@ style_Input
 style_User1
 style_User2
 style_NUMSTYLES
+</SECTION>
+
+<SECTION>
+<FILE>glk-stylehints</FILE>
+<TITLE>Suggesting the Appearance of Styles</TITLE>
+glk_stylehint_set
+glk_stylehint_clear
+<SUBSECTION Constants>
 stylehint_Indentation
 stylehint_ParaIndentation
 stylehint_Justification
@@ -339,6 +341,13 @@ stylehint_just_LeftFlush
 stylehint_just_LeftRight
 stylehint_just_Centered
 stylehint_just_RightFlush
+</SECTION>
+
+<SECTION>
+<FILE>glk-style-measure</FILE>
+<TITLE>Testing the Appearance of Styles</TITLE>
+glk_style_distinguish
+glk_style_measure
 </SECTION>
 
 <SECTION>
@@ -472,3 +481,67 @@ glk_cancel_hyperlink_event
 GLK_MODULE_HYPERLINKS
 </SECTION>
 
+<SECTION>
+<FILE>blorb-program</FILE>
+<TITLE>What the Program Does</TITLE>
+giblorb_set_resource_map
+giblorb_get_resource_map
+giblorb_map_t
+</SECTION>
+
+<SECTION>
+<FILE>blorb-layer</FILE>
+<TITLE>What the Blorb Layer Does</TITLE>
+giblorb_create_map
+giblorb_destroy_map
+giblorb_result_t
+giblorb_load_chunk_by_type
+giblorb_load_chunk_by_number
+giblorb_unload_chunk
+giblorb_load_resource
+giblorb_count_resources
+<SUBSECTION Constants>
+giblorb_method_DontLoad
+giblorb_method_Memory
+giblorb_method_FilePos
+giblorb_ID_Snd
+giblorb_ID_Exec
+giblorb_ID_Pict
+giblorb_ID_Copyright
+giblorb_ID_AUTH
+giblorb_ID_ANNO
+</SECTION>
+
+<SECTION>
+<FILE>blorb-errors</FILE>
+<TITLE>Blorb Errors</TITLE>
+giblorb_err_t
+<SUBSECTION Constants>
+giblorb_err_None
+giblorb_err_CompileTime
+giblorb_err_Alloc
+giblorb_err_Read
+giblorb_err_NotAMap
+giblorb_err_Format
+giblorb_err_NotFound
+</SECTION>
+
+<SECTION>
+<FILE>glkext-startup</FILE>
+<TITLE>Startup Code</TITLE>
+glkunix_argumentlist_t
+glkunix_startup_t
+<SUBSECTION Constants>
+glkunix_arg_NoValue
+glkunix_arg_ValueFollows
+glkunix_arg_ValueCanFollow
+glkunix_arg_NumberValue
+glkunix_arg_End
+</SECTION>
+
+<SECTION>
+<FILE>glkext-unix</FILE>
+<TITLE>Unix Extensions</TITLE>
+glkunix_stream_open_pathname
+glkunix_set_base_file
+</SECTION>

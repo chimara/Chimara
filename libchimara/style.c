@@ -4,18 +4,22 @@ extern ChimaraGlkPrivate *glk_data;
 
 /**
  * glk_set_style:
- * @styl The style to apply
+ * @styl: The style to apply
  *
- * This changes the style of the current output stream.  After a style change,
- * new text which is printed to that stream will be given the new style. For a
- * window stream, the text will appear in that style. For other types of
- * streams, this has no effect.
+ * Changes the style of the current output stream. @styl should be one of the
+ * <code>style_</code> constants listed above. However, any value is actually
+ * legal; if the interpreter does not recognize the style value, it will treat
+ * it as %style_Normal.
+ * <note><para>
+ *  This policy allows for the future definition of styles without breaking old
+ *  Glk libraries.
+ * </para></note>
  */
 void
-glk_set_style(glui32 style)
+glk_set_style(glui32 styl)
 {
 	g_return_if_fail(glk_data->current_stream != NULL);
-	glk_set_style_stream(glk_data->current_stream, style);
+	glk_set_style_stream(glk_data->current_stream, styl);
 }
 
 /* Internal function: mapping from style enum to tag name */
@@ -40,9 +44,16 @@ get_tag_name(glui32 style)
 	return "normal";
 }
 
+/** 
+ * glk_set_style_stream:
+ * @str: Output stream to change the style of
+ * @styl: The style to apply
+ *
+ * This changes the style of the stream @str. See glk_set_style().
+ */
 void
-glk_set_style_stream(strid_t stream, glui32 style) {
-	stream->style = get_tag_name(style);
+glk_set_style_stream(strid_t str, glui32 styl) {
+	str->style = get_tag_name(styl);
 }
 
 /* Internal function: call this to initialize the default styles to a textbuffer. */
@@ -173,11 +184,25 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 	}
 }
 
+/**
+ * glk_stylehint_set:
+ * @wintype: The window type to set a style hint on, or %wintype_AllTypes.
+ * @styl: The style to set a hint for.
+ * @hint: The type of style hint, one of the <code>stylehint_</code> constants.
+ * @val: The style hint. The meaning of this depends on @hint.
+ *
+ * Sets a hint about the appearance of one style for a particular type of 
+ * window. You can also set wintype to %wintype_AllTypes, which sets a hint for 
+ * all types of window.
+ * <note><para>
+ *  There is no equivalent constant to set a hint for all styles of a single 
+ *  window type.
+ * </para></note>
+ */
 void
-glk_stylehint_set(glui32 wintype, glui32 style, glui32 hint, glsi32 val)
+glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {
-
-	gchar *tag_name = get_tag_name(style);
+	gchar *tag_name = get_tag_name(styl);
 
 	/* Iterate over all the window and update their styles if nessecary */
 	winid_t win = glk_window_iterate(NULL, NULL);

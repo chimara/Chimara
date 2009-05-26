@@ -73,8 +73,8 @@ glk_window_get_rock(winid_t win)
  * glk_window_get_type:
  * @win: A window.
  *
- * Returns @win's type, one of #wintype_Blank, #wintype_Pair,
- * #wintype_TextBuffer, #wintype_TextGrid, or #wintype_Graphics.
+ * Returns @win's type, one of %wintype_Blank, %wintype_Pair,
+ * %wintype_TextBuffer, %wintype_TextGrid, or %wintype_Graphics.
  *
  * Returns: The window's type.
  */
@@ -145,15 +145,15 @@ glk_window_get_root()
  * @split: The window to split to create the new window. Must be 0 if there
  * are no windows yet.
  * @method: Position of the new window and method of size computation. One of
- * #winmethod_Above, #winmethod_Below, #winmethod_Left, or #winmethod_Right
- * OR'ed with #winmethod_Fixed or #winmethod_Proportional. If @wintype is
- * #wintype_Blank, then #winmethod_Fixed is not allowed.
+ * %winmethod_Above, %winmethod_Below, %winmethod_Left, or %winmethod_Right
+ * OR'ed with %winmethod_Fixed or %winmethod_Proportional. If @wintype is
+ * %wintype_Blank, then %winmethod_Fixed is not allowed.
  * @size: Size of the new window, in percentage points if @method is
- * #winmethod_Proportional, otherwise in characters if @wintype is 
- * #wintype_TextBuffer or #wintype_TextGrid, or pixels if @wintype is
- * #wintype_Graphics.
- * @wintype: Type of the new window. One of #wintype_Blank, #wintype_TextGrid,
- * #wintype_TextBuffer, or #wintype_Graphics.
+ * %winmethod_Proportional, otherwise in characters if @wintype is 
+ * %wintype_TextBuffer or %wintype_TextGrid, or pixels if @wintype is
+ * %wintype_Graphics.
+ * @wintype: Type of the new window. One of %wintype_Blank, %wintype_TextGrid,
+ * %wintype_TextBuffer, or %wintype_Graphics.
  * @rock: The new window's rock value.
  *
  * Creates a new window. If there are no windows, the first three arguments are
@@ -218,12 +218,12 @@ glk_window_get_root()
  * |[ newwin = #glk_window_open(win, #winmethod_Below | #winmethod_Fixed, 5, #wintype_TextGrid, 0); ]|
  * 
  * Note that the meaning of the @size argument depends on the @method argument.
- * If the method is #winmethod_Fixed, it also depends on the @wintype argument.
+ * If the method is %winmethod_Fixed, it also depends on the @wintype argument.
  * The new window is then called the <quote>key window</quote> of this split,
  * because its window type determines how the split size is computed.
  * 
  * <note><para>
- *   For #winmethod_Proportional splits, you can still call the new window the
+ *   For %winmethod_Proportional splits, you can still call the new window the
  *   <quote>key window</quote>. But the key window is not important for
  *   proportional splits, because the size will always be computed as a simple
  *   ratio of the available space, not a fixed size of one child window.
@@ -1026,13 +1026,13 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 /**
  * glk_window_set_arrangement:
  * @win: a pair window to rearrange.
- * @method: new method of size computation. One of #winmethod_Above, 
- * #winmethod_Below, #winmethod_Left, or #winmethod_Right OR'ed with 
- * #winmethod_Fixed or #winmethod_Proportional.
+ * @method: new method of size computation. One of %winmethod_Above, 
+ * %winmethod_Below, %winmethod_Left, or %winmethod_Right OR'ed with 
+ * %winmethod_Fixed or %winmethod_Proportional.
  * @size: new size constraint, in percentage points if @method is
- * #winmethod_Proportional, otherwise in characters if @win's type is 
- * #wintype_TextBuffer or #wintype_TextGrid, or pixels if @win's type is
- * #wintype_Graphics.
+ * %winmethod_Proportional, otherwise in characters if @win's type is 
+ * %wintype_TextBuffer or %wintype_TextGrid, or pixels if @win's type is
+ * %wintype_Graphics.
  * @keywin: new key window, or %NULL to leave the key window unchanged.
  *
  * Changes the size of an existing split &mdash; that is, it changes the 

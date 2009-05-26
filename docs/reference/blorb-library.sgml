@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-What-the-Library-Does">
+<refmeta>
+<refentrytitle>What the Library Does</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>What the Library Does</refname>
+<refpurpose>How to implement the Blorb layer in your library</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+Each library must implement <link linkend="giblorb-set-resource-map"><function>giblorb_set_resource_map()</function></link>, if it wishes to support Blorb at all. Generally, this function should create a Blorb map and stash it away somewhere. It may also want to stash the stream itself, so that the library can read data directly from it.
+</para>
+<para>
+<link linkend="giblorb-set-resource-map"><function>giblorb_set_resource_map()</function></link> should return <link linkend="giblorb-err-None"><constant>giblorb_err_None</constant></link> (0) if it succeeded, or the appropriate Blorb error code if not. See <link linkend="chimara-Blorb-Errors">Blorb Errors</link>.
+</para>
+<para>
+The library must also link in the <filename>gi_blorb.c</filename> file. Most of this should compile without difficulty on any platform. However, it does need to allocate memory. As supplied, <filename>gi_blorb.c</filename> calls the ANSI functions <function>malloc()</function>, <function>realloc()</function>, and <function>free()</function>. If this is not appropriate on your OS, feel free to change these calls. They are isolated at the end of the file.
+</para>
+<note><title>Chimara</title>
+<para>
+The Chimara library uses the GLib functions <link linkend="g-malloc"><function>g_malloc()</function></link>, <link linkend="g-realloc"><function>g_realloc()</function></link>, and <link linkend="g-free"><function>g_free()</function></link> because of their additional error-checking features.
+</para></note>
+</refsect1>
+</refentry>
