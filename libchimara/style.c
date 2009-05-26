@@ -23,7 +23,7 @@ glk_set_style(glui32 styl)
 }
 
 /* Internal function: mapping from style enum to tag name */
-gchar*
+static gchar *
 get_tag_name(glui32 style)
 {
 	switch(style) {
@@ -75,7 +75,7 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 	gtk_text_buffer_create_tag(buffer, "user2", NULL);
 }
 
-void
+static void
 color_format(glui32 val, gchar *buffer)
 {
 	sprintf(buffer, "#%02X%02X%02X",
@@ -86,7 +86,7 @@ color_format(glui32 val, gchar *buffer)
 }
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
-void
+static void
 apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 {
 	g_return_if_fail(tag != NULL);

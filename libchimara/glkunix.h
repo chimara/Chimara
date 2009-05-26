@@ -4,6 +4,6 @@
 #include <glib.h>
 #include <libchimara/glkstart.h>
 
-gboolean parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *argv[], glkunix_startup_t *data);
+G_GNUC_INTERNAL gboolean parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *argv[], glkunix_startup_t *data);
 
 #endif

@@ -6,7 +6,7 @@
 #include "chimara-glk-private.h"
 #include "gi_blorb.h"
 
-ChimaraGlkPrivate *glk_data = NULL;
+G_GNUC_INTERNAL ChimaraGlkPrivate *glk_data = NULL;
 
 /**
  * glk_exit:
