@@ -16,6 +16,8 @@ AM_INIT_AUTOMAKE([-Wall])
 AC_PROG_CC                 # C compiler
 AM_PROG_CC_C_O             # Automake requires this for per-target CFLAGS
 AC_PROG_INSTALL            # Install
+m4_defun([_LT_AC_LANG_CXX_CONFIG], [:]) # Disable unnecessary Libtool checks
+m4_defun([_LT_AC_LANG_F77_CONFIG], [:]) # to save time (1.5 only)
 LT_INIT                    # Libtool 2.2.6 and up
 #LT_INIT([dlopen])         # Should call it this way, but
 #LT_PREREQ([2.2.6])        # ...goddamn Fedora 10 still has 1.5
