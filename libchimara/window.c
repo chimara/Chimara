@@ -454,6 +454,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			
 			gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_WORD_CHAR );
 			gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
+			gtk_text_view_set_pixels_inside_wrap( GTK_TEXT_VIEW(textview), 3 );
+			gtk_text_view_set_left_margin( GTK_TEXT_VIEW(textview), 20 );
+			gtk_text_view_set_right_margin( GTK_TEXT_VIEW(textview), 20 );
 
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
 			gtk_widget_show_all(scrolledwindow);

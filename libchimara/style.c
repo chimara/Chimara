@@ -65,8 +65,8 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 	gtk_text_buffer_create_tag(buffer, "normal", NULL);
 	gtk_text_buffer_create_tag(buffer, "emphasized", "style", PANGO_STYLE_ITALIC, NULL);
 	gtk_text_buffer_create_tag(buffer, "preformatted", "font-desc", glk_data->monospace_font_desc, NULL);
-	gtk_text_buffer_create_tag(buffer, "header", "size-points", 16.0, "weight", PANGO_WEIGHT_BOLD, NULL);
-	gtk_text_buffer_create_tag(buffer, "subheader", "size-points", 12.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	gtk_text_buffer_create_tag(buffer, "header", "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	gtk_text_buffer_create_tag(buffer, "subheader", "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
 	gtk_text_buffer_create_tag(buffer, "alert", "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
 	gtk_text_buffer_create_tag(buffer, "note", "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
 	gtk_text_buffer_create_tag(buffer, "block-quote", "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, NULL);

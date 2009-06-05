@@ -73,8 +73,8 @@ create_window(void)
 	
 	glk = chimara_glk_new();
 	g_object_set(glk, "border-width", 6, "spacing", 6, NULL);
-	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Sans 11");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 10");
+	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
+	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
 	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);
 	g_signal_connect(glk, "stopped", G_CALLBACK(on_stopped), NULL);
 	
