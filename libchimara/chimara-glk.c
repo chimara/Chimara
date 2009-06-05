@@ -995,9 +995,9 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
 		startup_succeeded = glkunix_startup_code(&data);
 		priv->in_startup = FALSE;
 		
-		gchar **ptr = data.argv;
-		while(*ptr++)
-			g_free(*ptr);
+		int i=0;
+		while(i < data.argc)
+			g_free(data.argv[i++]);
 		g_free(data.argv);
 		
 		if(!startup_succeeded)
