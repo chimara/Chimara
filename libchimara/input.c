@@ -71,6 +71,8 @@ glk_cancel_char_event(winid_t win)
 static void
 text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
+	gdk_threads_enter();
+	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
     GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
@@ -126,12 +128,16 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
 	
 	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+	
+	gdk_threads_leave();
 }
     
 /* Internal function: Request either latin-1 or unicode line input, in a text buffer window. */
 static void
 text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
+	gdk_threads_enter();
+	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
     /* Move the input_position mark to the end of the window_buffer */
@@ -156,6 +162,8 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
     
     gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
     g_signal_handler_unblock(buffer, win->insert_text_handler);
+	
+	gdk_threads_leave();
 }
 
 /**
