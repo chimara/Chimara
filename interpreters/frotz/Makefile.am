@@ -1,4 +1,4 @@
-PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
+PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk"
 
 pkglib_LTLIBRARIES = frotz.la
 frotz_la_SOURCES = buffer.c err.c fastmem.c files.c input.c main.c math.c \
@@ -8,4 +8,3 @@ frotz_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 frotzdocdir = $(datadir)/doc/$(PACKAGE)/frotz
 dist_frotzdoc_DATA = AUTHORS COPYING README TODO
-
