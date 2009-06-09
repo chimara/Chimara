@@ -42,7 +42,8 @@ G_GNUC_INTERNAL ChimaraGlkPrivate *glk_data = NULL;
 void
 glk_exit(void)
 {
-    g_signal_emit_by_name(glk_data->self, "stopped");
+	if(!glk_data->in_startup)
+		g_signal_emit_by_name(glk_data->self, "stopped");
 
 	/* Stop any timers */
 	glk_request_timer_events(0);

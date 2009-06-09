@@ -913,14 +913,37 @@ chimara_glk_get_spacing(ChimaraGlk *glk)
 	return priv->spacing;
 }
 
+struct StartupData {
+	glk_main_t glk_main;
+	glkunix_startup_code_t glkunix_startup_code;
+	glkunix_startup_t args;
+};
+
 /* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */
 static gpointer
-glk_enter(gpointer glk_main)
+glk_enter(struct StartupData *startup)
 {
     extern ChimaraGlkPrivate *glk_data;
-
+	
+	/* Run startup function */
+	if(startup->glkunix_startup_code) {
+		glk_data->in_startup = TRUE;
+		int result = startup->glkunix_startup_code(&startup->args);
+		glk_data->in_startup = FALSE;
+		
+		int i = 0;
+		while(i < startup->args.argc)
+			g_free(startup->args.argv[i++]);
+		g_free(startup->args.argv);
+		
+		if(!result)
+			return NULL;
+	}
+	
+	/* Run main function */
     g_signal_emit_by_name(glk_data->self, "started");
-	((glk_main_t)glk_main)();
+	(startup->glk_main)();
+	g_slice_free(struct StartupData, startup);	
 	g_signal_emit_by_name(glk_data->self, "stopped");
 	return NULL;
 }
@@ -952,10 +975,9 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
     g_return_val_if_fail(plugin, FALSE);
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	struct StartupData *startup = g_slice_new0(struct StartupData);
     
     /* Open the module to run */
-    glk_main_t glk_main;
-	glkunix_startup_code_t glkunix_startup_code;
     g_assert( g_module_supported() );
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
@@ -964,10 +986,26 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
         g_warning( "Error opening module: %s", g_module_error() );
         return FALSE;
     }
-    if( !g_module_symbol(priv->program, "glk_main", (gpointer *) &glk_main) )
+    if( !g_module_symbol(priv->program, "glk_main", (gpointer *) &startup->glk_main) )
     {
         g_warning( "Error finding glk_main(): %s", g_module_error() );
         return FALSE;
+    }
+
+    if( g_module_symbol(priv->program, "glkunix_startup_code", (gpointer *) &startup->glkunix_startup_code) )
+    {
+		glkunix_argumentlist_t *glkunix_arguments;
+
+		if( !(g_module_symbol(priv->program, "glkunix_arguments", (gpointer *) &glkunix_arguments) 
+			  && parse_command_line(glkunix_arguments, argc, argv, &startup->args)) )
+		{
+			/* arguments could not be parsed, so create data ourselves */
+			startup->args.argc = 1;
+			startup->args.argv = g_new0(gchar *, 1);
+		}
+
+		/* Set the program name */
+		startup->args.argv[0] = g_strdup(plugin);
     }
 
 	extern ChimaraGlkPrivate *glk_data;
@@ -975,40 +1013,8 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
     /* TODO: Do this with a GPrivate */
     glk_data = priv;
 	
-    if( g_module_symbol(priv->program, "glkunix_startup_code", (gpointer *) &glkunix_startup_code) )
-    {
-		glkunix_startup_t data;
-		glkunix_argumentlist_t *glkunix_arguments;
-		gboolean startup_succeeded;
-
-		if( !(g_module_symbol(priv->program, "glkunix_arguments", (gpointer *) &glkunix_arguments) && parse_command_line(glkunix_arguments, argc, argv, &data)) )
-		{
-			/* arguments could not be parsed, so create data ourselves */
-			data.argc = 1;
-			data.argv = g_new0(gchar *, 1);
-		}
-
-		/* Set the program name */
-		data.argv[0] = g_strdup(plugin);
-		
-		priv->in_startup = TRUE;
-		startup_succeeded = glkunix_startup_code(&data);
-		priv->in_startup = FALSE;
-		
-		int i=0;
-		while(i < data.argc)
-			g_free(data.argv[i++]);
-		g_free(data.argv);
-		
-		if(!startup_succeeded)
-		{
-			chimara_glk_stopped(glk);
-			return FALSE;
-		}
-    }
-	
     /* Run in a separate thread */
-	priv->thread = g_thread_create(glk_enter, glk_main, TRUE, error);
+	priv->thread = g_thread_create((GThreadFunc)glk_enter, startup, TRUE, error);
 	
 	return !(priv->thread == NULL);
 }
@@ -1026,7 +1032,7 @@ chimara_glk_stop(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
     /* TODO: check if glk is actually running a program */
-    signal_abort();
+	signal_abort();
 }
 
 /**
