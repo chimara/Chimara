@@ -92,3 +92,95 @@ glk_select(event_t *event)
 	g_assert(event->type != evtype_Abort);
 }
 
+/**
+ * glk_select_poll:
+ * @event: Return location for an event.
+ *
+ * You can also inquire if an event is available, without stopping to wait for 
+ * one to occur.
+ * 
+ * This checks if an internally-spawned event is available. If so, it stores it 
+ * in the structure pointed to by @event. If not, it sets
+ * <code>@event->type</code> to %evtype_None. Either way, it returns almost
+ * immediately.
+ * 
+ * The first question you now ask is, what is an internally-spawned event?
+ * glk_select_poll() does not check for or return %evtype_CharInput,
+ * %evtype_LineInput, %evtype_MouseInput, or %evtype_Hyperlink events. It is
+ * intended for you to test conditions which may have occurred while you are
+ * computing, and not interfacing with the player. For example, time may pass
+ * during slow computations; you can use glk_select_poll() to see if a 
+ * %evtype_Timer event has occured. (See <link 
+ * linkend="chimara-Timer-Events">Timer Events</link>.)
+ * 
+ * At the moment, glk_select_poll() checks for %evtype_Timer, %evtype_Arrange,
+ * %evtype_Redraw and %evtype_SoundNotify events. But see <link 
+ * linkend="chimara-Other-Events">Other Events</link>.
+ * 
+ * The second question is, what does it mean that glk_select_poll() returns 
+ * <quote>almost immediately</quote>? In some Glk libraries, text that you send 
+ * to a window is buffered; it does not actually appear until you request player
+ * input with glk_select(). glk_select_poll() attends to this buffer-flushing 
+ * task in the same way. (Although it does not do the <quote><computeroutput>Hit
+ * any key to scroll down</computeroutput></quote> waiting which may be done in
+ * glk_select(); that's a player-input task.)
+ * 
+ * Similarly, on multitasking platforms, glk_select() may yield time to other
+ * processes; and glk_select_poll() does this as well.
+ * 
+ * The upshot of this is that you should not call glk_select_poll() very often. 
+ * If you are not doing much work between player inputs, you should not need to
+ * call it at all.
+ *
+ * <note><para>
+ *  For example, in a virtual machine interpreter, you should not call
+ *  glk_select_poll() after every opcode.
+ * </para></note>
+ * 
+ * However, if you are doing intense computation, you may wish to call
+ * glk_select_poll() every so often to yield time to other processes. And if you
+ * are printing intermediate results during this computation, you should
+ * glk_select_poll() every so often, so that you can be certain your output will 
+ * be displayed before the next glk_select().
+ * 
+ * <note><para>
+ *  However, you should call glk_tick() often &mdash; once per opcode in a VM
+ *  interpreter. See <link linkend="chimara-The-Tick-Thing">The Tick 
+ *  Thing</link>.
+ * </para></note>
+ */
+void
+glk_select_poll(event_t *event)
+{
+	g_return_if_fail(event != NULL);
+
+	event->type = evtype_None;
+	
+	g_mutex_lock(glk_data->event_lock);
+	
+	if( !g_queue_is_empty(glk_data->event_queue) )
+	{
+		GList *link;
+		int count;
+		for(count = 0; (link = g_queue_peek_nth_link(glk_data->event_queue, count)) != NULL; count++)
+		{
+			glui32 type = ((event_t *)link->data)->type;
+			if(type != evtype_CharInput && type != evtype_LineInput && type != evtype_MouseInput && type != evtype_Hyperlink)
+			{
+				memcpy(event, link->data, sizeof(event_t));
+				g_free(link->data);
+				g_queue_delete_link(glk_data->event_queue, link);
+				g_cond_signal(glk_data->event_queue_not_full);
+				break;
+			}
+		}
+	}
+	
+	g_mutex_unlock(glk_data->event_lock);
+	
+	/* Check for interrupt */
+	glk_tick();
+
+	/* If an abort event was generated, the thread should have exited by now */
+	g_assert(event->type != evtype_Abort);
+}
