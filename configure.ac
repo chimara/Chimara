@@ -10,6 +10,8 @@ AC_INIT([chimara], [0.1])
 AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
 # Initialize Automake
 AM_INIT_AUTOMAKE([-Wall])
+# Configure with --enable-silent-rules to cut down on clutter
+AM_SILENT_RULES
 
 ### DECLARE PROGRAMS ##########################################################
 
