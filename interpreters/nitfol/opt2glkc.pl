@@ -236,7 +236,7 @@ sub make_glk_unix
 #include <dirent.h>
 #include <limits.h>
 #include \"$header\"
-#include \"glkstart.h\"
+#include <libchimara/glkstart.h>
 
 static char *game_filename = NULL;
 

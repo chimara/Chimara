@@ -1,0 +1,6 @@
+# List of source files that look like they contain translatable strings
+# but don't.
+
+interpreters/nitfol/inform.c
+tests/chimara.ui
+

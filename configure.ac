@@ -24,21 +24,30 @@ CHIMARA_AGE=0 # Increment if interfaces added; set 0 if removed
 LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
 AC_SUBST(LT_VERSION_INFO)
 
+### DECLARE COMPILERS #########################################################
+
+AC_PROG_CC                   # C compiler
+AC_USE_SYSTEM_EXTENSIONS     # Define _GNU_SOURCE if using GCC
+AM_PROG_CC_C_O               # Automake requires this for per-target CFLAGS
+AC_C_INLINE                  # Define inline keyword 
+AC_PROG_YACC                 # Building nitfol requires yacc
+
 ### DECLARE PROGRAMS ##########################################################
 
-AC_PROG_CC                 # C compiler
-AM_PROG_CC_C_O             # Automake requires this for per-target CFLAGS
-AC_PROG_INSTALL            # Install
+AC_PROG_INSTALL              # Install
 m4_defun([_LT_AC_LANG_CXX_CONFIG], [:]) # Disable unnecessary Libtool checks
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:]) # to save time (1.5 only)
-LT_INIT                    # Libtool 2.2.6 and up
-#LT_INIT([dlopen])         # Should call it this way, but
-#LT_PREREQ([2.2.6])        # ...goddamn Debian still has 1.5
-AC_PROG_LIBTOOL            # Old way of declaring Libtool
-AM_GNU_GETTEXT([external]) # Gettext, link to system libintl
-IT_PROG_INTLTOOL([0.35.0]) # Intltool
-PKG_PROG_PKG_CONFIG        # pkg_config
-GTK_DOC_CHECK(1.9)         # Gtk-Doc
+LT_INIT                      # Libtool 2.2.6 and up
+#LT_INIT([dlopen])           # Should call it this way, but
+#LT_PREREQ([2.2.6])          # ...goddamn Debian still has 1.5
+AC_PROG_LIBTOOL              # Old way of declaring Libtool
+AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
+IT_PROG_INTLTOOL([0.35.0])   # Intltool
+PKG_PROG_PKG_CONFIG          # pkg_config
+GTK_DOC_CHECK(1.9)           # Gtk-Doc
+# Other utilities used in this package's various make scripts
+AC_PROG_AWK
+AC_PATH_PROG([PERL], [perl]) # Perl
 
 ### TYPES #####################################################################
 

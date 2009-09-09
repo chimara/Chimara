@@ -1,5 +1,5 @@
-This is Info file nitfol.info, produced by Makeinfo version 1.68 from
-the input file nitfol.texi.
+This is ../../../interpreters/nitfol/nitfol.info, produced by makeinfo
+version 4.13 from ../../../interpreters/nitfol/nitfol.texi.
 
 INFO-DIR-SECTION Games
 START-INFO-DIR-ENTRY
@@ -12,11 +12,11 @@ File: nitfol.info,  Node: Top,  Next: Invoking nitfol,  Prev: (dir),  Up: (dir)
 Introduction
 ************
 
-   Nitfol is a portable interpreter for Z-machine code, the game format
-used by Infocom and more recently,
-Inform (http://www.gnelson.demon.co.uk/inform.html).  Nitfol handles
-versions one through eight of the format, and attempts to comply with
-version 1.0 of the Z-machine specification.
+Nitfol is a portable interpreter for Z-machine code, the game format
+used by Infocom and more recently, Inform
+(http://www.gnelson.demon.co.uk/inform.html).  Nitfol handles versions
+one through eight of the format, and attempts to comply with version
+1.0 of the Z-machine specification.
 
    You will need game files to use nitfol.  The "if-archive" contains a
 large collection of these, available at
@@ -42,10 +42,10 @@ and should be sent to <nitfol@my-deja.com>.
 
 File: nitfol.info,  Node: Invoking nitfol,  Next: Features,  Prev: Top,  Up: Top
 
-Invoking nitfol
-***************
+1 Invoking nitfol
+*****************
 
-   Invoke nitfol with the game filename, and options.  If you omit the
+Invoke nitfol with the game filename, and options.  If you omit the
 game filename, nitfol will prompt you for one.  The following options
 are recognized:
 
@@ -216,11 +216,12 @@ are recognized:
      printed by banners and the `version' command.  Version 6 games
      interpret this as a number instead of a letter.
 
+
 
 File: nitfol.info,  Node: Features,  Next: Debugger,  Prev: Invoking nitfol,  Up: Top
 
-Features
-********
+2 Features
+**********
 
 * Menu:
 
@@ -236,11 +237,11 @@ Features
 
 File: nitfol.info,  Node: Preferences,  Next: Infinite undo/redo,  Prev: Features,  Up: Features
 
-Preferences
-===========
+2.1 Preferences
+===============
 
-   If you don't like the default options and don't want to recompile,
-you can set your preferences by writing a `.nitfolrc' in your home
+If you don't like the default options and don't want to recompile, you
+can set your preferences by writing a `.nitfolrc' in your home
 directory.
 
    Each line should be of the form `OPTION=VALUE'.  Blank lines and
@@ -254,7 +255,7 @@ specific name.
      alias=v verbose
      alias=asierra tone cordial. ask sierra about
      ignore=true
-     
+
      [strictnitfol]
      ignore=false
      spell=false
@@ -262,7 +263,7 @@ specific name.
      autoundo=false
      unalias=v
      unalias=asierra
-     
+
      [xnitfol]
      tandy=true
      pirate=true
@@ -280,15 +281,14 @@ environment variables and command line options.
 
 File: nitfol.info,  Node: Infinite undo/redo,  Next: Aliases,  Prev: Preferences,  Up: Features
 
-Infinite undo/redo
-==================
+2.2 Infinite undo/redo
+======================
 
-   Multiple `@restore_undo' opcodes with no intervening `@save_undo'
-will restore earlier and earlier saved states.  However, Inform games
-will not do this, so if you want infinite undo, you must enter the
-commands `/undo' and `/redo'. The `/...' commands are part of the
-debugger, so you will need to compile in debugger support to use this
-feature.
+Multiple `@restore_undo' opcodes with no intervening `@save_undo' will
+restore earlier and earlier saved states.  However, Inform games will
+not do this, so if you want infinite undo, you must enter the commands
+`/undo' and `/redo'. The `/...' commands are part of the debugger, so
+you will need to compile in debugger support to use this feature.
 
    Z-machine games prior to version 5 do not provide undo (none of them
 provide redo), and some version 5 games don't use it (like
@@ -299,10 +299,10 @@ intervening `@save_undo' or `@restore_undo', nitfol will perform a
 
 File: nitfol.info,  Node: Aliases,  Next: Abbreviation Expansion,  Prev: Infinite undo/redo,  Up: Features
 
-Aliases
-=======
+2.3 Aliases
+===========
 
-   If the game has long words which you wish to abbreviate, you can use
+If the game has long words which you wish to abbreviate, you can use
 aliases.  Use the command `/alias NAME VALUE'.  All instances of NAME
 in line input will be replaced with VALUE.  NAME may not contain
 whitespace.
@@ -368,37 +368,37 @@ possible to `/unalias'.
 
 File: nitfol.info,  Node: Abbreviation Expansion,  Next: Typo correction,  Prev: Aliases,  Up: Features
 
-Abbreviation Expansion
-======================
+2.4 Abbreviation Expansion
+==========================
 
-   Early Infocom games don't provide abbreviations like `x' for
-`examine'.  If you enable abbreviation expansion, nitfol will attempt
-to expand one letter words at the beginning of inputs which are not in
-the game's dictionary.
+Early Infocom games don't provide abbreviations like `x' for `examine'.
+If you enable abbreviation expansion, nitfol will attempt to expand one
+letter words at the beginning of inputs which are not in the game's
+dictionary.
 
    Nitfol supports the following expansions (note that some are
 non-standard):
 
-c  close      d  down       e  east       g  again      
-i  inventory  k  attack     l  look       n  north      
-o  oops       p  open       q  quit       r  drop       
-s  south      t  take       u  up         w  west       
-x  examine    y  yes        z  wait                     
+c   close       d   down        e   east        g   again
+i   inventory   k   attack      l   look        n   north
+o   oops        p   open        q   quit        r   drop
+s   south       t   take        u   up          w   west
+x   examine     y   yes         z   wait            
 
    From `Zork I':
      *West of House*
      You are standing in an open field west of a white house, with a
      boarded front door.
      There is a small mailbox here.
-     
+
      >x mailbox
      [x -> examine]
      The small mailbox is closed.
-     
+
      >p it
      [p -> open]
      Opening the small mailbox reveals a leaflet.
-     
+
      >t leaflet
      [t -> take]
      Taken.
@@ -406,10 +406,10 @@ x  examine    y  yes        z  wait
 
 File: nitfol.info,  Node: Typo correction,  Next: Automapping,  Prev: Abbreviation Expansion,  Up: Features
 
-Typo correction
-===============
+2.5 Typo correction
+===================
 
-   In the Z-machine, the `@read' opcode provides the interpreter with a
+In the Z-machine, the `@read' opcode provides the interpreter with a
 dictionary to search in order to do tokenisation and word matching.  If
 you enable typo correction and enter a word not in the provided
 dictionary, nitfol will search for near misses.
@@ -455,10 +455,10 @@ a dictionary word, which the game might complain about.
 
 File: nitfol.info,  Node: Automapping,  Next: Quetzal,  Prev: Typo correction,  Up: Features
 
-Automapping
-===========
+2.6 Automapping
+===============
 
-   Nitfol has the ability to display an on-screen map showing visited
+Nitfol has the ability to display an on-screen map showing visited
 rooms and their connections on the current floor.  Below is a map
 generated from `Enchanter'.
                                         *-* *
@@ -521,12 +521,12 @@ out which global keeps track of the location.  You can use the
      /globals 91
      G15 G36 G39
      s
-     
+
      *Mouth of Alley*
      You're in the entrance of a narrow brick alley, which runs further
      in to the north. To the south a broad street courses by, congested
      with traffic and bicycles, although none of them seem to notice you.
-     
+
      >/find self
      20 "(self object)"
      25 "yourself" in 94 "Mouth of Alley"
@@ -585,10 +585,10 @@ each neighboring room, but this would make automapping even slower.
 
 File: nitfol.info,  Node: Quetzal,  Next: Blorb,  Prev: Automapping,  Up: Features
 
-Quetzal
-=======
+2.7 Quetzal
+===========
 
-   Nitfol uses Quetzal version 1.4 for its save format, so you can use
+Nitfol uses Quetzal version 1.4 for its save format, so you can use
 your saves between different computers and interpreters.  More
 information about Quetzal is available at
 `http://www.geocities.com/SiliconValley/Vista/6631/'.
@@ -623,12 +623,12 @@ right before the restored PC.
 
 File: nitfol.info,  Node: Blorb,  Prev: Quetzal,  Up: Features
 
-Blorb
-=====
+2.8 Blorb
+=========
 
-   If you wish to hear sounds or see graphics in your games, they must
-be packaged in Blorb files.  The Z-machine game may included in the
-Blorb file or may be specified separately.  Nitfol does not support the
+If you wish to hear sounds or see graphics in your games, they must be
+packaged in Blorb files.  The Z-machine game may included in the Blorb
+file or may be specified separately.  Nitfol does not support the
 traditional Infocom `.mg1' and `.snd' files.
 
    Note that graphics are displayed incorrectly, and sound has not yet
@@ -637,10 +637,10 @@ been tested.
 
 File: nitfol.info,  Node: Debugger,  Next: Bugs,  Prev: Features,  Up: Top
 
-Debugger
-********
+3 Debugger
+**********
 
-   Nitfol debugging mode tries to imitate the GDB interface.  If you're
+Nitfol debugging mode tries to imitate the GDB interface.  If you're
 familiar with that, you should have no problem using nitfol (other than
 dealing with the current incompleteness).
 
@@ -695,120 +695,13 @@ is neither necessary nor recommended.
 (gdb)Top::, for more information.  Some of these were taken/adapted
 from GDB's help.
 
-`info breakpoints'
-`info breakpoints NUM'
-     List breakpoints.  An argument specifies a specific breakpoint to
-     list.
-
-`quit'
-     Exit nitfol.
-
-`show language'
-     Show the current source language.
-
-`condition NUM EXP'
-     Set a condition for an existing breakpoint.
-
-`restore'
-     Restore a saved game.
-
-`break LINESPEC'
-`break LINESPEC if EXP'
-     Set a breakpoint.  An `if' clause specifies a condition.
-
-`stepi'
-`stepi NUM'
-     Step exactly one instruction.  An argument specifies a repeat
-     count.
-
-`restart'
-     Restart the game.
-
-`object-tree'
-`object-tree EXP'
-     Display the object tree.  An argument says which object to use as
-     the root of the tree.
-
-`disable display NUM'
-     Temporarily disable an automatic display.
-
-`select-frame NUM'
-     Select a specific stack frame.
-
-`alias NAME VALUE'
-     Add an alias
-
-`down-silently'
-`down-silently NUM'
-     Silently select the child of the selected frame.  An argument
-     specifies how many frames down to go.
-
-`frame'
-`frame NUM'
-     Show the selected stack frame.  An argument specifies a stack
-     frame to show.
-
-`give EXP NUM'
-`give EXP ~ NUM'
-     Give an object an attribute.  With a tilde clears the attribute
-     instead of setting it.
-
-`set EXP'
-     Evaluate an expression without printing its value.
-
-`print EXP'
-     Evaluates an expression and prints the result.  This can include
-     function calls.
-
-`up'
-`up NUM'
-     Select the parent of the selected frame.  An argument specifies
-     how many frames up to go.
-
-`#  comment'
-     Enter a comment
-
-`continue'
-`continue NUM'
-     Continue execution.  An argument sets the ignore count of the
-     current breakpoint.
-
-`dumpmem FILE'
-     Dump memory to a file
-
-`undo'
-     Undo last move (not last debugger command).
-
-`display EXP'
-     Print value of an expression each time the program stops.
-
-`move EXP to EXP'
-     Move an object around the object tree.
-
 `up-silently'
 `up-silently NUM'
      Select the parent of the selected frame silently.  An argument
      specifies how many frames up to go.
 
-`show copying'
-     Show licensing information.
-
-`recording off'
-     Stop recording a script.
-
-`jump LINESPEC'
-     Continue execution at a new location.
-
-`recording on'
-     Start recording a script.
-
-`ralias NAME VALUE'
-     Add a recursive alias
-
-`globals'
-`globals EXP'
-     List all global variables and their values.  With an argument,
-     list all only those with a specific value.
+`set EXP'
+     Evaluate an expression without printing its value.
 
 `backtrace'
 `backtrace NUM'
@@ -817,86 +710,194 @@ from GDB's help.
      specifies how many frames back to show.  If the argument is
      negative, start from the first frame instead of the current.
 
-`find'
-     Find objects whose shortnames contain a string.
+`break LINESPEC'
+`break LINESPEC if EXP'
+     Set a breakpoint.  An `if' clause specifies a condition.
 
-`finish'
-     An argument specifies a repeat count.
+`recording off'
+     Stop recording a script.
 
-`down'
-`down NUM'
-     Select the child of the selected frame.  An argument specifies how
-     many frames down to go.
+`recording on'
+     Start recording a script.
 
-`ignore NUM NUM'
-     Set the ignore count for a breakpoint.
+`down-silently'
+`down-silently NUM'
+     Silently select the child of the selected frame.  An argument
+     specifies how many frames down to go.
 
-`replay off'
-     Halt replay.
+`show copying'
+     Show licensing information.
 
-`nexti'
-`nexti NUM'
-     Step one instruction, stepping over subroutine calls.  Step a
-     specified number of instructions, stepping over subroutine calls.
-
-`help'
-     Print list of commands.
-
-`redo'
-     Redo undid move.  Only works immediately after an `undo'.
-
-`enable NUM'
-     Re-enabled a breakpoint.
-
-`until'
-     Resume execution until the program reaches a line number greater
-     than the current line.
-
-`replay'
-     Replay a recorded script.
-
-`unalias NAME'
-     Remove an alias
-
-`remove EXP'
-     Remove an object from the object tree.
-
-`info sources'
-     List source files.
-
-`delete NUM'
-     Delete a breakpoint.
-
-`symbol-file FILE'
-     Load debugging info from a file (usually `gameinfo.dbg').
-
-`automap EXP'
-     Start automapping
-
-`show warranty'
-     Show warranty information.
-
-`disable NUM'
-     Temporarily disable a breakpoint.
-
-`undisplay NUM'
-     Stop automatically displaying an expression.
-
-`enable display NUM'
-     Re-enable an automatic display.
+`condition NUM EXP'
+     Set a condition for an existing breakpoint.
 
 `step'
 `step NUM'
      Step through program to a different source line.  An argument
      specifies a repeat count.
 
-`info source'
-     Get information on the current source file.
+`remove EXP'
+     Remove an object from the object tree.
+
+`replay'
+     Replay a recorded script.
+
+`down'
+`down NUM'
+     Select the child of the selected frame.  An argument specifies how
+     many frames down to go.
+
+`globals'
+`globals EXP'
+     List all global variables and their values.  With an argument,
+     list all only those with a specific value.
+
+`enable display NUM'
+     Re-enable an automatic display.
+
+`nexti'
+`nexti NUM'
+     Step one instruction, stepping over subroutine calls.  Step a
+     specified number of instructions, stepping over subroutine calls.
+
+`until'
+     Resume execution until the program reaches a line number greater
+     than the current line.
+
+`object-tree'
+`object-tree EXP'
+     Display the object tree.  An argument says which object to use as
+     the root of the tree.
+
+`stepi'
+`stepi NUM'
+     Step exactly one instruction.  An argument specifies a repeat
+     count.
+
+`show warranty'
+     Show warranty information.
+
+`restart'
+     Restart the game.
+
+`undo'
+     Undo last move (not last debugger command).
+
+`frame'
+`frame NUM'
+     Show the selected stack frame.  An argument specifies a stack
+     frame to show.
+
+`select-frame NUM'
+     Select a specific stack frame.
+
+`continue'
+`continue NUM'
+     Continue execution.  An argument sets the ignore count of the
+     current breakpoint.
+
+`finish'
+     An argument specifies a repeat count.
+
+`give EXP NUM'
+`give EXP ~ NUM'
+     Give an object an attribute.  With a tilde clears the attribute
+     instead of setting it.
+
+`find'
+     Find objects whose shortnames contain a string.
+
+`jump LINESPEC'
+     Continue execution at a new location.
+
+`show language'
+     Show the current source language.
+
+`dumpmem FILE'
+     Dump memory to a file
+
+`undisplay NUM'
+     Stop automatically displaying an expression.
+
+`disable NUM'
+     Temporarily disable a breakpoint.
+
+`restore'
+     Restore a saved game.
+
+`redo'
+     Redo undid move.  Only works immediately after an `undo'.
+
+`info sources'
+     List source files.
+
+`symbol-file FILE'
+     Load debugging info from a file (usually `gameinfo.dbg').
+
+`display EXP'
+     Print value of an expression each time the program stops.
 
 `next'
 `next NUM'
      Step through program, stepping over subroutine calls.  An argument
      specifies a repeat count.
+
+`info breakpoints'
+`info breakpoints NUM'
+     List breakpoints.  An argument specifies a specific breakpoint to
+     list.
+
+`unalias NAME'
+     Remove an alias
+
+`help'
+     Print list of commands.
+
+`move EXP to EXP'
+     Move an object around the object tree.
+
+`delete NUM'
+     Delete a breakpoint.
+
+`quit'
+     Exit nitfol.
+
+`up'
+`up NUM'
+     Select the parent of the selected frame.  An argument specifies
+     how many frames up to go.
+
+`alias NAME VALUE'
+     Add an alias
+
+`enable NUM'
+     Re-enabled a breakpoint.
+
+`automap EXP'
+     Start automapping
+
+`info source'
+     Get information on the current source file.
+
+`replay off'
+     Halt replay.
+
+`#  comment'
+     Enter a comment
+
+`ralias NAME VALUE'
+     Add a recursive alias
+
+`ignore NUM NUM'
+     Set the ignore count for a breakpoint.
+
+`print EXP'
+     Evaluates an expression and prints the result.  This can include
+     function calls.
+
+`disable display NUM'
+     Temporarily disable an automatic display.
+
 
    If you're on a UNIX and you don't like the GDB interface, you can
 compile cheapnitfol and run it as the inferior debugger under Emacs or
@@ -908,10 +909,10 @@ trying that, but I haven't tested that much.
 
 File: nitfol.info,  Node: Bugs,  Next: Thanks,  Prev: Debugger,  Up: Top
 
-Bugs
-****
+4 Bugs
+******
 
-   A nitfol bug is any behaviour which makes nitfol reliably misbehave,
+A nitfol bug is any behaviour which makes nitfol reliably misbehave,
 with the exceptions of bugs in Glk libraries.  These include: anything
 which makes nitfol crash (other than when nitfol reports `FATAL'
 errors), anything which causes nitfol to contradict the Z-machine
@@ -1004,10 +1005,10 @@ reliably cause the bug.
 
 File: nitfol.info,  Node: Thanks,  Next: Games Cited,  Prev: Bugs,  Up: Top
 
-Thanks
-******
+5 Thanks
+********
 
-   The following people have given comments, suggestions, bug reports,
+The following people have given comments, suggestions, bug reports,
 answered questions, or helped port nitfol (in alphabetical order):
    - John Cater
 
@@ -1030,8 +1031,8 @@ answered questions, or helped port nitfol (in alphabetical order):
 
 File: nitfol.info,  Node: Games Cited,  Prev: Thanks,  Up: Top
 
-Games Cited
-***********
+6 Games Cited
+*************
 
 `Wishbringer' Copyright (C) 1985, 1988 Infocom Inc.
 
@@ -1056,20 +1057,20 @@ Games Cited
 
 
 Tag Table:
-Node: Top230
-Node: Invoking nitfol1572
-Node: Features8446
-Node: Preferences9091
-Node: Infinite undo/redo10452
-Node: Aliases11221
-Node: Abbreviation Expansion13740
-Node: Typo correction14870
-Node: Automapping16779
-Node: Quetzal22563
-Node: Blorb24279
-Node: Debugger24700
-Node: Bugs31673
-Node: Thanks34727
-Node: Games Cited35142
+Node: Top263
+Node: Invoking nitfol1602
+Node: Features8478
+Node: Preferences9127
+Node: Infinite undo/redo10483
+Node: Aliases11257
+Node: Abbreviation Expansion13781
+Node: Typo correction14898
+Node: Automapping16812
+Node: Quetzal22591
+Node: Blorb24312
+Node: Debugger24738
+Node: Bugs31713
+Node: Thanks34768
+Node: Games Cited35184
 
 End Tag Table
