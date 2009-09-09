@@ -27,11 +27,20 @@ libchimara_la_SOURCES = \
 	timer.c timer.h \
 	window.c window.h 
 libchimara_la_CPPFLAGS = \
-	-DG_LOG_DOMAIN=\"Chimara\"
+	-DG_LOG_DOMAIN=\"Chimara\" \
+	-DLOCALEDIR=\""$(datadir)/locale"\" \
+	-I$(top_srcdir)
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
-libchimara_la_LDFLAGS = -no-undefined -export-symbols-regex "^(glk_|chimara_glk_|glkunix_|giblorb_|garglk_)"
+libchimara_la_LDFLAGS = -version-info $(LT_VERSION_INFO) \
+	-no-undefined \
+	-export-symbols-regex "^(glk_|chimara_glk_|glkunix_|giblorb_|garglk_)"
 libchimara_includedir = $(includedir)/chimara/libchimara
-libchimara_include_HEADERS = chimara-glk.h glk.h glkstart.h gi_blorb.h garglk.h
+libchimara_include_HEADERS = \
+	chimara-glk.h \
+	glk.h \
+	glkstart.h \
+	gi_blorb.h \
+	garglk.h
 
 EXTRA_DIST = doc.c glkstart.c

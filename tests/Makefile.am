@@ -1,11 +1,12 @@
 AM_CFLAGS = -Wall
+AM_CPPFLAGS = -I$(top_srcdir)
 
 data_DATA = chimara.ui
 
 noinst_PROGRAMS = test-chimara
 
 test_chimara_SOURCES = main.c callbacks.c callbacks.h error.c error.h
-test_chimara_CPPFLAGS = \
+test_chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\"

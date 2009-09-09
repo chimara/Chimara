@@ -1,6 +1,10 @@
 #!/bin/sh
 ### autogen.sh with sensible comments ###############################
 
+### CREATE MACRO DIRECTORY ##########################################
+# Needed by Gtk-doc
+mkdir -p m4
+
 ### GTK-DOC #########################################################
 # Run before autotools
 echo "Setting up Gtk-Doc"
@@ -11,11 +15,7 @@ gtkdocize --flavour no-tmpl || exit 1
 echo "Regenerating autotools files"
 autoreconf --install --symlink || exit 1
 
-### GLIB-GETTEXT ####################################################
-echo "Running glib-gettextize... Ignore non-fatal messages"
-glib-gettextize --force --copy || exit 1
-
 ### INTLTOOL ########################################################
-# Run after autopoint or glib-gettextize
+# Run after autopoint
 echo "Setting up Intltool"
 intltoolize --copy --force --automake || exit 1

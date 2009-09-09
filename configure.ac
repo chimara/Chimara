@@ -8,10 +8,21 @@
 AC_INIT([chimara], [0.1])
 # Sanity check to make sure we are running Autoconf from the right directory
 AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
+# Put m4 macros in their own directory
+AC_CONFIG_MACRO_DIR(m4)
 # Initialize Automake
 AM_INIT_AUTOMAKE([-Wall])
 # Configure with --enable-silent-rules to cut down on clutter
 AM_SILENT_RULES
+
+### LIBRARY VERSIONING ########################################################
+# Only update immediately before a public release
+
+CHIMARA_CURRENT=0  # Increment if interface changes
+CHIMARA_REVISION=0 # Increment if source changes; set 0 if interface changes
+CHIMARA_AGE=0 # Increment if interfaces added; set 0 if removed
+LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
+AC_SUBST(LT_VERSION_INFO)
 
 ### DECLARE PROGRAMS ##########################################################
 
@@ -22,9 +33,9 @@ m4_defun([_LT_AC_LANG_CXX_CONFIG], [:]) # Disable unnecessary Libtool checks
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:]) # to save time (1.5 only)
 LT_INIT                    # Libtool 2.2.6 and up
 #LT_INIT([dlopen])         # Should call it this way, but
-#LT_PREREQ([2.2.6])        # ...goddamn Fedora 10 still has 1.5
+#LT_PREREQ([2.2.6])        # ...goddamn Debian still has 1.5
 AC_PROG_LIBTOOL            # Old way of declaring Libtool
-AM_GLIB_GNU_GETTEXT        # Use GLib gettext instead of standard
+AM_GNU_GETTEXT([external]) # Gettext, link to system libintl
 IT_PROG_INTLTOOL([0.35.0]) # Intltool
 PKG_PROG_PKG_CONFIG        # pkg_config
 GTK_DOC_CHECK(1.9)         # Gtk-Doc
@@ -36,6 +47,7 @@ AC_TYPE_UINT32_T
 
 ### INTERNATIONALIZATION ######################################################
 
+AM_GNU_GETTEXT_VERSION([0.17])
 GETTEXT_PACKAGE=chimara
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
@@ -63,12 +75,6 @@ PKG_CHECK_MODULES([TEST], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION 
 	gmodule-2.0
 ])
-
-### GTK-DOC ###################################################################
-
-# Allow gtkdocize to automatically copy the macro definition for
-# GTK_DOC_CHECK to the project.
-# AC_CONFIG_MACRO_DIR(m4)
 
 ### OUTPUT ####################################################################
 

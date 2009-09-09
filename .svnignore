@@ -1,4 +1,5 @@
 *.pc
+ABOUT-NLS
 aclocal.m4
 autom4te.cache
 bugreports
@@ -14,10 +15,11 @@ libtool
 ltmain.sh
 Makefile
 Makefile.in
+m4
 missing
 mkinstalldirs
 stamp-h1
 TODO.tasks
-.anjuta
+.anjuta*
 .tm_project2.cache
 
