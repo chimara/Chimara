@@ -2,4 +2,10 @@
 .libs
 Makefile.in
 Makefile
+copying.c
+dbg_help.h
+dbg_help.texi
+options.texi
+startunix.c
 texinfo.tex
+

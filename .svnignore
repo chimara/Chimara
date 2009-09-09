@@ -21,6 +21,7 @@ mkinstalldirs
 stamp-h1
 TODO.tasks
 ylwrap
+chimara.anjuta
 .anjuta*
 .tm_project2.cache
 
