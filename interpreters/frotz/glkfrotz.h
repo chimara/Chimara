@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#include <libchimara/glk.h>
+#include "glk.h"
 
 extern int curr_status_ht;
 extern int mach_status_ht;

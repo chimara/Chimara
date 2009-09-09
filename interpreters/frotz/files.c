@@ -19,7 +19,7 @@
  */
 
 #include "frotz.h"
-#include <libchimara/glk.h>
+#include "glk.h"
 #include "glkio.h"
 
 extern void set_more_prompts (bool);

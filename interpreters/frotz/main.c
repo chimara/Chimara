@@ -163,8 +163,8 @@ void z_piracy (void)
  *
  */
 
-#include <libchimara/glk.h>
-#include <libchimara/glkstart.h>
+#include "glk.h"
+#include "glkstart.h"
 
 static int myargc;
 static char **myargv;

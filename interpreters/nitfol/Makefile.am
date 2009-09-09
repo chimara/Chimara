@@ -23,7 +23,8 @@ nitfol_la_SOURCES = automap.c automap.h binary.h copying.h debug.c debug.h \
 	$(BLORB) \
 	$(SOUND)
 nodist_nitfol_la_SOURCES = copying.c dbg_help.h startunix.c
-nitfol_la_CPPFLAGS = -I$(top_srcdir) -DSMART_TOKENISER -DUSE_INLINE
+nitfol_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara \
+	-DSMART_TOKENISER -DUSE_INLINE
 nitfol_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 info_TEXINFOS = nitfol.texi
