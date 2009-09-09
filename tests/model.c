@@ -41,11 +41,11 @@ void glk_main(void)
 		glk_set_window(mainwin);
 		glk_put_char_uni( glk_get_char_stream_uni(s) );
 		glk_put_char('\n');
-		g_printerr( "Line read: %d\n", glk_get_line_stream_uni(s, buffer, 1024) );
-		g_printerr("string[5] = %X\n", buffer[5]);
+		printf("Line read: %d\n", glk_get_line_stream_uni(s, buffer, 1024) );
+		printf("string[5] = %X\n", buffer[5]);
 		glk_put_string_uni(buffer);
 		int count = glk_get_buffer_stream_uni(s, buffer, 1024);
-		g_printerr("Buffer read: %d\n", count);
+		printf("Buffer read: %d\n", count);
 		glk_put_string("\n---SOME CHARACTERS---\n");
 		glk_put_buffer_uni(buffer, count);
 		glk_put_string("\n---THE SAME CHARACTERS IN UPPERCASE---\n");
@@ -55,7 +55,7 @@ void glk_main(void)
 		stream_result_t result;
 		glk_stream_close(s, &result);
 		
-		g_printerr("Read count: %d\nWrite count: %d\n", result.readcount, result.writecount);
+		fprintf(stderr, "Read count: %d\nWrite count: %d\n", result.readcount, result.writecount);
 /*		glk_fileref_destroy(f);
 	}*/
 
