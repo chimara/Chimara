@@ -23,7 +23,6 @@
 #include <stdlib.h>      /* For NULL, rand, srand */
 #include <time.h>        /* For time() */
 #include <ctype.h>       /* for isspace, isgraph, etc. */
-#include <limits.h>
 #include "glk.h"
 #define GLK_EOF ((glsi32) -1)
 
@@ -31,29 +30,12 @@
 #define NITFOL_MINOR 5
 
 /* Change these next few typedefs depending on your compiler */
-#if UCHAR_MAX==0xff
-typedef unsigned char zbyte;
-#else
-#error "Can't find an 8-bit integer type"
-#endif
+#include <stdint.h>
+typedef uint8_t zbyte;
 
 #ifdef FAST_SHORT
-
-#if SHRT_MAX==0x7fff
-typedef unsigned short zword;
-#elif INT_MAX==0x7fff
-typedef unsigned int zword;
-#else
-#error "Can't find a 16-bit integer type"
-#endif
-
-#if INT_MAX==0x7fffffff
-typedef unsigned int offset;
-#elif LONG_MAX==0x7fffffff
-typedef unsigned long offset;
-#else
-#error "Can't find a 32-bit integer type"
-#endif
+typedef uint16_t zword;
+typedef uint32_t offset;
 
 #ifdef TWOS16SHORT
 #define FAST_TWOS16SHORT
@@ -62,28 +44,11 @@ typedef unsigned long offset;
 #else
 
 #ifdef FAST_SIGNED
-#if INT_MAX==0x7fffffff
-typedef int zword;
-typedef int offset;
-#elif LONG_MAX==0x7fffffff
-typedef long zword;
-typedef long offset;
+typedef int32_t zword;
+typedef int32_t offset;
 #else
-#error "Can't find a 32-bit integer type"
-#endif
-
-#else
-
-#if INT_MAX==0x7fffffff
-typedef unsigned int zword;
-typedef unsigned int offset;
-#elif LONG_MAX==0x7fffffff
-typedef unsigned long zword;
-typedef unsigned long offset;
-#else
-#error "Can't find a 32-bit integer type"
-#endif
-
+typedef uint32_t zword;  /* Needs to be >= real zword */
+typedef uint32_t offset;
 #endif
 
 #endif
@@ -324,7 +289,7 @@ typedef enum { OBJ_GET_INFO, OBJ_RECEIVE, OBJ_MOVE } watchinfo;
 #include "decode.h"
 #include "main.h"
 
-#include "nio.h"
+#include "io.h"
 #include "z_io.h"
 
 #include "no_snd.h"

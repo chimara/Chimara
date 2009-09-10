@@ -51,6 +51,8 @@ AC_PATH_PROG([PERL], [perl]) # Perl
 
 ### TYPES #####################################################################
 
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
 AC_TYPE_INT32_T
 AC_TYPE_UINT32_T
 

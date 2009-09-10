@@ -18,7 +18,7 @@
     The author can be reached at nitfol@deja.com
 */
 #include "nitfol.h"
-#include "nio.h"
+#include "io.h"
 
 #ifdef HEADER
 
@@ -502,7 +502,7 @@ void z_kill_window(zwinid win)
 void kill_windows(void)
 {
   int i;
-
+  
   for(i = 0; i < num_z_windows; i++)
     z_clear_window(&game_windows[i]);
 
@@ -688,7 +688,7 @@ void z_flush_fixed(zwinid window)
   if(window->biggest_height > window->last_height &&
      window->biggest_height > window->height)
     end_line = window->biggest_height;
-
+  
   /* For v3 games, there's a callback function to draw the room name and
      score; if this is present, we start drawing at a lower position */
   start_line = 0;
@@ -697,15 +697,8 @@ void z_flush_fixed(zwinid window)
   end_line += start_line;
 
   o = glk_window_get_parent(window->win);
-#if 0
-  glk_window_get_size(window->win, &winx, &winy);
-  if (!(window->method & winmethod_Above || window->method & winmethod_Below)
-      || winy != end_line)
-    glk_window_set_arrangement(o, window->method,
-			       end_line, window->win);
-#else
-  glk_window_set_arrangement(o, window->method, end_line, window->win);
-#endif
+  glk_window_set_arrangement(o, window->method,
+			     end_line, window->win);
   glk_window_get_size(window->win, &winx, &winy);
 
   if(window->draw_callback) {

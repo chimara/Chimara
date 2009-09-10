@@ -87,8 +87,7 @@ int game_use_file(strid_t file)
 
 void glk_main(void)
 {
-  if(!current_zfile)
-  {
+  if(!current_zfile) {
     winid_t tempwin;
     tempwin = glk_window_open(0, 0, 100, wintype_TextBuffer, 0);
 	glk_set_window(tempwin);
