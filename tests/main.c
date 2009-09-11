@@ -101,7 +101,7 @@ create_window(void)
 	for(ptr = actions; *ptr; ptr += 2)
 		gtk_action_group_add_action_with_accel(actiongroup, GTK_ACTION(load_object(ptr[0])), ptr[1]);
 
-	GtkUIManager *uimanager = gtk_ui_manager_new();
+	uimanager = gtk_ui_manager_new();
 	if( !gtk_ui_manager_add_ui_from_file(uimanager, "chimara.menus", &error) ) {
 		error_dialog(NULL, error, "Error while building interface: ");
 		return;
@@ -155,6 +155,7 @@ main(int argc, char *argv[])
 	gtk_widget_show_all(window);
 
 	g_object_unref( G_OBJECT(builder) );
+	g_object_unref( G_OBJECT(uimanager) );
 
     if( !chimara_glk_run(CHIMARA_GLK(glk), "../interpreters/frotz/.libs/frotz.so", argc, argv, &error) ) {
    		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
