@@ -7,5 +7,6 @@ dbg_help.h
 dbg_help.texi
 options.texi
 startunix.c
+inform.c
 texinfo.tex
 
