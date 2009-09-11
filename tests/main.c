@@ -46,6 +46,7 @@
 
 /* Global pointers to widgets */
 GtkBuilder *builder = NULL;
+GtkUIManager *uimanager = NULL;
 GtkWidget *window = NULL;
 GtkWidget *glk = NULL;
 
@@ -61,14 +62,51 @@ on_stopped(ChimaraGlk *glk)
     g_printerr("Stopped!\n");
 }
 
+static GObject *
+load_object(const gchar *name)
+{
+	GObject *retval;
+	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
+		error_dialog(NULL, NULL, "Error while getting object '%s'", name);
+		g_error("Error while getting object '%s'", name);
+	}
+	return retval;
+}
+
 static void
 create_window(void)
 {
-	if( (window = GTK_WIDGET(gtk_builder_get_object(builder, "gargoyle-gtk"))) == NULL ) {
-		error_dialog(NULL, NULL, "Error while getting main window object");
+	GError *error = NULL;
+
+   	builder = gtk_builder_new();
+	if( !gtk_builder_add_from_file(builder, "chimara.ui", &error) ) {
+		error_dialog(NULL, error, "Error while building interface: ");	
 		return;
 	}
 
+	window = GTK_WIDGET(load_object("chimara"));
+	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
+
+	/* Add all the actions to the action group. This for-loop is a temporary fix
+	and can be removed once Glade supports adding actions and accelerators to an
+	action group. */
+	const gchar *actions[] = { 
+		"game", "",
+		"open", "<ctrl>F7", 
+		"save", NULL, /* NULL means use stock accelerator */
+		"quit", NULL,
+		NULL
+	};
+	const gchar **ptr;
+	for(ptr = actions; *ptr; ptr += 2)
+		gtk_action_group_add_action_with_accel(actiongroup, GTK_ACTION(load_object(ptr[0])), ptr[1]);
+
+	GtkUIManager *uimanager = gtk_ui_manager_new();
+	if( !gtk_ui_manager_add_ui_from_file(uimanager, "chimara.menus", &error) ) {
+		error_dialog(NULL, error, "Error while building interface: ");
+		return;
+	}
+	
 	gtk_builder_connect_signals(builder, NULL);
 	
 	glk = chimara_glk_new();
@@ -85,7 +123,13 @@ create_window(void)
 		return;
 	}
 
+	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
+	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/menubar");
+	GtkWidget *toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
+
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
+	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
+	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
 }
 
 int
@@ -106,12 +150,6 @@ main(int argc, char *argv[])
     
 	gtk_set_locale();
 	gtk_init(&argc, &argv);
-
-   	builder = gtk_builder_new();
-	if( !gtk_builder_add_from_file(builder, "chimara.ui", &error) ) {
-		error_dialog(NULL, error, "Error while building interface: ");	
-		return 1;
-	}
 
 	create_window();
 	gtk_widget_show_all(window);

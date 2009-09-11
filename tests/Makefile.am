@@ -1,7 +1,7 @@
 AM_CFLAGS = -Wall
 AM_CPPFLAGS = -I$(top_srcdir)
 
-data_DATA = chimara.ui
+dist_data_DATA = chimara.ui chimara.menus
 
 noinst_PROGRAMS = test-chimara
 
@@ -30,10 +30,3 @@ splittest_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 multiwin_la_SOURCES = multiwin.c
 multiwin_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
-
-CLEANFILES = chimara.ui
-
-chimara.ui: chimara.glade
-	gtk-builder-convert $< $@
-
-EXTRA_DIST = chimara.glade

@@ -31,9 +31,12 @@
  */
 
 #include "callbacks.h"
+#include "error.h"
 
-void on_save_tool_button_clicked(GtkToolButton *toolbutton, gpointer user_data) {
-	error_dialog( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(toolbutton))), NULL, "Not implemented yet" );
+void on_save(GtkAction *action, gpointer user_data) {
+	GSList *widgets = gtk_action_get_proxies(action);
+	GtkWindow *top = GTK_WINDOW( gtk_widget_get_toplevel(widgets->data) );
+	error_dialog(top, NULL, "Not implemented yet");
 }
 
 gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
@@ -41,7 +44,7 @@ gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, gpointer use
 	return TRUE;
 }
 
-void on_file_quit_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void on_quit(GtkAction *action, gpointer user_data) {
 	gtk_main_quit();
 }
 
