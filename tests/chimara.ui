@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkWindow" id="chimara">
+    <property name="title" translatable="yes">Chimara</property>
+    <property name="default_width">500</property>
+    <property name="default_height">600</property>
+    <signal name="delete_event" handler="on_window_delete_event"/>
+    <child>
+      <object class="GtkVBox" id="vbox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkActionGroup" id="actiongroup"/>
+  <object class="GtkAction" id="game">
+    <property name="label">_Game</property>
+  </object>
+  <object class="GtkAction" id="open">
+    <property name="label">_Open...</property>
+    <property name="short_label">_Open</property>
+    <property name="tooltip">Quit the current game and load a new one</property>
+    <property name="stock_id">gtk-open</property>
+  </object>
+  <object class="GtkAction" id="save">
+    <property name="label">_Save</property>
+    <property name="tooltip">Save the game</property>
+    <property name="stock_id">gtk-save</property>
+    <signal name="activate" handler="on_save"/>
+  </object>
+  <object class="GtkAction" id="quit">
+    <property name="label">_Quit</property>
+    <property name="tooltip">Exit Chimara</property>
+    <property name="stock_id">gtk-quit</property>
+    <signal name="activate" handler="on_quit"/>
+  </object>
+</interface>
