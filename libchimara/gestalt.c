@@ -90,10 +90,10 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 			/* All characters are printed as one character, in any case */
 			if(arr && arrlen > 0)
 				*arr = 1;
-			/* Cannot print control chars except \n, or chars > 255 */
-			if( (val < 32 && val != 10) || (val >= 127 && val <= 159) || (val > 255) )
+			/* Cannot print control chars except \n */
+			if( (val < 32 && val != 10) || (val >= 127 && val <= 159) )
 				return gestalt_CharOutput_CannotPrint;
-			/* Can print all other Latin-1 characters */
+			/* Can print all other characters */
 			return gestalt_CharOutput_ExactPrint;
 		
 		/* Unicode capabilities present */
