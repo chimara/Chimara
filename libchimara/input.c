@@ -6,6 +6,36 @@
 static int flush_text_buffer(winid_t win);
 static int flush_text_grid(winid_t win);
 
+/* Internal function: code common to both flavors of char event request */
+void
+request_char_event_common(winid_t win, gboolean unicode)
+{
+	VALID_WINDOW(win, return);
+	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
+	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+
+	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
+	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+
+	gdk_threads_enter();
+	
+	/* If the request is in a text buffer window, scroll to the end of the
+	 text buffer. TODO: This may scroll text off the top of the window that the
+	 user hasn't read yet. We need to implement a paging mechanism. */
+	if(win->type == wintype_TextBuffer)
+	{
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		GtkTextIter iter;
+		gtk_text_buffer_get_end_iter(buffer, &iter);
+		gtk_text_buffer_place_cursor(buffer, &iter);
+		gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), gtk_text_buffer_get_insert(buffer));
+		/* Why doesn't this always work?? */
+	}
+	
+	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
+	gdk_threads_leave();
+}
+
 /** 
  * glk_request_char_event:
  * @win: A window to request char events from.
@@ -19,12 +49,7 @@ static int flush_text_grid(winid_t win);
 void
 glk_request_char_event(winid_t win)
 {
-	VALID_WINDOW(win, return);
-	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
-
-	win->input_request_type = INPUT_REQUEST_CHARACTER;
-	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+	request_char_event_common(win, FALSE);
 }
 
 /** 
@@ -37,12 +62,7 @@ glk_request_char_event(winid_t win)
 void
 glk_request_char_event_uni(winid_t win)
 {
-	VALID_WINDOW(win, return);
-	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
-
-	win->input_request_type = INPUT_REQUEST_CHARACTER_UNICODE;
-	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+	request_char_event_common(win, TRUE);
 }
 
 /**
@@ -128,6 +148,8 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
 	
 	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+
+	gtk_widget_grab_focus(win->input_entry);
 	
 	gdk_threads_leave();
 }
@@ -162,6 +184,8 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
     
     gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
     g_signal_handler_unblock(buffer, win->insert_text_handler);
+
+	gtk_widget_grab_focus(win->widget);
 	
 	gdk_threads_leave();
 }
