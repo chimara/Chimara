@@ -493,7 +493,7 @@ static int
 flush_text_grid(winid_t win)
 {
 	VALID_WINDOW(win, return 0);
-	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
+	g_return_val_if_fail(win->type == wintype_TextGrid, 0);
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	
@@ -554,6 +554,6 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 
 	int chars_written = flush_text_grid(win);
-	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(GTK_WIDGET(input_entry), CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
+	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
 }
 
