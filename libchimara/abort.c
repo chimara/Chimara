@@ -4,7 +4,7 @@
 
 #include "chimara-glk-private.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 /**
  * glk_set_interrupt_handler:
@@ -29,6 +29,7 @@ extern ChimaraGlkPrivate *glk_data;
 void
 glk_set_interrupt_handler(void (*func)(void))
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	glk_data->interrupt_handler = func;
 }
 
@@ -37,30 +38,18 @@ user's interrupt handler. */
 static void
 abort_glk()
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	if(glk_data->interrupt_handler)
 		(*(glk_data->interrupt_handler))();
 	g_signal_emit_by_name(glk_data->self, "stopped");
 	g_thread_exit(NULL);
 }
 
-/* Internal function: Signal this Glk thread to abort. Does nothing if the abort
-mutex has already been freed. (That means the thread already ended.) */
-void
-signal_abort()
-{
-	if(glk_data && glk_data->abort_lock) {
-		g_mutex_lock(glk_data->abort_lock);
-		glk_data->abort_signalled = TRUE;
-		g_mutex_unlock(glk_data->abort_lock);
-		/* Stop blocking on the event queue condition */
-		event_throw(evtype_Abort, NULL, 0, 0);
-	}
-}
-
 /* Internal function: check if the Glk program has been interrupted. */
 void
 check_for_abort()
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_mutex_lock(glk_data->abort_lock);
 	if(glk_data->abort_signalled) 
 	{

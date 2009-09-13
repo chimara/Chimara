@@ -6,7 +6,7 @@
 #include "chimara-glk-private.h"
 #include "gi_blorb.h"
 
-G_GNUC_INTERNAL ChimaraGlkPrivate *glk_data = NULL;
+G_GNUC_INTERNAL GPrivate *glk_data_key = NULL;
 
 /**
  * glk_exit:
@@ -42,6 +42,8 @@ G_GNUC_INTERNAL ChimaraGlkPrivate *glk_data = NULL;
 void
 glk_exit(void)
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	if(!glk_data->in_startup)
 		g_signal_emit_by_name(glk_data->self, "stopped");
 
@@ -54,7 +56,6 @@ glk_exit(void)
 		glk_stream_close(glk_data->resource_file, NULL);
 	}
 
-    glk_data = NULL;
 	g_thread_exit(NULL);
 }
 

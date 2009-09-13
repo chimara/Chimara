@@ -3,9 +3,10 @@
 #include "glk.h"
 #include <string.h>
 
+#include "chimara-glk.h"
 #include "chimara-glk-private.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 #define EVENT_TIMEOUT_MICROSECONDS (3000000)
 
@@ -13,23 +14,25 @@ extern ChimaraGlkPrivate *glk_data;
 full, wait for max three seconds and then drop the event. If the event queue is
 NULL, i.e. freed, then fail silently. */
 void
-event_throw(glui32 type, winid_t win, glui32 val1, glui32 val2)
+event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
 {
-	if(!glk_data->event_queue)
+	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	
+	if(!priv->event_queue)
 		return;
 
 	GTimeVal timeout;
 	g_get_current_time(&timeout);
 	g_time_val_add(&timeout, EVENT_TIMEOUT_MICROSECONDS);
 
-	g_mutex_lock(glk_data->event_lock);
+	g_mutex_lock(priv->event_lock);
 
 	/* Wait for room in the event queue */
-	while( g_queue_get_length(glk_data->event_queue) >= EVENT_QUEUE_MAX_LENGTH )
-		if( !g_cond_timed_wait(glk_data->event_queue_not_full, glk_data->event_lock, &timeout) ) 
+	while( g_queue_get_length(priv->event_queue) >= EVENT_QUEUE_MAX_LENGTH )
+		if( !g_cond_timed_wait(priv->event_queue_not_full, priv->event_lock, &timeout) ) 
 		{
 			/* Drop the event after 3 seconds */
-			g_mutex_unlock(glk_data->event_lock);
+			g_mutex_unlock(priv->event_lock);
 			return;
 		}
 
@@ -38,12 +41,12 @@ event_throw(glui32 type, winid_t win, glui32 val1, glui32 val2)
 	event->win = win;
 	event->val1 = val1;
 	event->val2 = val2;
-	g_queue_push_head(glk_data->event_queue, event);
+	g_queue_push_head(priv->event_queue, event);
 
 	/* Signal that there is an event */
-	g_cond_signal(glk_data->event_queue_not_empty);
+	g_cond_signal(priv->event_queue_not_empty);
 
-	g_mutex_unlock(glk_data->event_lock);
+	g_mutex_unlock(priv->event_lock);
 }
 
 /**
@@ -64,6 +67,8 @@ glk_select(event_t *event)
 {
 	g_return_if_fail(event != NULL);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	g_mutex_lock(glk_data->event_lock);
 
 	/* Wait for an event */
@@ -154,6 +159,8 @@ glk_select_poll(event_t *event)
 {
 	g_return_if_fail(event != NULL);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	event->type = evtype_None;
 	
 	g_mutex_lock(glk_data->event_lock);

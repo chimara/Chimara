@@ -400,7 +400,7 @@ on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 				keycode = keycode_Unknown;	
 	}
 
-	event_throw(evtype_CharInput, win, keycode, 0);
+	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK)), evtype_CharInput, win, keycode, 0);
 	
 	/* Only one keypress will be handled */
 	win->input_request_type = INPUT_REQUEST_NONE;
@@ -542,7 +542,7 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
         gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
 
         int chars_written = flush_text_buffer(win);
-		event_throw(evtype_LineInput, win, chars_written, 0);
+		event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
 	}
 }
 
@@ -554,6 +554,6 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 
 	int chars_written = flush_text_grid(win);
-	event_throw(evtype_LineInput, win, chars_written, 0);
+	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(GTK_WIDGET(input_entry), CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
 }
 

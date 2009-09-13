@@ -7,7 +7,7 @@
 #include "fileref.h"
 #include "stream.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 /**
  * glkunix_stream_open_pathname:
@@ -25,6 +25,8 @@ extern ChimaraGlkPrivate *glk_data;
 strid_t
 glkunix_stream_open_pathname(char *pathname, glui32 usage, glui32 rock)
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	if(!glk_data->in_startup)
 		ILLEGAL("glkunix_stream_open_pathname() may only be called from "
 				"glkunix_startup_code().");
@@ -53,6 +55,8 @@ glkunix_set_base_file(char *filename)
 {
 	g_return_if_fail(filename);
 	g_return_if_fail(strlen(filename) > 0);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	gchar *dirname = g_path_get_dirname(filename);
 	if(!g_file_test(dirname, G_FILE_TEST_IS_DIR))

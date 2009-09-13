@@ -7,7 +7,7 @@
 #include "magic.h"
 #include "chimara-glk-private.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 /**
  * glk_fileref_iterate:
@@ -24,7 +24,8 @@ frefid_t
 glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 {
 	VALID_FILEREF_OR_NULL(fref, return NULL);
-	
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GList *retnode;
 	
 	if(fref == NULL)
@@ -62,6 +63,8 @@ fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 {
 	g_return_val_if_fail(filename != NULL, NULL);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	frefid_t f = g_new0(struct glk_fileref_struct, 1);
 	f->magic = MAGIC_FILEREF;
 	f->rock = rock;
@@ -185,6 +188,8 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	for each usage */
 	GtkWidget *chooser;
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	gdk_threads_enter();
 
 	switch(fmode)
@@ -289,13 +294,11 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 {
 	g_return_val_if_fail(name != NULL && strlen(name) > 0, NULL);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	/* Do any string-munging here to remove illegal Latin-1 characters from 
 	filename. On ext3, the only illegal characters are '/' and '\0'. */
-	
-	char *ptr = name;
-	while(*ptr++)
-		if(*ptr == '/')
-			*ptr = '_';
+	g_strdelimit(name, "/", '_');
 	
 	/* Find out what encoding filenames are in */
 	const gchar **charsets; /* Do not free */
@@ -377,6 +380,8 @@ void
 glk_fileref_destroy(frefid_t fref)
 {
 	VALID_FILEREF(fref, return);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	glk_data->fileref_list = g_list_delete_link(glk_data->fileref_list, fref->fileref_list);
 	if(fref->filename)

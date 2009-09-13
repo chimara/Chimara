@@ -1,6 +1,6 @@
 #include "style.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 /**
  * glk_set_style:
@@ -18,6 +18,7 @@ extern ChimaraGlkPrivate *glk_data;
 void
 glk_set_style(glui32 styl)
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	glk_set_style_stream(glk_data->current_stream, styl);
 }
@@ -62,6 +63,8 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
 	gtk_text_buffer_create_tag(buffer, "normal", NULL);
 	gtk_text_buffer_create_tag(buffer, "emphasized", "style", PANGO_STYLE_ITALIC, NULL);
 	gtk_text_buffer_create_tag(buffer, "preformatted", "font-desc", glk_data->monospace_font_desc, NULL);
@@ -91,6 +94,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 {
 	g_return_if_fail(tag != NULL);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GObject *tag_object = G_OBJECT(tag);
 	gint reverse_color = 0;
 

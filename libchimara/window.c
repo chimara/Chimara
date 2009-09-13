@@ -1,8 +1,9 @@
+#include <glib.h>
 #include "window.h"
 #include "magic.h"
 #include "chimara-glk-private.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 /**
  * glk_window_iterate:
@@ -25,6 +26,7 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 {
 	VALID_WINDOW_OR_NULL(win, return NULL);
 	
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GNode *retnode;
 	
 	if(win == NULL)
@@ -135,6 +137,7 @@ glk_window_get_sibling(winid_t win)
 winid_t
 glk_window_get_root()
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	if(glk_data->root_window == NULL)
 		return NULL;
 	return (winid_t)glk_data->root_window->data;
@@ -377,6 +380,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	g_return_val_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)), NULL);
 	g_return_val_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100), NULL);	
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	if(split == NULL && glk_data->root_window != NULL)
 	{
 		ILLEGAL("Tried to open a new root window, but there is already a root window");
@@ -701,6 +706,8 @@ void
 glk_window_close(winid_t win, stream_result_t *result)
 {
 	VALID_WINDOW(win, return);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	gdk_threads_enter(); /* Prevent redraw while we're trashing the window */
 	
@@ -810,6 +817,8 @@ glk_window_clear(winid_t win)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	switch(win->type)
 	{
@@ -976,6 +985,8 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 {
 	VALID_WINDOW(win, return);
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
     switch(win->type)
     {
         case wintype_Blank:
@@ -1103,6 +1114,8 @@ glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keyw
 	}
 	g_return_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)));
 	g_return_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100));
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	win->split_method = method;
 	win->constraint_size = size;
@@ -1177,6 +1190,8 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_TextGrid);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	/* Wait until the window's size is current */
 	g_mutex_lock(glk_data->arrange_lock);

@@ -1,6 +1,6 @@
 #include "timer.h"
 
-extern ChimaraGlkPrivate *glk_data;
+extern GPrivate *glk_data_key;
 
 /**
  * glk_request_timer_events:
@@ -46,6 +46,8 @@ extern ChimaraGlkPrivate *glk_data;
 void
 glk_request_timer_events(glui32 millisecs)
 {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
 	// Stop any existing timer
 	if(glk_data->timer_id != 0) {
 		g_source_remove(glk_data->timer_id);
@@ -55,7 +57,7 @@ glk_request_timer_events(glui32 millisecs)
 	if(millisecs == 0)
 		return;
 	
-	glk_data->timer_id = g_timeout_add(millisecs, push_timer_event, NULL);
+	glk_data->timer_id = g_timeout_add(millisecs, (GSourceFunc)push_timer_event, glk_data->self);
 }
 
 /*
@@ -63,9 +65,9 @@ glk_request_timer_events(glui32 millisecs)
  * Will always return TRUE
  */
 gboolean
-push_timer_event(gpointer data)
+push_timer_event(ChimaraGlk *glk)
 {
-	event_throw(evtype_Timer, NULL, 0, 0);
+	event_throw(glk, evtype_Timer, NULL, 0, 0);
 
 	return TRUE;
 }

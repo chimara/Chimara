@@ -484,7 +484,7 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		if(!priv->ignore_next_arrange_event)
 		{
 			if(arrange)
-				event_throw(evtype_Arrange, arrange == priv->root_window->data? NULL : arrange, 0, 0);
+				event_throw(CHIMARA_GLK(widget), evtype_Arrange, arrange == priv->root_window->data? NULL : arrange, 0, 0);
 		}
 		else
 			priv->ignore_next_arrange_event = FALSE;
@@ -929,19 +929,21 @@ struct StartupData {
 	glk_main_t glk_main;
 	glkunix_startup_code_t glkunix_startup_code;
 	glkunix_startup_t args;
+	ChimaraGlkPrivate *glk_data;
 };
 
 /* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */
 static gpointer
 glk_enter(struct StartupData *startup)
 {
-    extern ChimaraGlkPrivate *glk_data;
+	extern GPrivate *glk_data_key;
+	g_private_set(glk_data_key, startup->glk_data);
 	
 	/* Run startup function */
 	if(startup->glkunix_startup_code) {
-		glk_data->in_startup = TRUE;
+		startup->glk_data->in_startup = TRUE;
 		int result = startup->glkunix_startup_code(&startup->args);
-		glk_data->in_startup = FALSE;
+		startup->glk_data->in_startup = FALSE;
 		
 		int i = 0;
 		while(i < startup->args.argc)
@@ -953,10 +955,10 @@ glk_enter(struct StartupData *startup)
 	}
 	
 	/* Run main function */
-    g_signal_emit_by_name(glk_data->self, "started");
+    g_signal_emit_by_name(startup->glk_data->self, "started");
 	(startup->glk_main)();
-	g_slice_free(struct StartupData, startup);	
-	g_signal_emit_by_name(glk_data->self, "stopped");
+	g_signal_emit_by_name(startup->glk_data->self, "stopped");
+	g_slice_free(struct StartupData, startup);
 	return NULL;
 }
 
@@ -1020,10 +1022,10 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
 		startup->args.argv[0] = g_strdup(plugin);
     }
 
-	extern ChimaraGlkPrivate *glk_data;
-    /* Set the thread's private data */
-    /* TODO: Do this with a GPrivate */
-    glk_data = priv;
+	/* Initialize thread-private data */
+	extern GPrivate *glk_data_key;
+	glk_data_key = g_private_new(NULL);
+	startup->glk_data = priv;
 	
     /* Run in a separate thread */
 	priv->thread = g_thread_create((GThreadFunc)glk_enter, startup, TRUE, error);
@@ -1044,7 +1046,14 @@ chimara_glk_stop(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
     /* TODO: check if glk is actually running a program */
-	signal_abort();
+	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	if(priv->abort_lock) {
+		g_mutex_lock(priv->abort_lock);
+		priv->abort_signalled = TRUE;
+		g_mutex_unlock(priv->abort_lock);
+		/* Stop blocking on the event queue condition */
+		event_throw(glk, evtype_Abort, NULL, 0, 0);
+	}
 }
 
 /**
