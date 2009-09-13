@@ -2,7 +2,8 @@
 
 #include <math.h>
 #include <gtk/gtk.h>
-#include <glib/gi18n.h>
+#include <config.h>
+#include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <pango/pango.h>
 #include "chimara-glk.h"
@@ -12,6 +13,7 @@
 #include "window.h"
 #include "glkstart.h"
 #include "glkunix.h"
+#include "init.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
@@ -673,6 +675,9 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 GtkWidget *
 chimara_glk_new(void)
 {
+	/* This is a library entry point; initialize the library */
+	chimara_init();
+
     ChimaraGlk *self = CHIMARA_GLK(g_object_new(CHIMARA_TYPE_GLK, NULL));
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
     
@@ -1021,10 +1026,6 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
 		/* Set the program name */
 		startup->args.argv[0] = g_strdup(plugin);
     }
-
-	/* Initialize thread-private data */
-	extern GPrivate *glk_data_key;
-	glk_data_key = g_private_new(NULL);
 	startup->glk_data = priv;
 	
     /* Run in a separate thread */

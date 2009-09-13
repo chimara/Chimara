@@ -17,6 +17,7 @@ libchimara_la_SOURCES = \
 	glk.c glk.h \
 	glkstart.h \
 	glkunix.c glkunix.h \
+	init.c init.h \
 	input.c input.h \
 	magic.c magic.h \
 	mouse.c \

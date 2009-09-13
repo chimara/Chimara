@@ -145,10 +145,7 @@ main(int argc, char *argv[])
 
 	if( !g_thread_supported() )
 		g_thread_init(NULL);
-
 	gdk_threads_init();
-    
-	gtk_set_locale();
 	gtk_init(&argc, &argv);
 
 	create_window();
