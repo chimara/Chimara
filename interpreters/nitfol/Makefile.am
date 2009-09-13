@@ -41,7 +41,7 @@ dbg_help.texi: inform.y y2help.pl
 	$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y
 
 copying.c: COPYING copying.awk
-	$(AWK) --file $(srcdir)/copying.awk <$(srcdir)/COPYING >copying.c
+	$(AWK) -f $(srcdir)/copying.awk <$(srcdir)/COPYING >copying.c
 
 # nitfol.6: nitfol.opt opt2glkc.pl
 # 	$(PERL) $(srcdir)/opt2glkc.pl -man $(srcdir)/nitfol.opt
