@@ -484,3 +484,9 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
 {
 	return styl1 != styl2;
 }
+
+glui32
+glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
+{
+	return FALSE;
+}

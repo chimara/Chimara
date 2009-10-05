@@ -14,14 +14,18 @@ libchimara_la_SOURCES = \
 	garglk.c garglk.h \
 	gestalt.c \
 	gi_blorb.c gi_blorb.h \
+	gi_dispa.c gi_dispa.h \
 	glk.c glk.h \
 	glkstart.h \
 	glkunix.c glkunix.h \
+	hyperlink.c \
+	image.c \
 	init.c init.h \
 	input.c input.h \
 	magic.c magic.h \
 	mouse.c \
 	resource.c resource.h \
+	schannel.c \
 	stream.c stream.h \
 	strio.c \
 	style.c style.h \
