@@ -10,5 +10,6 @@
   </menubar>
   <toolbar>
     <toolitem action="save"/>
+    <toolitem action="quit"/>
   </toolbar>
 </ui>

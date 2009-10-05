@@ -27,6 +27,10 @@ struct _ChimaraGlkPrivate {
 	PangoFontDescription *monospace_font_desc;
 	/* Spacing between Glk windows */
 	guint spacing;
+	/* The CSS file to read style defaults from */
+	gchar *css_file;
+	/* Hashtable containing the default styles */
+	GHashTable *default_styles;
 
 	/* *** Threading data *** */
     /* Glk program loaded in widget */

@@ -78,6 +78,8 @@ chimara_glk_init(ChimaraGlk *self)
     priv->protect = FALSE;
 	priv->default_font_desc = pango_font_description_from_string("Sans");
 	priv->monospace_font_desc = pango_font_description_from_string("Monospace");
+	priv->css_file = "style.css";
+	priv->default_styles = g_hash_table_new(g_str_hash, g_str_equal);
     priv->program = NULL;
     priv->thread = NULL;
     priv->event_queue = NULL;
@@ -188,6 +190,7 @@ chimara_glk_finalize(GObject *object)
 	pango_font_description_free(priv->default_font_desc);
 	pango_font_description_free(priv->monospace_font_desc);
 	g_free(priv->current_dir);
+	g_hash_table_destroy(priv->default_styles);
 	
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
@@ -688,7 +691,7 @@ chimara_glk_new(void)
     priv->abort_lock = g_mutex_new();
 	priv->arrange_lock = g_mutex_new();
 	priv->rearranged = g_cond_new();
-    
+
     return GTK_WIDGET(self);
 }
 
