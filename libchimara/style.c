@@ -4,6 +4,10 @@
 
 extern GPrivate *glk_data_key;
 static gboolean chimara_style_initialized = FALSE;
+static gboolean style_accept(GScanner *scanner, GTokenType token);
+static gboolean style_accept_style_identifier(GScanner *scanner);
+static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
+static void style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table);
 
 /**
  * glk_set_style:
