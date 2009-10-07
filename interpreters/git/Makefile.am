@@ -17,7 +17,7 @@ git_la_SOURCES = version.h git.h config.h compiler.h memory.h opcodes.h \
     opcodes.c operands.c peephole.c savefile.c saveundo.c search.c terp.c \
     accel.c
 git_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
-git_la_CFLAGS = -DUSE_MMAP -DUSE_INLINE $(AM_CFLAGS)
+git_la_CFLAGS = -DUSE_INLINE $(AM_CFLAGS)
 git_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 gitdocdir = $(datadir)/doc/$(PACKAGE)/git
@@ -30,7 +30,9 @@ CLEANFILES = test/*.tmp
 #
 #test: git
 #	sh test/test.sh
-	
+
+# Memory mapping (-DUSE_MMAP) doesn't seem to work... FIXME
+
 # Best settings for GCC 2.95. This generates faster code than
 # GCC 3, so you should use this setup if possible.
 #CC = gcc -Wall -O3
