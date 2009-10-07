@@ -154,7 +154,7 @@ main(int argc, char *argv[])
 	g_object_unref( G_OBJECT(builder) );
 	g_object_unref( G_OBJECT(uimanager) );
 
-    if( !chimara_glk_run(CHIMARA_GLK(glk), "../interpreters/frotz/.libs/frotz.so", argc, argv, &error) ) {
+    if( !chimara_glk_run(CHIMARA_GLK(glk), "../interpreters/glulxe/.libs/glulxe.so", argc, argv, &error) ) {
    		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
 		return 1;
 	}

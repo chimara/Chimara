@@ -100,6 +100,8 @@ libchimara/Makefile
 interpreters/Makefile
 interpreters/frotz/Makefile
 interpreters/nitfol/Makefile
+interpreters/glulxe/Makefile
+interpreters/git/Makefile
 tests/Makefile
 docs/Makefile
 docs/reference/Makefile

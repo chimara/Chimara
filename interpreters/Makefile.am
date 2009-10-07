@@ -1,1 +1,1 @@
-SUBDIRS=nitfol frotz
+SUBDIRS=nitfol frotz glulxe git

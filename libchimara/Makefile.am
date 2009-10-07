@@ -39,7 +39,7 @@ libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
 libchimara_la_LDFLAGS = -version-info $(LT_VERSION_INFO) \
 	-no-undefined \
-	-export-symbols-regex "^(glk_|chimara_glk_|glkunix_|giblorb_|garglk_)"
+	-export-symbols-regex "^(glk|chimara_glk|glkunix|giblorb|gidispatch|garglk)_"
 libchimara_includedir = $(includedir)/chimara/libchimara
 libchimara_include_HEADERS = \
 	chimara-glk.h \
