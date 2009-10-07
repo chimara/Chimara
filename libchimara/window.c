@@ -895,17 +895,26 @@ glk_window_clear(winid_t win)
 
 /**
  * glk_set_window:
- * @win: A window.
+ * @win: A window, or %NULL.
  *
  * Sets the current stream to @win's window stream. It is exactly equivalent to
  * |[ #glk_stream_set_current(#glk_window_get_stream(@win)) ]| 
  * See <link linkend="chimara-Streams">Streams</link>.
+ *
+ * <note><title>Chimara</title>
+ * <para>
+ *   Although this is not mentioned in the specification, @win may also be 
+ *   %NULL, in which case the current stream is also set to %NULL.
+ * </para></note>
  */
 void
 glk_set_window(winid_t win)
 {
-	VALID_WINDOW(win, return);
-	glk_stream_set_current( glk_window_get_stream(win) );
+	VALID_WINDOW_OR_NULL(win, return);
+	if(win)
+		glk_stream_set_current( glk_window_get_stream(win) );
+	else
+		glk_stream_set_current(NULL);
 }
 
 /**
