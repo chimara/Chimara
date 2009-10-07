@@ -17,7 +17,7 @@ git_la_SOURCES = version.h git.h config.h compiler.h memory.h opcodes.h \
     opcodes.c operands.c peephole.c savefile.c saveundo.c search.c terp.c \
     accel.c
 git_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
-git_la_CFLAGS = -DUSE_INLINE $(AM_CFLAGS)
+git_la_CFLAGS = -DCHIMARA_EXTENSIONS -DUSE_INLINE $(AM_CFLAGS)
 git_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 gitdocdir = $(datadir)/doc/$(PACKAGE)/git
