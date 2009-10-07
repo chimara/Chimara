@@ -2,8 +2,53 @@
 #include "window.h"
 #include "magic.h"
 #include "chimara-glk-private.h"
+#include "gi_dispa.h"
 
 extern GPrivate *glk_data_key;
+
+static winid_t
+window_new_common(glui32 rock)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	winid_t win = g_new0(struct glk_window_struct, 1);
+	
+	win->magic = MAGIC_WINDOW;
+	win->rock = rock;
+	if(glk_data->register_obj)
+		win->disprock = (*glk_data->register_obj)(win, gidisp_Class_Window);
+	
+	win->window_node = g_node_new(win);
+	
+	/* Every window has a window stream, but printing to it might have no effect */
+	win->window_stream = stream_new_common(0);
+	win->window_stream->file_mode = filemode_Write;
+	win->window_stream->type = STREAM_TYPE_WINDOW;
+	win->window_stream->window = win;
+	win->window_stream->style = "normal";
+	
+	win->echo_stream = NULL;
+	win->input_request_type = INPUT_REQUEST_NONE;
+	win->line_input_buffer = NULL;
+	win->line_input_buffer_unicode = NULL;
+
+	return win;
+}
+
+static void
+window_close_common(winid_t win)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	if(glk_data->unregister_obj) 
+	{
+        (*glk_data->unregister_obj)(win, gidisp_Class_Window, win->disprock);
+        win->disprock.ptr = NULL;
+    }
+
+	g_node_destroy(win->window_node);
+	win->magic = MAGIC_FREE;
+	g_free(win);
+}
 
 /**
  * glk_window_iterate:
@@ -391,11 +436,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	gdk_threads_enter();
 	
 	/* Create the new window */
-	winid_t win = g_new0(struct glk_window_struct, 1);
-	win->magic = MAGIC_WINDOW;
-	win->rock = rock;
+	winid_t win = window_new_common(rock);
 	win->type = wintype;
-	win->window_node = g_node_new(win);
 
 	switch(wintype)
 	{
@@ -410,9 +452,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* A blank window has no size */
 			win->unit_width = 0;
 			win->unit_height = 0;
-			/* You can print to a blank window's stream, but it does nothing */
-			win->window_stream = window_stream_new(win);
-			win->echo_stream = NULL;
 		}
 			break;
 		
@@ -435,13 +474,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			pango_layout_set_font_description(zero, glk_data->monospace_font_desc);
 			pango_layout_get_pixel_size(zero, &(win->unit_width), &(win->unit_height));
 			g_object_unref(zero);
-			
-			/* Set the other parameters (width and height are set later) */
-			win->window_stream = window_stream_new(win);
-			win->echo_stream = NULL;
-			win->input_request_type = INPUT_REQUEST_NONE;
-			win->line_input_buffer = NULL;
-			win->line_input_buffer_unicode = NULL;
+			/* width and height are set later */
 			
 			/* Connect signal handlers */
 			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
@@ -477,13 +510,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			pango_layout_set_font_description(zero, glk_data->default_font_desc);
 			pango_layout_get_pixel_size(zero, &(win->unit_width), &(win->unit_height));
 			g_object_unref(zero);
-			
-			/* Set the other parameters */
-			win->window_stream = window_stream_new(win);
-			win->echo_stream = NULL;
-			win->input_request_type = INPUT_REQUEST_NONE;
-			win->line_input_buffer = NULL;
-			win->line_input_buffer_unicode = NULL;
 
 			/* Connect signal handlers */
 			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
@@ -524,14 +550,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	{
 		/* When splitting, construct a new parent window
 		 * copying most characteristics from the window that is being split */
-		winid_t pair = g_new0(struct glk_window_struct, 1);
-		pair->magic = MAGIC_WINDOW;
-		pair->rock = 0;
+		winid_t pair = window_new_common(0);
 		pair->type = wintype_Pair;
-		pair->window_node = g_node_new(pair);
-		/* You can print to a pair window's window stream, but it has no effect */
-		pair->window_stream = window_stream_new(pair);
-		pair->echo_stream = NULL;
 
 		/* The pair window must know about its children's split method */
 		pair->key_window = win;
@@ -636,8 +656,7 @@ free_winids_below(winid_t win)
 		free_winids_below(win->window_node->children->data);
 		free_winids_below(win->window_node->children->next->data);
 	}
-	win->magic = MAGIC_FREE;
-	g_free(win);
+	window_close_common(win);
 }
 
 /**
@@ -729,7 +748,6 @@ glk_window_close(winid_t win, stream_result_t *result)
 	/* Parent window changes from a split window into the sibling window */
 	/* The parent of any window is either a pair window or NULL */
 	GNode *pair_node = win->window_node->parent;
-	g_node_destroy(win->window_node);
 	/* If win was not the root window: */
 	if(pair_node != NULL)
 	{
@@ -752,19 +770,14 @@ glk_window_close(winid_t win, stream_result_t *result)
 				g_node_append(new_parent_node, sibling_node);
 		}
 
-		winid_t pair = (winid_t) pair_node->data;
-		g_node_destroy(pair_node);
-		
-		pair->magic = MAGIC_FREE;
-		g_free(pair);
+		window_close_common( (winid_t) pair_node->data );
 	} 
 	else /* it was the root window */
 	{
 		glk_data->root_window = NULL;
 	}
 
-	win->magic = MAGIC_FREE;
-	g_free(win);
+	window_close_common(win);
 
 	/* Schedule a redraw */
 	g_mutex_lock(glk_data->arrange_lock);
@@ -1226,4 +1239,3 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	
 	gdk_threads_leave();
 }
-

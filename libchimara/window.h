@@ -3,7 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "glk.h"
-
+#include "gi_dispa.h"
 #include "stream.h"
 #include "input.h"
 #include "style.h"
@@ -28,6 +28,7 @@ struct glk_window_struct
 {
 	/*< private >*/
 	glui32 magic, rock;
+	gidispatch_rock_t disprock;
 	/* Pointer to the node in the global tree that contains this window */
 	GNode *window_node;
 	/* Window parameters */
@@ -55,6 +56,7 @@ struct glk_window_struct
 	gchar *line_input_buffer;
 	glui32 *line_input_buffer_unicode;
 	glui32 line_input_buffer_max_len;
+	gidispatch_rock_t buffer_rock;
 	gboolean mouse_input_requested;
 	/* Line input field (text grids only) */
 	glui32 input_length;

@@ -6,6 +6,7 @@
 #include <pango/pango.h>
 #include "glk.h"
 #include "gi_blorb.h"
+#include "gi_dispa.h"
 #include "chimara-glk.h"
 
 G_BEGIN_DECLS
@@ -68,6 +69,11 @@ struct _ChimaraGlkPrivate {
 	giblorb_map_t *resource_map;
 	/* File stream pointing to the blorb used as current resource map */
 	strid_t resource_file;
+	/* Callbacks for registering and unregistering dispatch objects */
+	gidispatch_rock_t (*register_obj)(void *, glui32);
+	void (*unregister_obj)(void *, glui32, gidispatch_rock_t);
+	gidispatch_rock_t (*register_arr)(void *, glui32, char *);
+	void (*unregister_arr)(void *, glui32, char *, gidispatch_rock_t);
 
 	/* *** Platform-dependent Glk library data *** */
 	/* Flag for functions to find out if they are being called from startup code */

@@ -6,8 +6,54 @@
 #include "fileref.h"
 #include "magic.h"
 #include "chimara-glk-private.h"
+#include "gi_dispa.h"
 
 extern GPrivate *glk_data_key;
+
+/* Internal function: create a fileref using the given parameters. */
+frefid_t
+fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
+{
+	g_return_val_if_fail(filename != NULL, NULL);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	frefid_t f = g_new0(struct glk_fileref_struct, 1);
+	f->magic = MAGIC_FILEREF;
+	f->rock = rock;
+	if(glk_data->register_obj)
+		f->disprock = (*glk_data->register_obj)(f, gidisp_Class_Fileref);
+	
+	f->filename = g_strdup(filename);
+	f->usage = usage;
+	f->orig_filemode = orig_filemode;
+	
+	/* Add it to the global fileref list */
+	glk_data->fileref_list = g_list_prepend(glk_data->fileref_list, f);
+	f->fileref_list = glk_data->fileref_list;
+	
+	return f;
+}
+
+static void
+fileref_close_common(frefid_t fref)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	glk_data->fileref_list = g_list_delete_link(glk_data->fileref_list, fref->fileref_list);
+
+	if(glk_data->unregister_obj)
+	{
+		(*glk_data->unregister_obj)(fref, gidisp_Class_Fileref, fref->disprock);
+		fref->disprock.ptr = NULL;
+	}
+	
+	if(fref->filename)
+		g_free(fref->filename);
+	
+	fref->magic = MAGIC_FREE;
+	g_free(fref);
+}
 
 /**
  * glk_fileref_iterate:
@@ -55,28 +101,6 @@ glk_fileref_get_rock(frefid_t fref)
 {
 	VALID_FILEREF(fref, return 0);
 	return fref->rock;
-}
-
-/* Internal function: create a fileref using the given parameters. */
-frefid_t
-fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
-{
-	g_return_val_if_fail(filename != NULL, NULL);
-
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
-	frefid_t f = g_new0(struct glk_fileref_struct, 1);
-	f->magic = MAGIC_FILEREF;
-	f->rock = rock;
-	f->filename = g_strdup(filename);
-	f->usage = usage;
-	f->orig_filemode = orig_filemode;
-	
-	/* Add it to the global fileref list */
-	glk_data->fileref_list = g_list_prepend(glk_data->fileref_list, f);
-	f->fileref_list = glk_data->fileref_list;
-	
-	return f;
 }
 
 /**
@@ -200,8 +224,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 				NULL);
-			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser),
-				GTK_FILE_CHOOSER_ACTION_OPEN);
+			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_OPEN);
 			break;
 		case filemode_Write:
 			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
@@ -209,10 +232,8 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				NULL);
-			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser),
-				GTK_FILE_CHOOSER_ACTION_SAVE);
-			gtk_file_chooser_set_do_overwrite_confirmation(
-				GTK_FILE_CHOOSER(chooser), TRUE);
+			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
+			gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(chooser), TRUE);
 			break;
 		case filemode_ReadWrite:
 		case filemode_WriteAppend:
@@ -221,8 +242,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				NULL);
-			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser),
-				GTK_FILE_CHOOSER_ACTION_SAVE);
+			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
 			break;
 		default:
 			ILLEGAL_PARAM("Unknown file mode: %u", fmode);
@@ -239,8 +259,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		gdk_threads_leave();
 		return NULL;
 	}
-	gchar *filename = 
-		gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(chooser) );
+	gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(chooser) );
 	frefid_t f = fileref_new(filename, rock, usage, fmode);
 	g_free(filename);
 	gtk_widget_destroy(chooser);
@@ -380,15 +399,7 @@ void
 glk_fileref_destroy(frefid_t fref)
 {
 	VALID_FILEREF(fref, return);
-
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
-	glk_data->fileref_list = g_list_delete_link(glk_data->fileref_list, fref->fileref_list);
-	if(fref->filename)
-		g_free(fref->filename);
-	
-	fref->magic = MAGIC_FREE;
-	g_free(fref);
+	fileref_close_common(fref);
 }
 
 /**

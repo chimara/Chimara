@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "glk.h"
+#include "gi_dispa.h"
 
 /**
  * glk_fileref_struct:
@@ -14,6 +15,7 @@ struct glk_fileref_struct
 {
 	/*< private >*/
 	glui32 magic, rock;
+	gidispatch_rock_t disprock;
 	/* Pointer to the list node in the global fileref list that contains this
 	fileref */
 	GList* fileref_list;

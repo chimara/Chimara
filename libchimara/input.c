@@ -1,6 +1,9 @@
 #include "charset.h"
 #include "magic.h"
 #include "input.h"
+#include "chimara-glk-private.h"
+
+extern GPrivate *glk_data_key;
 
 /* Forward declarations */
 static int flush_text_buffer(winid_t win);
@@ -224,6 +227,11 @@ glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 	g_return_if_fail(initlen <= maxlen);
 
+	/* Register the buffer */
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if(glk_data->register_arr)
+        win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Cn");
+	
 	win->input_request_type = INPUT_REQUEST_LINE;
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
@@ -267,6 +275,11 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 	g_return_if_fail(initlen <= maxlen);
+
+	/* Register the buffer */
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if(glk_data->register_arr)
+        win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
 
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
 	win->line_input_buffer_unicode = buf;
@@ -338,6 +351,15 @@ glk_cancel_line_event(winid_t win, event_t *event)
 		chars_written = flush_text_buffer(win);
 	}
 
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if(glk_data->unregister_arr) 
+	{
+		if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+			(*glk_data->unregister_arr)(win->line_input_buffer_unicode, win->line_input_buffer_max_len, "&+#!Iu", win->buffer_rock);
+		else
+        	(*glk_data->unregister_arr)(win->line_input_buffer, win->line_input_buffer_max_len, "&+#!Cn", win->buffer_rock);
+    }
+	
 	if(event != NULL && chars_written > 0) {
 		event->type = evtype_LineInput;
 		event->val1 = chars_written;
@@ -567,6 +589,15 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 
         int chars_written = flush_text_buffer(win);
 		event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
+
+		ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+		if(glk_data->unregister_arr) 
+		{
+            if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+				(*glk_data->unregister_arr)(win->line_input_buffer_unicode, win->line_input_buffer_max_len, "&+#!Iu", win->buffer_rock);
+			else
+                (*glk_data->unregister_arr)(win->line_input_buffer, win->line_input_buffer_max_len, "&+#!Cn", win->buffer_rock);
+        }
 	}
 }
 
@@ -579,5 +610,13 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 
 	int chars_written = flush_text_grid(win);
 	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if(glk_data->unregister_arr) 
+	{
+        if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+			(*glk_data->unregister_arr)(win->line_input_buffer_unicode, win->line_input_buffer_max_len, "&+#!Iu", win->buffer_rock);
+		else
+            (*glk_data->unregister_arr)(win->line_input_buffer, win->line_input_buffer_max_len, "&+#!Cn", win->buffer_rock);
+    }
 }
 

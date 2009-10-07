@@ -9,6 +9,7 @@ libchimara_la_SOURCES = \
 	case.c \
 	charset.c charset.h \
 	chimara-glk.c chimara-glk.h chimara-glk-private.h \
+	dispatch.c \
 	event.c event.h \
 	fileref.c fileref.h \
 	garglk.c garglk.h \

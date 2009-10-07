@@ -10,16 +10,16 @@
 extern GPrivate *glk_data_key;
 
 /* Internal function: create a stream with a specified rock value */
-static strid_t
-stream_new_common(glui32 rock, glui32 fmode, enum StreamType type)
+strid_t
+stream_new_common(glui32 rock)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	strid_t str = g_new0(struct glk_stream_struct, 1);
 	str->magic = MAGIC_STREAM;
 	str->rock = rock;
-	str->file_mode = fmode;
-	str->type = type;
+	if(glk_data->register_obj)
+		str->disprock = (*glk_data->register_obj)(str, gidisp_Class_Stream);
 		
 	/* Add it to the global stream list */
 	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
@@ -28,15 +28,41 @@ stream_new_common(glui32 rock, glui32 fmode, enum StreamType type)
 	return str;
 }
 
-/* Internal function: create a window stream to go with window. */
-strid_t
-window_stream_new(winid_t window)
+/* Internal function: Stuff to do upon closing any type of stream. */
+void
+stream_close_common(strid_t str, stream_result_t *result)
 {
-	/* Create stream and connect it to window */
-	strid_t str = stream_new_common(0, filemode_Write, STREAM_TYPE_WINDOW);
-	str->window = window;
-	str->style = "normal";
-	return str;
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	/* Remove the stream from the global stream list */
+	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
+	
+	/* If it was the current output stream, set that to NULL */
+	if(glk_data->current_stream == str)
+		glk_data->current_stream = NULL;
+		
+	/* If it was one or more windows' echo streams, set those to NULL */
+	winid_t win;
+	for(win = glk_window_iterate(NULL, NULL); win; 
+		win = glk_window_iterate(win, NULL))
+		if(win->echo_stream == str)
+			win->echo_stream = NULL;
+
+	if(glk_data->unregister_obj)
+	{
+		(*glk_data->unregister_obj)(str, gidisp_Class_Stream, str->disprock);
+		str->disprock.ptr = NULL;
+	}
+	
+	/* Return the character counts */
+	if(result) 
+	{
+		result->readcount = str->read_count;
+		result->writecount = str->write_count;
+	}
+	
+	str->magic = MAGIC_FREE;
+	g_free(str);
 }
 
 /**
@@ -252,11 +278,21 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	strid_t str = stream_new_common(rock, fmode, STREAM_TYPE_MEMORY);
-	str->buffer = buf;
+	strid_t str = stream_new_common(rock);
+	str->file_mode = fmode;
+	str->type = STREAM_TYPE_MEMORY;
 	str->mark = 0;
-	str->buflen = buflen;
 	str->unicode = FALSE;
+
+	if(buf && buflen) 
+	{
+		ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+		str->buffer = buf;
+		str->buflen = buflen;
+		if(glk_data->register_arr) 
+			str->buffer_rock = (*glk_data->register_arr)(buf, buflen, "&+#!Cn");
+	}
+	
 	return str;
 }
 
@@ -280,11 +316,21 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
 	
-	strid_t str = stream_new_common(rock, fmode, STREAM_TYPE_MEMORY);
-	str->ubuffer = buf;
+	strid_t str = stream_new_common(rock);
+	str->file_mode = fmode;
+	str->type = STREAM_TYPE_MEMORY;
 	str->mark = 0;
-	str->buflen = buflen;
 	str->unicode = TRUE;
+
+	if(buf && buflen) 
+	{
+		ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+		str->ubuffer = buf;
+		str->buflen = buflen;
+		if(glk_data->register_arr) 
+			str->buffer_rock = (*glk_data->register_arr)(buf, buflen, "&+#!Iu");
+	}
+	
 	return str;
 }
 
@@ -351,7 +397,9 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 		}
 	}
 	
-	strid_t str = stream_new_common(rock, fmode, STREAM_TYPE_FILE);
+	strid_t str = stream_new_common(rock);
+	str->file_mode = fmode;
+	str->type = STREAM_TYPE_FILE;
 	str->file_pointer = fp;
 	str->binary = binary;
 	str->unicode = unicode;
@@ -444,9 +492,18 @@ glk_stream_close(strid_t str, stream_result_t *result)
 			return;
 			
 		case STREAM_TYPE_MEMORY:
-			/* Do nothing */
+		{
+			ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+			if(glk_data->unregister_arr) 
+			{
+				if(str->unicode)
+					(*glk_data->unregister_arr)(str->ubuffer, str->buflen, "&+#!Iu", str->buffer_rock);
+				else
+					(*glk_data->unregister_arr)(str->buffer, str->buflen, "&+#!Cn", str->buffer_rock);
+            }
+		}
 			break;
-			
+		
 		case STREAM_TYPE_FILE:
 			if(fclose(str->file_pointer) != 0)
 				IO_WARNING( "Failed to close file", str->filename, g_strerror(errno) );
@@ -458,35 +515,4 @@ glk_stream_close(strid_t str, stream_result_t *result)
 	}
 
 	stream_close_common(str, result);
-}
-
-/* Internal function: Stuff to do upon closing any type of stream. */
-void
-stream_close_common(strid_t str, stream_result_t *result)
-{
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
-	/* Remove the stream from the global stream list */
-	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
-	
-	/* If it was the current output stream, set that to NULL */
-	if(glk_data->current_stream == str)
-		glk_data->current_stream = NULL;
-		
-	/* If it was one or more windows' echo streams, set those to NULL */
-	winid_t win;
-	for(win = glk_window_iterate(NULL, NULL); win; 
-		win = glk_window_iterate(win, NULL))
-		if(win->echo_stream == str)
-			win->echo_stream = NULL;
-			
-	/* Return the character counts */
-	if(result) 
-	{
-		result->readcount = str->read_count;
-		result->writecount = str->write_count;
-	}
-	
-	str->magic = MAGIC_FREE;
-	g_free(str);
 }

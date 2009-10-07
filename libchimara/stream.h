@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "glk.h"
+#include "gi_dispa.h"
 #include "window.h"
 #include "fileref.h"
 
@@ -23,6 +24,7 @@ struct glk_stream_struct
 {
 	/*< private >*/
 	glui32 magic, rock;
+	gidispatch_rock_t disprock;
 	/* Pointer to the list node in the global stream list that contains this
 	stream */
 	GList* stream_list;
@@ -40,6 +42,7 @@ struct glk_stream_struct
 	glui32 *ubuffer;
 	glui32 mark;
 	glui32 buflen;
+	gidispatch_rock_t buffer_rock;
 	/* Specific to file streams */
 	FILE *file_pointer;
 	gboolean binary;
@@ -48,8 +51,8 @@ struct glk_stream_struct
 	gchar *style; /* Name of the current style */
 };
 
-G_GNUC_INTERNAL strid_t window_stream_new(winid_t window);
 G_GNUC_INTERNAL strid_t file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode);
+G_GNUC_INTERNAL strid_t stream_new_common(glui32 rock);
 G_GNUC_INTERNAL void stream_close_common(strid_t str, stream_result_t *result);
 
 #endif
