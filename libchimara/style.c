@@ -462,8 +462,8 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 	gchar *tag_name = get_tag_name(styl);
 
 	/* Iterate over all the window and update their styles if nessecary */
-	winid_t win = glk_window_iterate(NULL, NULL);
-	while(win != NULL) {
+	winid_t win;
+	for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL)) {
 		if(wintype != wintype_TextBuffer)
 			continue; /* FIXME: add support for text grid windows */
 
