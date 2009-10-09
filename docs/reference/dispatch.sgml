@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-The-Dispatch-Layer">
+<refmeta>
+<refentrytitle>The Dispatch Layer</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>The Dispatch Layer</refname>
+<refpurpose>Calling Glk functions dynamically</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+The material described in this section is not part of the Glk API per se. It is an external layer, lying on top of Glk, which allows a program to invoke Glk dynamically &mdash; determining the capabilities and interfaces of Glk at run-time.
+</para>
+<para>
+This is most useful for virtual machines and other run-time systems, which want to use Glk without being bound to a particular version of the Glk API. In other words, a VM can export Glk to VM programs, without hard-wiring a list of Glk functions within itself. If a new Glk library is released, with new functions, the VM can simply link in the library; the new functions will be available to VM programs without further work.
+</para>
+<para>
+If you are writing a C program which uses the Glk API, you can ignore this section entirely. If you are writing a VM which uses Glk, you need to read it. If you are implementing a Glk library, you should also read it. (There are some additional interfaces which your library must support for the dispatch layer to work right.) 
+</para>
+<refsect2 id="chimara-How-This-Works">
+<title>How This Works</title>
+<para>
+The dispatch layer is implemented in a C source file, <filename>gi_dispa.c</filename>, and its header, <filename class="headerfile">gi_dispa.h</filename>. This code is platform-independent &mdash; it is identical in every library, just as the <filename class="headerfile">glk.h</filename> header file is identical in every library. Each library author should download the <filename>gi_dispa.c</filename> and <filename class="headerfile">gi_dispa.h</filename> files from the Glk web site, and compile them unchanged into the library.
+</para>
+<para>
+This code is mostly external to Glk; it operates by calling the documented Glk API, not library internals. This is how <filename>gi_dispa.c</filename> can be platform-independent. However, the dividing line is not perfect. There are a few extra functions, not part of the Glk API, which the library must implement; <filename>gi_dispa.c</filename> (and no one else) calls these functions. These functions are simple and should not make life much harder for library implementors.
+</para>
+<para>
+The dispatch layer then provides a dispatch API. The heart of this is the <link linkend="gidispatch-call"><function>gidispatch_call()</function></link> function, which allows you to call <emphasis>any</emphasis> Glk function (specified by number) and pass in a list of arguments in a standardized way. You may also make use of <link linkend="gidispatch-prototype"><function>gidispatch_prototype()</function></link>, which gives you the proper format of that list for each function. Ancilliary functions let you enumerate the functions and constants in the Glk API. 
+</para>
+</refsect2>
+</refsect1>
+</refentry>

@@ -1,0 +1,32 @@
+#!@PERL@ -w
+#
+# Automatically builds section 11.1.6, "Table of Selectors", from the C code
+# in gi_dispa.c.
+
+my $in_list = 0;
+
+print "<variablelist>\n";
+
+while (<>) {
+	chomp;
+	if (/function_table\s*\[\]\s*=\s*{\s*$/) {
+		$in_list = 1;
+		next;
+	}
+	if ($in_list) {
+		next if /^#/;
+		last if /^};/;
+		/{\s*(0x[0-9a-fA-F]{4}),\s*(\w*).*/;
+		print "<varlistentry>\n";
+		print "  <term><code>$1</code></term>\n";
+		my $functionname = $2;
+		my $linkname = '"' . $2 . '"';
+		$linkname =~ s/_/-/g;
+		print "  <listitem><para>\n";
+		print "    <link linkend=$linkname><function>$functionname()</function></link>\n";
+		print "  </para></listitem>\n";
+		print "</varlistentry>\n";
+	}
+}
+
+print "</variablelist>\n";

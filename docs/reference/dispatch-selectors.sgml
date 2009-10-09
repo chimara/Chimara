@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY selectors SYSTEM "selectors.xml">
+]>
+<refentry id="chimara-Table-of-Selectors">
+<refmeta>
+<refentrytitle>Table of Selectors</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Table of Selectors</refname>
+<refpurpose>Table of dispatch selectors for Glk functions</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+These values, and the values used for future Glk calls, are integers in the range <code>0x0001</code> to <code>0xFFFF</code> (1 to 65535). The values are not sequential; they are divided into groups, roughly by category. Zero is not the selector of any
+Glk call, so it may be used for a null value.
+</para>
+&selectors;
+<para>
+Note that <function>glk_main()</function> does not have a selector, because it's provided by your program, not the library.
+</para>
+<para>
+There is no way to use these selectors directly in the Glk API.
+<note><para>
+An earlier version of Glk had gestalt selectors <code>gestalt_FunctionNameToID</code> and <code>gestalt_FunctionIDToName</code>, but these have been withdrawn.
+</para></note>
+They are defined and used only in the dispatch layer.
+</para>
+</refsect1>
+</refentry>

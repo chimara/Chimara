@@ -126,10 +126,16 @@
     <xi:include href="glk-porting.sgml"/>
    
     <!-- Chapter 11. Appendices -->
-<!--    <appendix>
+    <appendix>
       <title>The Dispatch Layer</title>
+      <xi:include href="dispatch.sgml"/>
+      <xi:include href="xml/dispatch-interrogating.xml"/>
+      <xi:include href="xml/dispatch-dispatching.xml"/>
+      <xi:include href="xml/dispatch-prototypes.xml"/>
+      <xi:include href="xml/dispatch-library-functions.xml"/>
+      <xi:include href="dispatch-selectors.sgml"/>
     </appendix>
--->    
+
     <appendix>
       <title>The Blorb Layer</title>
       <xi:include href="blorb.sgml"/>

@@ -106,6 +106,7 @@ tests/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
+docs/reference/build-selector-table.pl
 po/Makefile.in
 ])
 # Do it

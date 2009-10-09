@@ -840,6 +840,69 @@
  * else.
  */
 
+/**
+ * SECTION:dispatch-interrogating
+ * @short_description: Finding out what functions the Glk library exports
+ * @include: libchimara/glk.h, libchimara/gi_dispa.h
+ *
+ * These are the ancilliary functions that let you enumerate.
+ */
+ 
+/**
+ * SECTION:dispatch-dispatching
+ * @short_description: Dispatching the call to the Glk library
+ * @include: libchimara/glk.h, libchimara/gi_dispa.h
+ */
+ 
+/**
+ * SECTION:dispatch-prototypes
+ * @short_description: Querying Glk function prototypes
+ * @include: libchimara/glk.h, libchimara/gi_dispa.h
+ *
+ * There are many possible ways to set up a #gluniversal_t array, and it's
+ * illegal to call gidispatch_call() with an array which doesn't match the
+ * function. Furthermore, some references are passed in, some passed out, and
+ * some both. How do you know how to handle the argument list?
+ * 
+ * One possibility is to recognize each function selector, and set up the
+ * arguments appropriately. However, this entails writing special code for each
+ * Glk function; which is exactly what we don't want to do.
+ * 
+ * Instead, you can call gidispatch_prototype(). 
+ */
+
+/**
+ * SECTION:dispatch-library-functions
+ * @short_description: Platform-dependent dispatch layer functions
+ * @include: libchimara/glk.h, libchimara/gi_dispa.h
+ *
+ * Ideally, the three layers &mdash; program, dispatch layer, Glk library
+ * &mdash; would be completely modular; each would refer only to the layers
+ * beneath it. Sadly, there are a few places where the library must notify the
+ * program that something has happened. Worse, these situations are only
+ * relevant to programs which use the dispatch layer, and then only some of
+ * those.
+ * 
+ * Since C is uncomfortable with the concept of calling functions which may not
+ * exist, Glk handles this with call-back function pointers. The program can
+ * pass callbacks in to the library; if it does, the library will call them, and
+ * if not, the library doesn't try.
+ * 
+ * These callbacks are optional, in the sense that the program may or may not
+ * set them. However, any library which wants to interoperate with the dispatch
+ * layer must <emphasis>allow</emphasis> the program to set them; it is the
+ * program's choice. The library does this by implementing
+ * <code>set_registry functions</code> &mdash; the functions to which the
+ * program passes its callbacks.
+ * 
+ * <note><para>
+ *   Even though these callbacks and the functions to set them are declared in
+ *   <filename class="headerfile">gi_dispa.h</filename>, they are not defined in
+ *   <filename>gi_dispa.c</filename>. The dispatch layer merely coordinates
+ *   them. The program defines the callback functions; the library calls them.
+ * </para></note>
+ */
+
 /** 
  * SECTION:blorb-program
  * @short_description: How to use the Blorb layer in your program
@@ -2143,6 +2206,510 @@
  *
  * A value for %stylehint_Justification representing right-justified text.
  */
+
+/*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_DISPA.H ------------------*/
+
+/**
+ * gidispatch_count_classes:
+ * 
+ * Returns the number of opaque object classes used by the library. You will
+ * need to know this if you want to keep track of opaque objects as they are
+ * created; see <link linkend="gidispatch-set-object-registry">Opaque Object
+ * Registry</link>.
+ * 
+ * As of Glk API 0.7.0, there are four classes: windows, streams, filerefs, and
+ * sound channels (numbered 0, 1, 2, and 3 respectively.)
+ *
+ * Returns: Number of opaque object classes used by the library.
+ */
+ 
+/**
+ * gidispatch_count_intconst:
+ *
+ * Returns the number of integer constants exported by the library.
+ *
+ * Returns: Number of integer constants exported by the library.
+ */
+ 
+/**
+ * gidispatch_get_intconst:
+ * @index: Unique integer index of the integer constant.
+ *
+ * Returns a structure describing an integer constant which the library exports.
+ * These are, roughly, all the constants defined in the <filename
+ * class="headerfile">glk.h</filename> file. @index can range from 0 to
+ * <inlineequation><mathphrase>N - 1</mathphrase><alt>N - 
+ * 1</alt></inlineequation>, where N is the value returned by 
+ * gidispatch_count_intconst().
+ *
+ * Returns: A #gidispatch_intconst_t structure describing the integer constant.
+ */
+
+/**
+ * gidispatch_intconst_t:
+ * @name: Symbolic name of the integer constant.
+ * @val: Value of the integer constant.
+ *
+ * This structure simply contains a string and a value. The string is a
+ * symbolic name of the value, and can be re-exported to anyone interested in
+ * using Glk constants.
+ */
+ 
+/**
+ * gidispatch_count_functions:
+ *
+ * Returns the number of functions exported by the library.
+ *
+ * Returns: Number of functions exported by the library.
+ */
+ 
+/**
+ * gidispatch_get_function:
+ * @index: Unique integer index of the function.
+ *
+ * Returns a structure describing a Glk function. @index can range from 0 to
+ * <inlineequation><mathphrase>N - 1</mathphrase><alt>N - 
+ * 1</alt></inlineequation>, where N is the value returned by 
+ * gidispatch_count_functions().
+ *
+ * Returns: A #gidispatch_function_t structure describing the function.
+ */
+ 
+/**
+ * gidispatch_function_t:
+ * @id: Dispatch selector of the function.
+ * @fnptr: Pointer to the function.
+ * @name: Name of the function, without the <code>glk_</code> prefix.
+ *
+ * The @id field is a selector &mdash; a numeric constant used to refer to the
+ * function in question. @name is the function name, as it is given in the
+ * <filename class="headerfile">glk.h</filename> file, but without the 
+ * <quote><code>glk_</code></quote> prefix. And @fnptr is the address of the
+ * function itself.
+ *
+ * <note><para>
+ *   This is included because it might be useful, but it is not recommended. To
+ *   call an arbitrary Glk function, you should use gidispatch_call().
+ * </para></note>
+ *
+ * See <link linkend="chimara-Table-of-Selectors">Table of Selectors</link> for
+ * the selector definitions. See <link 
+ * linkend="chimara-Dispatching">Dispatching</link> for more about calling Glk
+ * functions by selector.
+ */
+ 
+/**
+ * gidispatch_get_function_by_id:
+ * @id: A selector.
+ *
+ * Returns a structure describing the Glk function with selector @id. If there 
+ * is no such function in the library, this returns %NULL.
+ *
+ * Returns: a #gidispatch_function_t structure, or %NULL.
+ */
+ 
+/**
+ * gidispatch_call:
+ * @funcnum: Selector of the function to call.
+ * @numargs: Length of @arglist.
+ * @arglist: List of arguments to pass to the function.
+ *
+ * @funcnum is the function number to invoke; see <link 
+ * linkend="chimara-Table-of-Selectors">Table of Selectors</link>. @arglist is
+ * the list of arguments, and @numargs is the length of the list.
+ * 
+ * The arguments are all stored as #gluniversal_t objects. 
+ * </para><refsect3 id="chimara-Basic-Types"><title>Basic Types</title><para>
+ * Numeric arguments are passed in the obvious way &mdash; one argument per
+ * #gluniversal_t, with the @uint or @sint field set to the numeric value.
+ * Characters and strings are also passed in this way &mdash; #char<!---->s in
+ * the @uch, @sch, or @ch fields (depending on whether the #char is signed) and
+ * strings in the @charstr field. Opaque objects (windows, streams, etc) are
+ * passed in the @opaqueref field (which is <code>void*</code>, in order to
+ * handle all opaque pointer types.)
+ * 
+ * However, pointers (other than C strings), arrays, and structures complicate
+ * life. So do return values.
+ * </para></refsect3>
+ * <refsect3 id="chimara-References"><title>References</title><para>
+ * A reference to a numeric type or object reference &mdash; that is,
+ * <code>#glui32*</code>, <code>#winid_t*</code>, and so on &mdash; takes
+ * <emphasis>one or two</emphasis> #gluniversal_t objects. The first is a flag
+ * indicating whether the reference argument is %NULL or not. The @ptrflag field
+ * of this #gluniversal_t should be %FALSE if the reference is %NULL, and %TRUE
+ * otherwise. If %FALSE, that is the end of the argument; you should not use a
+ * #gluniversal_t to explicitly store the %NULL reference. If the flag is %TRUE,
+ * you must then put a #gluniversal_t storing the base type of the reference.
+ *
+ * For example, consider a hypothetical function, with selector 
+ * <code>0xABCD</code>:
+ * |[ 
+ * void glk_glomp(#glui32 num, #winid_t win, #glui32 *numref, #strid_t *strref);
+ * ]|
+ * ...and the calls:
+ * |[
+ * #glui32 value;
+ * #winid_t mainwin;
+ * #strid_t gamefile;
+ * glk_glomp(5, mainwin, &value, &gamefile);
+ * ]|
+ *
+ * To perform this through gidispatch_call(), you would do the following:
+ * |[
+ * #gluniversal_t arglist[6];
+ * arglist[0].uint = 5;
+ * arglist[1].opaqueref = mainwin;
+ * arglist[2].ptrflag = TRUE;
+ * arglist[3].uint = value;
+ * arglist[4].ptrflag = TRUE;
+ * arglist[5].opaqueref = gamefile;
+ * #gidispatch_call(0xABCD, 6, arglist);
+ * value = arglist[3].uint;
+ * gamefile = arglist[5].opaqueref;
+ * ]|
+ * 
+ * Note that you copy the value of the reference arguments into and out of
+ * @arglist. Of course, it may be that glk_glomp() only uses these as pass-out
+ * references or pass-in references; if so, you could skip copying in or out.
+ *
+ * For further examples:
+ * |[
+ * glk_glomp(7, mainwin, NULL, NULL);
+ * ...or...
+ * #gluniversal_t arglist[4];
+ * arglist[0].uint = 7;
+ * arglist[1].opaqueref = mainwin;
+ * arglist[2].ptrflag = FALSE;
+ * arglist[3].ptrflag = FALSE;
+ * #gidispatch_call(0xABCD, 4, arglist);
+ * ]|
+ *
+ * |[
+ * glk_glomp(13, NULL, NULL, &gamefile);
+ * ...or...
+ * #gluniversal_t arglist[5];
+ * arglist[0].uint = 13;
+ * arglist[1].opaqueref = NULL;
+ * arglist[2].ptrflag = FALSE;
+ * arglist[3].ptrflag = TRUE;
+ * arglist[4].opaqueref = gamefile;
+ * #gidispatch_call(0xABCD, 5, arglist);
+ * gamefile = arglist[4].opaqueref;
+ * ]|
+ *
+ * |[
+ * glk_glomp(17, NULL, &value, NULL);
+ * ...or...
+ * #gluniversal_t arglist[5];
+ * arglist[0].uint = 17;
+ * arglist[1].opaqueref = NULL;
+ * arglist[2].ptrflag = TRUE;
+ * arglist[3].uint = value;
+ * arglist[4].ptrflag = FALSE;
+ * #gidispatch_call(0xABCD, 5, arglist);
+ * value = arglist[3].uint;
+ * ]|
+ * 
+ * As you see, the length of @arglist depends on how many of the reference
+ * arguments are %NULL.
+ * </para></refsect3>
+ * <refsect3 id="chimara-Structures"><title>Structures</title><para>
+ * A structure pointer is represented by a single @ptrflag, possibly followed by
+ * a sequence of #gluniversal_t objects (one for each field of the structure.)
+ * Again, if the structure pointer is non-%NULL, the @ptrflag should be %TRUE
+ * and be followed by values; if not, the @ptrflag should be %NULL and stands
+ * alone.
+ * 
+ * For example, the function glk_select() can be invoked as follows:
+ * |[
+ * #event_t ev;
+ * #gluniversal_t arglist[5];
+ * arglist[0].ptrflag = TRUE;
+ * #gidispatch_call(0x00C0, 5, arglist);
+ * ev.type = arglist[1].uint;
+ * ev.win = arglist[2].opaqueref;
+ * ev.val1 = arglist[3].uint;
+ * ev.val2 = arglist[4].uint;
+ * ]|
+ * 
+ * Since the structure passed to glk_select() is a pass-out reference (the entry
+ * values are ignored), you don't need to fill in <code>arglist[1..4]</code>
+ * before calling gidispatch_call().
+ * 
+ * <note><para>
+ *   Theoretically, you would invoke <code>#glk_select(%NULL)</code> by setting'
+ *   <code>arglist[0].ptrflag</code> to %FALSE, and using a one-element @arglist
+ *   instead of five-element. But it's illegal to pass %NULL to glk_select(). So
+ *   you cannot actually do this.
+ * </para></note></para></refsect3>
+ * <refsect3 id="chimara-Arrays"><title>Arrays</title><para>
+ * In the Glk API, an array argument is always followed by a numeric argument
+ * giving the array's length. These two C arguments are a single logical
+ * argument, which is represented by <emphasis>one or three</emphasis>
+ * #gluniversal_t objects. The first is a @ptrflag, indicating whether the
+ * argument is %NULL or not. The second is a pointer, stored in the @array
+ * field. The third is the array length, stored in the @uint field. And again,
+ * if the @ptrflag is %NULL, the following two are omitted.
+ * 
+ * For example, the function glk_put_buffer() can be invoked as follows:
+ * |[
+ * #char buf[64];
+ * #glui32 len = 64;
+ * #glk_put_buffer(buf, len);
+ * ...or...
+ * #gluniversal_t arglist[3];
+ * arglist[0].ptrflag = TRUE;
+ * arglist[1].array = buf;
+ * arglist[2].uint = len;
+ * #gidispatch_call(0x0084, 3, arglist);
+ * ]|
+ * 
+ * Since you are passing a C char array to gidispatch_call(), the contents will
+ * be read directly from that. There is no need to copy data into @arglist, as
+ * you would for a basic type.
+ * 
+ * If you are implementing a VM whose native representation of char arrays is
+ * more complex, you will have to do more work. You should allocate a C char
+ * array, copy your characters into it, make the call, and then free the array.
+ *
+ * <note><para>
+ *   glk_put_buffer() does not modify the array passed to it, so there is no
+ *   need to copy the characters out.
+ * </para></note></para></refsect3>
+ * <refsect3 id="chimara-Return-Values"><title>Return Values</title><para>
+ * The return value of a function is not treated specially. It is simply
+ * considered to be a pass-out reference argument which may not be %NULL. It
+ * comes after all the other arguments of the function.
+ * 
+ * For example, the function glk_window_get_rock() can be invoked as follows:
+ * |[
+ * #glui32 rock;
+ * #winid_t win;
+ * rock = #glk_window_get_rock(win);
+ * ...or...
+ * #gluniversal_t arglist[3];
+ * arglist[0].opaqueref = win;
+ * arglist[1].ptrflag = TRUE;
+ * #gidispatch_call(0x0021, 3, arglist);
+ * rock = arglist[2].uint;
+ * ]|
+ * </para></refsect3><para>
+ */
+
+/**
+ * gluniversal_t:
+ * @uint: Stores a #glui32.
+ * @sint: Stores a #glsi32.
+ * @opaqueref: Stores a #winid_t, #strid_t, #frefid_t, or #schanid_t.
+ * @uch: Stores an #unsigned #char.
+ * @sch: Stores a #signed #char.
+ * @ch: Stores a #char with the default signedness.
+ * @charstr: Stores a %NULL-terminated string.
+ * @array: Stores a pointer to an array, and should be followed by another 
+ * #gluniversal_t with the array length stored in the @uint member.
+ * @ptrflag: If %FALSE, represents an opaque reference or array that is %NULL,
+ * in which case it represents the entire argument. If %TRUE, should be followed
+ * by another #gluniversal_t with the pointer in its @opaqueref or @array field.
+ *
+ * This is a union, encompassing all the types that can be passed to Glk
+ * functions.
+ */
+ 
+/**
+ * gidispatch_prototype:
+ * @funcnum: A selector for the function to be queried.
+ *
+ * This returns a string which encodes the proper argument list for the given
+ * function. If there is no such function in the library, this returns %NULL.
+ * 
+ * The prototype string for the glk_glomp() function described above would be:
+ * <code>"4IuQa&amp;Iu&amp;Qb:"</code>. The <code>"4"</code> is the number of
+ * arguments (including the return value, if there is one, which in this case
+ * there isn't.) <code>"Iu"</code> denotes an unsigned integer;
+ * <code>"Qa"</code> is an opaque object of class 0 (window).
+ * <code>"&amp;Iu"</code> is a <emphasis>reference</emphasis> to an unsigned
+ * integer, and <code>"&amp;Qb"</code> is a reference to a stream. The colon at
+ * the end terminates the argument list; the return value would follow it, if
+ * there was one.
+ * 
+ * Note that the initial number (<code>"4"</code> in this case) is the number of
+ * logical arguments, not the number of #gluniversal_t objects which will be
+ * passed to gidispatch_call(). The glk_glomp() call uses anywhere from four to
+ * six #gluniversal_t objects, as demonstrated above.
+ * 
+ * The basic type codes:
+ * <variablelist>
+ * <varlistentry>
+ *   <term><code>Iu, Is</code></term>
+ *   <listitem><para>Unsigned and signed 32-bit integer.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>Cn, Cu, Cs</code></term>
+ *   <listitem><para>Character, #unsigned #char, and #signed #char.</para>
+ *     <note><para>Of course <code>Cn</code> will be the same as either 
+ *     <code>Cu</code> or <code>Cs</code>, depending on the platform. For this
+ *     reason, Glk avoids using it, but it is included here for completeness.
+ *     </para></note>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>S</code></term>
+ *   <listitem><para>A C-style string (null-terminated array of #char). In Glk,
+ *   strings are always treated as read-only and used immediately; the library
+ *   does not retain a reference to a string between Glk calls. A Glk call that
+ *   wants to use writable char arrays will use an array type 
+ *   (<code>"&num;C"</code>), not string (<code>"S"</code>).</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>U</code></term>
+ *   <listitem><para>A zero-terminated array of 32-bit integers. This is
+ *   primarily intended as a Unicode equivalent of <code>"S"</code>. Like 
+ *   <code>"S"</code> strings, <code>"U"</code> strings are read-only and used
+ *   immediately. A Glk call that wants to use writable Unicode arrays will use
+ *   an array type (<code>"&num;Iu"</code>) instead of <code>"U"</code>.</para>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>F</code></term>
+ *   <listitem><para>A floating-point value. Glk does not currently use
+ *   floating-point values, but we might as well define a code for them.</para>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>Qa, Qb, Qc...</code></term>
+ *   <listitem><para>A reference to an opaque object. The second letter
+ *   determines which class is involved. (The number of classes can be gleaned
+ *   from gidispatch_count_classes(); see <link 
+ *   linkend="chimara-Interrogating-the-Interface">Interrogating the
+ *   Interface</link>).</para>
+ *   <note><para>
+ *     If Glk expands to have more than 26 classes, we'll think of something.
+ *   </para></note></listitem>
+ * </varlistentry>
+ * </variablelist>
+ * Any type code can be prefixed with one or more of the following characters
+ * (order does not matter):
+ * <variablelist>
+ * <varlistentry>
+ *   <term><code>&amp;</code></term>
+ *   <listitem><para>A reference to the type; or, if you like, a variable passed
+ *   by reference. The reference is passed both in and out, so you must copy the
+ *   value in before calling gidispatch_call() and copy it out afterward.</para>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>&lt;</code></term>
+ *   <listitem><para>A reference which is pass-out only. The initial value is
+ *   ignored, so you only need copy out the value after the call.</para>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>&gt;</code></term>
+ *   <listitem><para>A reference which is pass-in only.</para>
+ *   <note><para>
+ *     This is not generally used for simple types, but is useful for structures
+ *     and arrays.
+ *   </para></note></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>+</code></term>
+ *   <listitem><para>Combined with <code>"&"</code>, <code>"&lt;"</code>, or 
+ *   <code>"&gt;"</code>, indicates that a valid reference is mandatory; %NULL
+ *   cannot be passed.</para>
+ *   <note><para>
+ *     Note that even though the @ptrflag #gluniversal_t for a <code>"+"</code>
+ *     reference is always %TRUE, it cannot be omitted.
+ *   </para></note></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>:</code></term>
+ *   <listitem><para>The colon separates the arguments from the return value, or
+ *   terminates the string if there is no return value. Since return values are
+ *   always non-%NULL pass-out references, you may treat <code>":"</code> as
+ *   equivalent to <code>"&lt;+"</code>. The colon is never combined with any
+ *   other prefix character.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>[...]</code></term>
+ *   <listitem><para>Combined with <code>"&amp;"</code>, <code>"&lt;"</code>, or 
+ *   <code>"&gt;"</code>, indicates a structure reference. Between the brackets
+ *   is a complete argument list encoding string, including the number of
+ *   arguments.</para>
+ *   <note><para>
+ *     For example, the prototype string for glk_select() is
+ *     <code>"1&lt;+[4IuQaIuIu]:"</code> &mdash; one argument, which is a
+ *     pass-out non-%NULL reference to a structure, which contains four
+ *     arguments.
+ *   </para></note>
+ *   <para>Currently, structures in Glk contain only basic types.</para>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>&num;</code></term>
+ *   <listitem><para>Combined with <code>"&amp;"</code>, <code>"&lt;"</code>, or 
+ *   <code>"&gt;"</code>, indicates an array reference. As described above, this
+ *   encompasses up to three #gluniversal_t objects &mdash; @ptrflag, pointer,
+ *   and integer length.</para>
+ *   <note><para>
+ *     Depending on the design of your program, you may wish to pass a pointer
+ *     directly to your program's memory, or allocate an array and copy the
+ *     contents in and out. See <link linkend="chimara-Arrays">Arrays</link>.
+ *   </para></note></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term><code>!</code></term>
+ *   <listitem><para>Combined with <code>"&num;"</code>, indicates that the
+ *   array is retained by the library. The library will keep a reference to the
+ *   array; the contents are undefined until further notice. You should not use
+ *   or copy the contents of the array out after the call, even for 
+ *   <code>"&amp;&num;!"</code> or <code>"&lt;&num;!"</code> arrays. Instead, do
+ *   it when the library releases the array.</para>
+ *   <note><para>
+ *     For example, glk_stream_open_memory() retains the array that you pass it,
+ *     and releases it when the stream is closed. The library can notify you
+ *     automatically when arrays are retained and released; see <link
+ *     linkend="gidispatch-set-retained-registry">Retained Array
+ *     Registry</link>.
+ *   </para></note></listitem>
+ * </varlistentry>
+ * </variablelist>
+ *
+ * Returns: A string which encodes the prototype of the specified Glk function.
+ */
+
+/**
+ * gidisp_Class_Window:
+ *
+ * Represents a #winid_t opaque object.
+ */
+ 
+/**
+ * gidisp_Class_Stream:
+ *
+ * Represents a #strid_t opaque object.
+ */
+ 
+/**
+ * gidisp_Class_Fileref:
+ *
+ * Represents a #frefid_t opaque object.
+ */
+
+/**
+ * gidisp_Class_Schannel:
+ * 
+ * Represents a #schanid_t opaque object.
+ */
+
+/**
+ * gidispatch_rock_t:
+ * @num: Space for storing an integer.
+ * @ptr: Space for storing a pointer.
+ *
+ * You can store any value you want in this object; return it from your object
+ * registry and retained array registry callbacks, and the library will stash it
+ * away. You can retrieve it with gidispatch_get_objrock().
+ */ 
 
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_BLORB.H ------------------*/
  

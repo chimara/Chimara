@@ -74,6 +74,7 @@ HTML_IMAGES = \
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
 content_files = version.xml \
+	selectors.xml \
 	glk-front-matter.sgml \
 	glk-introduction.sgml \
 	glk-main-function.sgml \
@@ -84,7 +85,11 @@ content_files = version.xml \
 	glk-windows.sgml \
 	glk-window-arrangement.sgml \
 	glk-display-style.sgml \
-	glk-other-events.sgml
+	glk-other-events.sgml \
+	glk-porting.sgml \
+	dispatch.sgml \
+	blorb.sgml \
+	blorb-library.sgml
 
 # SGML files where gtk-doc abbreviations (#GtkWidget) are expanded
 # These files must be listed here *and* in content_files
@@ -112,7 +117,8 @@ EXTRA_DIST += version.xml.in
 # Files not to distribute
 # for --rebuild-types in $(SCAN_OPTIONS), e.g. $(DOC_MODULE).types
 # for --rebuild-sections in $(SCAN_OPTIONS), e.g. $(DOC_MODULE)-sections.txt
-DISTCLEANFILES = $(DOC_MODULE)-overrides.txt
+CLEANFILES += selectors.xml
+DISTCLEANFILES = version.xml $(DOC_MODULE)-overrides.txt
 
 # Uncomment this if you want your docs-status tested during 'make check'
 # Comment this while not all symbols are documented, otherwise distcheck fails
@@ -120,3 +126,9 @@ DISTCLEANFILES = $(DOC_MODULE)-overrides.txt
 #TESTS_ENVIRONMENT = cd $(srcdir) &&
 #TESTS = $(GTKDOC_CHECK)
 #endif
+
+dist_noinst_SCRIPTS = build-selector-table.pl
+
+selectors.xml: $(srcdir)/../../libchimara/gi_dispa.c
+	$(PERL) build-selector-table.pl $< > $@
+

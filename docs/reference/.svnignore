@@ -15,4 +15,5 @@ chimara-decl-list.txt
 chimara-overrides.txt
 chimara-undeclared.txt
 chimara-undocumented.txt
-
+selectors.xml
+build-selector-table.pl

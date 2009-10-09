@@ -482,6 +482,46 @@ GLK_MODULE_HYPERLINKS
 </SECTION>
 
 <SECTION>
+<FILE>dispatch-interrogating</FILE>
+<TITLE>Interrogating the Interface</TITLE>
+gidispatch_count_classes
+gidispatch_count_intconst
+gidispatch_get_intconst
+gidispatch_intconst_t
+gidispatch_count_functions
+gidispatch_get_function
+gidispatch_function_t
+gidispatch_get_function_by_id
+<SUBSECTION Constants>
+gidisp_Class_Window
+gidisp_Class_Stream
+gidisp_Class_Fileref
+gidisp_Class_Schannel
+</SECTION>
+
+<SECTION>
+<FILE>dispatch-dispatching</FILE>
+<TITLE>Dispatching</TITLE>
+gidispatch_call
+gluniversal_t
+</SECTION>
+
+<SECTION>
+<FILE>dispatch-prototypes</FILE>
+<TITLE>Getting Argument Prototypes</TITLE>
+gidispatch_prototype
+</SECTION>
+
+<SECTION>
+<FILE>dispatch-library-functions</FILE>
+<TITLE>Functions the Library Must Provide</TITLE>
+gidispatch_set_object_registry
+gidispatch_rock_t
+gidispatch_get_objrock
+gidispatch_set_retained_registry
+</SECTION>
+
+<SECTION>
 <FILE>blorb-program</FILE>
 <TITLE>What the Program Does</TITLE>
 giblorb_set_resource_map
