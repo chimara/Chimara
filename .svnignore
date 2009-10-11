@@ -24,4 +24,6 @@ ylwrap
 chimara.anjuta
 .anjuta*
 .tm_project2.cache
-
+.cdtconfigure*
+.cproject*
+.project*
