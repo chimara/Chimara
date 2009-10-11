@@ -59,6 +59,7 @@ enum {
 enum {
 	STOPPED,
 	STARTED,
+	WAITING,
 	CHAR_INPUT,
 	LINE_INPUT,
 	TEXT_BUFFER_OUTPUT,
@@ -550,6 +551,12 @@ chimara_glk_started(ChimaraGlk *self)
 }
 
 static void
+chimara_glk_waiting(ChimaraGlk *self)
+{
+	/* TODO: Add default signal handler */
+}
+
+static void
 chimara_glk_char_input(ChimaraGlk *self, guint window_rock, guint keysym)
 {
 	/* TODO: Add default signal handler */
@@ -591,6 +598,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     /* Signals */
     klass->stopped = chimara_glk_stopped;
     klass->started = chimara_glk_started;
+    klass->waiting = chimara_glk_waiting;
     klass->char_input = chimara_glk_char_input;
     klass->line_input = chimara_glk_line_input;
     klass->text_buffer_output = chimara_glk_text_buffer_output;
@@ -603,6 +611,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      */ 
     chimara_glk_signals[STOPPED] = g_signal_new("stopped", 
         G_OBJECT_CLASS_TYPE(klass), 0, 
+        /* FIXME: Should be G_SIGNAL_RUN_CLEANUP but that segfaults??! */
         G_STRUCT_OFFSET(ChimaraGlkClass, stopped), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 	/**
@@ -613,8 +622,13 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * the widget.
 	 */
 	chimara_glk_signals[STARTED] = g_signal_new ("started",
-		G_OBJECT_CLASS_TYPE (klass), 0,
+		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, started), NULL, NULL,
+		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+	
+	chimara_glk_signals[WAITING] = g_signal_new("waiting",
+		G_OBJECT_CLASS_TYPE(klass), 0,
+		G_STRUCT_OFFSET(ChimaraGlkClass, waiting), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
 	chimara_glk_signals[CHAR_INPUT] = g_signal_new("char-input",

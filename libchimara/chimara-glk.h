@@ -3,7 +3,7 @@
 #ifndef __CHIMARA_GLK_H__
 #define __CHIMARA_GLK_H__
 
-#include <glib-object.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <pango/pango.h>
 
@@ -32,6 +32,7 @@ typedef struct _ChimaraGlkClass {
 	/* Signals */
 	void(* stopped) (ChimaraGlk *self);
 	void(* started) (ChimaraGlk *self);
+	void(* waiting) (ChimaraGlk *self);
 	void(* char_input) (ChimaraGlk *self, guint32 window_rock, guint keysym);
 	void(* line_input) (ChimaraGlk *self, guint32 window_rock, gchar *text);
 	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, gchar *text);

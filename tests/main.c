@@ -63,6 +63,12 @@ on_stopped(ChimaraGlk *glk)
 }
 
 static void
+on_waiting(ChimaraGlk *glk)
+{
+	g_printerr("Waiting!\n");
+}
+
+static void
 on_char_input(ChimaraGlk *glk, guint32 window_rock, guint keysym)
 {
 	g_printerr("Character input in window %d: key %d\n", window_rock, keysym);
@@ -125,14 +131,13 @@ create_window(void)
 		return;
 	}
 	
-	gtk_builder_connect_signals(builder, NULL);
-	
 	glk = chimara_glk_new();
 	g_object_set(glk, "border-width", 6, "spacing", 6, NULL);
 	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
 	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
 	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);
 	g_signal_connect(glk, "stopped", G_CALLBACK(on_stopped), NULL);
+	g_signal_connect(glk, "waiting", G_CALLBACK(on_waiting), NULL);
 	g_signal_connect(glk, "char-input", G_CALLBACK(on_char_input), NULL);
 	g_signal_connect(glk, "line-input", G_CALLBACK(on_line_input), NULL);
 	g_signal_connect(glk, "text-buffer-output", G_CALLBACK(on_text_buffer_output), NULL);
@@ -151,6 +156,8 @@ create_window(void)
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
 	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
 	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
+	
+	gtk_builder_connect_signals(builder, NULL);
 }
 
 int
