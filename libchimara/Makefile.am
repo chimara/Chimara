@@ -9,6 +9,8 @@ libchimara_la_SOURCES = \
 	case.c \
 	charset.c charset.h \
 	chimara-glk.c chimara-glk.h chimara-glk-private.h \
+	chimara-if.c chimara-if.h \
+	chimara-marshallers.c chimara-marshallers.h \
 	dispatch.c \
 	event.c event.h \
 	fileref.c fileref.h \
@@ -49,4 +51,11 @@ libchimara_include_HEADERS = \
 	gi_blorb.h \
 	garglk.h
 
-EXTRA_DIST = doc.c glkstart.c
+BUILT_SOURCES = chimara-marshallers.c chimara-marshallers.h
+chimara-marshallers.c: chimara-marshallers.txt
+	glib-genmarshal --body --prefix=chimara_marshal $< > $@
+
+chimara-marshallers.h: chimara-marshallers.txt
+	glib-genmarshal --header --prefix=chimara_marshal $< > $@
+
+EXTRA_DIST = doc.c glkstart.c chimara-marshallers.txt

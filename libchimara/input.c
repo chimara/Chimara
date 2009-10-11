@@ -6,8 +6,8 @@
 extern GPrivate *glk_data_key;
 
 /* Forward declarations */
-static int flush_text_buffer(winid_t win);
-static int flush_text_grid(winid_t win);
+static int finish_text_buffer_line_input(winid_t win, gboolean emit_signal);
+static int finish_text_grid_line_input(winid_t win, gboolean emit_signal);
 
 /* Internal function: code common to both flavors of char event request */
 void
@@ -344,11 +344,11 @@ glk_cancel_line_event(winid_t win, event_t *event)
 
 	if(win->type == wintype_TextGrid) {
 		g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
-		chars_written = flush_text_grid(win);
+		chars_written = finish_text_grid_line_input(win, FALSE);
 	} else if(win->type == wintype_TextBuffer) {
 		GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 		g_signal_handler_block(window_buffer, win->insert_text_handler);
-		chars_written = flush_text_buffer(win);
+		chars_written = finish_text_buffer_line_input(win, FALSE);
 	}
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
@@ -446,8 +446,11 @@ on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 				keycode = keycode_Unknown;	
 	}
 
-	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK)), evtype_CharInput, win, keycode, 0);
-	
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	event_throw(glk, evtype_CharInput, win, keycode, 0);
+	g_signal_emit_by_name(glk, "char-input", win->rock, event->keyval);
+
 	/* Only one keypress will be handled */
 	win->input_request_type = INPUT_REQUEST_NONE;
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
@@ -506,7 +509,7 @@ write_to_window_buffer(winid_t win, const gchar *inserted_text)
 /* Internal function: Retrieves the input of a TextBuffer window and stores it in the window buffer.
  * Returns the number of characters written, suitable for inclusion in a line input event. */
 static int
-flush_text_buffer(winid_t win)
+finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 {
 	VALID_WINDOW(win, return 0);
 	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
@@ -528,6 +531,12 @@ flush_text_buffer(winid_t win)
 	gchar* inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
 
 	int chars_written = write_to_window_buffer(win, inserted_text);
+	if(emit_signal)
+	{
+		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+		g_assert(glk);
+		g_signal_emit_by_name(glk, "line-input", win->rock, inserted_text);
+	}
 	g_free(inserted_text);
 
 	return chars_written;
@@ -536,7 +545,7 @@ flush_text_buffer(winid_t win)
 /* Internal function: Retrieves the input of a TextGrid window and stores it in the window buffer.
  * Returns the number of characters written, suitable for inclusion in a line input event. */
 static int
-flush_text_grid(winid_t win)
+finish_text_grid_line_input(winid_t win, gboolean emit_signal)
 {
 	VALID_WINDOW(win, return 0);
 	g_return_val_if_fail(win->type == wintype_TextGrid, 0);
@@ -565,6 +574,12 @@ flush_text_grid(winid_t win)
     g_free(text_to_insert);
     
     int chars_written = write_to_window_buffer(win, text);
+    if(emit_signal)
+    {
+		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+		g_assert(glk);
+		g_signal_emit_by_name(glk, "line-input", win->rock, text);
+    }
 	g_free(text);
 
 	return chars_written;
@@ -587,8 +602,9 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 		/* Make the window uneditable again and retrieve the text that was input */
         gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
 
-        int chars_written = flush_text_buffer(win);
-		event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
+        int chars_written = finish_text_buffer_line_input(win, TRUE);
+        ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+		event_throw(glk, evtype_LineInput, win, chars_written, 0);
 	}
 }
 
@@ -599,7 +615,7 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 {
 	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
 
-	int chars_written = flush_text_grid(win);
+	int chars_written = finish_text_grid_line_input(win, TRUE);
 	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
 }
 

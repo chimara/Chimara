@@ -1,4 +1,7 @@
+
 .deps
 .libs
 Makefile
 Makefile.in
+chimara-marshallers.c
+chimara-marshallers.h

@@ -80,6 +80,10 @@ write_utf8_to_window(winid_t win, gchar *s)
 	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, s, -1, win->window_stream->style, NULL);
 
 	gdk_threads_leave();
+	
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	g_signal_emit_by_name(glk, "text-buffer-output", win->rock, s);
 }
 
 /* Internal function: write a Latin-1 buffer with length to a stream. */

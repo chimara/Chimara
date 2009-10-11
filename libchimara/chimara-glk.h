@@ -10,16 +10,11 @@
 G_BEGIN_DECLS
 
 #define CHIMARA_TYPE_GLK            (chimara_glk_get_type())
-#define CHIMARA_GLK(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                                     CHIMARA_TYPE_GLK, ChimaraGlk))
-#define CHIMARA_GLK_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                     CHIMARA_TYPE_GLK, ChimaraGlkClass))
-#define CHIMARA_IS_GLK(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-                                     CHIMARA_TYPE_GLK))
-#define CHIMARA_IS_GLK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), \
-                                     CHIMARA_TYPE_GLK))
-#define CHIMARA_GLK_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), \
-                                     CHIMARA_TYPE_GLK, ChimaraGlkClass))
+#define CHIMARA_GLK(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), CHIMARA_TYPE_GLK, ChimaraGlk))
+#define CHIMARA_GLK_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), CHIMARA_TYPE_GLK, ChimaraGlkClass))
+#define CHIMARA_IS_GLK(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), CHIMARA_TYPE_GLK))
+#define CHIMARA_IS_GLK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), CHIMARA_TYPE_GLK))
+#define CHIMARA_GLK_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), CHIMARA_TYPE_GLK, ChimaraGlkClass))
 
 /**
  * ChimaraGlk:
@@ -37,6 +32,9 @@ typedef struct _ChimaraGlkClass {
 	/* Signals */
 	void(* stopped) (ChimaraGlk *self);
 	void(* started) (ChimaraGlk *self);
+	void(* char_input) (ChimaraGlk *self, guint32 window_rock, guint keysym);
+	void(* line_input) (ChimaraGlk *self, guint32 window_rock, gchar *text);
+	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, gchar *text);
 } ChimaraGlkClass;
 
 GType chimara_glk_get_type(void) G_GNUC_CONST;

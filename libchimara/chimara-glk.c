@@ -8,6 +8,7 @@
 #include <pango/pango.h>
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
+#include "chimara-marshallers.h"
 #include "glk.h"
 #include "abort.h"
 #include "window.h"
@@ -58,6 +59,9 @@ enum {
 enum {
 	STOPPED,
 	STARTED,
+	CHAR_INPUT,
+	LINE_INPUT,
+	TEXT_BUFFER_OUTPUT,
 
 	LAST_SIGNAL
 };
@@ -545,6 +549,24 @@ chimara_glk_started(ChimaraGlk *self)
 	/* TODO: Add default signal handler implementation here */
 }
 
+static void
+chimara_glk_char_input(ChimaraGlk *self, guint window_rock, guint keysym)
+{
+	/* TODO: Add default signal handler */
+}
+
+static void
+chimara_glk_line_input(ChimaraGlk *self, guint window_rock, gchar *text)
+{
+	/* TODO: Add default signal handler */
+}
+
+static void
+chimara_glk_text_buffer_output(ChimaraGlk *self, guint window_rock, gchar *text)
+{
+	/* TODO: Add default signal handler */
+}
+
 /* G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
 #ifndef G_PARAM_STATIC_STRINGS
 #define G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
@@ -569,6 +591,9 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     /* Signals */
     klass->stopped = chimara_glk_stopped;
     klass->started = chimara_glk_started;
+    klass->char_input = chimara_glk_char_input;
+    klass->line_input = chimara_glk_line_input;
+    klass->text_buffer_output = chimara_glk_text_buffer_output;
     /**
      * ChimaraGlk::stopped:
      * @glk: The widget that received the signal
@@ -591,6 +616,24 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		G_OBJECT_CLASS_TYPE (klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, started), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+
+	chimara_glk_signals[CHAR_INPUT] = g_signal_new("char-input",
+		G_OBJECT_CLASS_TYPE(klass), 0,
+		G_STRUCT_OFFSET(ChimaraGlkClass, char_input), NULL, NULL,
+		chimara_marshal_VOID__UINT_UINT,
+		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
+
+	chimara_glk_signals[LINE_INPUT] = g_signal_new("line-input",
+		G_OBJECT_CLASS_TYPE(klass), 0,
+		G_STRUCT_OFFSET(ChimaraGlkClass, line_input), NULL, NULL,
+		chimara_marshal_VOID__UINT_STRING,
+		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
+
+	chimara_glk_signals[TEXT_BUFFER_OUTPUT] = g_signal_new("text-buffer-output",
+		G_OBJECT_CLASS_TYPE(klass), 0,
+		G_STRUCT_OFFSET(ChimaraGlkClass, text_buffer_output), NULL, NULL,
+		chimara_marshal_VOID__UINT_STRING,
+		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
 
     /* Properties */
     /**
