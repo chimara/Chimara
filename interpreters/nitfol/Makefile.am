@@ -1,5 +1,3 @@
-PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk"
-
 GRAPHICS = no_graph.c no_graph.h
 # GRAPHICS = graphics.c graphics.h
 BLORB = blorb.c 
@@ -25,7 +23,7 @@ nitfol_la_SOURCES = automap.c automap.h binary.h copying.h debug.c debug.h \
 nodist_nitfol_la_SOURCES = copying.c dbg_help.h startunix.c
 nitfol_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara \
 	-DSMART_TOKENISER -DUSE_INLINE
-nitfol_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+nitfol_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 info_TEXINFOS = nitfol.texi
 nitfol_TEXINFOS = dbg_help.texi options.texi

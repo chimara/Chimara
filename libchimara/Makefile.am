@@ -37,15 +37,17 @@ libchimara_la_SOURCES = \
 libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
+	-DPLUGINDIR=\""$(pkglibdir)"\" \
 	-I$(top_srcdir)
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
 libchimara_la_LDFLAGS = -version-info $(LT_VERSION_INFO) \
 	-no-undefined \
-	-export-symbols-regex "^(glk|chimara_glk|glkunix|giblorb|gidispatch|garglk)_"
+	-export-symbols-regex "^(glk|chimara|glkunix|giblorb|gidispatch|garglk)_"
 libchimara_includedir = $(includedir)/chimara/libchimara
 libchimara_include_HEADERS = \
 	chimara-glk.h \
+	chimara-if.h \
 	glk.h \
 	glkstart.h \
 	gi_blorb.h \

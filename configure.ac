@@ -26,8 +26,8 @@ AC_SUBST(LT_VERSION_INFO)
 
 ### DECLARE COMPILERS #########################################################
 
-AC_PROG_CC                   # C compiler
 AC_USE_SYSTEM_EXTENSIONS     # Define _GNU_SOURCE if using GCC
+AC_PROG_CC                   # C compiler
 AM_PROG_CC_C_O               # Automake requires this for per-target CFLAGS
 AC_C_INLINE                  # Define inline keyword 
 AC_PROG_YACC                 # Building nitfol requires yacc
@@ -86,6 +86,12 @@ PKG_CHECK_MODULES([TEST], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION 
 	gmodule-2.0
 ])
+
+# Plugin flags; include '-module' in each Makefile.am, because AC_SUBSTed
+# variables are black boxes to Automake, so it has to know about it being a
+# module in the makefile itself.
+PLUGIN_LIBTOOL_FLAGS='-avoid-version -shared -export-symbols-regex "^glk"'
+AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 
 ### OUTPUT ####################################################################
 

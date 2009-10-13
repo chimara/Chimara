@@ -43,6 +43,7 @@
 #include "callbacks.h"
 #include "error.h"
 #include <libchimara/chimara-glk.h>
+#include <libchimara/chimara-if.h>
 
 /* Global pointers to widgets */
 GtkBuilder *builder = NULL;
@@ -63,27 +64,9 @@ on_stopped(ChimaraGlk *glk)
 }
 
 static void
-on_waiting(ChimaraGlk *glk)
+on_command(ChimaraGlk *glk, gchar *input, gchar *response)
 {
-	g_printerr("Waiting!\n");
-}
-
-static void
-on_char_input(ChimaraGlk *glk, guint32 window_rock, guint keysym)
-{
-	g_printerr("Character input in window %d: key %d\n", window_rock, keysym);
-}
-
-static void
-on_line_input(ChimaraGlk *glk, guint32 window_rock, gchar *text)
-{
-	g_printerr("Line input in window %d: '%s'\n", window_rock, text);
-}
-
-static void
-on_text_buffer_output(ChimaraGlk *glk, guint32 window_rock, gchar *text)
-{
-	g_printerr("Text buffer output in window %d: '%s'\n", window_rock, text);
+	g_printerr("Command!\n");
 }
 
 static GObject *
@@ -131,16 +114,13 @@ create_window(void)
 		return;
 	}
 	
-	glk = chimara_glk_new();
+	glk = chimara_if_new();
 	g_object_set(glk, "border-width", 6, "spacing", 6, NULL);
 	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
 	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
 	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);
 	g_signal_connect(glk, "stopped", G_CALLBACK(on_stopped), NULL);
-	g_signal_connect(glk, "waiting", G_CALLBACK(on_waiting), NULL);
-	g_signal_connect(glk, "char-input", G_CALLBACK(on_char_input), NULL);
-	g_signal_connect(glk, "line-input", G_CALLBACK(on_line_input), NULL);
-	g_signal_connect(glk, "text-buffer-output", G_CALLBACK(on_text_buffer_output), NULL);
+	g_signal_connect(glk, "command", G_CALLBACK(on_command), NULL);
 	
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)
@@ -182,7 +162,12 @@ main(int argc, char *argv[])
 	g_object_unref( G_OBJECT(builder) );
 	g_object_unref( G_OBJECT(uimanager) );
 
-    if( !chimara_glk_run(CHIMARA_GLK(glk), "../interpreters/frotz/.libs/frotz.so", argc, argv, &error) ) {
+	if(argc < 2) {
+		error_dialog(GTK_WINDOW(window), NULL, "Must provide a game file");
+		return 1;
+	}
+	
+    if( !chimara_if_run_game(CHIMARA_IF(glk), argv[1], &error) ) {
    		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
 		return 1;
 	}

@@ -17,7 +17,9 @@ typedef enum _ChimaraIFFormat {
 	CHIMARA_IF_FORMAT_Z5,
 	CHIMARA_IF_FORMAT_Z6,
 	CHIMARA_IF_FORMAT_Z8,
+	CHIMARA_IF_FORMAT_Z_BLORB,
 	CHIMARA_IF_FORMAT_GLULX,
+	CHIMARA_IF_FORMAT_GLULX_BLORB,
 	CHIMARA_IF_NUM_FORMATS
 } ChimaraIFFormat;
 
@@ -43,6 +45,7 @@ GType chimara_if_get_type(void) G_GNUC_CONST;
 GtkWidget *chimara_if_new(void);
 void chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, ChimaraIFInterpreter interpreter);
 ChimaraIFInterpreter chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format);
+gboolean chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error);
 
 G_END_DECLS
 

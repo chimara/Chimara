@@ -87,14 +87,14 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->default_styles = g_hash_table_new(g_str_hash, g_str_equal);
     priv->program = NULL;
     priv->thread = NULL;
-    priv->event_queue = NULL;
-    priv->event_lock = NULL;
-    priv->event_queue_not_empty = NULL;
-    priv->event_queue_not_full = NULL;
-    priv->abort_lock = NULL;
+    priv->event_queue = g_queue_new();
+    priv->event_lock = g_mutex_new();
+    priv->event_queue_not_empty = g_cond_new();
+    priv->event_queue_not_full = g_cond_new();
+    priv->abort_lock = g_mutex_new();
     priv->abort_signalled = FALSE;
-	priv->arrange_lock = NULL;
-	priv->rearranged = NULL;
+	priv->arrange_lock = g_mutex_new();
+	priv->rearranged = g_cond_new();
 	priv->needs_rearrange = FALSE;
 	priv->ignore_next_arrange_event = FALSE;
     priv->interrupt_handler = NULL;
@@ -547,31 +547,31 @@ chimara_glk_stopped(ChimaraGlk *self)
 static void
 chimara_glk_started(ChimaraGlk *self)
 {
-	/* TODO: Add default signal handler implementation here */
+	/* Default signal handler */
 }
 
 static void
 chimara_glk_waiting(ChimaraGlk *self)
 {
-	/* TODO: Add default signal handler */
+	/* Default signal handler */
 }
 
 static void
 chimara_glk_char_input(ChimaraGlk *self, guint window_rock, guint keysym)
 {
-	/* TODO: Add default signal handler */
+	/* Default signal handler */
 }
 
 static void
 chimara_glk_line_input(ChimaraGlk *self, guint window_rock, gchar *text)
 {
-	/* TODO: Add default signal handler */
+	/* Default signal handler */
 }
 
 static void
 chimara_glk_text_buffer_output(ChimaraGlk *self, guint window_rock, gchar *text)
 {
-	/* TODO: Add default signal handler */
+	/* Default signal handler */
 }
 
 /* G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
@@ -738,18 +738,7 @@ chimara_glk_new(void)
 	/* This is a library entry point; initialize the library */
 	chimara_init();
 
-    ChimaraGlk *self = CHIMARA_GLK(g_object_new(CHIMARA_TYPE_GLK, NULL));
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
-    
-    priv->event_queue = g_queue_new();
-    priv->event_lock = g_mutex_new();
-    priv->event_queue_not_empty = g_cond_new();
-    priv->event_queue_not_full = g_cond_new();
-    priv->abort_lock = g_mutex_new();
-	priv->arrange_lock = g_mutex_new();
-	priv->rearranged = g_cond_new();
-
-    return GTK_WIDGET(self);
+    return GTK_WIDGET(g_object_new(CHIMARA_TYPE_GLK, NULL));
 }
 
 /**
@@ -1048,7 +1037,7 @@ glk_enter(struct StartupData *startup)
  * Return value: %TRUE if the Glk program was started successfully.
  */
 gboolean
-chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError **error)
+chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GError **error)
 {
     g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
     g_return_val_if_fail(plugin, FALSE);
@@ -1063,11 +1052,13 @@ chimara_glk_run(ChimaraGlk *glk, gchar *plugin, int argc, char *argv[], GError *
     if(!priv->program)
     {
         g_warning( "Error opening module: %s", g_module_error() );
+        /* TODO: set error */
         return FALSE;
     }
     if( !g_module_symbol(priv->program, "glk_main", (gpointer *) &startup->glk_main) )
     {
         g_warning( "Error finding glk_main(): %s", g_module_error() );
+        /* TODO: set error */
         return FALSE;
     }
 

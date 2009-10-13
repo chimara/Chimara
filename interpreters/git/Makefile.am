@@ -1,5 +1,3 @@
-PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk"
-
 # Automatically generate version.h
 MAJOR = 1
 MINOR = 2
@@ -18,7 +16,7 @@ git_la_SOURCES = version.h git.h config.h compiler.h memory.h opcodes.h \
     accel.c
 git_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
 git_la_CFLAGS = -DCHIMARA_EXTENSIONS -DUSE_INLINE $(AM_CFLAGS)
-git_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+git_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 gitdocdir = $(datadir)/doc/$(PACKAGE)/git
 dist_gitdoc_DATA = README.txt

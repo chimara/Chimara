@@ -1,3 +1,5 @@
+#include <errno.h>
+#include <stdlib.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <config.h>
@@ -12,16 +14,23 @@ static gboolean supported_formats[CHIMARA_IF_NUM_FORMATS][CHIMARA_IF_NUM_INTERPR
 	{ TRUE,  TRUE,  FALSE, FALSE }, /* Z5 */
 	{ TRUE,  TRUE,  FALSE, FALSE }, /* Z6 */
 	{ TRUE,  TRUE,  FALSE, FALSE }, /* Z8 */
-	{ FALSE, FALSE, TRUE,  TRUE  }  /* Glulx */
+	{ TRUE,  TRUE,  FALSE, FALSE }, /* Zblorb */
+	{ FALSE, FALSE, TRUE,  TRUE  }, /* Glulx */
+	{ FALSE, FALSE, TRUE,  TRUE  }  /* Gblorb */
 };
 static gchar *format_names[CHIMARA_IF_NUM_FORMATS] = {
 	N_("Z-code version 5"),
 	N_("Z-code version 6"),
 	N_("Z-code version 8"),
-	N_("Glulx")
+	N_("Blorbed Z-code"),
+	N_("Glulx"),
+	N_("Blorbed Glulx")
 };
 static gchar *interpreter_names[CHIMARA_IF_NUM_INTERPRETERS] = {
 	N_("Frotz"), N_("Nitfol"), N_("Glulxe"), N_("Git")
+};
+static gchar *plugin_names[CHIMARA_IF_NUM_INTERPRETERS] = {
+	"frotz", "nitfol", "glulxe", "git"
 };
 
 typedef struct _ChimaraIFPrivate {
@@ -52,7 +61,9 @@ chimara_if_init(ChimaraIF *self)
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z5] = CHIMARA_IF_INTERPRETER_FROTZ;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z6] = CHIMARA_IF_INTERPRETER_FROTZ;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z8] = CHIMARA_IF_INTERPRETER_FROTZ;
+	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z_BLORB] = CHIMARA_IF_INTERPRETER_FROTZ;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_GLULX] = CHIMARA_IF_INTERPRETER_GLULXE;
+	priv->preferred_interpreter[CHIMARA_IF_FORMAT_GLULX_BLORB] = CHIMARA_IF_INTERPRETER_GLULXE;
 }
 
 static void
@@ -85,7 +96,7 @@ chimara_if_finalize(GObject *object)
 static void
 chimara_if_command(ChimaraIF *self, gchar *input, gchar *response)
 {
-	/* TODO: Add default signal handler */
+	/* Default signal handler */
 }
 
 static void
@@ -134,7 +145,7 @@ chimara_if_new(void)
 void
 chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, ChimaraIFInterpreter interpreter)
 {
-	g_return_if_fail(self);
+	g_return_if_fail(self && CHIMARA_IS_IF(self));
 	g_return_if_fail(format < CHIMARA_IF_NUM_FORMATS);
 	g_return_if_fail(format < CHIMARA_IF_NUM_INTERPRETERS);
 
@@ -149,8 +160,115 @@ chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, Ch
 ChimaraIFInterpreter
 chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
 {
-	g_return_val_if_fail(self, -1);
+	g_return_val_if_fail(self && CHIMARA_IS_IF(self), -1);
 	g_return_val_if_fail(format < CHIMARA_IF_NUM_FORMATS, -1);
 	CHIMARA_IF_USE_PRIVATE(self, priv);
 	return priv->preferred_interpreter[format];
+}
+
+/* Opens a '.la' file and finds the name of the plugin library. g_free() the
+ * string when done. */
+static gchar *
+find_dlname(const gchar *pluginfile, GError **error)
+{
+	/* Find the name of the shared library */
+	gchar *dlname;
+	FILE *plugin = fopen(pluginfile, "r");
+	if(!plugin)
+	{
+		g_set_error(error, G_FILE_ERROR, errno, "Error opening '%s': %s", pluginfile, g_strerror(errno));
+		return NULL;
+	}
+	gchar *line = NULL;
+	size_t buflen;
+	ssize_t length;
+	while((length = getline(&line, &buflen, plugin)) != -1)
+	{	
+		if(g_str_has_prefix(line, "dlname='"))
+		{
+			dlname = g_strndup(line + 8, length - 10);
+			break;
+		}
+	}
+	free(line);
+	if(!dlname)
+	{
+		g_set_error(error, G_FILE_ERROR, errno, "Error reading '%s': %s", pluginfile, g_strerror(errno));
+		return NULL;
+	}
+	if(fclose(plugin))
+	{
+		g_set_error(error, G_FILE_ERROR, errno, "Error closing '%s': %s", pluginfile, g_strerror(errno));
+		return NULL;
+	}
+	return dlname;
+}
+
+gboolean 
+chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
+{
+	g_return_val_if_fail(self && CHIMARA_IS_IF(self), FALSE);
+	g_return_val_if_fail(gamefile, FALSE);
+	
+	CHIMARA_IF_USE_PRIVATE(self, priv);
+
+	/* Find out what format the game is */
+	/* TODO: Look inside the file instead of just looking at the extension */
+	ChimaraIFFormat format = CHIMARA_IF_FORMAT_Z5;
+	if(g_str_has_suffix(gamefile, ".z5"))
+		format = CHIMARA_IF_FORMAT_Z5;
+	else if(g_str_has_suffix(gamefile, ".z6"))
+		format = CHIMARA_IF_FORMAT_Z6;
+	else if(g_str_has_suffix(gamefile, ".z8"))
+		format = CHIMARA_IF_FORMAT_Z8;
+	else if(g_str_has_suffix(gamefile, ".zlb") || g_str_has_suffix(gamefile, ".zblorb"))
+		format = CHIMARA_IF_FORMAT_Z_BLORB;
+	else if(g_str_has_suffix(gamefile, ".ulx"))
+		format = CHIMARA_IF_FORMAT_GLULX;
+	else if(g_str_has_suffix(gamefile, ".blb") || g_str_has_suffix(gamefile, ".blorb") || g_str_has_suffix(gamefile, ".glb") || g_str_has_suffix(gamefile, ".gblorb"))
+		format = CHIMARA_IF_FORMAT_GLULX_BLORB;
+	
+	/* Now decide what interpreter to use */
+	ChimaraIFInterpreter interpreter = priv->preferred_interpreter[format];
+	gchar *libtoolfile = g_strconcat(plugin_names[interpreter], ".la", NULL);
+#ifndef RELEASE
+	/* If there is a plugin in the source tree, use that */
+	gboolean use_installed = FALSE;
+	gchar *libtoolpath = g_build_filename("..", "interpreters", plugin_names[interpreter], libtoolfile, NULL);
+	if( !g_file_test(libtoolpath, G_FILE_TEST_EXISTS) ) 
+	{
+		g_free(libtoolpath);
+#endif
+		gchar *libtoolpath = g_build_filename(PLUGINDIR, libtoolfile, NULL);
+		if( !g_file_test(libtoolpath, G_FILE_TEST_EXISTS) ) 
+		{
+			g_free(libtoolpath);
+			g_free(libtoolfile);
+			g_warning("Cannot open %s plugin file", interpreter_names[interpreter]);
+			/* TODO: set error */
+			return FALSE;
+		}
+#ifndef RELEASE
+		use_installed = TRUE;
+	}
+#endif
+	g_free(libtoolfile);
+	
+	gchar *dlname = find_dlname(libtoolpath, error);
+	g_free(libtoolpath);
+	if(!dlname)
+		return FALSE;
+	gchar *pluginpath;
+#ifndef RELEASE
+	if(use_installed)
+#endif
+		pluginpath = g_build_filename(PLUGINDIR, dlname, NULL);
+#ifndef RELEASE
+	else
+		pluginpath = g_build_filename("..", "interpreters", plugin_names[interpreter], LT_OBJDIR, dlname, NULL);
+#endif
+	char *argv[3] = { pluginpath, gamefile, NULL };
+	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, 2, argv, error);
+	g_free(dlname);
+	return retval;
 }
