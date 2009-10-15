@@ -4,8 +4,8 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="chimara">
     <property name="title" translatable="yes">Chimara</property>
-    <property name="default_width">500</property>
-    <property name="default_height">600</property>
+    <property name="default_width">800</property>
+    <property name="default_height">800</property>
     <signal name="delete_event" handler="on_window_delete_event"/>
     <child>
       <object class="GtkVBox" id="vbox">
