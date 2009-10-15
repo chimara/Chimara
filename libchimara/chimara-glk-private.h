@@ -5,6 +5,7 @@
 #include <gmodule.h>
 #include <pango/pango.h>
 #include "glk.h"
+#include "style.h"
 #include "gi_blorb.h"
 #include "gi_dispa.h"
 #include "chimara-glk.h"
@@ -30,8 +31,9 @@ struct _ChimaraGlkPrivate {
 	guint spacing;
 	/* The CSS file to read style defaults from */
 	gchar *css_file;
-	/* Hashtable containing the default styles */
-	GHashTable *default_styles;
+	/* Hashtable containing the default and current style */
+	struct StyleSet *default_styles;
+	struct StyleSet *current_styles;
 
 	/* *** Threading data *** */
     /* Glk program loaded in widget */

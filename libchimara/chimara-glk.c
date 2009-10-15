@@ -84,7 +84,8 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->default_font_desc = pango_font_description_from_string("Sans");
 	priv->monospace_font_desc = pango_font_description_from_string("Monospace");
 	priv->css_file = "style.css";
-	priv->default_styles = g_hash_table_new(g_str_hash, g_str_equal);
+	priv->default_styles = g_new0(StyleSet,1);
+	priv->current_styles = g_new0(StyleSet,1);
     priv->program = NULL;
     priv->thread = NULL;
     priv->event_queue = g_queue_new();

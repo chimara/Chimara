@@ -458,6 +458,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		case wintype_TextGrid:
 		{
 		    GtkWidget *textview = gtk_text_view_new();
+			GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 
 		    gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_NONE );
 		    gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
@@ -479,6 +480,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* Connect signal handlers */
 			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
 			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
+
+			/* Create the styles available to the window stream */
+			style_init_textgrid(textbuffer);
 		}
 		    break;
 		
@@ -522,7 +526,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			(for line input) */
 			gtk_text_buffer_create_tag(textbuffer, "uneditable", "editable", FALSE, "editable-set", TRUE, NULL);
 
-			/* Create the default styles available to the window stream */
+			/* Create the styles available to the window stream */
 			style_init_textbuffer(textbuffer);
 
 			/* Mark the position where the user will input text */

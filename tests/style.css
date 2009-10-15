@@ -20,44 +20,41 @@
  * background-color (#hex-value)
  * text-align (left/right/center)
  */
-
-
-normal {
-	font-family: 'times';
+buffer.normal {
 	font-size: 12;
 }
 
-header {
+buffer.header {
 	font-size: 18;
 	font-weight: bold;
 	text-align: center;
 }
 
-subheader {
+buffer.subheader {
 	font-size: 14;
 	font-weight: bold;
 }
 
-alert {
+buffer.alert {
 	color: #aa0000;
 	font-weight: bold;
 }
 
-note {
+buffer.note {
 	color: #aaaa00;
 	font-weight: bold;
 }
 
-block-quote {
+buffer.block-quote {
 	text-align: center;
 	font-style: italic;
 }
 
-input {
+buffer.input {
 }
 
-user1 {
+buffer.user1 {
 }
 
-user2 {
+buffer.user2 {
 }

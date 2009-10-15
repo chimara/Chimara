@@ -43,7 +43,7 @@ write_utf8_to_grid(winid_t win, gchar *s)
         GtkTextIter end = start;
         gtk_text_iter_forward_to_line_end(&end);
         gtk_text_buffer_delete(buffer, &start, &end);
-        gtk_text_buffer_insert(buffer, &start, s + (length - chars_left), available_space);
+        gtk_text_buffer_insert_with_tags_by_name(buffer, &start, s + (length - chars_left), available_space, win->window_stream->style, NULL);
         chars_left -= available_space;
         gtk_text_iter_forward_line(&start);
         available_space = win->width;
@@ -53,7 +53,7 @@ write_utf8_to_grid(winid_t win, gchar *s)
         GtkTextIter end = start;
         gtk_text_iter_forward_chars(&end, chars_left);
         gtk_text_buffer_delete(buffer, &start, &end);
-        gtk_text_buffer_insert(buffer, &start, s + (length - chars_left), -1);
+        gtk_text_buffer_insert_with_tags_by_name(buffer, &start, s + (length - chars_left), -1, win->window_stream->style, NULL);
     }
     
     gtk_text_buffer_move_mark(buffer, cursor, &start);
