@@ -179,14 +179,12 @@ find_dlname(const gchar *pluginfile, GError **error)
 		g_set_error(error, G_FILE_ERROR, errno, "Error opening '%s': %s", pluginfile, g_strerror(errno));
 		return NULL;
 	}
-	gchar *line = NULL;
-	size_t buflen;
-	ssize_t length;
-	while((length = getline(&line, &buflen, plugin)) != -1)
+	gchar line[256];
+	while( fgets(line, 256, plugin) != NULL)
 	{	
 		if(g_str_has_prefix(line, "dlname='"))
 		{
-			dlname = g_strndup(line + 8, length - 10);
+			dlname = g_strndup(line + 8, strlen(line) - 10);
 			break;
 		}
 	}
