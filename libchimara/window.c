@@ -35,7 +35,7 @@ window_new_common(glui32 rock)
 }
 
 static void
-window_close_common(winid_t win)
+window_close_common(winid_t win, gboolean destroy_node)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
@@ -45,7 +45,8 @@ window_close_common(winid_t win)
         win->disprock.ptr = NULL;
     }
 
-	g_node_destroy(win->window_node);
+	if(destroy_node)
+		g_node_destroy(win->window_node);
 	win->magic = MAGIC_FREE;
 	g_free(win);
 }
@@ -660,7 +661,7 @@ free_winids_below(winid_t win)
 		free_winids_below(win->window_node->children->data);
 		free_winids_below(win->window_node->children->next->data);
 	}
-	window_close_common(win);
+	window_close_common(win, FALSE);
 }
 
 /**
@@ -774,14 +775,14 @@ glk_window_close(winid_t win, stream_result_t *result)
 				g_node_append(new_parent_node, sibling_node);
 		}
 
-		window_close_common( (winid_t) pair_node->data );
+		window_close_common( (winid_t) pair_node->data, TRUE);
 	} 
 	else /* it was the root window */
 	{
 		glk_data->root_window = NULL;
 	}
 
-	window_close_common(win);
+	window_close_common(win, FALSE);
 
 	/* Schedule a redraw */
 	g_mutex_lock(glk_data->arrange_lock);

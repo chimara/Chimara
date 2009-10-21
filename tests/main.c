@@ -66,7 +66,7 @@ on_stopped(ChimaraGlk *glk)
 static void
 on_command(ChimaraGlk *glk, gchar *input, gchar *response)
 {
-	g_printerr("Command!\n");
+	g_print("Command: %s\nResponse: %s\n", input, response);
 }
 
 static GObject *
@@ -115,7 +115,11 @@ create_window(void)
 	}
 	
 	glk = chimara_if_new();
-	g_object_set(glk, "border-width", 6, "spacing", 6, NULL);
+	g_object_set(glk, 
+		"border-width", 6, 
+		"spacing", 6,
+		"ignore-errors", TRUE,
+		NULL);
 	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
 	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
 	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);

@@ -86,6 +86,7 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->css_file = "style.css";
 	priv->default_styles = g_new0(StyleSet,1);
 	priv->current_styles = g_new0(StyleSet,1);
+	priv->running = FALSE;
     priv->program = NULL;
     priv->thread = NULL;
     priv->event_queue = g_queue_new();
@@ -538,7 +539,8 @@ chimara_glk_forall(GtkContainer *container, gboolean include_internals, GtkCallb
 static void
 chimara_glk_stopped(ChimaraGlk *self)
 {
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
+    CHIMARA_GLK_USE_PRIVATE(self, priv);
+    priv->running = FALSE;
 
     /* Free the plugin */
 	if( priv->program && !g_module_close(priv->program) )
@@ -548,7 +550,8 @@ chimara_glk_stopped(ChimaraGlk *self)
 static void
 chimara_glk_started(ChimaraGlk *self)
 {
-	/* Default signal handler */
+	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	priv->running = TRUE;
 }
 
 static void
@@ -725,6 +728,21 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 }
 
 /* PUBLIC FUNCTIONS */
+
+/**
+ * chimara_error_quark:
+ *
+ * The error domain for errors from Chimara widgets.
+ *
+ * Returns: The string <quote>chimara-error-quark</quote> as a <link 
+ * linkend="GQuark">GQuark</link>.
+ */
+GQuark
+chimara_error_quark(void)
+{
+	chimara_init(); /* This is a library entry point */
+	return g_quark_from_static_string("chimara-error-quark");
+}
 
 /**
  * chimara_glk_new:
@@ -1052,14 +1070,12 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
     
     if(!priv->program)
     {
-        g_warning( "Error opening module: %s", g_module_error() );
-        /* TODO: set error */
+    	g_set_error(error, CHIMARA_ERROR, CHIMARA_LOAD_MODULE_ERROR, _("Error opening module: %s"), g_module_error());
         return FALSE;
     }
     if( !g_module_symbol(priv->program, "glk_main", (gpointer *) &startup->glk_main) )
     {
-        g_warning( "Error finding glk_main(): %s", g_module_error() );
-        /* TODO: set error */
+    	g_set_error(error, CHIMARA_ERROR, CHIMARA_NO_GLK_MAIN, _("Error finding glk_main(): %s"), g_module_error());
         return FALSE;
     }
 
@@ -1098,8 +1114,11 @@ void
 chimara_glk_stop(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    /* TODO: check if glk is actually running a program */
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    CHIMARA_GLK_USE_PRIVATE(glk, priv);
+    /* Don't do anything if not running a program */
+    if(!priv->running)
+    	return;
+    
 	if(priv->abort_lock) {
 		g_mutex_lock(priv->abort_lock);
 		priv->abort_signalled = TRUE;
@@ -1120,7 +1139,17 @@ void
 chimara_glk_wait(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    CHIMARA_GLK_USE_PRIVATE(glk, priv);
+    /* Don't do anything if not running a program */
+    if(!priv->running)
+    	return;
     g_thread_join(priv->thread);
+}
+
+gboolean
+chimara_glk_get_running(ChimaraGlk *glk)
+{
+	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	return priv->running;
 }

@@ -38,6 +38,20 @@ typedef struct _ChimaraGlkClass {
 	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, gchar *text);
 } ChimaraGlkClass;
 
+typedef enum _ChimaraError {
+	CHIMARA_LOAD_MODULE_ERROR,
+	CHIMARA_NO_GLK_MAIN,
+	CHIMARA_PLUGIN_NOT_FOUND
+} ChimaraError;
+
+/**
+ * CHIMARA_ERROR:
+ *
+ * The domain of errors raised by Chimara widgets.
+ */
+#define CHIMARA_ERROR chimara_error_quark()
+
+GQuark chimara_error_quark(void);
 GType chimara_glk_get_type(void) G_GNUC_CONST;
 GtkWidget *chimara_glk_new(void);
 void chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive);
@@ -55,6 +69,7 @@ guint chimara_glk_get_spacing(ChimaraGlk *glk);
 gboolean chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GError **error);
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);
+gboolean chimara_glk_get_running(ChimaraGlk *glk);
 
 G_END_DECLS
 

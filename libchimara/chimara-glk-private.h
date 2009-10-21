@@ -36,6 +36,8 @@ struct _ChimaraGlkPrivate {
 	struct StyleSet *current_styles;
 
 	/* *** Threading data *** */
+	/* Whether program is running */
+	gboolean running;
     /* Glk program loaded in widget */
     GModule *program;
     /* Thread in which Glk program is run */
@@ -84,8 +86,8 @@ struct _ChimaraGlkPrivate {
 	gchar *current_dir;
 };
 
-#define CHIMARA_GLK_PRIVATE(obj) \
-	(G_TYPE_INSTANCE_GET_PRIVATE((obj), CHIMARA_TYPE_GLK, ChimaraGlkPrivate))
+#define CHIMARA_GLK_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), CHIMARA_TYPE_GLK, ChimaraGlkPrivate))
+#define CHIMARA_GLK_USE_PRIVATE(o, n) ChimaraGlkPrivate *n = CHIMARA_GLK_PRIVATE(o)
 	
 G_END_DECLS
 
