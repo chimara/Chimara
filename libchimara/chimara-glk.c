@@ -25,7 +25,7 @@
  * @stability: Unstable
  * @include: chimara/chimara-glk.h
  * 
- * The ChimaraGlk widget opens and runs a Glk program. The program must be
+ * The #ChimaraGlk widget opens and runs a Glk program. The program must be
  * compiled as a plugin module, with a function <function>glk_main()</function>
  * that the Glk library can hook into.
  *
@@ -179,14 +179,14 @@ chimara_glk_finalize(GObject *object)
 	g_mutex_unlock(priv->event_lock);
 	g_mutex_free(priv->event_lock);
 	
-	/* Free the abort signalling mechanism */
+	/* Free the abort signaling mechanism */
 	g_mutex_lock(priv->abort_lock);
 	/* Make sure no other thread is busy with this */
 	g_mutex_unlock(priv->abort_lock);
 	g_mutex_free(priv->abort_lock);
 	priv->abort_lock = NULL;
 
-	/* Free the window arrangement signalling */
+	/* Free the window arrangement signaling */
 	g_mutex_lock(priv->arrange_lock);
 	g_cond_free(priv->rearranged);
 	g_mutex_unlock(priv->arrange_lock);
@@ -610,8 +610,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      * ChimaraGlk::stopped:
      * @glk: The widget that received the signal
      *
-     * The ::stopped signal is emitted when the a Glk program finishes
-     * executing in the widget, whether it ended normally, or was interrupted.
+     * Emitted when the a Glk program finishes executing in the widget, whether
+     * it ended normally, or was interrupted.
      */ 
     chimara_glk_signals[STOPPED] = g_signal_new("stopped", 
         G_OBJECT_CLASS_TYPE(klass), 0, 
@@ -622,31 +622,60 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * ChimaraGlk::started:
 	 * @glk: The widget that received the signal
 	 *
-	 * The ::started signal is emitted when a Glk program starts executing in
-	 * the widget.
+	 * Emitted when a Glk program starts executing in the widget.
 	 */
 	chimara_glk_signals[STARTED] = g_signal_new ("started",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, started), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-	
+	/**
+	 * ChimaraGlk::waiting:
+	 * @glk: The widget that received the signal
+	 * 
+	 * Emitted when glk_select() is called by the Glk program and the event
+	 * queue is empty, which means that the widget is waiting for input.
+	 */
 	chimara_glk_signals[WAITING] = g_signal_new("waiting",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, waiting), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-
+	/**
+	 * ChimaraGlk::char-input:
+	 * @glk: The widget that received the signal
+	 * @window_rock: The rock value of the window that received character input
+	 * (see <link linkend="chimara-Rocks">Rocks</link>)
+	 * @keysym: The key that was typed, in the form of a key symbol from 
+	 * <filename class="headerfile">gdk/gdkkeysyms.h</filename>
+	 * 
+	 * Emitted when a Glk window receives character input.
+	 */
 	chimara_glk_signals[CHAR_INPUT] = g_signal_new("char-input",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, char_input), NULL, NULL,
 		chimara_marshal_VOID__UINT_UINT,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
-
+	/**
+	 * ChimaraGlk::line-input:
+	 * @glk: The widget that received the signal
+	 * @window_rock: The rock value of the window that received line input (see
+	 * <link linkend="chimara-Rocks">Rocks</link>)
+	 * @text: The text that was typed
+	 * 
+	 * Emitted when a Glk window receives line input.
+	 */
 	chimara_glk_signals[LINE_INPUT] = g_signal_new("line-input",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, line_input), NULL, NULL,
 		chimara_marshal_VOID__UINT_STRING,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
-
+	/**
+	 * ChimaraGlk::text-buffer-output:
+	 * @glk: The widget that received the signal
+	 * @window_rock: The rock value of the window that was printed to (see <link
+	 * linkend="chimara-Rocks">Rocks</link>)
+	 * 
+	 * Emitted when text is printed to a text buffer window.
+	 */
 	chimara_glk_signals[TEXT_BUFFER_OUTPUT] = g_signal_new("text-buffer-output",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, text_buffer_output), NULL, NULL,
@@ -1146,6 +1175,15 @@ chimara_glk_wait(ChimaraGlk *glk)
     g_thread_join(priv->thread);
 }
 
+/**
+ * chimara_glk_get_running:
+ * @glk: a #ChimaraGlk widget
+ * 
+ * Use this function to tell whether a program is currently running in the
+ * widget.
+ * 
+ * Returns: %TRUE if @glk is executing a Glk program, %FALSE otherwise.
+ */
 gboolean
 chimara_glk_get_running(ChimaraGlk *glk)
 {

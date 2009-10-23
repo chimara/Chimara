@@ -2,6 +2,9 @@
 <FILE>chimara-glk</FILE>
 <TITLE>ChimaraGlk</TITLE>
 ChimaraGlk
+ChimaraError
+CHIMARA_ERROR
+chimara_error_quark
 chimara_glk_new
 chimara_glk_set_interactive
 chimara_glk_get_interactive
@@ -18,8 +21,8 @@ chimara_glk_get_spacing
 chimara_glk_run
 chimara_glk_stop
 chimara_glk_wait
+chimara_glk_get_running
 <SUBSECTION Standard>
-ChimaraGlkClass
 CHIMARA_GLK
 CHIMARA_IS_GLK
 CHIMARA_TYPE_GLK
@@ -27,6 +30,29 @@ chimara_glk_get_type
 CHIMARA_GLK_CLASS
 CHIMARA_IS_GLK_CLASS
 CHIMARA_GLK_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>chimara-if</FILE>
+ChimaraIFFormat
+ChimaraIFInterpreter
+ChimaraIFZmachineVersion
+<TITLE>ChimaraIF</TITLE>
+ChimaraIF
+chimara_if_new
+chimara_if_set_preferred_interpreter
+chimara_if_get_preferred_interpreter
+chimara_if_run_game
+chimara_if_get_format
+chimara_if_get_interpreter
+<SUBSECTION Standard>
+CHIMARA_IF
+CHIMARA_IS_IF
+CHIMARA_TYPE_IF
+chimara_if_get_type
+CHIMARA_IF_CLASS
+CHIMARA_IS_IF_CLASS
+CHIMARA_IF_GET_CLASS
 </SECTION>
 
 <SECTION>

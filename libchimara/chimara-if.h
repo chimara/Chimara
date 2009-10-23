@@ -13,6 +13,11 @@ G_BEGIN_DECLS
 #define CHIMARA_IS_IF_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), CHIMARA_TYPE_IF))
 #define CHIMARA_IF_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), CHIMARA_TYPE_IF, ChimaraIFClass))
 
+/**
+ * ChimaraIFFormat:
+ * 
+ * Constants representing all game formats supported by the Chimara system.
+ */
 typedef enum _ChimaraIFFormat {
 	CHIMARA_IF_FORMAT_NONE = -1,
 	CHIMARA_IF_FORMAT_Z5,
@@ -24,6 +29,11 @@ typedef enum _ChimaraIFFormat {
 	CHIMARA_IF_NUM_FORMATS
 } ChimaraIFFormat;
 
+/**
+ * ChimaraIFInterpreter:
+ * 
+ * Constants representing the available interpreter plugins.
+ */
 typedef enum _ChimaraIFInterpreter {
 	CHIMARA_IF_INTERPRETER_NONE = -1,
 	CHIMARA_IF_INTERPRETER_FROTZ,
@@ -33,6 +43,11 @@ typedef enum _ChimaraIFInterpreter {
 	CHIMARA_IF_NUM_INTERPRETERS
 } ChimaraIFInterpreter;
 
+/**
+ * ChimaraIFZmachineVersion:
+ * 
+ * Allowed values for the #ChimaraIF:interpreter-number property.
+ */
 typedef enum _ChimaraIFZmachineVersion {
 	CHIMARA_IF_ZMACHINE_DEFAULT = 0,
 	CHIMARA_IF_ZMACHINE_DECSYSTEM_20,
@@ -49,8 +64,15 @@ typedef enum _ChimaraIFZmachineVersion {
 	CHIMARA_IF_ZMACHINE_MAXVAL = CHIMARA_IF_ZMACHINE_TANDY_COLOR
 } ChimaraIFZmachineVersion;
 
+/**
+ * ChimaraIF:
+ * 
+ * This structure contains no public members.
+ */
 typedef struct _ChimaraIF {
 	ChimaraGlk parent_instance;
+	
+	/*< public >*/
 } ChimaraIF;
 
 typedef struct _ChimaraIFClass {

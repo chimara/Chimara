@@ -38,6 +38,30 @@ typedef struct _ChimaraGlkClass {
 	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, gchar *text);
 } ChimaraGlkClass;
 
+/**
+ * ChimaraError:
+ * 
+ * Error codes returned by #ChimaraGlk widgets and subclasses.
+ * <variablelist>
+ * <varlistentry>
+ *   <term>CHIMARA_LOAD_MODULE_ERROR</term>
+ *   <listitem><para>There was an error opening the plugin containing the Glk
+ *   program. The error message from <link 
+ *   linkend="g-module-error">g_module_error()</link> is appended to the <link
+ *   linkend="GError">GError</link> message.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>CHIMARA_NO_GLK_MAIN</term>
+ *   <listitem><para>The plugin containing the Glk program did not export a 
+ *   glk_main() function.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>CHIMARA_PLUGIN_NOT_FOUND</term>
+ *   <listitem><para>An appropriate interpreter plugin for the autodetected
+ *   game file type could not be found.</para></listitem>
+ * </varlistentry>
+ * </variablelist>
+ */
 typedef enum _ChimaraError {
 	CHIMARA_LOAD_MODULE_ERROR,
 	CHIMARA_NO_GLK_MAIN,
