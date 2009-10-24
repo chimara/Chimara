@@ -33,6 +33,20 @@ glk_set_style(glui32 styl)
 	glk_set_style_stream(glk_data->current_stream, styl);
 }
 
+static const gchar* TAG_NAMES[] = {
+	"normal",
+	"emphasized",
+	"preformatted",
+	"header",
+	"subheader",
+	"alert",
+	"note",
+	"block-quote",
+	"input",
+	"user1",
+	"user2"
+};
+
 /* Internal function: mapping from style enum to tag name */
 static gchar*
 get_tag_name(glui32 style)
