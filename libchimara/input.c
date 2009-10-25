@@ -16,6 +16,8 @@ request_char_event_common(winid_t win, gboolean unicode)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+	
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
 	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
@@ -37,6 +39,9 @@ request_char_event_common(winid_t win, gboolean unicode)
 	
 	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
 	gdk_threads_leave();
+	
+	/* Emit the "waiting" signal to let listeners know we are ready for input */
+	g_signal_emit_by_name(glk_data->self, "waiting");
 }
 
 /** 
@@ -248,6 +253,9 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	        break;
     }
 	g_free(inserttext);
+	
+	/* Emit the "waiting" signal to let listeners know we are ready for input */
+	g_signal_emit_by_name(glk_data->self, "waiting");
 }
 
 /**
@@ -306,6 +314,9 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	        break;
     }		
 	g_free(utf8);
+	
+	/* Emit the "waiting" signal to let listeners know we are ready for input */
+	g_signal_emit_by_name(glk_data->self, "waiting");
 }
 
 /**

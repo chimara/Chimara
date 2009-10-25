@@ -149,9 +149,6 @@ glk_select(event_t *event)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
-	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	g_signal_emit_by_name(glk_data->self, "waiting");
-	
 	get_appropriate_event(event);
 
 	/* Check for interrupt */
