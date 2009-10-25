@@ -76,7 +76,7 @@ glk_select(event_t *event)
 	g_mutex_lock(glk_data->event_lock);
 
 	/* Wait for an event */
-	while( g_queue_is_empty(glk_data->event_queue) )
+	if( g_queue_is_empty(glk_data->event_queue) )
 		g_cond_wait(glk_data->event_queue_not_empty, glk_data->event_lock);
 
 	event_t *retrieved_event = g_queue_pop_tail(glk_data->event_queue);
