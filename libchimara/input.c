@@ -219,7 +219,7 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
  * it is illegal to change the contents of the buffer yourself. 
  */
 void
-glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
+glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(buf);
@@ -227,8 +227,9 @@ glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 	g_return_if_fail(initlen <= maxlen);
 
-	/* Register the buffer */
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	/* Register the buffer */
 	if(glk_data->register_arr)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Cn");
 	
@@ -264,8 +265,8 @@ glk_request_line_event(winid_t win, char* buf, glui32 maxlen, glui32 initlen)
  * The result will be in Unicode Normalization Form C. This basically means that
  * composite characters will be single characters where possible, instead of
  * sequences of base and combining marks. See 
- * <ulink url="http://www.unicode.org/reports/tr15/">Unicode Standard Annex #15
- * </ulink> for the details.
+ * <ulink url="http://www.unicode.org/reports/tr15/">Unicode Standard Annex 
+ * #15</ulink> for the details.
  */
 void
 glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initlen)
@@ -276,8 +277,9 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 	g_return_if_fail(initlen <= maxlen);
 
-	/* Register the buffer */
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	/* Register the buffer */
 	if(glk_data->register_arr)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
 
@@ -314,9 +316,9 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
  * This cancels a pending request for line input. (Either Latin-1 or Unicode.)
  *
  * The event pointed to by the event argument will be filled in as if the
- * player had hit <keycap>enter</keycap>, and the input composed so far will be stored in the
- * buffer; see below. If you do not care about this information, pass %NULL as
- * the @event argument. (The buffer will still be filled.) 
+ * player had hit <keycap>enter</keycap>, and the input composed so far will be 
+ * stored in the buffer; see below. If you do not care about this information, 
+ * pass %NULL as the @event argument. (The buffer will still be filled.) 
  *
  * For convenience, it is legal to call glk_cancel_line_event() even if there
  * is no line input request on that window. The event type will be set to
@@ -393,58 +395,7 @@ on_window_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 		win->input_request_type != INPUT_REQUEST_CHARACTER_UNICODE)
 		return FALSE;
 
-	int keycode;
-
-	switch(event->keyval) {
-		case GDK_Up:
-		case GDK_KP_Up: keycode = keycode_Up; break;
-		case GDK_Down: 
-		case GDK_KP_Down: keycode = keycode_Down; break;
-		case GDK_Left:
-		case GDK_KP_Left: keycode = keycode_Left; break;
-		case GDK_Right:
-		case GDK_KP_Right: keycode = keycode_Right; break;
-		case GDK_Linefeed:
-		case GDK_Return:
-		case GDK_KP_Enter: keycode = keycode_Return; break;
-		case GDK_Delete:
-		case GDK_BackSpace:
-		case GDK_KP_Delete: keycode = keycode_Delete; break;
-		case GDK_Escape: keycode = keycode_Escape; break;
-		case GDK_Tab: 
-		case GDK_KP_Tab: keycode = keycode_Tab; break;
-		case GDK_Page_Up:
-		case GDK_KP_Page_Up: keycode = keycode_PageUp; break;
-		case GDK_Page_Down:
-		case GDK_KP_Page_Down: keycode = keycode_PageDown; break;
-		case GDK_Home:
-		case GDK_KP_Home: keycode = keycode_Home; break;
-		case GDK_End:
-		case GDK_KP_End: keycode = keycode_End; break;
-		case GDK_F1: 
-		case GDK_KP_F1: keycode = keycode_Func1; break;
-		case GDK_F2: 
-		case GDK_KP_F2: keycode = keycode_Func2; break;
-		case GDK_F3: 
-		case GDK_KP_F3: keycode = keycode_Func3; break;
-		case GDK_F4: 
-		case GDK_KP_F4: keycode = keycode_Func4; break;
-		case GDK_F5: keycode = keycode_Func5; break;
-		case GDK_F6: keycode = keycode_Func6; break;
-		case GDK_F7: keycode = keycode_Func7; break;
-		case GDK_F8: keycode = keycode_Func8; break;
-		case GDK_F9: keycode = keycode_Func9; break;
-		case GDK_F10: keycode = keycode_Func10; break;
-		case GDK_F11: keycode = keycode_Func11; break;
-		case GDK_F12: keycode = keycode_Func12; break;
-		default:
-			keycode = gdk_keyval_to_unicode(event->keyval);
-			/* If keycode is 0, then keyval was not recognized; also return
-			unknown if Latin-1 input was requested and the character is not in
-			Latin-1 */
-			if(keycode == 0 || (win->input_request_type == INPUT_REQUEST_CHARACTER && keycode > 255))
-				keycode = keycode_Unknown;	
-	}
+	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
 
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
 	g_assert(glk);
@@ -613,9 +564,134 @@ in a text grid window. */
 void
 on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 {
-	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+	g_signal_handler_block(win->widget, win->keypress_handler);
 
 	int chars_written = finish_text_grid_line_input(win, TRUE);
-	event_throw(CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK)), evtype_LineInput, win, chars_written, 0);
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+	event_throw(glk, evtype_LineInput, win, chars_written, 0);
 }
 
+glui32
+keyval_to_glk_keycode(guint keyval, gboolean unicode)
+{
+	glui32 keycode;
+	switch(keyval) {
+		case GDK_Up:
+		case GDK_KP_Up: return keycode_Up;
+		case GDK_Down: 
+		case GDK_KP_Down: return keycode_Down;
+		case GDK_Left:
+		case GDK_KP_Left: return keycode_Left; 
+		case GDK_Right:
+		case GDK_KP_Right: return keycode_Right; 
+		case GDK_Linefeed:
+		case GDK_Return:
+		case GDK_KP_Enter: return keycode_Return; 
+		case GDK_Delete:
+		case GDK_BackSpace:
+		case GDK_KP_Delete: return keycode_Delete; 
+		case GDK_Escape: return keycode_Escape; 
+		case GDK_Tab: 
+		case GDK_KP_Tab: return keycode_Tab; 
+		case GDK_Page_Up:
+		case GDK_KP_Page_Up: return keycode_PageUp; 
+		case GDK_Page_Down:
+		case GDK_KP_Page_Down: return keycode_PageDown; 
+		case GDK_Home:
+		case GDK_KP_Home: return keycode_Home; 
+		case GDK_End:
+		case GDK_KP_End: return keycode_End; 
+		case GDK_F1: 
+		case GDK_KP_F1: return keycode_Func1; 
+		case GDK_F2: 
+		case GDK_KP_F2: return keycode_Func2; 
+		case GDK_F3: 
+		case GDK_KP_F3: return keycode_Func3; 
+		case GDK_F4: 
+		case GDK_KP_F4: return keycode_Func4; 
+		case GDK_F5: return keycode_Func5; 
+		case GDK_F6: return keycode_Func6; 
+		case GDK_F7: return keycode_Func7; 
+		case GDK_F8: return keycode_Func8; 
+		case GDK_F9: return keycode_Func9; 
+		case GDK_F10: return keycode_Func10; 
+		case GDK_F11: return keycode_Func11; 
+		case GDK_F12: return keycode_Func12; 
+		default:
+			keycode = gdk_keyval_to_unicode(keyval);
+			/* If keycode is 0, then keyval was not recognized; also return
+			unknown if Latin-1 input was requested and the character is not in
+			Latin-1 */
+			if(keycode == 0 || (!unicode && keycode > 255))
+				return keycode_Unknown;
+			return keycode;
+	}
+}
+
+void
+force_char_input_from_queue(winid_t win, event_t *event)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	guint keyval = GPOINTER_TO_UINT(g_async_queue_pop(glk_data->char_input_queue));
+	
+	glk_cancel_char_event(win);
+	
+	gdk_threads_enter();
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	g_signal_emit_by_name(glk, "char-input", win->rock, keyval);
+	gdk_threads_leave();
+	
+	event->type = evtype_CharInput;
+	event->win = win;
+	event->val1 = keyval_to_glk_keycode(keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
+	event->val2 = 0;
+}
+
+void
+force_line_input_from_queue(winid_t win, event_t *event)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	const gchar *text = g_async_queue_pop(glk_data->line_input_queue);
+	glui32 chars_written = 0;
+	
+	gdk_threads_enter();
+	if(win->type == wintype_TextBuffer)
+	{
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		GtkTextIter start, end;
+		
+		/* Remove signal handlers so the line input doesn't get picked up again */
+		g_signal_handler_block(buffer, win->insert_text_handler);
+		
+		/* Erase any text that was already typed */
+		GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+		gtk_text_buffer_get_iter_at_mark(buffer, &start, input_position);
+		gtk_text_buffer_get_end_iter(buffer, &end);
+		gtk_text_buffer_delete(buffer, &start, &end);
+		
+		/* Make the window uneditable again */
+		gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
+		
+		/* Insert the forced input into the window */
+		gtk_text_buffer_get_end_iter(buffer, &end);
+		gchar *text_to_insert = g_strconcat(text, "\n", NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "input", NULL);
+		chars_written = finish_text_buffer_line_input(win, TRUE);		
+	}
+	else if(win->type == wintype_TextGrid)
+	{
+		/* Remove signal handlers so the line input doesn't get picked up again */
+		g_signal_handler_block(win->widget, win->keypress_handler);
+		
+		/* Insert the forced input into the window */
+		gtk_entry_set_text(GTK_ENTRY(win->input_entry), text);
+		chars_written = finish_text_grid_line_input(win, TRUE);
+	}
+	gdk_threads_leave();
+	
+	event->type = evtype_LineInput;
+	event->win = win;
+	event->val1 = chars_written;
+	event->val2 = 0;
+}

@@ -39,4 +39,20 @@
     <property name="stock_id">gtk-quit</property>
     <signal name="activate" handler="on_quit"/>
   </object>
+  <object class="GtkAction" id="hint">
+    <property name="label">_Hint</property>
+    <property name="tooltip">Do the first few moves of the game</property>
+    <property name="stock_id">gtk-dialog-info</property>
+    <signal name="activate" handler="on_hint"/>
+  </object>
+  <object class="GtkAction" id="char_input">
+    <property name="label">Press _R</property>
+    <property name="stock_id">gtk-open</property>
+    <signal name="activate" handler="on_press_r"/>
+  </object>
+  <object class="GtkAction" id="char_input2">
+    <property name="label">3x _Enter</property>
+    <property name="stock_id">gtk-media-play</property>
+    <signal name="activate" handler="on_press_enter"/>
+  </object>
 </interface>

@@ -42,20 +42,7 @@ G_GNUC_INTERNAL GPrivate *glk_data_key = NULL;
 void
 glk_exit(void)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
-	if(!glk_data->in_startup)
-		g_signal_emit_by_name(glk_data->self, "stopped");
-
-	/* Stop any timers */
-	glk_request_timer_events(0);
-
-	/* Close any open resource files */
-	if(glk_data->resource_map != NULL) {
-		giblorb_destroy_map(glk_data->resource_map);
-		glk_stream_close(glk_data->resource_file, NULL);
-	}
-
+	shutdown_glk();
 	g_thread_exit(NULL);
 }
 

@@ -2,6 +2,7 @@
 #include "magic.h"
 #include "glk.h"
 #include "window.h"
+#include "input.h"
 #include <string.h>
 
 #include "chimara-glk.h"
@@ -50,6 +51,84 @@ event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
 	g_mutex_unlock(priv->event_lock);
 }
 
+/* Helper function: Wait for an event in the event queue. If it is a forced
+ * input event, but no windows have an input request of that type, then wait
+ * for the next event and put the forced input event back on top of the queue.
+ */
+static void
+get_appropriate_event(event_t *event)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	g_mutex_lock(glk_data->event_lock);
+
+	event_t *retrieved_event = NULL;
+
+	/* Wait for an event */
+	if( g_queue_is_empty(glk_data->event_queue) )
+		g_cond_wait(glk_data->event_queue_not_empty, glk_data->event_lock);
+
+	retrieved_event = g_queue_pop_tail(glk_data->event_queue);
+
+	/* Signal that the event queue is no longer full */
+	g_cond_signal(glk_data->event_queue_not_full);
+	
+	g_mutex_unlock(glk_data->event_lock);
+	
+	if(retrieved_event->type == evtype_ForcedCharInput)
+	{
+		/* Check for forced character input in the queue */
+		winid_t win;
+		for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL))
+			if(win->input_request_type == INPUT_REQUEST_CHARACTER || win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE)
+				break;
+		if(win)
+		{
+			force_char_input_from_queue(win, event);
+			g_free(retrieved_event);
+		}
+		else
+		{
+			get_appropriate_event(event);
+			g_mutex_lock(glk_data->event_lock);
+			g_queue_push_tail(glk_data->event_queue, retrieved_event);
+			g_cond_signal(glk_data->event_queue_not_empty);
+			g_mutex_unlock(glk_data->event_lock);
+		}
+	}
+	else if(retrieved_event->type == evtype_ForcedLineInput)
+	{
+		/* Check for forced line input in the queue */
+		winid_t win;
+		for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL))
+			if(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+				break;
+		if(win)
+		{
+			force_line_input_from_queue(win, event);
+			g_free(retrieved_event);
+		}
+		else
+		{
+			get_appropriate_event(event);
+			g_mutex_lock(glk_data->event_lock);
+			g_queue_push_tail(glk_data->event_queue, retrieved_event);
+			g_cond_signal(glk_data->event_queue_not_empty);
+			g_mutex_unlock(glk_data->event_lock);
+		}
+	}
+	else
+	{
+		if(retrieved_event == NULL)
+		{
+			WARNING("Retrieved NULL event from non-empty event queue");
+			return;
+		}
+		memcpy(event, retrieved_event, sizeof(event_t));
+		g_free(retrieved_event);
+	}
+}
+
 /**
  * glk_select:
  * @event: Pointer to an #event_t.
@@ -73,27 +152,8 @@ glk_select(event_t *event)
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
 	g_signal_emit_by_name(glk_data->self, "waiting");
 	
-	g_mutex_lock(glk_data->event_lock);
+	get_appropriate_event(event);
 
-	/* Wait for an event */
-	if( g_queue_is_empty(glk_data->event_queue) )
-		g_cond_wait(glk_data->event_queue_not_empty, glk_data->event_lock);
-
-	event_t *retrieved_event = g_queue_pop_tail(glk_data->event_queue);
-	if(retrieved_event == NULL)
-	{
-		g_mutex_unlock(glk_data->event_lock);
-		WARNING("Retrieved NULL event from non-empty event queue");
-		return;
-	}
-	memcpy(event, retrieved_event, sizeof(event_t));
-	g_free(retrieved_event);
-
-	/* Signal that the event queue is no longer full */
-	g_cond_signal(glk_data->event_queue_not_full);
-
-	g_mutex_unlock(glk_data->event_lock);
-	
 	/* Check for interrupt */
 	glk_tick();
 
@@ -128,7 +188,7 @@ glk_select(event_t *event)
  * intended for you to test conditions which may have occurred while you are
  * computing, and not interfacing with the player. For example, time may pass
  * during slow computations; you can use glk_select_poll() to see if a 
- * %evtype_Timer event has occured. (See <link 
+ * %evtype_Timer event has occurred. (See <link 
  * linkend="chimara-Timer-Events">Timer Events</link>.)
  * 
  * At the moment, glk_select_poll() checks for %evtype_Timer, %evtype_Arrange,

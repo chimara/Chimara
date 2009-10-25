@@ -30,21 +30,39 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "callbacks.h"
+#include <gdk/gdkkeysyms.h>
+#include <libchimara/chimara-glk.h>
 #include "error.h"
 
-void on_save(GtkAction *action, gpointer user_data) {
+void on_save(GtkAction *action, ChimaraGlk *glk) {
 	GSList *widgets = gtk_action_get_proxies(action);
 	GtkWindow *top = GTK_WINDOW( gtk_widget_get_toplevel(widgets->data) );
 	error_dialog(top, NULL, "Not implemented yet");
 }
 
-gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraGlk *glk) {
 	gtk_main_quit();
 	return TRUE;
 }
 
-void on_quit(GtkAction *action, gpointer user_data) {
+void on_quit(GtkAction *action, ChimaraGlk *glk) {
 	gtk_main_quit();
 }
 
+void on_hint(GtkAction *action, ChimaraGlk *glk) {
+	chimara_glk_feed_line_input(glk, "se");
+	chimara_glk_feed_line_input(glk, "push cans to window");
+	chimara_glk_feed_line_input(glk, "stand on cans");
+	chimara_glk_feed_line_input(glk, "open window");
+	chimara_glk_feed_line_input(glk, "enter window");
+}
+
+void on_press_r(GtkAction *action, ChimaraGlk *glk) {
+	chimara_glk_feed_char_input(glk, GDK_R);
+}
+
+void on_press_enter(GtkAction *action, ChimaraGlk *glk) {
+	chimara_glk_feed_char_input(glk, GDK_Return);
+	chimara_glk_feed_char_input(glk, GDK_Return);
+	chimara_glk_feed_char_input(glk, GDK_Return);
+}

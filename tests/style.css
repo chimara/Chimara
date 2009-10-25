@@ -51,6 +51,8 @@ buffer.block-quote {
 }
 
 buffer.input {
+	color: #0000aa;
+	font-style: italic;
 }
 
 buffer.user1 {

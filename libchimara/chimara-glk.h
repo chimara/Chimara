@@ -94,6 +94,8 @@ gboolean chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *a
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);
 gboolean chimara_glk_get_running(ChimaraGlk *glk);
+void chimara_glk_feed_char_input(ChimaraGlk *glk, guint32 keycode);
+void chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text);
 
 G_END_DECLS
 

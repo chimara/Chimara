@@ -1,3 +1,4 @@
+#include "abort.h"
 #include "event.h"
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -36,18 +37,18 @@ glk_set_interrupt_handler(void (*func)(void))
 /* Internal function: abort this Glk program, freeing resources and calling the
 user's interrupt handler. */
 static void
-abort_glk()
+abort_glk(void)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	if(glk_data->interrupt_handler)
 		(*(glk_data->interrupt_handler))();
-	g_signal_emit_by_name(glk_data->self, "stopped");
+	shutdown_glk();
 	g_thread_exit(NULL);
 }
 
 /* Internal function: check if the Glk program has been interrupted. */
 void
-check_for_abort()
+check_for_abort(void)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_mutex_lock(glk_data->abort_lock);
@@ -57,4 +58,27 @@ check_for_abort()
 		abort_glk();
 	}
 	g_mutex_unlock(glk_data->abort_lock);
+}
+
+/* Internal function: do any cleanup for shutting down the Glk library. */
+void
+shutdown_glk(void)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+		
+	if(!glk_data->in_startup)
+		g_signal_emit_by_name(glk_data->self, "stopped");
+
+	/* Stop any timers */
+	glk_request_timer_events(0);
+
+	/* Close any open resource files */
+	if(glk_data->resource_map != NULL) {
+		giblorb_destroy_map(glk_data->resource_map);
+		glk_stream_close(glk_data->resource_file, NULL);
+	}
+	
+	/* Unref the input queues */
+	g_async_queue_unref(glk_data->char_input_queue);
+	g_async_queue_unref(glk_data->line_input_queue);
 }

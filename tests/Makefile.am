@@ -5,7 +5,7 @@ dist_data_DATA = chimara.ui chimara.menus
 
 noinst_PROGRAMS = test-chimara test-multisession
 
-test_chimara_SOURCES = main.c callbacks.c callbacks.h error.c error.h
+test_chimara_SOURCES = main.c callbacks.c error.c error.h
 test_chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \

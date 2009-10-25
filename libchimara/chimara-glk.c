@@ -99,7 +99,10 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->rearranged = g_cond_new();
 	priv->needs_rearrange = FALSE;
 	priv->ignore_next_arrange_event = FALSE;
-    priv->interrupt_handler = NULL;
+	priv->char_input_queue = g_async_queue_new();
+	priv->line_input_queue = g_async_queue_new();
+	/* Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
+	priv->interrupt_handler = NULL;
     priv->root_window = NULL;
     priv->fileref_list = NULL;
     priv->current_stream = NULL;
@@ -192,6 +195,10 @@ chimara_glk_finalize(GObject *object)
 	g_mutex_unlock(priv->arrange_lock);
 	g_mutex_free(priv->arrange_lock);
 	priv->arrange_lock = NULL;
+	
+	/* Unref input queues */
+	g_async_queue_unref(priv->char_input_queue);
+	g_async_queue_unref(priv->line_input_queue);
 	
 	/* Free private data */
 	pango_font_description_free(priv->default_font_desc);
@@ -1044,6 +1051,9 @@ glk_enter(struct StartupData *startup)
 	extern GPrivate *glk_data_key;
 	g_private_set(glk_data_key, startup->glk_data);
 	
+	g_async_queue_ref(startup->glk_data->char_input_queue);
+	g_async_queue_ref(startup->glk_data->line_input_queue);
+	
 	/* Run startup function */
 	if(startup->glkunix_startup_code) {
 		startup->glk_data->in_startup = TRUE;
@@ -1193,4 +1203,48 @@ chimara_glk_get_running(ChimaraGlk *glk)
 	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	return priv->running;
+}
+
+/**
+ * chimara_glk_feed_char_input:
+ * @glk: a #ChimaraGlk widget
+ * @keyval: a key symbol as defined in <filename 
+ * class="headerfile">gdk/gdkkeysyms.h</filename>
+ * 
+ * Pretend that a key was pressed in the Glk program as a response to a 
+ * character input request. You can call this function even when no window has
+ * requested character input, in which case the key will be saved for the 
+ * following window that requests character input. This has the disadvantage 
+ * that if more than one window has requested character input, it is arbitrary 
+ * which one gets the key press.
+ */
+void 
+chimara_glk_feed_char_input(ChimaraGlk *glk, guint keyval)
+{
+	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_async_queue_push(priv->char_input_queue, GUINT_TO_POINTER(keyval));
+	event_throw(glk, evtype_ForcedCharInput, NULL, 0, 0);
+}
+
+/**
+ * chimara_glk_feed_line_input:
+ * @glk: a #ChimaraGlk widget
+ * @text: text to pass to the next line input request
+ * 
+ * Pretend that @text was typed in the Glk program as a response to a line input
+ * request. @text does not need to end with a newline. You can call this 
+ * function even when no window has requested line input, in which case the text
+ * will be saved for the following window that requests line input. This has the 
+ * disadvantage that if more than one window has requested character input, it 
+ * is arbitrary which one gets the text.
+ */
+void 
+chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text)
+{
+	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
+	g_return_if_fail(text);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_async_queue_push(priv->line_input_queue, g_strdup(text));
+	event_throw(glk, evtype_ForcedLineInput, NULL, 0, 0);
 }

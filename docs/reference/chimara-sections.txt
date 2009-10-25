@@ -22,6 +22,8 @@ chimara_glk_run
 chimara_glk_stop
 chimara_glk_wait
 chimara_glk_get_running
+chimara_glk_feed_char_input
+chimara_glk_feed_line_input
 <SUBSECTION Standard>
 CHIMARA_GLK
 CHIMARA_IS_GLK

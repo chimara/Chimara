@@ -40,7 +40,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "callbacks.h"
 #include "error.h"
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
@@ -66,7 +65,10 @@ on_stopped(ChimaraGlk *glk)
 static void
 on_command(ChimaraGlk *glk, gchar *input, gchar *response)
 {
-	g_print("Command: %s\nResponse: %s\n", input, response);
+	gchar *ellipsized = g_strdelimit(g_strndup(response, 20), "\n", ' ');
+	g_print("%s - %s%s\n", input, ellipsized, 
+		(strlen(ellipsized) < strlen(response))? "..." : "");
+	g_free(ellipsized);
 }
 
 static GObject *
@@ -102,6 +104,9 @@ create_window(void)
 		"open", "<ctrl>F7", 
 		"save", NULL, /* NULL means use stock accelerator */
 		"quit", NULL,
+		"hint", "",
+		"char_input", "",
+		"char_input2", "",
 		NULL
 	};
 	const gchar **ptr;
@@ -141,7 +146,7 @@ create_window(void)
 	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
 	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
 	
-	gtk_builder_connect_signals(builder, NULL);
+	gtk_builder_connect_signals(builder, glk);
 }
 
 int

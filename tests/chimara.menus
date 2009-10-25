@@ -5,11 +5,19 @@
       <menuitem action="open"/>
       <menuitem action="save"/>
       <separator/>
+      <menuitem action="hint"/>
+      <menuitem action="char_input"/>
+      <menuitem action="char_input2"/>
+      <separator/>
       <menuitem action="quit"/>
     </menu>
   </menubar>
   <toolbar>
     <toolitem action="save"/>
     <toolitem action="quit"/>
+    <separator/>
+    <toolitem action="hint"/>
+    <toolitem action="char_input"/>
+    <toolitem action="char_input2"/>
   </toolbar>
 </ui>

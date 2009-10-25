@@ -55,6 +55,9 @@ struct _ChimaraGlkPrivate {
 	GCond *rearranged;
 	gboolean needs_rearrange;
 	gboolean ignore_next_arrange_event;
+	/* Input queues */
+	GAsyncQueue *char_input_queue;
+	GAsyncQueue *line_input_queue;
 
 	/* *** Glk library data *** */
     /* User-defined interrupt handler */
