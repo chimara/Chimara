@@ -81,6 +81,8 @@ struct _ChimaraGlkPrivate {
 	void (*unregister_obj)(void *, glui32, gidispatch_rock_t);
 	gidispatch_rock_t (*register_arr)(void *, glui32, char *);
 	void (*unregister_arr)(void *, glui32, char *, gidispatch_rock_t);
+	/* Have styles been initialized */
+	gboolean style_initialized;
 
 	/* *** Platform-dependent Glk library data *** */
 	/* Flag for functions to find out if they are being called from startup code */

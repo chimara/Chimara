@@ -108,6 +108,7 @@ chimara_glk_init(ChimaraGlk *self)
     priv->current_stream = NULL;
     priv->stream_list = NULL;
 	priv->timer_id = 0;
+	priv->style_initialized = FALSE;
 	priv->in_startup = FALSE;
 	priv->current_dir = NULL;
 }

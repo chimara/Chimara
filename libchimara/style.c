@@ -3,7 +3,6 @@
 #include <fcntl.h>
 
 extern GPrivate *glk_data_key;
-static gboolean chimara_style_initialized = FALSE;
 
 static gboolean style_accept(GScanner *scanner, GTokenType token);
 static gboolean style_accept_style_selector(GScanner *scanner);
@@ -77,11 +76,10 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
 
-	if( G_UNLIKELY(!chimara_style_initialized) ) {
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if( G_UNLIKELY(!glk_data->style_initialized) ) {
 		style_init();
 	}
-
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_hash_table_foreach(glk_data->current_styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
 
@@ -90,12 +88,11 @@ void
 style_init_textgrid(GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
-
-	if( G_UNLIKELY(!chimara_style_initialized) ) {
+	
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if( G_UNLIKELY(!glk_data->style_initialized) ) {
 		style_init();
 	}
-
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_hash_table_foreach(glk_data->current_styles->text_grid, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
 
@@ -173,8 +170,8 @@ style_init()
 	g_return_if_fail(f != -1);
 	g_scanner_input_file(scanner, f);
 	scanner->input_name = glk_data->css_file;
-	scanner->config->cset_identifier_first = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#";
-	scanner->config->cset_identifier_nth = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_0123456789";
+	scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
+	scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
 	scanner->config->symbol_2_token = TRUE;
 	scanner->config->cpair_comment_single = NULL;
 	scanner->config->scan_float = FALSE;
@@ -232,7 +229,7 @@ style_init()
 
 	g_scanner_destroy(scanner);
 
-	chimara_style_initialized = TRUE;
+	glk_data->style_initialized = TRUE;
 }
 
 /* Internal function: parses a token */
@@ -678,7 +675,7 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	if( G_UNLIKELY(!chimara_style_initialized) ) {
+	if( G_UNLIKELY(!glk_data->style_initialized) ) {
 		style_init();
 	}
 
