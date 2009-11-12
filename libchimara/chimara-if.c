@@ -14,7 +14,7 @@
  * @short_description: Widget which plays an interactive fiction game
  * @stability: Unstable
  * @include: chimara/chimara-if.h
- * 
+ *
  * The #ChimaraIF widget, given an interactive fiction game file to run, selects
  * an appropriate interpreter plugin and runs it. Interpreter options are set by
  * setting properties on the widget.
@@ -96,9 +96,9 @@ chimara_if_waiting(ChimaraGlk *glk)
 
 	gchar *response = g_string_free(priv->response, FALSE);
 	priv->response = g_string_new("");
-	
+
 	g_signal_emit_by_name(glk, "command", priv->input, response);
-	
+
 	g_free(priv->input);
 	g_free(response);
 	priv->input = NULL;
@@ -108,10 +108,10 @@ static void
 chimara_if_stopped(ChimaraGlk *glk)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
-	
+
 	if(priv->input || priv->response->len > 0)
 		chimara_if_waiting(glk); /* Send one last command signal */
-	
+
 	priv->format = CHIMARA_IF_FORMAT_NONE;
 	priv->interpreter = CHIMARA_IF_INTERPRETER_NONE;
 }
@@ -148,7 +148,7 @@ chimara_if_init(ChimaraIF *self)
 	priv->random_seed_set = FALSE;
 	priv->input = NULL;
 	priv->response = g_string_new("");
-	
+
 	/* Connect to signals of ChimaraGlk parent */
 	g_signal_connect(self, "stopped", G_CALLBACK(chimara_if_stopped), NULL);
 	g_signal_connect(self, "waiting", G_CALLBACK(chimara_if_waiting), NULL);
@@ -261,10 +261,10 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * @self: The widget that received the signal
 	 * @input: The command typed into the game
 	 * @response: The game's response to the command
-	 * 
+	 *
 	 * Emitted once for each input-response cycle of an interactive fiction
 	 * game. Note that games with nontraditional input systems (i.e. not all
-	 * taking place in the same text buffer window) may throw this signal for a 
+	 * taking place in the same text buffer window) may throw this signal for a
 	 * loop.
 	 */
 	chimara_if_signals[COMMAND] = g_signal_new("command",
@@ -276,39 +276,39 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	/* Properties */
 	/**
 	 * ChimaraIF:piracy-mode:
-	 * 
+	 *
 	 * The Z-machine specification defines a facility for games to ask the
 	 * interpreter they are running on whether this copy of the game is pirated.
 	 * How the interpreter is supposed to magically determine that it is running
 	 * pirate software is unclear, and so the majority of games and interpreters
 	 * ignore this feature. Set this property to %TRUE if you want the
 	 * interpreter to pretend it has detected a pirated game.
-	 * 
+	 *
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_PIRACY_MODE,
-		g_param_spec_boolean("piracy-mode", _("Piracy mode"), 
+		g_param_spec_boolean("piracy-mode", _("Piracy mode"),
 		_("Pretend the game is pirated"), FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:tandy-bit:
-	 * 
+	 *
 	 * Some early Infocom games were sold by the Tandy Corporation. Setting this
-	 * property to %TRUE changes the wording of some Version 3 Infocom games 
-	 * slightly, so as to be less offensive. See <ulink 
+	 * property to %TRUE changes the wording of some Version 3 Infocom games
+	 * slightly, so as to be less offensive. See <ulink
 	 * url="http://www.ifarchive.org/if-archive/infocom/info/tandy_bits.html">
 	 * http://www.ifarchive.org/if-archive/infocom/info/tandy_bits.html</ulink>.
-	 * 
+	 *
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_TANDY_BIT,
-		g_param_spec_boolean("tandy-bit", _("Tandy bit"), 
-		_("Censor certain Infocom games"), FALSE, 
+		g_param_spec_boolean("tandy-bit", _("Tandy bit"),
+		_("Censor certain Infocom games"), FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:expand-abbreviations:
-	 * 
-	 * Most Z-machine games, in particular ones compiled with the Inform 
+	 *
+	 * Most Z-machine games, in particular ones compiled with the Inform
 	 * library, support the following one-letter abbreviations:
 	 * <simplelist>
 	 * <member>D &mdash; Down</member>
@@ -327,9 +327,9 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * <member>Z &mdash; wait (ZZZZ...)</member>
 	 * </simplelist>
 	 * Some early Infocom games might not recognize these abbreviations. Setting
-	 * this property to %TRUE will cause the interpreter to expand the 
-	 * abbreviations to the full words before passing the commands on to the 
-	 * game. Frotz only expands G, X, and Z; Nitfol expands all of the above 
+	 * this property to %TRUE will cause the interpreter to expand the
+	 * abbreviations to the full words before passing the commands on to the
+	 * game. Frotz only expands G, X, and Z; Nitfol expands all of the above
 	 * plus the following nonstandard ones:
 	 * <simplelist>
 	 * <member>C &mdash; Close</member>
@@ -338,8 +338,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * <member>R &mdash; dRop</member>
 	 * <member>T &mdash; Take</member>
 	 * </simplelist>
-	 * 
-	 * Only affects Z-machine interpreters. Behaves differently on Frotz and 
+	 *
+	 * Only affects Z-machine interpreters. Behaves differently on Frotz and
 	 * Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_EXPAND_ABBREVIATIONS,
@@ -348,27 +348,27 @@ chimara_if_class_init(ChimaraIFClass *klass)
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:ignore-errors:
-	 * 
+	 *
 	 * Setting this property to %TRUE will cause the interpreter to ignore
 	 * certain Z-machine runtime errors. Frotz will ignore any fatal errors.
 	 * Nitfol by default warns about any shady behavior, and this property will
 	 * turn those warnings off.
-	 * 
-	 * Only affects Z-machine interpreters. Behaves differently on Frotz and 
+	 *
+	 * Only affects Z-machine interpreters. Behaves differently on Frotz and
 	 * Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_IGNORE_ERRORS,
-		g_param_spec_boolean("ignore-errors", _("Ignore errors"), 
+		g_param_spec_boolean("ignore-errors", _("Ignore errors"),
 		_("Do not warn the user about Z-machine errors"), FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:typo-correction:
-	 * 
+	 *
 	 * Nitfol has an automatic typo-correction facility, where it searches the
 	 * game dictionary for words which differ by one letter from any unknown
 	 * input words. Set this property to %FALSE to turn this feature off.
-	 * 
-	 * Only affects Nitfol. 
+	 *
+	 * Only affects Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_TYPO_CORRECTION,
 		g_param_spec_boolean("typo-correction", _("Typo correction"),
@@ -376,35 +376,35 @@ chimara_if_class_init(ChimaraIFClass *klass)
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:interpreter-number:
-	 * 
-	 * Infocom gave each port of their interpreter a different number. The Frotz 
+	 *
+	 * Infocom gave each port of their interpreter a different number. The Frotz
 	 * and Nitfol plugins can emulate any of these platforms. Some games behave
 	 * slightly differently depending on what platform they are on. Set this
 	 * property to a #ChimaraIFZmachineVersion value to emulate a certain
 	 * platform.
-	 * 
+	 *
 	 * Note that Nitfol pretends to be an Apple IIe by default.
-	 * 
+	 *
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_INTERPRETER_NUMBER,
 		g_param_spec_uint("interpreter-number", _("Interpreter number"),
-		_("Platform the Z-machine should pretend it is running on"), 
+		_("Platform the Z-machine should pretend it is running on"),
 		CHIMARA_IF_ZMACHINE_DEFAULT, CHIMARA_IF_ZMACHINE_MAXVAL, CHIMARA_IF_ZMACHINE_DEFAULT,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:random-seed:
-	 * 
+	 *
 	 * If the #ChimaraIF:random-seed-set property is %TRUE, then the interpreter
 	 * will use the value of this property as a seed for the random number
 	 * generator. Use this feature to duplicate sequences of random numbers
 	 * for testing games.
-	 * 
+	 *
 	 * Note that the value -1 is a valid random number seed for
 	 * Nitfol, whereas it will cause Frotz to pick an arbitrary seed even when
 	 * #ChimaraIF:random-seed-set is %TRUE.
-	 * 
-	 * Only affects Z-machine interpreters. Behaves slightly differently on 
+	 *
+	 * Only affects Z-machine interpreters. Behaves slightly differently on
 	 * Frotz and Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_RANDOM_SEED,
@@ -413,9 +413,9 @@ chimara_if_class_init(ChimaraIFClass *klass)
 		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:random-seed-set:
-	 * 
+	 *
 	 * Whether to use or ignore the #ChimaraIF:random-seed property.
-	 * 
+	 *
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_RANDOM_SEED_SET,
@@ -449,7 +449,7 @@ chimara_if_new(void)
  * @self: A #ChimaraIF widget.
  * @format: The game format to set the preferred interpreter plugin for.
  * @interpreter: The preferred interpreter plugin for @format.
- * 
+ *
  * The function chimara_if_run_game() picks an appropriate interpreter for the
  * type of game file it is given. This function sets which interpreter is picked
  * for a certain game file format. Most formats, notably the Z-machine, have
@@ -461,7 +461,7 @@ chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, Ch
 {
 	g_return_if_fail(self && CHIMARA_IS_IF(self));
 	g_return_if_fail(format < CHIMARA_IF_NUM_FORMATS);
-	g_return_if_fail(format < CHIMARA_IF_NUM_INTERPRETERS);
+	g_return_if_fail(interpreter < CHIMARA_IF_NUM_INTERPRETERS);
 
 	CHIMARA_IF_USE_PRIVATE(self, priv);
 
@@ -475,10 +475,10 @@ chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, Ch
  * chimara_if_get_preferred_interpreter:
  * @self: A #ChimaraIF widget.
  * @format: The game format to query the preferred interpreter plugin for.
- * 
+ *
  * Looks up the preferred interpreter for the game file format @format. See
  * chimara_if_set_preferred_interpreter().
- * 
+ *
  * Returns: a #ChimaraIFInterpreter value representing the preferred interpreter
  * plugin for @format.
  */
@@ -496,21 +496,21 @@ chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
  * @self: A #ChimaraIF widget.
  * @gamefile: Path to an interactive fiction game file.
  * @error: Return location for an error, or %NULL.
- * 
+ *
  * Autodetects the type of a game file and runs it using an appropriate
  * interpreter plugin. If there is more than one interpreter that supports the
- * file format, the preferred one will be picked, according to 
+ * file format, the preferred one will be picked, according to
  * chimara_if_set_preferred_interpreter().
- * 
+ *
  * Returns: %TRUE if the game was started successfully, %FALSE if not, in which
  * case @error is set.
  */
-gboolean 
+gboolean
 chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), FALSE);
 	g_return_val_if_fail(gamefile, FALSE);
-	
+
 	CHIMARA_IF_USE_PRIVATE(self, priv);
 
 	/* Find out what format the game is */
@@ -528,18 +528,18 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 		format = CHIMARA_IF_FORMAT_GLULX;
 	else if(g_str_has_suffix(gamefile, ".blb") || g_str_has_suffix(gamefile, ".blorb") || g_str_has_suffix(gamefile, ".glb") || g_str_has_suffix(gamefile, ".gblorb"))
 		format = CHIMARA_IF_FORMAT_GLULX_BLORB;
-	
+
 	/* Now decide what interpreter to use */
 	ChimaraIFInterpreter interpreter = priv->preferred_interpreter[format];
 	gchar *pluginfile = g_strconcat(plugin_names[interpreter], "." G_MODULE_SUFFIX, NULL);
 
 	/* If there is a plugin in the source tree, use that */
 	gchar *pluginpath = g_build_filename("..", "interpreters", plugin_names[interpreter], LT_OBJDIR, pluginfile, NULL);
-	if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) ) 
+	if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) )
 	{
 		g_free(pluginpath);
 		pluginpath = g_build_filename(PLUGINDIR, pluginfile, NULL);
-		if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) ) 
+		if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) )
 		{
 			g_free(pluginpath);
 			g_free(pluginfile);
@@ -602,19 +602,19 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 		default:
 			;
 	}
-	
+
 	/* Allocate argv to hold the arguments */
 	int argc = g_slist_length(args);
 	args = g_slist_prepend(args, NULL);
 	char **argv = g_new0(char *, argc + 1);
-	
+
 	/* Fill argv */
 	args = g_slist_reverse(args);
 	int count;
 	GSList *ptr;
 	for(count = 0, ptr = args; ptr; count++, ptr = g_slist_next(ptr))
 		argv[count] = ptr->data;
-	
+
 	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, argc, argv, error);
 	g_free(argv);
 	if(terpnumstr)
@@ -622,7 +622,7 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	if(randomstr)
 		g_free(randomstr);
 	g_free(pluginpath);
-	
+
 	/* Set current format and interpreter if plugin was started successfully */
 	if(retval)
 	{
@@ -635,9 +635,9 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 /**
  * chimara_if_get_format:
  * @self: A #ChimaraIF widget.
- * 
+ *
  * Returns the file format of the currently running game.
- * 
+ *
  * Returns: a #ChimaraIFFormat constant.
  */
 ChimaraIFFormat
@@ -651,9 +651,9 @@ chimara_if_get_format(ChimaraIF *self)
 /**
  * chimara_if_get_interpreter:
  * @self: A #ChimaraIF widget.
- * 
+ *
  * Returns the interpreter plugin currently running.
- * 
+ *
  * Returns: a #ChimaraIFInterpreter constant.
  */
 ChimaraIFInterpreter
