@@ -30,6 +30,7 @@ window_new_common(glui32 rock)
 	win->input_request_type = INPUT_REQUEST_NONE;
 	win->line_input_buffer = NULL;
 	win->line_input_buffer_unicode = NULL;
+	win->history = NULL;
 
 	/* Initialise the buffer */
 	win->buffer = g_string_sized_new(1024);
@@ -51,6 +52,9 @@ window_close_common(winid_t win, gboolean destroy_node)
 	if(destroy_node)
 		g_node_destroy(win->window_node);
 	win->magic = MAGIC_FREE;
+
+	g_list_foreach(win->history, g_free, NULL);
+	g_list_free(win->history);
 
 	g_string_free(win->buffer, TRUE);
 	g_free(win);
