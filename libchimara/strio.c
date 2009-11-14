@@ -13,55 +13,6 @@
  *
  */
 
-/* Internal function: write a UTF-8 string to a text grid window's text buffer. */
-static void
-write_utf8_to_grid(winid_t win, gchar *s)
-{
-	if(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
-	{
-		ILLEGAL("Tried to print to a text grid window with line input pending.");
-		return;
-	}
-	
-    /* Number of characters to insert */
-    glong length = g_utf8_strlen(s, -1);
-    glong chars_left = length;
-    
-    gdk_threads_enter();
-    
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-    GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
-    
-    /* Get cursor position */
-    GtkTextIter start;
-    gtk_text_buffer_get_iter_at_mark(buffer, &start, cursor);
-    /* Spaces available on this line */
-    gint available_space = win->width - gtk_text_iter_get_line_offset(&start);
-    
-    while(chars_left > available_space && !gtk_text_iter_is_end(&start))
-    {
-        GtkTextIter end = start;
-        gtk_text_iter_forward_to_line_end(&end);
-        gtk_text_buffer_delete(buffer, &start, &end);
-        gtk_text_buffer_insert_with_tags_by_name(buffer, &start, s + (length - chars_left), available_space, win->window_stream->style, NULL);
-        chars_left -= available_space;
-        gtk_text_iter_forward_line(&start);
-        available_space = win->width;
-    }
-    if(!gtk_text_iter_is_end(&start))
-    {
-        GtkTextIter end = start;
-        gtk_text_iter_forward_chars(&end, chars_left);
-        gtk_text_buffer_delete(buffer, &start, &end);
-        gtk_text_buffer_insert_with_tags_by_name(buffer, &start, s + (length - chars_left), -1, win->window_stream->style, NULL);
-    }
-    
-    gtk_text_buffer_move_mark(buffer, cursor, &start);
-    
-    gdk_threads_leave();
-}
-
-
 /* Internal function: write a UTF-8 string to a text buffer window's text buffer. */
 static void
 write_utf8_to_window_buffer(winid_t win, gchar *s)
@@ -80,6 +31,9 @@ write_utf8_to_window_buffer(winid_t win, gchar *s)
 void
 flush_window_buffer(winid_t win)
 {
+	if(win->type != wintype_TextBuffer && win->type != wintype_TextGrid)
+		return;
+
 	if(win->buffer->len == 0)
 		return;
 
@@ -87,15 +41,58 @@ flush_window_buffer(winid_t win)
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
-	GtkTextIter iter;
-	gtk_text_buffer_get_end_iter(buffer, &iter);
-	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, win->buffer->str, -1, win->window_stream->style, NULL);
+	switch(win->type) {
+	case wintype_TextBuffer:
+	{
+		GtkTextIter iter;
+		gtk_text_buffer_get_end_iter(buffer, &iter);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, win->buffer->str, -1, win->window_stream->style, NULL);
+
+		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+		g_assert(glk);
+		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->buffer->str);
+
+	}
+		break;
+
+	case wintype_TextGrid:
+	{
+		/* Number of characters to insert */
+		glong length = win->buffer->len;
+		glong chars_left = length;
+		
+		GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
+		
+		/* Get cursor position */
+		GtkTextIter start;
+		gtk_text_buffer_get_iter_at_mark(buffer, &start, cursor);
+		/* Spaces available on this line */
+		gint available_space = win->width - gtk_text_iter_get_line_offset(&start);
+		
+		while(chars_left > available_space && !gtk_text_iter_is_end(&start))
+		{
+			GtkTextIter end = start;
+			gtk_text_iter_forward_to_line_end(&end);
+			gtk_text_buffer_delete(buffer, &start, &end);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &start, win->buffer->str + (length - chars_left), available_space, win->window_stream->style, NULL);
+			chars_left -= available_space;
+			gtk_text_iter_forward_line(&start);
+			available_space = win->width;
+		}
+		if(!gtk_text_iter_is_end(&start))
+		{
+			GtkTextIter end = start;
+			gtk_text_iter_forward_chars(&end, chars_left);
+			gtk_text_buffer_delete(buffer, &start, &end);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &start, win->buffer->str + (length - chars_left), -1, win->window_stream->style, NULL);
+		}
+		
+		gtk_text_buffer_move_mark(buffer, cursor, &start);
+	}
+		break;
+	}
 
 	gdk_threads_leave();
-	
-	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->buffer->str);
 
 	g_string_truncate(win->buffer, 0);
 }
@@ -117,26 +114,12 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 					str->write_count += len;
 					break;
 					
-			    /* Text grid window */
+			    /* Text grid/buffer windows */
 			    case wintype_TextGrid:
+				case wintype_TextBuffer:
 			    {
 			        gchar *utf8 = convert_latin1_to_utf8(buf, len);
-			        if(utf8 != NULL)
-			        {
-			            /* FIXME: What to do if string contains \n? Split the input string at newlines and write each string separately? */
-			            write_utf8_to_grid(str->window, utf8);
-			            g_free(utf8);
-			        }
-			    }
-			        str->write_count += len;
-			        break;
-					
-				/* Text buffer window */	
-				case wintype_TextBuffer:
-				{
-					gchar *utf8 = convert_latin1_to_utf8(buf, len);
-					if(utf8 != NULL)
-					{
+			        if(utf8 != NULL) {
 						write_utf8_to_window_buffer(str->window, utf8);
 						g_free(utf8);
 					}
@@ -218,26 +201,12 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 					str->write_count += len;
 					break;
 					
-			    /* Text grid window */
+			    /* Text grid/buffer windows */
 			    case wintype_TextGrid:
+			    case wintype_TextBuffer:
 			    {
 			        gchar *utf8 = convert_ucs4_to_utf8(buf, len);
-			        if(utf8 != NULL)
-			        {
-			            /* FIXME: What to do if string contains \n? Split the input string at newlines and write each string separately? */
-			            write_utf8_to_grid(str->window, utf8);
-			            g_free(utf8);
-			        }
-			    }
-			        str->write_count += len;
-			        break;
-					
-				/* Text buffer window */	
-				case wintype_TextBuffer:
-				{
-					gchar *utf8 = convert_ucs4_to_utf8(buf, len);
-					if(utf8 != NULL)
-					{
+			        if(utf8 != NULL) {
 						write_utf8_to_window_buffer(str->window, utf8);
 						g_free(utf8);
 					}

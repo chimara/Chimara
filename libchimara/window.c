@@ -1145,6 +1145,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 void
 glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keywin)
 {
+	printf("set_arrangement(%d)\n", size);
 	VALID_WINDOW(win, return);
 	VALID_WINDOW_OR_NULL(keywin, return);
 	g_return_if_fail(win->type == wintype_Pair);
@@ -1232,6 +1233,8 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_TextGrid);
 
+	flush_window_buffer(win);
+
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	/* Wait until the window's size is current */
@@ -1250,6 +1253,7 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	    ypos += xpos / win->width;
 	    xpos %= win->width;
 	}
+
 	/* Go to the end if the cursor is moved off the bottom edge */
 	if(ypos >= win->height)
 	{
