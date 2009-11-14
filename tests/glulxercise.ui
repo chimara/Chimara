@@ -47,12 +47,14 @@
                     <signal name="clicked" handler="on_go_clicked"/>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton" id="stop">
-                    <property name="label" translatable="yes">gtk-stop</property>
+                    <property name="label">gtk-stop</property>
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
@@ -62,6 +64,7 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -154,8 +157,8 @@
         <col id="1" translatable="yes">accelfunctest.ulx</col>
       </row>
       <row>
-        <col id="0" translatable="yes">InputEventTest</col>
-        <col id="1" translatable="yes">inputeventtest.ulx</col>
+        <col id="0" translatable="yes">InputEventText</col>
+        <col id="1" translatable="yes">inputeventtext.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">MemCopyTest</col>
@@ -178,6 +181,5 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="stock">gtk-yes</property>
-    <property name="icon-size">4</property>
   </object>
 </interface>
