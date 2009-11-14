@@ -21,7 +21,7 @@ libchimara_la_SOURCES = \
 	glk.c glk.h \
 	glkstart.h \
 	glkunix.c glkunix.h \
-	hyperlink.c \
+	hyperlink.c hyperlink.h \
 	image.c \
 	init.c init.h \
 	input.c input.h \
