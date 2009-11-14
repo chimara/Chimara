@@ -61,29 +61,43 @@ write_utf8_to_grid(winid_t win, gchar *s)
     gdk_threads_leave();
 }
 
+
 /* Internal function: write a UTF-8 string to a text buffer window's text buffer. */
 static void
-write_utf8_to_window(winid_t win, gchar *s)
+write_utf8_to_window_buffer(winid_t win, gchar *s)
 {
 	if(win->input_request_type == INPUT_REQUEST_LINE || win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
 	{
 		ILLEGAL("Tried to print to a text buffer window with line input pending.");
 		return;
 	}
+
+	// Write to the buffer	
+	g_string_append(win->buffer, s);
+}
 	
+/* Internal function: flush a window's text buffer to the screen. */
+void
+flush_window_buffer(winid_t win)
+{
+	if(win->buffer->len == 0)
+		return;
+
 	gdk_threads_enter();
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(buffer, &iter);
-	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, s, -1, win->window_stream->style, NULL);
+	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, win->buffer->str, -1, win->window_stream->style, NULL);
 
 	gdk_threads_leave();
 	
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 	g_assert(glk);
-	g_signal_emit_by_name(glk, "text-buffer-output", win->rock, s);
+	g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->buffer->str);
+
+	g_string_truncate(win->buffer, 0);
 }
 
 /* Internal function: write a Latin-1 buffer with length to a stream. */
@@ -123,7 +137,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 					gchar *utf8 = convert_latin1_to_utf8(buf, len);
 					if(utf8 != NULL)
 					{
-						write_utf8_to_window(str->window, utf8);
+						write_utf8_to_window_buffer(str->window, utf8);
 						g_free(utf8);
 					}
 				}	
@@ -224,7 +238,7 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 					gchar *utf8 = convert_ucs4_to_utf8(buf, len);
 					if(utf8 != NULL)
 					{
-						write_utf8_to_window(str->window, utf8);
+						write_utf8_to_window_buffer(str->window, utf8);
 						g_free(utf8);
 					}
 				}	
@@ -341,6 +355,9 @@ void
 glk_put_string_stream(strid_t str, char *s)
 {
 	VALID_STREAM(str, return);
+	if(*s == 0)
+		return;
+
 	g_return_if_fail(str->file_mode != filemode_Read);
 
 	write_buffer_to_stream(str, s, strlen(s));
@@ -359,6 +376,9 @@ void
 glk_put_string_stream_uni(strid_t str, glui32 *s)
 {
 	VALID_STREAM(str, return);
+	if(*s == 0)
+		return;
+
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	/* An impromptu strlen() for glui32 arrays */
@@ -383,6 +403,9 @@ void
 glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
 {
 	VALID_STREAM(str, return);
+	if(len == 0)
+		return;
+
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	write_buffer_to_stream(str, buf, len);
@@ -402,6 +425,9 @@ void
 glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 {
 	VALID_STREAM(str, return);
+	if(len == 0)
+		return;
+
 	g_return_if_fail(str->file_mode != filemode_Read);
 	
 	write_buffer_to_stream_uni(str, buf, len);
@@ -884,9 +910,14 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 				}
 				else /* Regular binary file */
 				{
-					fgets(buf, len, str->file_pointer);
-					str->read_count += strlen(buf);
-					return strlen(buf);
+					if( !fgets(buf, len, str->file_pointer) ) {
+						*buf = 0;
+						return 0;
+					}
+
+					int nread = strlen(buf);
+					str->read_count += nread;
+					return nread;
 				}
 			}
 			else /* Text mode is the same for Unicode and regular files */
@@ -1022,10 +1053,14 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				else /* Regular binary file */
 				{
 					gchar *readbuffer = g_new0(gchar, len);
-					fgets(readbuffer, len, str->file_pointer);
-					glui32 count = strlen(readbuffer) + 1; /* Copy terminator */
+					if( !fgets(readbuffer, len, str->file_pointer) ) {
+						*buf = 0;
+						return 0;
+					}
+
+					glui32 count = strlen(readbuffer);
 					int foo;
-					for(foo = 0; foo < count; foo++)
+					for(foo = 0; foo < count + 1; foo++) /* Copy terminator */
 						buf[foo] = (unsigned char)(readbuffer[foo]);
 					str->read_count += count;
 					return count;

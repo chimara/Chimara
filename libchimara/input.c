@@ -16,6 +16,8 @@ request_char_event_common(winid_t win, gboolean unicode)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+
+	flush_window_buffer(win);
 	
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
@@ -166,6 +168,8 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 static void
 text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
+	flush_window_buffer(win);
+
 	gdk_threads_enter();
 	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );

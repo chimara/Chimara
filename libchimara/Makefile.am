@@ -30,7 +30,7 @@ libchimara_la_SOURCES = \
 	resource.c resource.h \
 	schannel.c \
 	stream.c stream.h \
-	strio.c \
+	strio.c strio.h \
 	style.c style.h \
 	timer.c timer.h \
 	window.c window.h 

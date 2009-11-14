@@ -7,6 +7,7 @@
 #include "stream.h"
 #include "input.h"
 #include "style.h"
+#include "hyperlink.h"
 
 
 enum InputRequestType
@@ -65,6 +66,10 @@ struct glk_window_struct
 	/* Signal handlers */
 	gulong keypress_handler;
 	gulong insert_text_handler;
+	gulong mouse_click_handler;
+	gulong mouse_move_handler;
+	/* Window buffer */
+	GString *buffer;
 };
 
 #endif

@@ -49,6 +49,7 @@ struct glk_stream_struct
 	gchar *filename; /* Displayable filename in UTF-8 for error handling */
 
 	gchar *style; /* Name of the current style */
+	gboolean hyperlink_mode; /* WHen turned on, text written to the stream will be a hyperlink */
 };
 
 G_GNUC_INTERNAL strid_t file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode);

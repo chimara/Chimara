@@ -147,8 +147,15 @@ glk_select(event_t *event)
 {
 	g_return_if_fail(event != NULL);
 
+	/* Flush all window buffers */
+	winid_t win;
+	for(win = glk_window_iterate(NULL, NULL); win != NULL; win = glk_window_iterate(win, NULL)) {
+		if(win->type == wintype_TextBuffer)
+			flush_window_buffer(win);
+	}
+
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+
 	get_appropriate_event(event);
 
 	/* Check for interrupt */

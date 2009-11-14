@@ -67,6 +67,10 @@ get_tag_name(glui32 style)
  */
 void
 glk_set_style_stream(strid_t str, glui32 styl) {
+	if(str->window == NULL)
+		return;
+
+	flush_window_buffer(str->window);
 	str->style = get_tag_name(styl);
 }
 
@@ -691,6 +695,20 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 	}
 }
 
+/**
+ * glk_stylehint_clear:
+ * @wintype: The window type to set a style hint on, or %wintype_AllTypes.
+ * @styl: The style to set a hint for.
+ * @hint: The type of style hint, one of the <code>stylehint_</code> constants.
+ *
+ * Resets a hint about the appearance of one style for a particular type of 
+ * window to it's default value. You can also set wintype to %wintype_AllTypes, which resets a hint for 
+ * all types of window.
+ * <note><para>
+ *  There is no equivalent constant to reset a hint for all styles of a single 
+ *  window type.
+ * </para></note>
+ */
 void
 glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 {
@@ -710,12 +728,31 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 	}
 }
 
+/**
+ * glk_style_distinguish:
+ * @win: The window in which the styles are to be distinguished.
+ * @styl1: The first style to be distinguished from the second style.
+ * @styl2: The second styel to be distinguished from the first style.
+ * 
+ * Returns: TRUE if the two styles are visually distinguishable in the given window.
+ * If they are not, it returns FALSE.
+ */
 glui32
 glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
 {
 	return styl1 != styl2;
 }
 
+/**
+ * glk_style_measure:
+ * @win: The window from which to take the style.
+ * @styl: The style to perform the measurement on.
+ * @hint: The stylehint to measure.
+ * @result: Address to write the result to.
+ * 
+ * This function can be used to query the current value of a particular style hint.
+ * Returns: TRUE upon successul retrievel, otherwise FALSE.
+ */
 glui32
 glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 {

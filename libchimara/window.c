@@ -31,6 +31,9 @@ window_new_common(glui32 rock)
 	win->line_input_buffer = NULL;
 	win->line_input_buffer_unicode = NULL;
 
+	/* Initialise the buffer */
+	win->buffer = g_string_sized_new(1024);
+
 	return win;
 }
 
@@ -48,6 +51,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 	if(destroy_node)
 		g_node_destroy(win->window_node);
 	win->magic = MAGIC_FREE;
+
+	g_string_free(win->buffer, TRUE);
 	g_free(win);
 }
 
@@ -482,6 +487,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
 			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
 
+			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
+			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
+			g_signal_handler_block( G_OBJECT(textview), win->mouse_click_handler );
+
 			/* Create the styles available to the window stream */
 			style_init_textgrid(textbuffer);
 		}
@@ -520,8 +529,13 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
 			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
 
+			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
+			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
+			g_signal_handler_block( G_OBJECT(textview), win->mouse_click_handler );
+
 			win->insert_text_handler = g_signal_connect_after( G_OBJECT(textbuffer), "insert-text", G_CALLBACK(after_window_insert_text), win );
 			g_signal_handler_block( G_OBJECT(textbuffer), win->insert_text_handler );
+
 
 			/* Create an editable tag to indicate uneditable parts of the window
 			(for line input) */
