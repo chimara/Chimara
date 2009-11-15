@@ -53,7 +53,7 @@ window_close_common(winid_t win, gboolean destroy_node)
 		g_node_destroy(win->window_node);
 	win->magic = MAGIC_FREE;
 
-	g_list_foreach(win->history, g_free, NULL);
+	g_list_foreach(win->history, (GFunc)g_free, NULL);
 	g_list_free(win->history);
 
 	g_string_free(win->buffer, TRUE);
@@ -488,8 +488,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* width and height are set later */
 			
 			/* Connect signal handlers */
-			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
-			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
+			win->char_input_keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
+			g_signal_handler_block( G_OBJECT(textview), win->char_input_keypress_handler );
 
 			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
 			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
@@ -530,9 +530,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_object_unref(zero);
 
 			/* Connect signal handlers */
-			win->keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_window_key_press_event), win );
-			g_signal_handler_block( G_OBJECT(textview), win->keypress_handler );
-
+			win->char_input_keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
+			g_signal_handler_block( G_OBJECT(textview), win->char_input_keypress_handler );
+			win->line_input_keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_line_input_key_press_event), win );
+			
 			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
 			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
 			g_signal_handler_block( G_OBJECT(textview), win->mouse_click_handler );
@@ -1149,7 +1150,6 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 void
 glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keywin)
 {
-	printf("set_arrangement(%d)\n", size);
 	VALID_WINDOW(win, return);
 	VALID_WINDOW_OR_NULL(keywin, return);
 	g_return_if_fail(win->type == wintype_Pair);

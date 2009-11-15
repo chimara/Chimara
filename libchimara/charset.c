@@ -28,8 +28,7 @@ gchar *
 convert_latin1_to_utf8(const gchar *s, const gsize len)
 {
 	GError *error = NULL;
-	gchar *canonical = remove_latin1_control_characters( (unsigned char *)s,
-		len);
+	gchar *canonical = remove_latin1_control_characters( (unsigned char *)s, len);
 	gchar *retval = g_convert(canonical, len, "UTF-8", "ISO-8859-1", NULL, NULL, &error);
 	g_free(canonical);
 	

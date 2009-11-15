@@ -22,7 +22,7 @@ request_char_event_common(winid_t win, gboolean unicode)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
-	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+	g_signal_handler_unblock( G_OBJECT(win->widget), win->char_input_keypress_handler );
 
 	gdk_threads_enter();
 	
@@ -93,7 +93,7 @@ glk_cancel_char_event(winid_t win)
 	if(win->input_request_type == INPUT_REQUEST_CHARACTER || win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE)
 	{
 		win->input_request_type = INPUT_REQUEST_NONE;
-		g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+		g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
 	}
 }
 
@@ -157,7 +157,7 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     gtk_widget_show(win->input_entry);
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
 	
-	g_signal_handler_unblock( G_OBJECT(win->widget), win->keypress_handler );
+	g_signal_handler_unblock( G_OBJECT(win->widget), win->char_input_keypress_handler );
 
 	gtk_widget_grab_focus(win->input_entry);
 	
@@ -355,12 +355,12 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	if(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE)
 		return;
 
-	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+	g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
 
 	int chars_written = 0;
 
 	if(win->type == wintype_TextGrid) {
-		g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+		g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
 		chars_written = finish_text_grid_line_input(win, FALSE);
 	} else if(win->type == wintype_TextBuffer) {
 		GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
@@ -396,7 +396,7 @@ on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 	/* Only one keypress will be handled */
 	win->input_request_type = INPUT_REQUEST_NONE;
-	g_signal_handler_block( G_OBJECT(win->widget), win->keypress_handler );
+	g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
 
 	return TRUE;
 }
@@ -407,15 +407,51 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	switch(win->type)
 	{
 		case wintype_TextBuffer:
-			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
+				|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
 			{
-				
-			}
-			else if(event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
-			{
+				/* Prevent falling off the end of the history list */
+				if( (event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+					&& win->history_pos && win->history_pos->next == NULL)
+					return TRUE;
+				if( (event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+					&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
+					return TRUE;
 			
+				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+				GtkTextIter start, end;
+				/* Erase any text that was already typed */
+				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+				gtk_text_buffer_get_iter_at_mark(buffer, &start, input_position);
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				
+				if(win->history_pos == NULL) {
+					gchar *current_input = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+					win->history = g_list_prepend(win->history, current_input);
+					win->history_pos = win->history;
+				}
+				
+				gtk_text_buffer_delete(buffer, &start, &end);
+		
+				if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+				{
+					if(win->history_pos)
+						win->history_pos = g_list_next(win->history_pos);
+					else
+						win->history_pos = win->history;
+				}
+				else /* down */
+					win->history_pos = g_list_previous(win->history_pos);
+		
+				/* Insert the history item into the window */
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				
+				g_signal_handler_block(buffer, win->insert_text_handler);
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &end, win->history_pos->data, -1, "input", NULL);
+				g_signal_handler_unblock(buffer, win->insert_text_handler);
+				return TRUE;
 			}
-			break;
+			return FALSE;
 
 		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
 		case wintype_TextGrid:
@@ -437,6 +473,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 			return retval; /* Block this key event if the entry handled it */
 		}
 	}
+	return FALSE;
 }
 
 /* Internal function: finish handling a line input request, for both text grid and text buffer windows. */
@@ -520,8 +557,13 @@ finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 	}
 	
 	/* Add the text to the window input history */
-	win->history = g_list_prepend(win->history, g_strdup(inserted_text));
-	win->history_pos = win->history;
+	if(win->history_pos != NULL)
+	{
+		g_free(win->history->data);
+		win->history = g_list_delete_link(win->history, win->history);
+	}
+	win->history = g_list_prepend(win->history, g_strdup(inserted_text));	
+	win->history_pos = NULL;
 	
 	g_free(inserted_text);
 
@@ -579,6 +621,13 @@ pasted into the window. */
 void
 after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win) 
 {
+	/* Set the history position to NULL and erase the text we were already editing */
+	if(win->history_pos != NULL)
+	{
+		g_free(win->history->data);
+		win->history = g_list_delete_link(win->history, win->history);
+		win->history_pos = NULL;
+	}
 	if( strchr(text, '\n') != NULL ) 
 	{
 		/* Remove signal handlers */
@@ -599,7 +648,7 @@ in a text grid window. */
 void
 on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 {
-	g_signal_handler_block(win->widget, win->keypress_handler);
+	g_signal_handler_block(win->widget, win->char_input_keypress_handler);
 
 	int chars_written = finish_text_grid_line_input(win, TRUE);
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
@@ -717,7 +766,7 @@ force_line_input_from_queue(winid_t win, event_t *event)
 	else if(win->type == wintype_TextGrid)
 	{
 		/* Remove signal handlers so the line input doesn't get picked up again */
-		g_signal_handler_block(win->widget, win->keypress_handler);
+		g_signal_handler_block(win->widget, win->char_input_keypress_handler);
 		
 		/* Insert the forced input into the window */
 		gtk_entry_set_text(GTK_ENTRY(win->input_entry), text);
