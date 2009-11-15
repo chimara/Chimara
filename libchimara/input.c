@@ -562,7 +562,9 @@ finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 		g_free(win->history->data);
 		win->history = g_list_delete_link(win->history, win->history);
 	}
-	win->history = g_list_prepend(win->history, g_strdup(inserted_text));	
+	if(*inserted_text != 0)
+		win->history = g_list_prepend(win->history, g_strdup(inserted_text));	
+	
 	win->history_pos = NULL;
 	
 	g_free(inserted_text);
