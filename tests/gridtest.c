@@ -49,6 +49,15 @@ void glk_main(void)
     assert(buffer);
     
     fprintf(stderr, "Line input field until end of line\n");
+    glk_window_move_cursor(mainwin, 10, 18);
+    glk_request_line_event(mainwin, buffer, 256, 0);
+    while(1) {
+        glk_select(&ev);
+        if(ev.type == evtype_LineInput)
+            break;
+    }
+    
+    fprintf(stderr, "Another line input field until end of line\n");
     glk_window_move_cursor(mainwin, 10, 20);
     glk_request_line_event(mainwin, buffer, 256, 0);
     while(1) {

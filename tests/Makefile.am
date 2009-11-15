@@ -3,7 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)
 
 dist_data_DATA = chimara.ui chimara.menus glulxercise.ui
 
-noinst_PROGRAMS = test-chimara test-multisession glulxercise
+noinst_PROGRAMS = test-chimara test-multisession glulxercise plugin-loader
 
 test_chimara_SOURCES = main.c callbacks.c error.c error.h
 test_chimara_CPPFLAGS = $(AM_CPPFLAGS) \
@@ -20,6 +20,10 @@ test_multisession_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 glulxercise_SOURCES = glulxercise.c error.c error.h
 glulxercise_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 glulxercise_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
+
+plugin_loader_SOURCES = plugin-loader.c
+plugin_loader_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
+plugin_loader_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 pkglib_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la
 PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
