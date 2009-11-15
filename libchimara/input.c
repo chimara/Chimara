@@ -190,11 +190,18 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
     gtk_text_buffer_apply_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
     
     /* Insert pre-entered text if needed */
-    if(insert)
+    if(insert) {
         gtk_text_buffer_insert(buffer, &end_iter, inserttext, -1);
+		gtk_text_buffer_get_end_iter(buffer, &end_iter); /* update after text insertion */
+	}
     
     /* Scroll to input point */
     gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), input_position);
+
+	/* Apply the correct style to the input prompt */
+	GtkTextIter input_iter;
+    gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
+    gtk_text_buffer_apply_tag_by_name(buffer, "input", &input_iter, &end_iter);
     
     gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
     g_signal_handler_unblock(buffer, win->insert_text_handler);
@@ -635,6 +642,8 @@ pasted into the window. */
 void
 after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win) 
 {
+	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+
 	/* Set the history position to NULL and erase the text we were already editing */
 	if(win->history_pos != NULL)
 	{
@@ -645,7 +654,6 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 	if( strchr(text, '\n') != NULL ) 
 	{
 		/* Remove signal handlers */
-		GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 		g_signal_handler_block(window_buffer, win->insert_text_handler);
 		
 		/* Make the window uneditable again and retrieve the text that was input */
@@ -655,6 +663,14 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
         ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		event_throw(glk, evtype_LineInput, win, chars_written, 0);
 	}
+
+	/* Apply the 'input' style to the text that was entered */
+	GtkTextIter end_iter;
+	gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
+	GtkTextIter input_iter;
+	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
+	gtk_text_buffer_get_iter_at_mark(window_buffer, &input_iter, input_position);
+	gtk_text_buffer_apply_tag_by_name(window_buffer, "input", &input_iter, &end_iter);
 }
 
 /* Internal function: Callback for signal activate on the line input GtkEntry

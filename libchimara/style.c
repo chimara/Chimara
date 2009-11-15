@@ -153,9 +153,12 @@ gtk_text_tag_copy(GtkTextTag *tag)
 		_COPY_FLAG (language_set);
 	#undef _COPY_FLAG
 
+	/* Copy the reverse_color attribute, that was added manually */
+	g_object_set_data( G_OBJECT(copy), "reverse_color", g_object_get_data(G_OBJECT(tag), "reverse_color") );
+
 	return copy;
 }
-    
+
 /* Internal function that reads the default styles from a CSS file */
 void
 style_init()
@@ -474,11 +477,8 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GObject *tag_object = G_OBJECT(tag);
-	gint reverse_color = 0;
 
-	/* FIXME where should we keep track of this?
-	g_object_get(tag, "reverse_color", &reverse_color, NULL);
-	*/
+	gint reverse_color = GPOINTER_TO_INT( g_object_get_data(tag_object, "reverse-color") );
 
 	int i = 0;
 	gchar color[20];
@@ -569,6 +569,8 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 				g_object_set(tag_object, "background-gdk", foreground_color, NULL);
 			else
 				g_object_set(tag_object, "background", "#000000", NULL);
+
+			g_object_set_data( tag_object, "reverse-color", GINT_TO_POINTER(val != 0) );
 		}
 		break;
 
@@ -648,8 +650,7 @@ query_tag(GtkTextTag *tag, glui32 hint)
 		break;
 
 	case stylehint_ReverseColor:
-		/* FIXME: implement this */
-		return 0;
+		return GPOINTER_TO_INT( g_object_get_data(G_OBJECT(tag), "reverse_color") );
 		break;
 
 	default:
