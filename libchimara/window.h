@@ -65,6 +65,7 @@ struct glk_window_struct
 	glui32 input_length;
 	GtkTextChildAnchor *input_anchor;
 	GtkWidget *input_entry;
+	gulong line_input_entry_changed;
 	/* Signal handlers */
 	gulong char_input_keypress_handler;
 	gulong line_input_keypress_handler;

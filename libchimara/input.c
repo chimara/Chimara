@@ -153,6 +153,8 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     gtk_widget_modify_base(win->input_entry, GTK_STATE_NORMAL, &background);
     
     g_signal_connect(win->input_entry, "activate", G_CALLBACK(on_input_entry_activate), win);
+    g_signal_connect(win->input_entry, "key-press-event", G_CALLBACK(on_input_entry_key_press_event), win);
+    win->line_input_entry_changed = g_signal_connect(win->input_entry, "changed", G_CALLBACK(on_input_entry_changed), win);
     
     gtk_widget_show(win->input_entry);
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
@@ -610,8 +612,18 @@ finish_text_grid_line_input(winid_t win, gboolean emit_signal)
 		g_assert(glk);
 		g_signal_emit_by_name(glk, "line-input", win->rock, text);
     }
+	
+	/* Add the text to the window input history */
+	if(win->history_pos != NULL)
+	{
+		g_free(win->history->data);
+		win->history = g_list_delete_link(win->history, win->history);
+	}
+	if(*text != 0)
+		win->history = g_list_prepend(win->history, g_strdup(text));	
+	win->history_pos = NULL;
+	
 	g_free(text);
-
 	return chars_written;
 }
 
@@ -655,6 +667,60 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 	int chars_written = finish_text_grid_line_input(win, TRUE);
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 	event_throw(glk, evtype_LineInput, win, chars_written, 0);
+}
+
+/* Internal function: Callback for signal key-press-event on the line input 
+GtkEntry in a text grid window. */
+gboolean
+on_input_entry_key_press_event(GtkEntry *input_entry, GdkEventKey *event, winid_t win)
+{
+	if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
+		|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+	{
+		/* Prevent falling off the end of the history list */
+		if( (event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+			&& win->history_pos && win->history_pos->next == NULL)
+			return TRUE;
+		if( (event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+			&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
+			return TRUE;
+	
+		if(win->history_pos == NULL) 
+		{
+			gchar *current_input = gtk_entry_get_text(input_entry);
+			win->history = g_list_prepend(win->history, current_input);
+			win->history_pos = win->history;
+		}
+
+		if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+		{
+			if(win->history_pos)
+				win->history_pos = g_list_next(win->history_pos);
+			else
+				win->history_pos = win->history;
+		}
+		else /* down */
+			win->history_pos = g_list_previous(win->history_pos);
+
+		/* Insert the history item into the window */
+		g_signal_handler_block(input_entry, win->line_input_entry_changed);
+		gtk_entry_set_text(input_entry, win->history_pos->data);
+		g_signal_handler_unblock(input_entry, win->line_input_entry_changed);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+void
+on_input_entry_changed(GtkEditable *editable, winid_t win)
+{
+	/* Set the history position to NULL and erase the text we were already editing */
+	if(win->history_pos != NULL)
+	{
+		g_free(win->history->data);
+		win->history = g_list_delete_link(win->history, win->history);
+		win->history_pos = NULL;
+	}
 }
 
 glui32
