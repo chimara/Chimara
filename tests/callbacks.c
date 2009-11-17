@@ -35,9 +35,11 @@
 #include "error.h"
 
 void on_save(GtkAction *action, ChimaraGlk *glk) {
-	GSList *widgets = gtk_action_get_proxies(action);
-	GtkWindow *top = GTK_WINDOW( gtk_widget_get_toplevel(widgets->data) );
-	error_dialog(top, NULL, "Not implemented yet");
+	chimara_glk_feed_line_input(glk, "save");
+}
+
+void on_restore(GtkAction *action, ChimaraGlk *glk) {
+	chimara_glk_feed_line_input(glk, "restore");
 }
 
 gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraGlk *glk) {
