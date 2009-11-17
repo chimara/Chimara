@@ -64,6 +64,7 @@ create_window(void)
 		"border-width", 6, 
 		"spacing", 6,
 		NULL);
+	g_signal_connect(glk, "stopped", G_CALLBACK(gtk_main_quit), NULL);
 	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
 	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
 	gtk_container_add(GTK_CONTAINER(window), glk);

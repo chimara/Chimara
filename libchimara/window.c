@@ -488,10 +488,12 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* width and height are set later */
 			
 			/* Connect signal handlers */
-			win->char_input_keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
+			win->char_input_keypress_handler = g_signal_connect(textview, "key-press-event", G_CALLBACK(on_char_input_key_press_event), win);
 			g_signal_handler_block(textview, win->char_input_keypress_handler);
+			win->line_input_keypress_handler = g_signal_connect(textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win);
+			g_signal_handler_block(textview, win->line_input_keypress_handler);
 
-			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
+			gtk_widget_add_events( textview, GDK_BUTTON_RELEASE_MASK );
 			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
 			g_signal_handler_block( textview, win->mouse_click_handler );
 
@@ -530,15 +532,16 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_object_unref(zero);
 
 			/* Connect signal handlers */
-			win->char_input_keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
-			g_signal_handler_block( G_OBJECT(textview), win->char_input_keypress_handler );
-			win->line_input_keypress_handler = g_signal_connect( G_OBJECT(textview), "key-press-event", G_CALLBACK(on_line_input_key_press_event), win );
+			win->char_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
+			g_signal_handler_block(textview, win->char_input_keypress_handler);
+			win->line_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win );
+			g_signal_handler_block(textview, win->line_input_keypress_handler);
 			
 			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
-			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
+			win->mouse_click_handler = g_signal_connect_after( textview, "button-release-event", G_CALLBACK(on_window_button_release_event), win );
 			g_signal_handler_block( textview, win->mouse_click_handler );
 
-			win->insert_text_handler = g_signal_connect_after( G_OBJECT(textbuffer), "insert-text", G_CALLBACK(after_window_insert_text), win );
+			win->insert_text_handler = g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(after_window_insert_text), win );
 			g_signal_handler_block( textbuffer, win->insert_text_handler );
 
 			/* Create an editable tag to indicate uneditable parts of the window

@@ -22,7 +22,7 @@ request_char_event_common(winid_t win, gboolean unicode)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
-	g_signal_handler_unblock( G_OBJECT(win->widget), win->char_input_keypress_handler );
+	g_signal_handler_unblock( win->widget, win->char_input_keypress_handler );
 
 	gdk_threads_enter();
 	
@@ -158,8 +158,6 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     
     gtk_widget_show(win->input_entry);
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
-	
-	g_signal_handler_unblock( G_OBJECT(win->widget), win->char_input_keypress_handler );
 
 	gtk_widget_grab_focus(win->input_entry);
 	
@@ -266,6 +264,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	        break;
     }
 	g_free(inserttext);
+	g_signal_handler_unblock(win->widget, win->line_input_keypress_handler);
 	
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
 	g_signal_emit_by_name(glk_data->self, "waiting");
@@ -325,7 +324,8 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	    case wintype_TextGrid:
 	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), utf8);
 	        break;
-    }		
+    }
+    g_signal_handler_unblock(win->widget, win->line_input_keypress_handler);
 	g_free(utf8);
 	
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
@@ -364,12 +364,11 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	if(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE)
 		return;
 
-	g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
+	g_signal_handler_block( win->widget, win->line_input_keypress_handler );
 
 	int chars_written = 0;
 
 	if(win->type == wintype_TextGrid) {
-		g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
 		chars_written = finish_text_grid_line_input(win, FALSE);
 	} else if(win->type == wintype_TextBuffer) {
 		GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
@@ -392,7 +391,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	}
 }
 
-/* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids, and also in line input on grids, to redirect keystrokes to the line input field. Blocked when not in use. */
+/* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids. Blocked when not in use. */
 gboolean
 on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 {
@@ -655,6 +654,7 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 	{
 		/* Remove signal handlers */
 		g_signal_handler_block(window_buffer, win->insert_text_handler);
+		g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 		
 		/* Make the window uneditable again and retrieve the text that was input */
         gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
@@ -678,7 +678,7 @@ in a text grid window. */
 void
 on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 {
-	g_signal_handler_block(win->widget, win->char_input_keypress_handler);
+	g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 
 	int chars_written = finish_text_grid_line_input(win, TRUE);
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
@@ -703,8 +703,8 @@ on_input_entry_key_press_event(GtkEntry *input_entry, GdkEventKey *event, winid_
 	
 		if(win->history_pos == NULL) 
 		{
-			gchar *current_input = gtk_entry_get_text(input_entry);
-			win->history = g_list_prepend(win->history, current_input);
+			const gchar *current_input = gtk_entry_get_text(input_entry);
+			win->history = g_list_prepend(win->history, g_strdup(current_input));
 			win->history_pos = win->history;
 		}
 
