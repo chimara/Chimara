@@ -475,14 +475,14 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_widget_show(textview);
 		    		
 			/* Set the window's font */
-			gtk_widget_modify_font(textview, glk_data->monospace_font_desc);
+			gtk_widget_modify_font( textview, get_current_font(wintype) );
 		    
 		    win->widget = textview;
 		    win->frame = textview;
 			
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
-			pango_layout_set_font_description(zero, glk_data->monospace_font_desc);
+			pango_layout_set_font_description( zero, get_current_font(wintype) );
 			pango_layout_get_pixel_size(zero, &(win->unit_width), &(win->unit_height));
 			g_object_unref(zero);
 			/* width and height are set later */
@@ -520,14 +520,14 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_widget_show_all(scrolledwindow);
 
 			/* Set the window's font */
-			gtk_widget_modify_font(textview, glk_data->default_font_desc);
+			gtk_widget_modify_font( textview, get_current_font(wintype) );
 			
 			win->widget = textview;
 			win->frame = scrolledwindow;
 			
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
-			pango_layout_set_font_description(zero, glk_data->default_font_desc);
+			pango_layout_set_font_description( zero, get_current_font(wintype) );
 			pango_layout_get_pixel_size(zero, &(win->unit_width), &(win->unit_height));
 			g_object_unref(zero);
 

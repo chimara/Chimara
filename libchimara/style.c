@@ -84,6 +84,8 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 	if( G_UNLIKELY(!glk_data->style_initialized) ) {
 		style_init();
 	}
+
+	/* Copy the current text tags to the textbuffer's tag table */
 	g_hash_table_foreach(glk_data->current_styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
 
@@ -97,6 +99,8 @@ style_init_textgrid(GtkTextBuffer *buffer)
 	if( G_UNLIKELY(!glk_data->style_initialized) ) {
 		style_init();
 	}
+
+	/* Copy the current text tags to the textgrid's tag table */
 	g_hash_table_foreach(glk_data->current_styles->text_grid, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
 
@@ -183,8 +187,10 @@ style_init()
 	scanner->config->cpair_comment_single = NULL;
 	scanner->config->scan_float = FALSE;
 
-	/* Initialise the default styles */
-	g_hash_table_insert(default_text_grid_styles, "normal", gtk_text_tag_new("normal"));
+	/* Initialise the default styles for a text grid */
+	tag = gtk_text_tag_new("normal");
+	g_object_set(tag, "font-desc", glk_data->monospace_font_desc, NULL);
+	g_hash_table_insert(default_text_grid_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
 	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
@@ -195,11 +201,11 @@ style_init()
 	g_hash_table_insert(default_text_grid_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	g_object_set(tag, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	g_object_set(tag, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
@@ -211,14 +217,50 @@ style_init()
 	g_hash_table_insert(default_text_grid_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, NULL);
+	g_object_set(tag, "style", PANGO_STYLE_ITALIC, NULL);
 	g_hash_table_insert(default_text_grid_styles, "block-quote", tag);
 
 	g_hash_table_insert(default_text_grid_styles, "input", gtk_text_tag_new("input"));
 	g_hash_table_insert(default_text_grid_styles, "user1", gtk_text_tag_new("user1"));
 	g_hash_table_insert(default_text_grid_styles, "user2", gtk_text_tag_new("user2"));
 
-	g_hash_table_foreach(default_text_grid_styles, style_table_copy, default_text_buffer_styles);
+	/* Tags for the textbuffer */
+	tag = gtk_text_tag_new("normal");
+	g_object_set(tag, "font-desc", glk_data->default_font_desc, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "normal", tag);
+
+	tag = gtk_text_tag_new("emphasized");
+	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "emphasized", tag);
+
+	tag = gtk_text_tag_new("preformatted");
+	g_object_set(tag, "font-desc", glk_data->monospace_font_desc, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "preformatted", tag);
+
+	tag = gtk_text_tag_new("header");
+	g_object_set(tag, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "header", tag);
+
+	tag = gtk_text_tag_new("subheader");
+	g_object_set(tag, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "subheader", tag);
+
+	tag = gtk_text_tag_new("alert");
+	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "alert", tag);
+
+	tag = gtk_text_tag_new("note");
+	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "note", tag);
+
+	tag = gtk_text_tag_new("block-quote");
+	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "block-quote", tag);
+
+	g_hash_table_insert(default_text_buffer_styles, "input", gtk_text_tag_new("input"));
+	g_hash_table_insert(default_text_buffer_styles, "user1", gtk_text_tag_new("user1"));
+	g_hash_table_insert(default_text_buffer_styles, "user2", gtk_text_tag_new("user2"));
+
 	glk_data->default_styles->text_grid = default_text_grid_styles;
 	glk_data->default_styles->text_buffer = default_text_buffer_styles;
 
@@ -773,4 +815,30 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 	}
 
 	return TRUE;
+}
+
+/* Internal function returning the current default font for a window type
+ * This can be used later for size calculations. Only wintype_TextGrid and wintype_TextBuffer are
+ * supported for now */
+PangoFontDescription*
+get_current_font(guint32 wintype)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	GtkTextTag *normal;
+
+	switch(wintype) {
+	case wintype_TextGrid:
+		normal = g_hash_table_lookup(glk_data->default_styles->text_grid, "normal");
+		break;
+	case wintype_TextBuffer:
+		normal = g_hash_table_lookup(glk_data->default_styles->text_buffer, "normal");
+		break;
+	default:
+		return NULL;
+	}
+
+	PangoFontDescription *font;
+	g_object_get( G_OBJECT(normal), "font-desc", &font, NULL );
+
+	return font;
 }
