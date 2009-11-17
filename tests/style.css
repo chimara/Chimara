@@ -1,4 +1,8 @@
-/* Possible selectors:
+/* Possible windows:
+ * grid
+ * buffer
+ *
+ * Possible selectors:
  * normal
  * emphasized
  * preformatted
@@ -20,8 +24,17 @@
  * background-color (#hex-value)
  * text-align (left/right/center)
  */
+grid.normal {
+	font-size: 14;
+}
+
+grid.user1 {
+	color: #303030;
+	background-color: #ffffff;
+}
+
 buffer.normal {
-	font-size: 12;
+	font-size: 14;
 }
 
 buffer.header {
@@ -31,7 +44,7 @@ buffer.header {
 }
 
 buffer.subheader {
-	font-size: 14;
+	font-size: 16;
 	font-weight: bold;
 }
 
