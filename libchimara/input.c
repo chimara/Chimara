@@ -93,7 +93,7 @@ glk_cancel_char_event(winid_t win)
 	if(win->input_request_type == INPUT_REQUEST_CHARACTER || win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE)
 	{
 		win->input_request_type = INPUT_REQUEST_NONE;
-		g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
+		g_signal_handler_block( win->widget, win->char_input_keypress_handler );
 	}
 }
 
@@ -202,8 +202,8 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
     gtk_text_buffer_apply_tag_by_name(buffer, "input", &input_iter, &end_iter);
     
     gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
-    g_signal_handler_unblock(buffer, win->insert_text_handler);
 
+	g_signal_handler_unblock(buffer, win->insert_text_handler);
 	gtk_widget_grab_focus(win->widget);
 	
 	gdk_threads_leave();
@@ -404,7 +404,7 @@ on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 	/* Only one keypress will be handled */
 	win->input_request_type = INPUT_REQUEST_NONE;
-	g_signal_handler_block( G_OBJECT(win->widget), win->char_input_keypress_handler );
+	g_signal_handler_block( win->widget, win->char_input_keypress_handler );
 
 	return TRUE;
 }
@@ -831,6 +831,7 @@ force_line_input_from_queue(winid_t win, event_t *event)
 		
 		/* Remove signal handlers so the line input doesn't get picked up again */
 		g_signal_handler_block(buffer, win->insert_text_handler);
+		g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 		
 		/* Erase any text that was already typed */
 		GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
