@@ -828,10 +828,10 @@ get_current_font(guint32 wintype)
 
 	switch(wintype) {
 	case wintype_TextGrid:
-		normal = g_hash_table_lookup(glk_data->default_styles->text_grid, "normal");
+		normal = g_hash_table_lookup(glk_data->current_styles->text_grid, "normal");
 		break;
 	case wintype_TextBuffer:
-		normal = g_hash_table_lookup(glk_data->default_styles->text_buffer, "normal");
+		normal = g_hash_table_lookup(glk_data->current_styles->text_buffer, "normal");
 		break;
 	default:
 		return NULL;
