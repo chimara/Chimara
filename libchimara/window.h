@@ -70,10 +70,12 @@ struct glk_window_struct
 	gulong char_input_keypress_handler;
 	gulong line_input_keypress_handler;
 	gulong insert_text_handler;
-	gulong mouse_click_handler;
-	gulong mouse_move_handler;
+	gulong tag_event_handler;
 	/* Window buffer */
 	GString *buffer;
+	/* Hyperlinks */
+	GHashTable *hyperlinks;
+	struct hyperlink *current_hyperlink;
 };
 
 #endif

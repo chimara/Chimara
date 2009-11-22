@@ -120,6 +120,8 @@ create_window(void)
 	}
 	
 	glk = chimara_if_new();
+	//chimara_if_set_preferred_interpreter( CHIMARA_IF(glk), CHIMARA_IF_FORMAT_Z8, CHIMARA_IF_INTERPRETER_NITFOL);
+
 	g_object_set(glk, 
 		"border-width", 6, 
 		"spacing", 6,
@@ -180,6 +182,8 @@ main(int argc, char *argv[])
    		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
 		return 1;
 	}
+	//chimara_glk_run( CHIMARA_GLK(glk), ".libs/multiwin.so", argc, argv, NULL);
+
 
     gdk_threads_enter();
 	gtk_main();

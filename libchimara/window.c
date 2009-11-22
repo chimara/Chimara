@@ -35,6 +35,9 @@ window_new_common(glui32 rock)
 	/* Initialise the buffer */
 	win->buffer = g_string_sized_new(1024);
 
+	/* Initialise hyperlink table */
+	win->hyperlinks = g_hash_table_new_full(g_int_hash, g_direct_equal, g_free, g_object_unref);
+
 	return win;
 }
 
@@ -57,6 +60,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_list_free(win->history);
 
 	g_string_free(win->buffer, TRUE);
+	g_hash_table_destroy(win->hyperlinks);
+	g_free(win->current_hyperlink);
 	g_free(win);
 }
 
@@ -493,10 +498,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_signal_handler_block(textview, win->char_input_keypress_handler);
 			win->line_input_keypress_handler = g_signal_connect(textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win);
 			g_signal_handler_block(textview, win->line_input_keypress_handler);
-
-			gtk_widget_add_events( textview, GDK_BUTTON_RELEASE_MASK );
-			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
-			g_signal_handler_block( textview, win->mouse_click_handler );
 		}
 		    break;
 		
@@ -536,12 +537,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->line_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win );
 			g_signal_handler_block(textview, win->line_input_keypress_handler);
 			
-			gtk_widget_add_events( GTK_WIDGET(textview), GDK_BUTTON_RELEASE_MASK );
-			win->mouse_click_handler = g_signal_connect_after( textview, "button-release-event", G_CALLBACK(on_window_button_release_event), win );
-			g_signal_handler_block( textview, win->mouse_click_handler );
-
 			win->insert_text_handler = g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(after_window_insert_text), win );
-			g_signal_handler_block( textbuffer, win->insert_text_handler );
+			g_signal_handler_block(textbuffer, win->insert_text_handler);
+
 
 			/* Create an editable tag to indicate uneditable parts of the window
 			(for line input) */

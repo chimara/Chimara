@@ -9,7 +9,7 @@ static gboolean style_accept_style_selector(GScanner *scanner);
 static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
 static void style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table);
 static void style_table_copy(gpointer key, gpointer tag, gpointer target_table);
-static GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
+GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
 
 /**
  * glk_set_style:
@@ -123,7 +123,7 @@ style_table_copy(gpointer key, gpointer tag, gpointer target_table)
 }
 
 /* Internal function that copies a text tag */
-static GtkTextTag*
+GtkTextTag*
 gtk_text_tag_copy(GtkTextTag *tag)
 {
 	GtkTextTag *copy;
@@ -157,8 +157,11 @@ gtk_text_tag_copy(GtkTextTag *tag)
 		_COPY_FLAG (language_set);
 	#undef _COPY_FLAG
 
-	/* Copy the reverse_color attribute, that was added manually */
-	g_object_set_data( G_OBJECT(copy), "reverse_color", g_object_get_data(G_OBJECT(tag), "reverse_color") );
+	/* Copy the data that was added manually */
+	gpointer reverse_color = g_object_get_data( G_OBJECT(tag), "reverse_color" );
+
+	if(reverse_color)
+		g_object_set_data( G_OBJECT(copy), "reverse_color", reverse_color );
 
 	return copy;
 }
@@ -168,10 +171,10 @@ void
 style_init()
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	GHashTable *default_text_grid_styles = g_hash_table_new(g_str_hash, g_str_equal);
-	GHashTable *default_text_buffer_styles = g_hash_table_new(g_str_hash, g_str_equal);
-	GHashTable *current_text_grid_styles = g_hash_table_new(g_str_hash, g_str_equal);
-	GHashTable *current_text_buffer_styles = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *default_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GHashTable *default_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GHashTable *current_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GHashTable *current_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GtkTextTag *tag;
 
 	/* Create the CSS file scanner */
@@ -217,12 +220,16 @@ style_init()
 	g_hash_table_insert(default_text_grid_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "style", PANGO_STYLE_ITALIC, NULL);
+	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "block-quote", tag);
 
 	g_hash_table_insert(default_text_grid_styles, "input", gtk_text_tag_new("input"));
 	g_hash_table_insert(default_text_grid_styles, "user1", gtk_text_tag_new("user1"));
 	g_hash_table_insert(default_text_grid_styles, "user2", gtk_text_tag_new("user2"));
+
+	tag = gtk_text_tag_new("hyperlink");
+	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	g_hash_table_insert(default_text_grid_styles, "hyperlink", tag);
 
 	/* Tags for the textbuffer */
 	tag = gtk_text_tag_new("normal");
@@ -254,12 +261,17 @@ style_init()
 	g_hash_table_insert(default_text_buffer_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, NULL);
+	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "block-quote", tag);
 
 	g_hash_table_insert(default_text_buffer_styles, "input", gtk_text_tag_new("input"));
 	g_hash_table_insert(default_text_buffer_styles, "user1", gtk_text_tag_new("user1"));
 	g_hash_table_insert(default_text_buffer_styles, "user2", gtk_text_tag_new("user2"));
+
+	tag = gtk_text_tag_new("hyperlink");
+	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
+
 
 	glk_data->default_styles->text_grid = default_text_grid_styles;
 	glk_data->default_styles->text_buffer = default_text_buffer_styles;

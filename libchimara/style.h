@@ -15,6 +15,7 @@ G_GNUC_INTERNAL void style_init_textbuffer(GtkTextBuffer *buffer);
 G_GNUC_INTERNAL void style_init_textgrid(GtkTextBuffer *buffer);
 G_GNUC_INTERNAL void style_init();
 G_GNUC_INTERNAL PangoFontDescription* get_current_font(guint32 wintype);
+G_GNUC_INTERNAL GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
 
 typedef struct StyleSet {
 	GHashTable *text_grid;

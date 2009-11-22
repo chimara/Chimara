@@ -103,6 +103,14 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		/* Timer capabilities present */
 		case gestalt_Timer:
 			return 1;
+
+		/* Hyperlink capabilities present */
+		case gestalt_Hyperlinks:
+			return 1;
+
+		/* Hyperlinks supported on textbuffers only at the moment */
+		case gestalt_HyperlinkInput:
+			return val == wintype_TextBuffer;
 			
 		/* Unsupported capabilities */
 		case gestalt_MouseInput:
@@ -111,8 +119,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_Sound:
 		case gestalt_SoundVolume:
 		case gestalt_SoundNotify:
-		case gestalt_Hyperlinks:
-		case gestalt_HyperlinkInput:
 		case gestalt_SoundMusic:
 		case gestalt_GraphicsTransparency:
 		/* Selector not supported */	

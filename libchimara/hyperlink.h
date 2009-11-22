@@ -8,6 +8,14 @@
 #include "window.h"
 #include "event.h"
 
-G_GNUC_INTERNAL gboolean on_window_button_release_event(GtkWidget *widget, GdkEventButton *event, winid_t win);
+struct hyperlink {
+	guint32 value;
+	GtkTextTag *tag;
+	gulong event_handler;
+	winid_t window;
+};
+typedef struct hyperlink hyperlink_t;
+
+G_GNUC_INTERNAL gboolean on_hyperlink_clicked(GtkTextTag *tag, GObject *object, GdkEvent *event, GtkTextIter *iter, hyperlink_t *link);
 
 #endif

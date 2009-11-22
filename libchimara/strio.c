@@ -46,7 +46,17 @@ flush_window_buffer(winid_t win)
 	{
 		GtkTextIter iter;
 		gtk_text_buffer_get_end_iter(buffer, &iter);
-		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, win->buffer->str, -1, win->window_stream->style, NULL);
+
+		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+		GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
+
+		if(win->window_stream->hyperlink_mode) {
+			GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
+			GtkTextTag *link_tag = win->current_hyperlink->tag;
+			gtk_text_buffer_insert_with_tags(buffer, &iter, win->buffer->str, -1, style_tag, link_style_tag, link_tag, NULL);
+		} else {
+			gtk_text_buffer_insert_with_tags(buffer, &iter, win->buffer->str, -1, style_tag, NULL);
+		}
 
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
@@ -74,7 +84,18 @@ flush_window_buffer(winid_t win)
 			GtkTextIter end = start;
 			gtk_text_iter_forward_to_line_end(&end);
 			gtk_text_buffer_delete(buffer, &start, &end);
-			gtk_text_buffer_insert_with_tags_by_name(buffer, &start, win->buffer->str + (length - chars_left), available_space, win->window_stream->style, NULL);
+
+			GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+			GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
+
+			if(win->window_stream->hyperlink_mode) {
+				GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
+				GtkTextTag *link_tag = win->current_hyperlink->tag;
+				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), available_space, style_tag, link_style_tag, link_tag, NULL);
+			} else {
+				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), available_space, style_tag, NULL);
+			}
+
 			chars_left -= available_space;
 			gtk_text_iter_forward_line(&start);
 			available_space = win->width;
@@ -84,7 +105,17 @@ flush_window_buffer(winid_t win)
 			GtkTextIter end = start;
 			gtk_text_iter_forward_chars(&end, chars_left);
 			gtk_text_buffer_delete(buffer, &start, &end);
-			gtk_text_buffer_insert_with_tags_by_name(buffer, &start, win->buffer->str + (length - chars_left), -1, win->window_stream->style, NULL);
+
+			GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+			GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
+
+			if(win->window_stream->hyperlink_mode) {
+				GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
+				GtkTextTag *link_tag = win->current_hyperlink->tag;
+				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), -1, style_tag, link_style_tag, link_tag, NULL);
+			} else {
+				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), -1, style_tag, NULL);
+			}
 		}
 		
 		gtk_text_buffer_move_mark(buffer, cursor, &start);
