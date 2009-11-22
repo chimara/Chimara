@@ -168,10 +168,10 @@ void
 style_init()
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	GHashTable *default_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
-	GHashTable *default_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
-	GHashTable *current_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
-	GHashTable *current_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+	GHashTable *default_text_grid_styles = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *default_text_buffer_styles = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *current_text_grid_styles = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *current_text_buffer_styles = g_hash_table_new(g_str_hash, g_str_equal);
 	GtkTextTag *tag;
 
 	/* Create the CSS file scanner */

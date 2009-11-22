@@ -81,4 +81,7 @@ shutdown_glk(void)
 	/* Unref the input queues */
 	g_async_queue_unref(glk_data->char_input_queue);
 	g_async_queue_unref(glk_data->line_input_queue);
+
+	printf("cleaning up...\n");
+	chimara_glk_reset(glk_data->self);
 }

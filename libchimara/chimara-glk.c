@@ -168,11 +168,10 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
 }
 
 static void
-chimara_glk_finalize(GObject *object)
+chimara_glk_free_private_data(ChimaraGlk *self)
 {
-    ChimaraGlk *self = CHIMARA_GLK(object);
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
-    
+
     /* Free the event queue */
     g_mutex_lock(priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
@@ -201,17 +200,38 @@ chimara_glk_finalize(GObject *object)
 	g_async_queue_unref(priv->char_input_queue);
 	g_async_queue_unref(priv->line_input_queue);
 	
-	/* Free private data */
+	/* Free styles */
 	pango_font_description_free(priv->default_font_desc);
 	pango_font_description_free(priv->monospace_font_desc);
+
 	g_free(priv->current_dir);
 	g_hash_table_destroy(priv->default_styles->text_buffer);
 	g_hash_table_destroy(priv->default_styles->text_grid);
 	g_hash_table_destroy(priv->current_styles->text_buffer);
 	g_hash_table_destroy(priv->current_styles->text_grid);
+}
 	
+static void
+chimara_glk_finalize(GObject *object)
+{
+    ChimaraGlk *self = CHIMARA_GLK(object);
+	chimara_glk_free_private_data(self);
+
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
+
+/**
+ * chimara_glk_reset:
+ * Resets the widget back to it's origional state. IE: it resets all the private data.
+ * @param self: The ChimaraGLK widget to reset
+ */
+void
+chimara_glk_reset(ChimaraGlk *self)
+{
+	chimara_glk_free_private_data(self);
+	chimara_glk_init(self);
+}
+
 
 /* Internal function: Recursively get the Glk window tree's size request */
 static void
@@ -551,6 +571,7 @@ static void
 chimara_glk_stopped(ChimaraGlk *self)
 {
     CHIMARA_GLK_USE_PRIVATE(self, priv);
+	printf("stopped signal received\n");
     priv->running = FALSE;
 
     /* Free the plugin */
@@ -562,6 +583,7 @@ static void
 chimara_glk_started(ChimaraGlk *self)
 {
 	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	printf("started signal received\n");
 	priv->running = TRUE;
 }
 
@@ -1072,8 +1094,17 @@ glk_enter(struct StartupData *startup)
 	
 	/* Run main function */
     g_signal_emit_by_name(startup->glk_data->self, "started");
+	/* FIXME: hack. should be done by the signal above but for some reason
+	 * this doesn't work */
+	chimara_glk_started(startup->glk_data->self);
+
 	(startup->glk_main)();
+
 	g_signal_emit_by_name(startup->glk_data->self, "stopped");
+	/* FIXME: hack. should be done by the signal above but for some reason
+	 * this doesn't work */
+	chimara_glk_stopped(startup->glk_data->self);
+
 	g_slice_free(struct StartupData, startup);
 	return NULL;
 }
@@ -1158,6 +1189,8 @@ chimara_glk_stop(ChimaraGlk *glk)
 {
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
     CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
+	printf("stopping (%d)...\n", priv->running);
     /* Don't do anything if not running a program */
     if(!priv->running)
     	return;
