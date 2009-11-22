@@ -474,7 +474,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
 			gtk_widget_show(textview);
 		    		
-			/* Set the window's font */
+			/* Create the styles available to the window stream */
+			style_init_textgrid(textbuffer);
 			gtk_widget_modify_font( textview, get_current_font(wintype) );
 		    
 		    win->widget = textview;
@@ -496,9 +497,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_widget_add_events( textview, GDK_BUTTON_RELEASE_MASK );
 			win->mouse_click_handler = g_signal_connect_after( G_OBJECT(textview), "button-release-event", G_CALLBACK(on_window_button_release_event), win );
 			g_signal_handler_block( textview, win->mouse_click_handler );
-
-			/* Create the styles available to the window stream */
-			style_init_textgrid(textbuffer);
 		}
 		    break;
 		
@@ -519,7 +517,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
 			gtk_widget_show_all(scrolledwindow);
 
-			/* Set the window's font */
+			/* Create the styles available to the window stream */
+			style_init_textbuffer(textbuffer);
 			gtk_widget_modify_font( textview, get_current_font(wintype) );
 			
 			win->widget = textview;
@@ -547,9 +546,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* Create an editable tag to indicate uneditable parts of the window
 			(for line input) */
 			gtk_text_buffer_create_tag(textbuffer, "uneditable", "editable", FALSE, "editable-set", TRUE, NULL);
-
-			/* Create the styles available to the window stream */
-			style_init_textbuffer(textbuffer);
 
 			/* Mark the position where the user will input text */
 			GtkTextIter end;

@@ -826,6 +826,10 @@ get_current_font(guint32 wintype)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GtkTextTag *normal;
 
+	if( G_UNLIKELY(!glk_data->style_initialized) ) {
+		style_init();
+	}
+
 	switch(wintype) {
 	case wintype_TextGrid:
 		normal = g_hash_table_lookup(glk_data->current_styles->text_grid, "normal");
