@@ -42,12 +42,13 @@ LT_INIT                      # Libtool 2.2.6 and up
 #LT_PREREQ([2.2.6])          # ...goddamn Debian still has 1.5
 AC_PROG_LIBTOOL              # Old way of declaring Libtool
 AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
-IT_PROG_INTLTOOL([0.35.0])   # Intltool
+IT_PROG_INTLTOOL    # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
 GTK_DOC_CHECK(1.9)           # Gtk-Doc
 # Other utilities used in this package's various make scripts
 AC_PROG_AWK
 AC_PATH_PROG([PERL], [perl]) # Perl
+AC_PATH_PROG([TEST], [test]) # Test
 
 ### TYPES #####################################################################
 
@@ -63,18 +64,26 @@ GETTEXT_PACKAGE=chimara
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 
+### ILIAD #####################################################################
+AC_ARG_ENABLE([iliad],
+  [AS_HELP_STRING([--enable-iliad],[Compiles Chimara for the iLiad])],
+  [AS_CASE([${enableval}],
+	   [yes], [iliad=true],
+	   [no], [iliad=false],
+	   [AC_MSG_ERROR([bad value ${enableval} for --enable-iliad])]
+   )],
+   [iliad=false]
+)
+
+AM_CONDITIONAL([TARGET_ILIAD], [$TEST "x$iliad" = xtrue])
+
+
 ### CHECK FOR LIBRARIES #######################################################
-
-GTK_REQUIRED_VERSION=2.8
-GLIB_REQUIRED_VERSION=2.6
-
-AC_SUBST(GTK_REQUIRED_VERSION)
-AC_SUBST(GLIB_REQUIRED_VERSION)
 
 # Libraries needed to build Chimara library
 PKG_CHECK_MODULES([CHIMARA], [
-	glib-2.0 >= $GLIB_REQUIRED_VERSION
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	glib-2.0 
+	gtk+-2.0
 	gthread-2.0 
 	gmodule-2.0
 	pango
@@ -83,7 +92,7 @@ CHIMARA_LIBS="$CHIMARA_LIBS -lm"
 AC_SUBST(CHIMARA_LIBS)
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION 
+	gtk+-2.0 
 	gmodule-2.0
 ])
 
@@ -115,6 +124,7 @@ docs/reference/version.xml
 docs/reference/build-selector-table.pl
 po/Makefile.in
 ])
+
 # Do it
 AC_OUTPUT
 
