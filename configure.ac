@@ -13,7 +13,7 @@ AC_CONFIG_MACRO_DIR(m4)
 # Initialize Automake
 AM_INIT_AUTOMAKE([-Wall])
 # Configure with --enable-silent-rules to cut down on clutter
-AM_SILENT_RULES
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 ### LIBRARY VERSIONING ########################################################
 # Only update immediately before a public release
