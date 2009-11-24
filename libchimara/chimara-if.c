@@ -533,11 +533,14 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	ChimaraIFInterpreter interpreter = priv->preferred_interpreter[format];
 	gchar *pluginfile = g_strconcat(plugin_names[interpreter], "." G_MODULE_SUFFIX, NULL);
 
+	gchar *pluginpath;
+#ifdef DEBUG
 	/* If there is a plugin in the source tree, use that */
-	gchar *pluginpath = g_build_filename("..", "interpreters", plugin_names[interpreter], LT_OBJDIR, pluginfile, NULL);
+	pluginpath = g_build_filename(PLUGINSOURCEDIR, plugin_names[interpreter], LT_OBJDIR, pluginfile, NULL);
 	if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) )
 	{
 		g_free(pluginpath);
+#endif
 		pluginpath = g_build_filename(PLUGINDIR, pluginfile, NULL);
 		if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) )
 		{
@@ -546,7 +549,9 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 			g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_NOT_FOUND, _("No appropriate %s interpreter plugin was found"), interpreter_names[interpreter]);
 			return FALSE;
 		}
+#ifdef DEBUG
 	}
+#endif
 	g_free(pluginfile);
 
 	/* Decide what arguments to pass to the interpreters; currently only the

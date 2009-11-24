@@ -10,13 +10,12 @@ dist_noinst_SCRIPTS = copying.awk opt2glkc.pl y2help.pl
 pkglib_LTLIBRARIES = nitfol.la
 nitfol_la_SOURCES = automap.c automap.h binary.h copying.h debug.c debug.h \
 	decode.c decode.h errmesg.c errmesg.h globals.c globals.h hash.c hash.h \
-	iff.c iff.h infix.c infix.h inform.y inform.h init.c init.h io.c \
-	linkevil.h main.c main.h nio.h nitfol.h no_blorb.h objects.c objects.h \
-	op_call.c op_call.h op_jmp.c op_jmp.h oplist.c oplist.h op_math.c \
-	op_math.h op_save.c op_save.h op_table.c op_table.h op_v6.c op_v6.h \
-	portfunc.c portfunc.h quetzal.c quetzal.h solve.c solve.h stack.c stack.h \
-	struct.c struct.h tokenise.c tokenise.h undo.c undo.h z_io.c z_io.h \
-	zscii.c zscii.h \
+	iff.c iff.h infix.c infix.h inform.y inform.h init.c init.h io.c io.h \
+	linkevil.h main.c main.h nitfol.h no_blorb.h objects.c objects.h op_call.c \
+	op_call.h op_jmp.c op_jmp.h oplist.c oplist.h op_math.c op_math.h \
+	op_save.c op_save.h op_table.c op_table.h op_v6.c op_v6.h portfunc.c \
+	portfunc.h quetzal.c quetzal.h solve.c solve.h stack.c stack.h struct.c \
+	struct.h tokenise.c tokenise.h undo.c undo.h z_io.c z_io.h zscii.c zscii.h \
 	$(GRAPHICS) \
 	$(BLORB) \
 	$(SOUND)
@@ -29,8 +28,8 @@ info_TEXINFOS = nitfol.texi
 nitfol_TEXINFOS = dbg_help.texi options.texi
 # man_MANS = nitfol.6
 
-BUILT_SOURCES = copying.c dbg_help.h startunix.c
-CLEANFILES = $(BUILT_SOURCES) dbg_help.texi nitfol.6 options.texi 
+BUILT_SOURCES = copying.c dbg_help.h startunix.c dbg_help.texi options.texi
+CLEANFILES = $(BUILT_SOURCES) nitfol.6 
 
 dbg_help.h: inform.y y2help.pl
 	$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y

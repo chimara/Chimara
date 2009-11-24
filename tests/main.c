@@ -88,7 +88,7 @@ create_window(void)
 	GError *error = NULL;
 
    	builder = gtk_builder_new();
-	if( !gtk_builder_add_from_file(builder, "chimara.ui", &error) ) {
+	if( !gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", &error) ) {
 		error_dialog(NULL, error, "Error while building interface: ");	
 		return;
 	}
@@ -114,7 +114,7 @@ create_window(void)
 		gtk_action_group_add_action_with_accel(actiongroup, GTK_ACTION(load_object(ptr[0])), ptr[1]);
 
 	uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, "chimara.menus", &error) ) {
+	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
 		error_dialog(NULL, error, "Error while building interface: ");
 		return;
 	}

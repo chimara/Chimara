@@ -44,7 +44,7 @@ AC_PROG_LIBTOOL              # Old way of declaring Libtool
 AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
 IT_PROG_INTLTOOL    # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
-GTK_DOC_CHECK(1.9)           # Gtk-Doc
+GTK_DOC_CHECK(1.11)          # Gtk-Doc 1.11 required
 # Other utilities used in this package's various make scripts
 AC_PROG_AWK
 AC_PATH_PROG([PERL], [perl]) # Perl

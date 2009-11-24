@@ -1,4 +1,5 @@
-This is nitfol.info, produced by makeinfo version 4.13 from nitfol.texi.
+This is ../../../interpreters/nitfol/nitfol.info, produced by makeinfo
+version 4.13 from ../../../interpreters/nitfol/nitfol.texi.
 
 INFO-DIR-SECTION Games
 START-INFO-DIR-ENTRY
@@ -1056,20 +1057,20 @@ File: nitfol.info,  Node: Games Cited,  Prev: Thanks,  Up: Top
 
 
 Tag Table:
-Node: Top205
-Node: Invoking nitfol1544
-Node: Features8420
-Node: Preferences9069
-Node: Infinite undo/redo10425
-Node: Aliases11199
-Node: Abbreviation Expansion13723
-Node: Typo correction14840
-Node: Automapping16754
-Node: Quetzal22533
-Node: Blorb24254
-Node: Debugger24680
-Node: Bugs31655
-Node: Thanks34710
-Node: Games Cited35126
+Node: Top263
+Node: Invoking nitfol1602
+Node: Features8478
+Node: Preferences9127
+Node: Infinite undo/redo10483
+Node: Aliases11257
+Node: Abbreviation Expansion13781
+Node: Typo correction14898
+Node: Automapping16812
+Node: Quetzal22591
+Node: Blorb24312
+Node: Debugger24738
+Node: Bugs31713
+Node: Thanks34768
+Node: Games Cited35184
 
 End Tag Table

@@ -177,19 +177,6 @@ style_init()
 	GHashTable *current_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GtkTextTag *tag;
 
-	/* Create the CSS file scanner */
-	GScanner *scanner = g_scanner_new(NULL);
-
-	int f = open(glk_data->css_file, O_RDONLY);
-	g_return_if_fail(f != -1);
-	g_scanner_input_file(scanner, f);
-	scanner->input_name = glk_data->css_file;
-	scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
-	scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
-	scanner->config->symbol_2_token = TRUE;
-	scanner->config->cpair_comment_single = NULL;
-	scanner->config->scan_float = FALSE;
-
 	/* Initialise the default styles for a text grid */
 	tag = gtk_text_tag_new("normal");
 	g_object_set(tag, "font-desc", glk_data->monospace_font_desc, NULL);
@@ -272,23 +259,39 @@ style_init()
 	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
-
 	glk_data->default_styles->text_grid = default_text_grid_styles;
 	glk_data->default_styles->text_buffer = default_text_buffer_styles;
 
-	/* Run the scanner over the CSS file, overriding defaults */
-	while( g_scanner_peek_next_token(scanner) != G_TOKEN_EOF) {
-		if( !style_accept_style_selector(scanner) )
-			break;
+	/* Create the CSS file scanner */
+	GScanner *scanner = g_scanner_new(NULL);
+
+	int f = open(glk_data->css_file, O_RDONLY);
+	if(f != -1)
+	{
+		g_scanner_input_file(scanner, f);
+		scanner->input_name = glk_data->css_file;
+		scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
+		scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
+		scanner->config->symbol_2_token = TRUE;
+		scanner->config->cpair_comment_single = NULL;
+		scanner->config->scan_float = FALSE;
+
+		/* Run the scanner over the CSS file, overriding defaults */
+		while( g_scanner_peek_next_token(scanner) != G_TOKEN_EOF) {
+			if( !style_accept_style_selector(scanner) )
+				break;
+		}
+
+		g_scanner_destroy(scanner);
 	}
+	else
+		g_warning("Could not find CSS file");
 
 	/* Set the current style to a copy of the default style */
 	g_hash_table_foreach(default_text_grid_styles, style_table_copy, current_text_grid_styles);
 	g_hash_table_foreach(default_text_buffer_styles, style_table_copy, current_text_buffer_styles);
 	glk_data->current_styles->text_grid = current_text_grid_styles;
 	glk_data->current_styles->text_buffer = current_text_buffer_styles;
-
-	g_scanner_destroy(scanner);
 
 	glk_data->style_initialized = TRUE;
 }

@@ -222,8 +222,9 @@ chimara_glk_finalize(GObject *object)
 
 /**
  * chimara_glk_reset:
+ * @self: The ChimaraGLK widget to reset
+ *
  * Resets the widget back to it's origional state. IE: it resets all the private data.
- * @param self: The ChimaraGLK widget to reset
  */
 void
 chimara_glk_reset(ChimaraGlk *self)

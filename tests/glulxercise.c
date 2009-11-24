@@ -28,11 +28,14 @@ on_go_clicked(GtkButton *go, Widgets *w)
 	gtk_tree_model_get(model, &iter, 1, &filename, -1);
 	g_object_unref(model);
 
-	if( !chimara_if_run_game(CHIMARA_IF(w->interp), filename, &error) )
+	gchar *fullpath = g_build_filename(PACKAGE_SRC_DIR, filename, NULL);
+
+	if( !chimara_if_run_game(CHIMARA_IF(w->interp), fullpath, &error) )
 	{
 		error_dialog(GTK_WINDOW(w->window), error, "Error starting Glk library: ");
 		gtk_main_quit();
 	}
+	g_free(fullpath);
 
 	gtk_widget_set_sensitive(w->go, FALSE);
 	gtk_widget_set_sensitive(w->stop, TRUE);
@@ -75,7 +78,7 @@ main(int argc, char *argv[])
 	gtk_init(&argc, &argv);
 
 	GtkBuilder *builder = gtk_builder_new();
-	if(!gtk_builder_add_from_file(builder, "glulxercise.ui", &error))
+	if(!gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/glulxercise.ui", &error))
 	{
 		error_dialog(NULL, error, "Failed to build interface: ");
 		return 1;

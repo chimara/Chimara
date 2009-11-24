@@ -2,5 +2,5 @@
 # but don't.
 
 interpreters/nitfol/inform.c
-tests/chimara.ui
+tests/glulxercise.ui
 

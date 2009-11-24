@@ -1,5 +1,7 @@
 # List of source files containing translatable strings.
 
 libchimara/chimara-glk.c
-tests/chimara.glade
+libchimara/chimara-if.c
+libchimara/init.c
+tests/chimara.ui
 

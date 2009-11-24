@@ -21,7 +21,7 @@ git_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 gitdocdir = $(datadir)/doc/$(PACKAGE)/git
 dist_gitdoc_DATA = README.txt
 
-CLEANFILES = test/*.tmp
+CLEANFILES = version.h test/*.tmp
 
 #TESTS = test/test.sh \
 #	test/Alabaster.gblorb test/Alabaster.walk test/Alabaster.golden

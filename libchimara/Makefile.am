@@ -38,6 +38,7 @@ libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
 	-DPLUGINDIR=\""$(pkglibdir)"\" \
+	-DPLUGINSOURCEDIR=\""$(abs_builddir)/../interpreters"\" \
 	-I$(top_srcdir)
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
