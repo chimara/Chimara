@@ -24,6 +24,14 @@ CHIMARA_AGE=0 # Increment if interfaces added; set 0 if removed
 LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
 AC_SUBST(LT_VERSION_INFO)
 
+### REQUIREMENTS ##############################################################
+GTK_REQUIRED_VERSION=2.12
+GLIB_REQUIRED_VERSION=2.16
+GTK_DOC_REQUIRED_VERSION=1.11
+AC_SUBST(GTK_REQUIRED_VERSION)
+AC_SUBST(GLIB_REQUIRED_VERSION)
+AC_SUBST(GTK_DOC_REQUIRED_VERSION) # Gtk-Doc 1.11 required
+
 ### DECLARE COMPILERS #########################################################
 
 AC_USE_SYSTEM_EXTENSIONS     # Define _GNU_SOURCE if using GCC
@@ -44,11 +52,12 @@ AC_PROG_LIBTOOL              # Old way of declaring Libtool
 AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
 IT_PROG_INTLTOOL    # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
-GTK_DOC_CHECK(1.11)          # Gtk-Doc 1.11 required
+GTK_DOC_CHECK($GTK_DOC_REQUIRED_VERSION) 
 # Other utilities used in this package's various make scripts
 AC_PROG_AWK
 AC_PATH_PROG([PERL], [perl]) # Perl
 AC_PATH_PROG([TEST], [test]) # Test
+AC_PATH_PROG([ECHO], [echo]) # Echo
 
 ### TYPES #####################################################################
 
@@ -77,13 +86,32 @@ AC_ARG_ENABLE([iliad],
 
 AM_CONDITIONAL([TARGET_ILIAD], [$TEST "x$iliad" = xtrue])
 
+### RPM CONFIGURATION ##########################################################
+# --enable-rpm requires rpm and rpmbuild
+AC_PATH_PROG([RPMBUILD], [rpmbuild], [notfound])
+AC_ARG_ENABLE([rpm],
+	[AS_HELP_STRING([--enable-rpm],[Configure for building RPM package [no] (requires rpm and rpmbuild)])],
+	[AS_CASE([${enableval}],
+		[yes], [AS_IF(
+			[$TEST "x$RPMBUILD" = xnotfound],
+				[AC_MSG_ERROR([rpmbuild is required for --enable-rpm])],
+			[rpm=true])],
+		[no],  [rpm=false],
+		[AC_MSG_ERROR([bad value ${enableval} for --enable-rpm])]
+	)],
+	[rpm=false]
+)
+AM_CONDITIONAL([BUILDING_RPM], [$TEST "x$rpm" = xtrue])
+# The user can specify the RPM release number in the environment (e.g. '1')
+AC_ARG_VAR([RPM_RELEASE], [Release number to build RPMs with [1]])
+AS_IF([$TEST "x$RPM_RELEASE" = x], [RPM_RELEASE=1])
 
 ### CHECK FOR LIBRARIES #######################################################
 
 # Libraries needed to build Chimara library
 PKG_CHECK_MODULES([CHIMARA], [
-	glib-2.0 
-	gtk+-2.0
+	glib-2.0 >= $GLIB_REQUIRED_VERSION
+	gtk+-2.0 >= $GTK_REQUIRED_VERSION
 	gthread-2.0 
 	gmodule-2.0
 	pango
@@ -92,8 +120,8 @@ CHIMARA_LIBS="$CHIMARA_LIBS -lm"
 AC_SUBST(CHIMARA_LIBS)
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
-	gtk+-2.0 
-	gmodule-2.0
+	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gmodule-2.0 >= $GLIB_REQUIRED_VERSION
 ])
 
 # Plugin flags; include '-module' in each Makefile.am, because AC_SUBSTed
@@ -111,6 +139,7 @@ AC_CONFIG_FILES([
 Makefile
 chimara.pc
 chimara-plugin.pc
+chimara.spec
 libchimara/Makefile
 interpreters/Makefile
 interpreters/frotz/Makefile

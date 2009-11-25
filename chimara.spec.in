@@ -1,0 +1,82 @@
+# @configure_input@
+#
+# Spec file for chimara and chimara-devel
+#
+
+Name:           @PACKAGE_TARNAME@
+Version:        @PACKAGE_VERSION@
+Release:        @RPM_RELEASE@%{?dist}
+Summary:        A GTK+ widget implementation of the Glk library
+
+Packager:       P. F. Chimento <philip.chimento@gmail.com>
+URL:            http://lassie.student.utwente.nl/chimara/
+License:        MIT
+
+Group:          Development/Libraries
+Source:         %{name}-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+Requires:       glib2 >= @GLIB_REQUIRED_VERSION@
+Requires:       gtk2 >= @GTK_REQUIRED_VERSION@
+Requires:       pango
+BuildRequires:  bison
+# byacc is allowed instead of bison, but stoopid RPM doesn't let you specify alternative pkgs
+BuildRequires:  perl gettext libtool pkgconfig intltool
+BuildRequires:  gtk-doc >= @GTK_DOC_REQUIRED_VERSION@
+BuildRequires:  glib2-devel >= @GLIB_REQUIRED_VERSION@
+BuildRequires:  gtk2-devel >= @GTK_REQUIRED_VERSION@
+BuildRequires:  pango-devel
+
+%description
+A GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+input/output specification specifically designed for interactive fiction.
+
+%package        devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+The %{name}-devel package contains libraries and header files for
+developing applications that use %{name}.
+
+%prep
+%setup -q
+
+%build
+%configure --disable-static
+make %{?_smp_mflags}
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%makeinstall
+find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%files
+%define docdir %{_prefix}/doc
+%define pkgdocdir %{_datadir}/doc/chimara
+%defattr(-,root,root,-)
+%doc %{docdir}/chimara/*
+%doc %{_infodir}/*
+%doc %{pkgdocdir}/*
+%{_libdir}/libchimara.*
+%{_libdir}/chimara/*.so
+%{_datadir}/*.ui
+%{_datadir}/*.menus
+
+%files devel
+%defattr(-,root,root,-)
+%doc %{_datadir}/gtk-doc/html/*
+%{_includedir}/chimara/libchimara/*.h
+%{_libdir}/pkgconfig/*.pc
+
+%changelog
+* Wed Nov 25 2009 P. F. Chimento <philip.chimento@gmail.com>
+- Created specfile.
