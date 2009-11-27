@@ -34,7 +34,11 @@ MKTMPL_OPTIONS =
 
 # Extra options to supply to gtkdoc-mkhtml
 # The --path is because Gtk-doc is broken on non-distcheck vpath builds! Sigh.
-MKHTML_OPTIONS = --path="$(abs_builddir)"
+# But it only works on Gtk-doc 1.11 and higher. So if you want to do a vpath
+# build then uncomment this and require 1.11 in configure.ac. If you want to do
+# vpath build on Debian, then you're S.O.L. Complain to Gtk-doc and Debian.
+# MKHTML_OPTIONS = --path="$(abs_builddir)"
+MKHTML_OPTIONS = 
 
 # Extra options to supply to gtkdoc-fixref. Not normally needed.
 FIXXREF_OPTIONS = 
