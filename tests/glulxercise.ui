@@ -20,7 +20,6 @@
               <object class="GtkComboBox" id="test_picker">
                 <property name="visible">True</property>
                 <property name="model">tests</property>
-                <property name="active">0</property>
                 <child>
                   <object class="GtkCellRendererText" id="cellrenderertext"/>
                   <attributes>

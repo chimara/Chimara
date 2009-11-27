@@ -88,6 +88,7 @@ main(int argc, char *argv[])
 	w->window = LOAD_WIDGET("window");
 	GtkWidget *vbox = LOAD_WIDGET("vbox");
 	w->test_picker = LOAD_WIDGET("test_picker");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(w->test_picker), 0);
 	w->go = LOAD_WIDGET("go");
 	w->stop = LOAD_WIDGET("stop");
 	w->interp = chimara_if_new();
