@@ -1,0 +1,25 @@
+This package was debianized by Philip Chimento <philip.chimento@gmail.com> on
+Sat, 28 Nov 2009 00:57:21 +0100.
+
+It was downloaded from <url://example.com>
+
+Upstream Author(s):
+
+    Marijn van Vliet <whatever>
+    Philip Chimento <philip.chimento@gmail.com>
+
+Copyright:
+
+    Copyright (C) 2009 <<whatever>>
+
+License:
+
+    Yada yada TODO FIXME when actually doing release
+
+The Debian packaging is (C) 2009, Philip Chimento <philip.chimento@gmail.com> and
+is licensed under the same license as the main program.
+
+# Please also look if there are files or directories which have a
+# different copyright/license attached and list them here.
+# TODO
+# We'll have to sort through all this license crap before we release the package.

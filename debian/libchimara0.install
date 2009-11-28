@@ -1,0 +1,5 @@
+debian/tmp/usr/lib/lib*.so.*
+debian/tmp/usr/lib/chimara/frotz.so
+debian/tmp/usr/lib/chimara/git.so
+debian/tmp/usr/lib/chimara/glulxe.so
+debian/tmp/usr/lib/chimara/nitfol.so
