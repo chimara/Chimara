@@ -72,7 +72,7 @@ shutdown_glk(void)
 	/* Stop any timers */
 	glk_request_timer_events(0);
 
-	/* Cancel any pending input requests */
+	/* Cancel any pending input requests and flush all window buffers */
 	winid_t win;
 	for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL))
 	{
@@ -90,6 +90,8 @@ shutdown_glk(void)
 			default:
 				; /* Handle mouse and hyperlink requests */
 		}
+
+		flush_window_buffer(win);
 	}
 
 	/* Close any open resource files */
@@ -102,6 +104,11 @@ shutdown_glk(void)
 	g_async_queue_unref(glk_data->char_input_queue);
 	g_async_queue_unref(glk_data->line_input_queue);
 
-	printf("cleaning up...\n");
+	/* Wait for any pending window rearrange */
+	g_mutex_lock(glk_data->arrange_lock);
+	if(glk_data->needs_rearrange)
+		g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+	g_mutex_unlock(glk_data->arrange_lock);
+
 	chimara_glk_reset(glk_data->self);
 }
