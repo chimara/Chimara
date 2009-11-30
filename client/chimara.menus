@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ui>
+  <menubar>
+    <menu action="game">
+      <menuitem action="open"/>
+      <menuitem action="restore"/>
+      <menuitem action="save"/>
+      <separator/>
+      <menuitem action="quit"/>
+    </menu>
+  </menubar>
+  <toolbar>
+    <toolitem action="open"/>
+    <toolitem action="restore"/>
+    <toolitem action="save"/>
+    <separator/>
+    <toolitem action="quit"/>
+  </toolbar>
+</ui>
