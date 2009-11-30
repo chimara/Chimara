@@ -1,0 +1,48 @@
+bin/chimara
+doc/chimara/AUTHORS
+doc/chimara/COPYING
+doc/chimara/ChangeLog
+doc/chimara/INSTALL
+doc/chimara/NEWS
+doc/chimara/README
+include/chimara/libchimara/chimara-glk.h
+include/chimara/libchimara/chimara-if.h
+include/chimara/libchimara/garglk.h
+include/chimara/libchimara/gi_blorb.h
+include/chimara/libchimara/glk.h
+include/chimara/libchimara/glkstart.h
+lib/chimara/first.a
+lib/chimara/first.la
+lib/chimara/first.so
+lib/chimara/frotz.la
+lib/chimara/frotz.so
+lib/chimara/git.la
+lib/chimara/git.so
+lib/chimara/glulxe.la
+lib/chimara/glulxe.so
+lib/chimara/gridtest.a
+lib/chimara/gridtest.la
+lib/chimara/gridtest.so
+lib/chimara/model.a
+lib/chimara/model.la
+lib/chimara/model.so
+lib/chimara/multiwin.a
+lib/chimara/multiwin.la
+lib/chimara/multiwin.so
+lib/chimara/nitfol.la
+lib/chimara/nitfol.so
+lib/chimara/splittest.a
+lib/chimara/splittest.la
+lib/chimara/splittest.so
+lib/chimara/styletest.a
+lib/chimara/styletest.la
+lib/chimara/styletest.so
+lib/libchimara.a
+lib/libchimara.la
+lib/libchimara.so.0
+lib/pkgconfig/chimara.pc
+lib/pkgconfig/chimara-plugin.pc
+@dirrm doc/chimara
+@dirrm include/chimara/libchimara
+@dirrm include/chimara
+@dirrm lib/chimara

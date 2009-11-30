@@ -81,11 +81,9 @@ create_window(void)
 	const gchar *actions[] = { 
 		"game", "",
 		"open", "<ctrl>F7", 
+		"restore", "<ctrl>O", 
 		"save", NULL, /* NULL means use stock accelerator */
 		"quit", NULL,
-		"hint", "",
-		"char_input", "",
-		"char_input2", "",
 		NULL
 	};
 	const gchar **ptr;

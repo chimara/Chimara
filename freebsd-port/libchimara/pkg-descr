@@ -1,0 +1,3 @@
+This is a GTK widget that implements the GLK interface to play interactive fiction. It means that the widget can load any interpreter plugin that uses GLK to provide a central render for interactive fiction. Many interpreters for popular formats such as Z8 and inform7 are included.
+
+WWW: http://lassie.student.utwente.nl/chimara
