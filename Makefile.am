@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-SUBDIRS = libchimara interpreters tests docs po
+SUBDIRS = libchimara interpreters tests docs po player
 
 chimaradocdir = ${prefix}/doc/chimara
 dist_chimaradoc_DATA = \

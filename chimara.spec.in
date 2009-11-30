@@ -40,6 +40,15 @@ Requires:       %{name} = %{version}-%{release}
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
+%package        player
+Summary:        The default IF player using %{name}
+Group:          Games
+Requires:       %{name} = %{version}-%{release}
+
+%description    player
+The %{name}-player package contains the default interactive fiction player using %{name}.
+developing applications that use %{name}.
+
 %prep
 %setup -q
 
@@ -77,6 +86,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/chimara/libchimara/*.h
 %{_libdir}/pkgconfig/*.pc
 
+%files player
+%{_bindir}/chimara
+
 %changelog
+* Mon Nov 30 2009 W. M. van Vliet <w.m.vanvliet@student.utwente.nl>
+- Added Chimara player to the package.
 * Wed Nov 25 2009 P. F. Chimento <philip.chimento@gmail.com>
 - Created specfile.

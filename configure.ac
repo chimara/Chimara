@@ -147,6 +147,7 @@ interpreters/nitfol/Makefile
 interpreters/glulxe/Makefile
 interpreters/git/Makefile
 tests/Makefile
+player/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml

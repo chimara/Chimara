@@ -46,4 +46,16 @@ Description: Documentation for the Chimara Glk library
  .
  This package contains the Chimara reference manual.
 
+Package: libchimara-player
+Section: games
+Architecture: any
+Depends: ${misc:Depends}
+         libchimara0 (= ${binary:Version}),
+         libglib2.0-dev,
+         libgtk2.0-dev
+Description: Interactive fiction player using the Chimara Glk library
+ Chimara is a GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+ input/output specification specifically designed for interactive fiction.
+ .
+ This package contains a default interactive fiction player that uses Chimara.
 
