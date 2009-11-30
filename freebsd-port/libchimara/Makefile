@@ -14,12 +14,11 @@ DISTNAME=     chimara-0.1
 MAINTAINER=    w.m.vanvliet@student.utwente.nl
 COMMENT=       A GTK widget that implements the GLK interface for interactive fiction.
 
-LIB_DEPENDS=   libchimara.0:${PORTSDIR}/devel/libchimara \
-		       gtk-x11-2.0:${PORTSDIR}/x11-toolkits/gtk20 \
-			   glib-2.0:${PORTSDIR}/devel/glib20
+USE_GNOME=     gtk20
 
 GNU_CONFIGURE= yes
 USE_GMAKE=     yes
+USE_LDCONFIG=  ${PREFIX}/lib ${PREFIX}/lib/chimara
 
 
 .include <bsd.port.mk>
