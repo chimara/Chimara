@@ -1,5 +1,6 @@
 #include "hyperlink.h"
 #include "chimara-glk-private.h"
+#include "magic.h"
 
 extern GPrivate *glk_data_key;
 

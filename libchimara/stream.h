@@ -2,6 +2,7 @@
 #define STREAM_H
 
 #include <gtk/gtk.h>
+#include "chimara-glk-private.h"
 #include "glk.h"
 #include "gi_dispa.h"
 #include "window.h"
@@ -55,5 +56,6 @@ struct glk_stream_struct
 G_GNUC_INTERNAL strid_t file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode);
 G_GNUC_INTERNAL strid_t stream_new_common(glui32 rock);
 G_GNUC_INTERNAL void stream_close_common(strid_t str, stream_result_t *result);
+G_GNUC_INTERNAL void trash_stream_thread_independent(ChimaraGlkPrivate *glk_data, strid_t str);
 
 #endif

@@ -41,21 +41,13 @@ window_new_common(glui32 rock)
 	return win;
 }
 
-static void
-window_close_common(winid_t win, gboolean destroy_node)
+/* Internal function: window closing stuff that is safe to call from either the
+ main thread or the Glk thread. */
+void
+trash_window_thread_independent(ChimaraGlkPrivate *glk_data, winid_t win)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
-	if(glk_data->unregister_obj) 
-	{
-        (*glk_data->unregister_obj)(win, gidisp_Class_Window, win->disprock);
-        win->disprock.ptr = NULL;
-    }
-
-	if(destroy_node)
-		g_node_destroy(win->window_node);
 	win->magic = MAGIC_FREE;
-
+	
 	g_list_foreach(win->history, (GFunc)g_free, NULL);
 	g_list_free(win->history);
 
@@ -63,6 +55,25 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_hash_table_destroy(win->hyperlinks);
 	g_free(win->current_hyperlink);
 	g_free(win);
+}
+
+/* Internal function: do all the stuff necessary to close a window. Call only
+ from Glk thread. */
+static void
+window_close_common(winid_t win, gboolean destroy_node)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	if(glk_data->unregister_obj) 
+	{
+        (*glk_data->unregister_obj)(win, gidisp_Class_Window, win->disprock);
+        win->disprock.ptr = NULL;
+    }
+	
+	if(destroy_node)
+		g_node_destroy(win->window_node);
+	
+	trash_window_thread_independent(glk_data, win);
 }
 
 /**

@@ -11,10 +11,12 @@
 #include "chimara-marshallers.h"
 #include "glk.h"
 #include "abort.h"
+#include "stream.h"
 #include "window.h"
 #include "glkstart.h"
 #include "glkunix.h"
 #include "init.h"
+#include "magic.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
@@ -109,6 +111,7 @@ chimara_glk_init(ChimaraGlk *self)
     priv->stream_list = NULL;
 	priv->timer_id = 0;
 	priv->style_initialized = FALSE;
+	priv->needs_reset = FALSE;
 	priv->in_startup = FALSE;
 	priv->current_dir = NULL;
 }
@@ -167,11 +170,9 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
     }
 }
 
-static void
-chimara_glk_free_private_data(ChimaraGlk *self)
+void
+_chimara_glk_free_nonwindow_private_data(ChimaraGlkPrivate *priv)
 {
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
-
     /* Free the event queue */
     g_mutex_lock(priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
@@ -189,13 +190,6 @@ chimara_glk_free_private_data(ChimaraGlk *self)
 	g_mutex_free(priv->abort_lock);
 	priv->abort_lock = NULL;
 
-	/* Free the window arrangement signaling */
-	g_mutex_lock(priv->arrange_lock);
-	g_cond_free(priv->rearranged);
-	g_mutex_unlock(priv->arrange_lock);
-	g_mutex_free(priv->arrange_lock);
-	priv->arrange_lock = NULL;
-	
 	/* Unref input queues */
 	g_async_queue_unref(priv->char_input_queue);
 	g_async_queue_unref(priv->line_input_queue);
@@ -210,29 +204,58 @@ chimara_glk_free_private_data(ChimaraGlk *self)
 	g_hash_table_destroy(priv->current_styles->text_buffer);
 	g_hash_table_destroy(priv->current_styles->text_grid);
 }
+
+/* Internal function: main thread version of destroy_windows_below, only more
+ DESTRUCTO-MATIC! */
+static void
+trash_windows_recursive(ChimaraGlkPrivate *priv, winid_t win)
+{
+	switch(win->type)
+	{
+		case wintype_Blank:
+	    case wintype_TextGrid:
+		case wintype_TextBuffer:
+			gtk_widget_unparent(win->frame);
+			break;
+
+		case wintype_Pair:
+			trash_windows_recursive(priv, win->window_node->children->data);
+			trash_windows_recursive(priv, win->window_node->children->next->data);
+			break;
+
+		default:
+			ILLEGAL_PARAM("Unknown window type: %u", win->type);
+			return;
+	}
+	trash_stream_thread_independent(priv, win->window_stream);
+	trash_window_thread_independent(priv, win);
+}
+
+void
+_chimara_glk_free_window_private_data(ChimaraGlkPrivate *priv)
+{
+	/* Destroy the window tree */
+	trash_windows_recursive(priv, priv->root_window->data);
+	g_node_destroy(priv->root_window);
 	
+	/* Free the window arrangement signaling */
+	g_mutex_lock(priv->arrange_lock);
+	g_cond_free(priv->rearranged);
+	g_mutex_unlock(priv->arrange_lock);
+	g_mutex_free(priv->arrange_lock);
+	priv->arrange_lock = NULL;
+}
+
 static void
 chimara_glk_finalize(GObject *object)
 {
     ChimaraGlk *self = CHIMARA_GLK(object);
-	chimara_glk_free_private_data(self);
+	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	_chimara_glk_free_nonwindow_private_data(priv);
+	_chimara_glk_free_window_private_data(priv);
 
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
-
-/**
- * chimara_glk_reset:
- * @self: The ChimaraGLK widget to reset
- *
- * Resets the widget back to it's origional state. IE: it resets all the private data.
- */
-void
-chimara_glk_reset(ChimaraGlk *self)
-{
-	chimara_glk_free_private_data(self);
-	chimara_glk_init(self);
-}
-
 
 /* Internal function: Recursively get the Glk window tree's size request */
 static void
@@ -648,7 +671,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      * it ended normally, or was interrupted.
      */ 
     chimara_glk_signals[STOPPED] = g_signal_new("stopped", 
-        G_OBJECT_CLASS_TYPE(klass), 0, 
+        G_OBJECT_CLASS_TYPE(klass), G_SIGNAL_RUN_FIRST, 
         /* FIXME: Should be G_SIGNAL_RUN_CLEANUP but that segfaults??! */
         G_STRUCT_OFFSET(ChimaraGlkClass, stopped), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
@@ -659,7 +682,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * Emitted when a Glk program starts executing in the widget.
 	 */
 	chimara_glk_signals[STARTED] = g_signal_new ("started",
-		G_OBJECT_CLASS_TYPE(klass), 0,
+		G_OBJECT_CLASS_TYPE(klass), G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET(ChimaraGlkClass, started), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 	/**
@@ -1095,12 +1118,7 @@ glk_enter(struct StartupData *startup)
 	
 	/* Run main function */
     g_signal_emit_by_name(startup->glk_data->self, "started");
-	/* FIXME: hack. should be done by the signal above but for some reason
-	 * this doesn't work */
-	chimara_glk_started(startup->glk_data->self);
-
 	(startup->glk_main)();
-
 	g_signal_emit_by_name(startup->glk_data->self, "stopped");
 	/* FIXME: hack. should be done by the signal above but for some reason
 	 * this doesn't work */
@@ -1138,7 +1156,14 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	struct StartupData *startup = g_slice_new0(struct StartupData);
-    
+
+	/* If anything was left over from the previous run, destroy it */
+	if(priv->needs_reset) {
+		_chimara_glk_free_window_private_data(priv);
+		priv->needs_reset = FALSE;
+		chimara_glk_init(glk);
+	}
+	
     /* Open the module to run */
     g_assert( g_module_supported() );
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);

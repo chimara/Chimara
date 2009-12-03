@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <gtk/gtk.h>
+#include "chimara-glk-private.h"
 #include "glk.h"
 #include "gi_dispa.h"
 #include "stream.h"
@@ -77,5 +78,7 @@ struct glk_window_struct
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;
 };
+
+G_GNUC_INTERNAL void trash_window_thread_independent(ChimaraGlkPrivate *glk_data, winid_t win);
 
 #endif

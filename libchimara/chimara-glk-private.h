@@ -83,6 +83,8 @@ struct _ChimaraGlkPrivate {
 	void (*unregister_arr)(void *, glui32, char *, gidispatch_rock_t);
 	/* Have styles been initialized */
 	gboolean style_initialized;
+	/* Is widget still displaying windows from last run */
+	gboolean needs_reset;
 
 	/* *** Platform-dependent Glk library data *** */
 	/* Flag for functions to find out if they are being called from startup code */
@@ -93,7 +95,9 @@ struct _ChimaraGlkPrivate {
 
 #define CHIMARA_GLK_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), CHIMARA_TYPE_GLK, ChimaraGlkPrivate))
 #define CHIMARA_GLK_USE_PRIVATE(o, n) ChimaraGlkPrivate *n = CHIMARA_GLK_PRIVATE(o)
-	
+
+G_GNUC_INTERNAL void _chimara_glk_free_nonwindow_private_data(ChimaraGlkPrivate *self);
+
 G_END_DECLS
 
 #endif /* __CHIMARA_GLK_PRIVATE_H__ */

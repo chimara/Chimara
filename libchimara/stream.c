@@ -28,25 +28,28 @@ stream_new_common(glui32 rock)
 	return str;
 }
 
-/* Internal function: Stuff to do upon closing any type of stream. */
+/* Internal function: stream closing stuff that is safe to call from either the
+ main thread or the Glk thread. */
 void
-stream_close_common(strid_t str, stream_result_t *result)
+trash_stream_thread_independent(ChimaraGlkPrivate *glk_data, strid_t str)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
 	/* Remove the stream from the global stream list */
 	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
 	
 	/* If it was the current output stream, set that to NULL */
 	if(glk_data->current_stream == str)
 		glk_data->current_stream = NULL;
-		
-	/* If it was one or more windows' echo streams, set those to NULL */
-	winid_t win;
-	for(win = glk_window_iterate(NULL, NULL); win; 
-		win = glk_window_iterate(win, NULL))
-		if(win->echo_stream == str)
-			win->echo_stream = NULL;
+	
+	str->magic = MAGIC_FREE;
+	g_free(str);
+}
+
+/* Internal function: Stuff to do upon closing any type of stream. Call only 
+ from Glk thread. */
+void
+stream_close_common(strid_t str, stream_result_t *result)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	if(glk_data->unregister_obj)
 	{
@@ -54,15 +57,21 @@ stream_close_common(strid_t str, stream_result_t *result)
 		str->disprock.ptr = NULL;
 	}
 	
+	/* If the stream was one or more windows' echo streams, set those to NULL */
+	winid_t win;
+	for(win = glk_window_iterate(NULL, NULL); win; 
+		win = glk_window_iterate(win, NULL))
+		if(win->echo_stream == str)
+			win->echo_stream = NULL;
+	
 	/* Return the character counts */
 	if(result) 
 	{
 		result->readcount = str->read_count;
 		result->writecount = str->write_count;
 	}
-	
-	str->magic = MAGIC_FREE;
-	g_free(str);
+
+	trash_stream_thread_independent(glk_data, str);
 }
 
 /**

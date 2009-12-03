@@ -1,5 +1,6 @@
 #include <libchimara/glk.h>
 #include "chimara-glk-private.h"
+#include "stream.h"
 
 extern GPrivate *glk_data_key;
 

@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
+#include "window.h"
 
 extern GPrivate *glk_data_key;
 
@@ -66,9 +67,6 @@ shutdown_glk(void)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	if(!glk_data->in_startup)
-		g_signal_emit_by_name(glk_data->self, "stopped");
-
 	/* Stop any timers */
 	glk_request_timer_events(0);
 
@@ -110,5 +108,11 @@ shutdown_glk(void)
 		g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
 	g_mutex_unlock(glk_data->arrange_lock);
 
-	chimara_glk_reset(glk_data->self);
+	/* Default handler for 'stopped' unloads the plugin, so be absolutely sure
+	 we're not calling any dispatch callbacks after this point */
+	if(!glk_data->in_startup)
+		g_signal_emit_by_name(glk_data->self, "stopped");
+	
+	_chimara_glk_free_nonwindow_private_data(glk_data);
+	glk_data->needs_reset = TRUE;
 }

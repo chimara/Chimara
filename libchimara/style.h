@@ -3,13 +3,6 @@
 
 #include <gtk/gtk.h>
 #include <glib.h>
-#include <glib/gstdio.h>
-#include <stdio.h>
-#include "glk.h"
-#include "magic.h"
-#include "chimara-glk-private.h"
-#include "stream.h"
-#include "strio.h"
 
 G_GNUC_INTERNAL void style_init_textbuffer(GtkTextBuffer *buffer);
 G_GNUC_INTERNAL void style_init_textgrid(GtkTextBuffer *buffer);
