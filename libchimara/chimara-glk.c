@@ -235,8 +235,10 @@ void
 _chimara_glk_free_window_private_data(ChimaraGlkPrivate *priv)
 {
 	/* Destroy the window tree */
-	trash_windows_recursive(priv, priv->root_window->data);
-	g_node_destroy(priv->root_window);
+	if(priv->root_window) {
+		trash_windows_recursive(priv, priv->root_window->data);
+		g_node_destroy(priv->root_window);
+	}
 	
 	/* Free the window arrangement signaling */
 	g_mutex_lock(priv->arrange_lock);
@@ -244,6 +246,12 @@ _chimara_glk_free_window_private_data(ChimaraGlkPrivate *priv)
 	g_mutex_unlock(priv->arrange_lock);
 	g_mutex_free(priv->arrange_lock);
 	priv->arrange_lock = NULL;
+
+	/* Remove the dispatch callbacks */
+	priv->register_obj = NULL;
+	priv->unregister_obj = NULL;
+	priv->register_arr = NULL;
+	priv->unregister_arr = NULL;
 }
 
 static void

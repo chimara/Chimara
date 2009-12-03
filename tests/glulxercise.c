@@ -9,6 +9,13 @@ typedef struct {
 	GtkWidget *window, *test_picker, *go, *stop, *interp;
 } Widgets;
 
+gboolean
+on_window_delete_event()
+{
+	gtk_main_quit();
+	return TRUE;
+}
+
 void
 on_go_clicked(GtkButton *go, Widgets *w)
 {
