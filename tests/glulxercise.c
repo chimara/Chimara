@@ -9,13 +9,6 @@ typedef struct {
 	GtkWidget *window, *test_picker, *go, *stop, *interp;
 } Widgets;
 
-gboolean
-on_window_delete_event()
-{
-	gtk_main_quit();
-	return TRUE;
-}
-
 void
 on_go_clicked(GtkButton *go, Widgets *w)
 {
@@ -36,7 +29,11 @@ on_go_clicked(GtkButton *go, Widgets *w)
 		gtk_main_quit();
 	}
 	g_free(fullpath);
+}
 
+void
+on_interp_started(ChimaraGlk *glk, Widgets *w)
+{
 	gtk_widget_set_sensitive(w->go, FALSE);
 	gtk_widget_set_sensitive(w->stop, TRUE);
 	gtk_widget_set_sensitive(w->test_picker, FALSE);
@@ -47,7 +44,11 @@ on_stop_clicked(GtkButton *stop, Widgets *w)
 {
 	chimara_glk_stop( CHIMARA_GLK(w->interp) );
 	chimara_glk_wait( CHIMARA_GLK(w->interp) );
+}
 
+void
+on_interp_stopped(ChimaraGlk *glk, Widgets *w)
+{
 	gtk_widget_set_sensitive(w->stop, FALSE);
 	gtk_widget_set_sensitive(w->go, TRUE);
 	gtk_widget_set_sensitive(w->test_picker, TRUE);
@@ -92,8 +93,11 @@ main(int argc, char *argv[])
 	w->go = LOAD_WIDGET("go");
 	w->stop = LOAD_WIDGET("stop");
 	w->interp = chimara_if_new();
+	gtk_widget_set_size_request(w->interp, 500, 600);
 	gtk_box_pack_end_defaults(GTK_BOX(vbox), w->interp);
 	gtk_builder_connect_signals(builder, w);
+	g_signal_connect(w->interp, "started", G_CALLBACK(on_interp_started), w);
+	g_signal_connect(w->interp, "stopped", G_CALLBACK(on_interp_stopped), w);
 	gtk_widget_show_all(w->window);
 
 	gdk_threads_enter();
