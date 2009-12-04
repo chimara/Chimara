@@ -13,14 +13,14 @@ bin_PROGRAMS = chimara_iliad
 
 else
 
-dist_data_DATA = chimara.ui chimara.menus 
+dist_pkgdata_DATA = chimara.ui chimara.menus 
 bin_PROGRAMS = chimara
 
 chimara_SOURCES = main.c callbacks.c error.c error.h
 chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
-	-DPACKAGE_DATA_DIR=\""$(datadir)"\"
+	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\"
 chimara_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 chimara_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 

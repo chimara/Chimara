@@ -85,8 +85,6 @@ fi
 %doc %{_infodir}/*.info*
 %{_libdir}/libchimara.so.*
 %{_libdir}/chimara/*.so
-%{_datadir}/*.ui
-%{_datadir}/*.menus
 
 %files devel
 %defattr(-,root,root,-)
@@ -103,11 +101,14 @@ fi
 %doc %{_datadir}/doc/chimara/ChangeLog 
 %doc %{_datadir}/doc/chimara/NEWS
 %{_bindir}/chimara
+%{_pkgdatadir}/chimara.ui
+%{_pkgdatadir}/chimara.menus
 
 %changelog
 * Fri Dec 4 2009 P. F. Chimento <philip.chimento@gmail.com>
 - 0.1-1
 - Mended rpmlint warnings and errors.
+- Moved player data files to player package.
 * Mon Nov 30 2009 W. M. van Vliet <w.m.vanvliet@student.utwente.nl>
 - Added Chimara player to the package.
 * Wed Nov 25 2009 P. F. Chimento <philip.chimento@gmail.com>
