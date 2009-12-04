@@ -3,13 +3,12 @@
 
 SUBDIRS = libchimara interpreters tests docs po player
 
-chimaradocdir = ${prefix}/doc/chimara
+chimaradocdir = $(datadir)/doc/chimara
 dist_chimaradoc_DATA = \
 	README\
 	COPYING\
 	AUTHORS\
 	ChangeLog\
-	INSTALL\
 	NEWS
 
 pkgconfigdir = $(libdir)/pkgconfig

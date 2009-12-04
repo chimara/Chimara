@@ -5,10 +5,8 @@
 
 Name:           @PACKAGE_TARNAME@
 Version:        @PACKAGE_VERSION@
-Release:        @RPM_RELEASE@%{?dist}
+Release:        1%{?dist}
 Summary:        A GTK+ widget implementation of the Glk library
-
-Packager:       P. F. Chimento <philip.chimento@gmail.com>
 URL:            http://lassie.student.utwente.nl/chimara/
 License:        MIT
 
@@ -19,6 +17,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       glib2 >= @GLIB_REQUIRED_VERSION@
 Requires:       gtk2 >= @GTK_REQUIRED_VERSION@
 Requires:       pango
+Requires(post): info
+Requires(preun): info
 BuildRequires:  bison
 # byacc is allowed instead of bison, but stoopid RPM doesn't let you specify alternative pkgs
 BuildRequires:  perl gettext libtool pkgconfig intltool
@@ -42,12 +42,12 @@ developing applications that use %{name}.
 
 %package        player
 Summary:        The default IF player using %{name}
-Group:          Games
+Group:          Amusements/Games
 Requires:       %{name} = %{version}-%{release}
 
 %description    player
-The %{name}-player package contains the default interactive fiction player using %{name}.
-developing applications that use %{name}.
+The %{name}-player package contains the default interactive fiction player 
+using %{name}.
 
 %prep
 %setup -q
@@ -60,22 +60,30 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
+rm -f $RPM_BUILD_ROOT/usr/share/info/dir
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
+%post 
+/sbin/ldconfig
+/sbin/install-info %{_infodir}/nitfol.info %{_infodir}/dir || :
+
+%preun
+if [ $1 = 0 ] ; then
+  /sbin/install-info --delete %{_infodir}/nitfol.info %{_infodir}/dir || :
+fi
 
 %postun -p /sbin/ldconfig
 
 %files
-%define docdir %{_prefix}/doc
-%define pkgdocdir %{_datadir}/doc/chimara
 %defattr(-,root,root,-)
-%doc %{docdir}/chimara/*
-%doc %{_infodir}/*
-%doc %{pkgdocdir}/*
-%{_libdir}/libchimara.*
+%doc %{_datadir}/doc/chimara/frotz/*
+%doc %{_datadir}/doc/chimara/git/*
+%doc %{_datadir}/doc/chimara/glulxe/*
+%doc %{_datadir}/doc/chimara/nitfol/*
+%doc %{_infodir}/*.info*
+%{_libdir}/libchimara.so.*
 %{_libdir}/chimara/*.so
 %{_datadir}/*.ui
 %{_datadir}/*.menus
@@ -84,12 +92,22 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc %{_datadir}/gtk-doc/html/*
 %{_includedir}/chimara/libchimara/*.h
+%{_libdir}/libchimara.so
 %{_libdir}/pkgconfig/*.pc
 
 %files player
+%defattr(-,root,root,-)
+%doc %{_datadir}/doc/chimara/README 
+%doc %{_datadir}/doc/chimara/COPYING 
+%doc %{_datadir}/doc/chimara/AUTHORS 
+%doc %{_datadir}/doc/chimara/ChangeLog 
+%doc %{_datadir}/doc/chimara/NEWS
 %{_bindir}/chimara
 
 %changelog
+* Fri Dec 4 2009 P. F. Chimento <philip.chimento@gmail.com>
+- 0.1-1
+- Mended rpmlint warnings and errors.
 * Mon Nov 30 2009 W. M. van Vliet <w.m.vanvliet@student.utwente.nl>
 - Added Chimara player to the package.
 * Wed Nov 25 2009 P. F. Chimento <philip.chimento@gmail.com>

@@ -102,9 +102,6 @@ AC_ARG_ENABLE([rpm],
 	[rpm=false]
 )
 AM_CONDITIONAL([BUILDING_RPM], [$TEST "x$rpm" = xtrue])
-# The user can specify the RPM release number in the environment (e.g. '1')
-AC_ARG_VAR([RPM_RELEASE], [Release number to build RPMs with [1]])
-AS_IF([$TEST "x$RPM_RELEASE" = x], [RPM_RELEASE=1])
 
 ### CHECK FOR LIBRARIES #######################################################
 
