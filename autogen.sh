@@ -19,8 +19,4 @@ autoreconf --force --install || exit 1
 # Run after autopoint
 echo "Setting up Intltool"
 intltoolize --copy --force --automake || exit 1
-# Hack to get intltool 0.40.0 to work (Debian stable)
-touch intltool-extract.in
-touch intltool-merge.in
-touch intltool-update.in
 

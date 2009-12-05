@@ -50,7 +50,7 @@ LT_INIT                      # Libtool 2.2.6 and up
 #LT_PREREQ([2.2.6])          # ...goddamn Debian still has 1.5
 AC_PROG_LIBTOOL              # Old way of declaring Libtool
 AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
-IT_PROG_INTLTOOL    # Intltool
+IT_PROG_INTLTOOL([0.40.0])   # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
 GTK_DOC_CHECK($GTK_DOC_REQUIRED_VERSION) 
 # Other utilities used in this package's various make scripts

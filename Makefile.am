@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-SUBDIRS = libchimara interpreters tests docs po player
+SUBDIRS = libchimara interpreters player tests docs po
 
 chimaradocdir = $(datadir)/doc/chimara
 dist_chimaradoc_DATA = \
@@ -14,11 +14,9 @@ dist_chimaradoc_DATA = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = chimara.pc chimara-plugin.pc
 
-EXTRA_DIST = intltool-extract.in intltool-merge.in intltool-update.in \
-	chimara.pc.in chimara-plugin.pc.in chimara.spec.in
+EXTRA_DIST = chimara.pc.in chimara-plugin.pc.in chimara.spec.in
 
-DISTCLEANFILES = chimara.pc chimara-plugin.pc chimara.spec \
-				 intltool-extract intltool-merge intltool-update
+DISTCLEANFILES = chimara.pc chimara-plugin.pc chimara.spec
 
 ACLOCAL_AMFLAGS = -I m4
 
