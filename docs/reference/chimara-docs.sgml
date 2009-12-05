@@ -116,13 +116,13 @@
     </chapter>
 -->    
     <!-- Chapter 9. Hyperlinks -->
-<!--    <chapter>
+    <chapter>
       <title>Hyperlinks</title>
       <xi:include href="xml/glk-creating-hyperlinks.xml"/>
       <xi:include href="xml/glk-accepting-hyperlinks.xml"/>
       <xi:include href="xml/glk-hyperlinks-testing.xml"/>
     </chapter>
--->    
+    
     <!-- Chapter 10. Porting, Adapting and Other Messy Bits -->
     <xi:include href="glk-porting.sgml"/>
    

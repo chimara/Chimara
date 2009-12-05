@@ -841,6 +841,33 @@
  */
 
 /**
+ * SECTION:glk-creating-hyperlinks
+ * @short_description: Printing text as a hyperlink
+ * @include: libchimara/glk.h
+ *
+ * Some games may wish to mark up text in their windows with hyperlinks, which
+ * can be selected by the player &mdash; most likely by mouse click. Glk allows
+ * this in a manner similar to the way text styles are set.
+ *
+ * Hyperlinks are an optional capability in Glk.
+ */
+
+/**
+ * SECTION:glk-accepting-hyperlinks
+ * @short_description: Generating and catching hyperlink navigation events
+ * @include: libchimara/glk.h
+ */
+
+/**
+ * SECTION:glk-hyperlinks-testing
+ * @short_description: Checking whether the library supports hyperlinks
+ * @include: libchimara/glk.h
+ *
+ * Before calling Glk hyperlink functions, you should use the gestalt selectors
+ * %gestalt_Hyperlinks and %gestalt_HyperlinkInput.
+ */
+ 
+/**
  * SECTION:dispatch-interrogating
  * @short_description: Finding out what functions the Glk library exports
  * @include: libchimara/glk.h, libchimara/gi_dispa.h
@@ -999,6 +1026,14 @@
  *
  * If this preprocessor symbol is defined, so are all the Unicode functions and
  * constants (see %gestalt_Unicode). If not, not.
+ */
+
+/**
+ * GLK_MODULE_HYPERLINKS:
+ * 
+ * If you are writing a C program, you can perform a preprocessor test for the
+ * existence of %GLK_MODULE_HYPERLINKS. If this is defined, so are all the
+ * functions and constants described in this section. If not, not.
  */
 
 /**
@@ -1200,6 +1235,34 @@
  * You can test whether the library supports timer events:
  * |[ res = #glk_gestalt(#gestalt_Timer, 0); ]|
  * This returns 1 if timer events are supported, and 0 if they are not.
+ */
+
+/**
+ * gestalt_Hyperlinks:
+ *
+ * You can test whether the library supports hyperlinks:
+ * |[ 
+ * #glui32 res;
+ * res = #glk_gestalt(#gestalt_Hyperlinks, 0); 
+ * ]|
+ * This returns 1 if the overall suite of hyperlinks functions is available.
+ * This includes glk_set_hyperlink(), glk_set_hyperlink_stream(),
+ * glk_request_hyperlink_event(), glk_cancel_hyperlink_event().
+ *
+ * If this selector returns 0, you should not try to call these functions. They
+ * may have no effect, or they may cause a run-time error.
+ */
+
+/**
+ * gestalt_HyperlinkInput:
+ *
+ * You can test whether hyperlinks are supported with the 
+ * %gestalt_HyperlinkInput selector:
+ * |[ res = #glk_gestalt(#gestalt_HyperlinkInput, windowtype); ]|
+ * This will return %TRUE (1) if windows of the given type support hyperlinks.
+ * If this returns %FALSE (0), it is still legal to call glk_set_hyperlink() and
+ * glk_request_hyperlink_event(), but they will have no effect, and you will
+ * never get hyperlink events.
  */
  
 /**
