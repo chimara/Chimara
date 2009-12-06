@@ -30,23 +30,134 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <gdk/gdkkeysyms.h>
+#include <glib.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
+#include <libchimara/chimara-if.h>
 #include "error.h"
 
-void on_save(GtkAction *action, ChimaraGlk *glk) {
+void 
+on_open_activate(GtkAction *action, ChimaraGlk *glk) 
+{
+	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
+	
+	if(chimara_glk_get_running(glk)) {
+		GtkWidget *dialog = gtk_message_dialog_new(window,
+		    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+		    GTK_MESSAGE_WARNING,
+		    GTK_BUTTONS_CANCEL,
+		    _("Are you sure you want to open a new game?"));
+		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
+		    _("If you open a new game, you will quit the one you are currently playing."));
+		gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_OPEN, GTK_RESPONSE_OK);
+		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+
+		if(response != GTK_RESPONSE_OK)
+			return;
+
+		chimara_glk_stop(glk);
+		chimara_glk_wait(glk);
+	}
+
+	GtkWidget *dialog = gtk_file_chooser_dialog_new(_("Open Game"),
+	    window,
+	    GTK_FILE_CHOOSER_ACTION_OPEN,
+	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+	    NULL);
+	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+		GError *error = NULL;
+		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error))
+			error_dialog(window, error, _("Could not open game file."));
+		g_free(filename);
+	}
+	gtk_widget_destroy(dialog);
+}
+
+void
+on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
+{
+
+}
+
+void
+on_stop_activate(GtkAction *action, ChimaraGlk *glk)
+{
+	chimara_glk_stop(glk);
+}
+
+void 
+on_quit_chimara_activate(GtkAction *action, ChimaraGlk *glk) 
+{
+	gtk_main_quit();
+}
+
+void
+on_cut_activate(GtkAction *action, ChimaraGlk *glk)
+{
+
+}
+
+void
+on_copy_activate(GtkAction *action, ChimaraGlk *glk)
+{
+
+}
+
+void
+on_paste_activate(GtkAction *action, ChimaraGlk *glk)
+{
+
+}
+
+void
+on_preferences_activate(GtkAction *action, ChimaraGlk *glk)
+{
+
+}
+
+void
+on_undo_activate(GtkAction *action, ChimaraGlk *glk)
+{
+	chimara_glk_feed_line_input(glk, "undo");
+}
+
+void 
+on_save_activate(GtkAction *action, ChimaraGlk *glk) 
+{
 	chimara_glk_feed_line_input(glk, "save");
 }
 
-void on_restore(GtkAction *action, ChimaraGlk *glk) {
+void 
+on_restore_activate(GtkAction *action, ChimaraGlk *glk) 
+{
 	chimara_glk_feed_line_input(glk, "restore");
 }
 
-gboolean on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraGlk *glk) {
-	gtk_main_quit();
-	return TRUE;
+void 
+on_restart_activate(GtkAction *action, ChimaraGlk *glk) 
+{
+	chimara_glk_feed_line_input(glk, "restart");
 }
 
-void on_quit(GtkAction *action, ChimaraGlk *glk) {
+void 
+on_quit_activate(GtkAction *action, ChimaraGlk *glk) 
+{
+	chimara_glk_feed_line_input(glk, "quit");
+}
+
+void
+on_about_activate(GtkAction *action, ChimaraGlk *glk)
+{
+
+}
+
+gboolean 
+on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraGlk *glk) 
+{
 	gtk_main_quit();
+	return TRUE;
 }

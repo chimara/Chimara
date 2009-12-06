@@ -60,12 +60,17 @@ typedef struct _ChimaraGlkClass {
  *   <listitem><para>An appropriate interpreter plugin for the autodetected
  *   game file type could not be found.</para></listitem>
  * </varlistentry>
+ * <varlistentry>
+ *   <term>CHIMARA_PLUGIN_ALREADY_RUNNING</term>
+ *   <listitem><para>A plugin was opened while there was already another plugin
+ *   running in the widget.</para></listitem>
  * </variablelist>
  */
 typedef enum _ChimaraError {
 	CHIMARA_LOAD_MODULE_ERROR,
 	CHIMARA_NO_GLK_MAIN,
-	CHIMARA_PLUGIN_NOT_FOUND
+	CHIMARA_PLUGIN_NOT_FOUND,
+	CHIMARA_PLUGIN_ALREADY_RUNNING
 } ChimaraError;
 
 /**

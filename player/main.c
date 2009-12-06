@@ -80,10 +80,23 @@ create_window(void)
 	action group. */
 	const gchar *actions[] = { 
 		"game", "",
-		"open", "<ctrl>F7", 
-		"restore", "<ctrl>O", 
-		"save", NULL, /* NULL means use stock accelerator */
-		"quit", NULL,
+		"open", "<ctrl>O", 
+		"recent", "",
+		"stop", "",
+		"quit_chimara", NULL, /* NULL means use stock accelerator */
+		"command", "",
+		"undo", "<ctrl>Z",
+		"save", NULL, 
+		"restore", "<ctrl>R", 
+		"restart", "",
+		"quit", "",
+		"edit", "",
+		"cut", NULL,
+		"copy", NULL,
+		"paste", NULL,
+		"preferences", "",
+		"help", "",
+		"about", "",
 		NULL
 	};
 	const gchar **ptr;
@@ -97,15 +110,7 @@ create_window(void)
 	}
 	
 	glk = chimara_if_new();
-	//chimara_if_set_preferred_interpreter( CHIMARA_IF(glk), CHIMARA_IF_FORMAT_Z8, CHIMARA_IF_INTERPRETER_NITFOL);
-
-	g_object_set(glk, 
-		"border-width", 6, 
-		"spacing", 6,
-		"ignore-errors", TRUE,
-		NULL);
-	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
+	g_object_set(glk, "ignore-errors", TRUE, NULL);
 	
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)
@@ -147,14 +152,11 @@ main(int argc, char *argv[])
 	g_object_unref( G_OBJECT(builder) );
 	g_object_unref( G_OBJECT(uimanager) );
 
-	if(argc < 2) {
-		error_dialog(GTK_WINDOW(window), NULL, "Must provide a game file");
-		return 1;
-	}
-	
-    if( !chimara_if_run_game(CHIMARA_IF(glk), argv[1], &error) ) {
-   		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
-		return 1;
+	if(argc >= 2) {
+		if( !chimara_if_run_game(CHIMARA_IF(glk), argv[1], &error) ) {
+	   		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
+			return 1;
+		}
 	}
 
     gdk_threads_enter();

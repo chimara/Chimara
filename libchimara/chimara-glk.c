@@ -1161,6 +1161,10 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 {
     g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
     g_return_val_if_fail(plugin, FALSE);
+	if(chimara_glk_get_running(glk)) {
+		g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_ALREADY_RUNNING, _("There was already a plugin running."));
+		return FALSE;
+	}
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	struct StartupData *startup = g_slice_new0(struct StartupData);

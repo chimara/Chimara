@@ -4,7 +4,7 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="chimara">
     <property name="title" translatable="yes">Chimara</property>
-    <property name="default_width">800</property>
+    <property name="default_width">600</property>
     <property name="default_height">800</property>
     <signal name="delete_event" handler="on_window_delete_event"/>
     <child>
@@ -26,24 +26,96 @@
     <property name="short_label">_Open</property>
     <property name="tooltip">Quit the current game and load a new one</property>
     <property name="stock_id">gtk-media-play</property>
+    <signal name="activate" handler="on_open_activate"/>
   </object>
   <object class="GtkAction" id="restore">
     <property name="label">_Restore...</property>
     <property name="short_label">_Restore</property>
     <property name="tooltip">Restore a previously saved game</property>
     <property name="stock_id">gtk-open</property>
-    <signal name="activate" handler="on_restore"/>
+    <signal name="activate" handler="on_restore_activate"/>
   </object>
   <object class="GtkAction" id="save">
     <property name="label">_Save</property>
     <property name="tooltip">Save the game</property>
     <property name="stock_id">gtk-save</property>
-    <signal name="activate" handler="on_save"/>
+    <signal name="activate" handler="on_save_activate"/>
+  </object>
+  <object class="GtkAction" id="quit_chimara">
+    <property name="label">_Quit Chimara</property>
+    <property name="tooltip">Leave the program</property>
+    <property name="stock_id">gtk-quit</property>
+    <signal name="activate" handler="on_quit_chimara_activate"/>
+  </object>
+  <object class="GtkAction" id="command">
+    <property name="label">_Command</property>
+  </object>
+  <object class="GtkAction" id="edit">
+    <property name="label">_Edit</property>
+  </object>
+  <object class="GtkAction" id="stop">
+    <property name="label">_Stop Game</property>
+    <property name="short_label">_Stop</property>
+    <property name="tooltip">Immediately stop the running game</property>
+    <property name="stock_id">gtk-stop</property>
+    <signal name="activate" handler="on_stop_activate"/>
+  </object>
+  <object class="GtkRecentAction" id="recent">
+    <property name="label">Open _Recent</property>
+    <property name="limit">10</property>
+    <property name="sort_type">mru</property>
+    <signal name="item_activated" handler="on_recent_item_activated"/>
+  </object>
+  <object class="GtkAction" id="undo">
+    <property name="label">_Undo</property>
+    <property name="tooltip">Attempt to undo the last move (the game may not allow this)</property>
+    <property name="stock_id">gtk-undo</property>
+    <signal name="activate" handler="on_undo_activate"/>
+  </object>
+  <object class="GtkAction" id="restart">
+    <property name="label">Res_tart</property>
+    <property name="tooltip">Tell the game to restart</property>
+    <property name="stock_id">gtk-media-rewind</property>
+    <signal name="activate" handler="on_restart_activate"/>
   </object>
   <object class="GtkAction" id="quit">
     <property name="label">_Quit</property>
-    <property name="tooltip">Exit Chimara</property>
-    <property name="stock_id">gtk-quit</property>
-    <signal name="activate" handler="on_quit"/>
+    <property name="tooltip">Try to quit the game</property>
+    <property name="stock_id">gtk-media-stop</property>
+    <signal name="activate" handler="on_quit_activate"/>
+  </object>
+  <object class="GtkAction" id="cut">
+    <property name="label">Cu_t</property>
+    <property name="tooltip">Cut the selection</property>
+    <property name="stock_id">gtk-cut</property>
+    <signal name="activate" handler="on_cut_activate"/>
+  </object>
+  <object class="GtkAction" id="copy">
+    <property name="label">_Copy</property>
+    <property name="tooltip">Copy the selection</property>
+    <property name="stock_id">gtk-copy</property>
+    <signal name="activate" handler="on_copy_activate"/>
+  </object>
+  <object class="GtkAction" id="paste">
+    <property name="label">_Paste</property>
+    <property name="tooltip">Paste the clipboard</property>
+    <property name="stock_id">gtk-paste</property>
+    <signal name="activate" handler="on_paste_activate"/>
+  </object>
+  <object class="GtkAction" id="preferences">
+    <property name="label">P_references</property>
+    <property name="tooltip">Configure the application</property>
+    <property name="stock_id">gtk-preferences</property>
+    <signal name="activate" handler="on_preferences_activate"/>
+  </object>
+  <object class="GtkAction" id="help">
+    <property name="label">_Help</property>
+  </object>
+  <object class="GtkAction" id="about">
+    <property name="label">_About...</property>
+    <property name="short_label">_About</property>
+    <property name="tooltip">About this application</property>
+    <property name="stock_id">gtk-about</property>
+    <signal name="activate" handler="on_about_activate"/>
   </object>
 </interface>
