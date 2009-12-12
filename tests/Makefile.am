@@ -16,7 +16,7 @@ test_multisession_SOURCES = test-multisession.c
 test_multisession_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_multisession_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
-glulxercise_SOURCES = glulxercise.c error.c error.h
+glulxercise_SOURCES = glulxercise.c
 glulxercise_CPPFLAGS = $(AM_CPPFLAGS) -DPACKAGE_SRC_DIR=\""$(srcdir)"\"
 glulxercise_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS) 
 glulxercise_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la

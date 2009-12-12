@@ -1,7 +1,6 @@
 #include <glib.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
-#include "error.h"
 
 #define LOAD_WIDGET(name) GTK_WIDGET(gtk_builder_get_object(builder, name))
 
@@ -31,10 +30,7 @@ on_go_clicked(GtkButton *go, Widgets *w)
 	gchar *fullpath = g_build_filename(PACKAGE_SRC_DIR, filename, NULL);
 
 	if( !chimara_if_run_game(CHIMARA_IF(w->interp), fullpath, &error) )
-	{
-		error_dialog(GTK_WINDOW(w->window), error, "Error starting Glk library: ");
-		gtk_main_quit();
-	}
+		g_error("Error starting Glk library: %s", error->message);
 	g_free(fullpath);
 }
 
@@ -87,10 +83,7 @@ main(int argc, char *argv[])
 
 	GtkBuilder *builder = gtk_builder_new();
 	if(!gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/glulxercise.ui", &error))
-	{
-		error_dialog(NULL, error, "Failed to build interface: ");
-		return 1;
-	}
+		g_error("Failed to build interface: %s", error->message);
 
 	Widgets *w = g_slice_new0(Widgets);
 	w->window = LOAD_WIDGET("window");

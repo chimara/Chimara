@@ -60,13 +60,7 @@ create_window(void)
     gtk_widget_set_size_request(window, 400, 400);
     g_signal_connect(window, "delete-event", G_CALLBACK(quit), NULL);
 	glk = chimara_glk_new();
-	g_object_set(glk, 
-		"border-width", 6, 
-		"spacing", 6,
-		NULL);
 	g_signal_connect(glk, "stopped", G_CALLBACK(gtk_main_quit), NULL);
-	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
 	gtk_container_add(GTK_CONTAINER(window), glk);
 }
 
@@ -89,15 +83,11 @@ main(int argc, char *argv[])
 	create_window();
 	gtk_widget_show_all(window);
 
-	if(argc < 2) {
-		g_printerr("Must provide a plugin\n");
-		return 1;
-	}
+	if(argc < 2)
+		g_error("Must provide a plugin\n");
 	
-    if( !chimara_glk_run(CHIMARA_GLK(glk), argv[1], argc - 1, argv + 1, &error) ) {
-   		g_printerr("Error starting Glk library: %s\n", error->message);
-		return 1;
-	}
+    if( !chimara_glk_run(CHIMARA_GLK(glk), argv[1], argc - 1, argv + 1, &error) )
+   		g_error("Error starting Glk library: %s\n", error->message);
 
     gdk_threads_enter();
 	gtk_main();
