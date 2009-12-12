@@ -9,7 +9,6 @@
       <menuitem action="quit_chimara"/>
     </menu>
     <menu action="edit">
-      <menuitem action="cut"/>
       <menuitem action="copy"/>
       <menuitem action="paste"/>
       <separator/>

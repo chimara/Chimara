@@ -35,11 +35,18 @@
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
+#include <config.h>
 #include "error.h"
 
-void 
-on_open_activate(GtkAction *action, ChimaraGlk *glk) 
+/* If a game is running in @glk, warn the user that they will quit the currently
+running game if they open a new one. Returns TRUE if no game was running.
+Returns FALSE if the user cancelled. Returns TRUE and shuts down the running
+game if the user wishes to continue. */
+static gboolean
+confirm_open_new_game(ChimaraGlk *glk)
 {
+	g_return_val_if_fail(glk && CHIMARA_IS_GLK(glk), FALSE);
+	
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
 	
 	if(chimara_glk_get_running(glk)) {
@@ -53,13 +60,23 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 		gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_OPEN, GTK_RESPONSE_OK);
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
-
+		
 		if(response != GTK_RESPONSE_OK)
-			return;
+			return FALSE;
 
 		chimara_glk_stop(glk);
 		chimara_glk_wait(glk);
 	}
+	return TRUE;
+}
+
+void 
+on_open_activate(GtkAction *action, ChimaraGlk *glk) 
+{
+	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
+	
+	if(!confirm_open_new_game(glk))
+		return;
 
 	GtkWidget *dialog = gtk_file_chooser_dialog_new(_("Open Game"),
 	    window,
@@ -70,8 +87,24 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		GError *error = NULL;
 		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error))
-			error_dialog(window, error, _("Could not open game file."));
+		if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
+			error_dialog(window, error, _("Could not open game file '%s': "), filename);
+			g_free(filename);
+			gtk_widget_destroy(dialog);
+			return;
+		}
+		
+		/* Add file to recent files list */
+		GtkRecentManager *manager = gtk_recent_manager_get_default();
+		gchar *uri;
+		
+		if(!(uri = g_filename_to_uri(filename, NULL, &error)))
+			g_warning(_("Could not convert filename '%s' to URI: %s"), filename, error->message);
+		else {
+			if(!gtk_recent_manager_add_item(manager, uri))
+				g_warning(_("Could not add URI '%s' to recent files list."), uri);
+			g_free(uri);
+		}
 		g_free(filename);
 	}
 	gtk_widget_destroy(dialog);
@@ -80,7 +113,36 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 void
 on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
 {
-
+	GError *error = NULL;
+	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
+	gchar *uri = gtk_recent_chooser_get_current_uri(chooser);
+	gchar *filename;
+	if(!(filename = g_filename_from_uri(uri, NULL, &error))) {
+		error_dialog(window, error, _("Could not open game file '%s': "), uri);
+		g_free(uri);
+		return;
+	}
+	
+	if(!confirm_open_new_game(glk)) {
+		g_free(filename);
+		g_free(uri);
+		return;
+	}
+	
+	if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
+		error_dialog(window, error, _("Could not open game file '%s': "), filename);
+		g_free(filename);
+		g_free(uri);
+		return;
+	}
+	g_free(filename);
+	
+	/* Add file to recent files list again, this updates it to most recently used */
+	GtkRecentManager *manager = gtk_recent_manager_get_default();
+	if(!gtk_recent_manager_add_item(manager, uri))
+		g_warning(_("Could not add URI '%s' to recent files list."), uri);
+	
+	g_free(uri);
 }
 
 void
@@ -96,27 +158,30 @@ on_quit_chimara_activate(GtkAction *action, ChimaraGlk *glk)
 }
 
 void
-on_cut_activate(GtkAction *action, ChimaraGlk *glk)
-{
-
-}
-
-void
 on_copy_activate(GtkAction *action, ChimaraGlk *glk)
 {
-
+	GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
+	GtkWidget *focus = gtk_window_get_focus(toplevel);
+	/* Call "copy clipboard" on any widget that defines it */
+	if(GTK_IS_LABEL(focus) || GTK_IS_ENTRY(focus) || GTK_IS_TEXT_VIEW(focus))
+		g_signal_emit_by_name(focus, "copy-clipboard");
 }
 
 void
 on_paste_activate(GtkAction *action, ChimaraGlk *glk)
 {
-
+	GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
+	GtkWidget *focus = gtk_window_get_focus(toplevel);
+	/* Call "paste clipboard" on any widget that defines it */
+	if(GTK_IS_ENTRY(focus) || GTK_IS_TEXT_VIEW(focus))
+		g_signal_emit_by_name(focus, "paste-clipboard");
 }
 
 void
 on_preferences_activate(GtkAction *action, ChimaraGlk *glk)
 {
-
+	extern GtkWidget *prefswindow;
+	gtk_window_present(GTK_WINDOW(prefswindow));
 }
 
 void
@@ -152,7 +217,9 @@ on_quit_activate(GtkAction *action, ChimaraGlk *glk)
 void
 on_about_activate(GtkAction *action, ChimaraGlk *glk)
 {
-
+	extern GtkWidget *aboutwindow;
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(aboutwindow), PACKAGE_VERSION);
+	gtk_window_present(GTK_WINDOW(aboutwindow));
 }
 
 gboolean 

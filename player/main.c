@@ -44,11 +44,15 @@
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
 
-/* Global pointers to widgets */
-GtkBuilder *builder = NULL;
-GtkUIManager *uimanager = NULL;
-GtkWidget *window = NULL;
-GtkWidget *glk = NULL;
+/* Static global pointers to widgets */
+static GtkBuilder *builder = NULL;
+static GtkUIManager *uimanager = NULL;
+static GtkWidget *window = NULL;
+static GtkWidget *glk = NULL;
+
+/* Global global pointers */
+GtkWidget *aboutwindow = NULL;
+GtkWidget *prefswindow = NULL;
 
 static GObject *
 load_object(const gchar *name)
@@ -73,6 +77,8 @@ create_window(void)
 	}
 
 	window = GTK_WIDGET(load_object("chimara"));
+	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
+	prefswindow = GTK_WIDGET(load_object("prefswindow"));
 	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
 
 	/* Add all the actions to the action group. This for-loop is a temporary fix
@@ -91,7 +97,6 @@ create_window(void)
 		"restart", "",
 		"quit", "",
 		"edit", "",
-		"cut", NULL,
 		"copy", NULL,
 		"paste", NULL,
 		"preferences", "",
@@ -102,6 +107,16 @@ create_window(void)
 	const gchar **ptr;
 	for(ptr = actions; *ptr; ptr += 2)
 		gtk_action_group_add_action_with_accel(actiongroup, GTK_ACTION(load_object(ptr[0])), ptr[1]);
+	GtkRecentFilter *filter = gtk_recent_filter_new();
+	/* TODO: Use mimetypes and construct the filter dynamically depending on 
+	what plugins are installed */
+	const gchar *patterns[] = {
+		"*.z[1-8]", "*.[zg]lb", "*.[zg]blorb", "*.ulx", "*.blb", "*.blorb", NULL
+	};
+	for(ptr = patterns; *ptr; ptr++)
+		gtk_recent_filter_add_pattern(filter, *ptr);
+	GtkRecentChooser *recent = GTK_RECENT_CHOOSER(load_object("recent"));
+	gtk_recent_chooser_add_filter(recent, filter);
 
 	uimanager = gtk_ui_manager_new();
 	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
