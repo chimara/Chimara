@@ -64,6 +64,7 @@ typedef struct _ChimaraGlkClass {
  *   <term>CHIMARA_PLUGIN_ALREADY_RUNNING</term>
  *   <listitem><para>A plugin was opened while there was already another plugin
  *   running in the widget.</para></listitem>
+ * </varlistentry>
  * </variablelist>
  */
 typedef enum _ChimaraError {
