@@ -368,6 +368,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
 
 	int chars_written = 0;
 
+	gdk_threads_enter();
 	if(win->type == wintype_TextGrid) {
 		chars_written = finish_text_grid_line_input(win, FALSE);
 	} else if(win->type == wintype_TextBuffer) {
@@ -376,6 +377,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
 		g_signal_handler_block(window_buffer, win->insert_text_handler);
 		chars_written = finish_text_buffer_line_input(win, FALSE);
 	}
+	gdk_threads_leave();
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	if(glk_data->unregister_arr)
