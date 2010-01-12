@@ -392,6 +392,35 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	}
 }
 
+/* Helper function: Turn off shutdown key-press-event signal handler */
+static gboolean
+turn_off_handler(GNode *node)
+{
+	winid_t win = node->data;
+	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
+	return FALSE; /* don't stop */
+}
+
+/* Internal function: Callback for signal key-press-event while waiting for shutdown. */
+gboolean
+on_shutdown_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
+{
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	
+	/* Turn off all the signal handlers */
+	if(priv->root_window)
+		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
+	
+	/* Signal the Glk library that it can shut everything down now */
+	g_mutex_lock(priv->shutdown_lock);
+	g_cond_signal(priv->shutdown_key_pressed);
+	g_mutex_unlock(priv->shutdown_lock);
+	
+	return TRUE; /* block the event */
+}
+
 /* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids. Blocked when not in use. */
 gboolean
 on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)

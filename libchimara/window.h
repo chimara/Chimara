@@ -72,13 +72,12 @@ struct glk_window_struct
 	gulong line_input_keypress_handler;
 	gulong insert_text_handler;
 	gulong tag_event_handler;
+	gulong shutdown_keypress_handler;
 	/* Window buffer */
 	GString *buffer;
 	/* Hyperlinks */
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;
 };
-
-G_GNUC_INTERNAL void trash_window_thread_independent(ChimaraGlkPrivate *glk_data, winid_t win);
 
 #endif

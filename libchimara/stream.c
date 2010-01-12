@@ -28,22 +28,6 @@ stream_new_common(glui32 rock)
 	return str;
 }
 
-/* Internal function: stream closing stuff that is safe to call from either the
- main thread or the Glk thread. */
-void
-trash_stream_thread_independent(ChimaraGlkPrivate *glk_data, strid_t str)
-{
-	/* Remove the stream from the global stream list */
-	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
-	
-	/* If it was the current output stream, set that to NULL */
-	if(glk_data->current_stream == str)
-		glk_data->current_stream = NULL;
-	
-	str->magic = MAGIC_FREE;
-	g_free(str);
-}
-
 /* Internal function: Stuff to do upon closing any type of stream. Call only 
  from Glk thread. */
 void
@@ -71,7 +55,15 @@ stream_close_common(strid_t str, stream_result_t *result)
 		result->writecount = str->write_count;
 	}
 
-	trash_stream_thread_independent(glk_data, str);
+	/* Remove the stream from the global stream list */
+	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
+	
+	/* If it was the current output stream, set that to NULL */
+	if(glk_data->current_stream == str)
+		glk_data->current_stream = NULL;
+	
+	str->magic = MAGIC_FREE;
+	g_free(str);
 }
 
 /**

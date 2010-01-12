@@ -37,24 +37,8 @@ window_new_common(glui32 rock)
 
 	/* Initialise hyperlink table */
 	win->hyperlinks = g_hash_table_new_full(g_int_hash, g_direct_equal, g_free, g_object_unref);
-
-	return win;
-}
-
-/* Internal function: window closing stuff that is safe to call from either the
- main thread or the Glk thread. */
-void
-trash_window_thread_independent(ChimaraGlkPrivate *glk_data, winid_t win)
-{
-	win->magic = MAGIC_FREE;
 	
-	g_list_foreach(win->history, (GFunc)g_free, NULL);
-	g_list_free(win->history);
-
-	g_string_free(win->buffer, TRUE);
-	g_hash_table_destroy(win->hyperlinks);
-	g_free(win->current_hyperlink);
-	g_free(win);
+	return win;
 }
 
 /* Internal function: do all the stuff necessary to close a window. Call only
@@ -73,7 +57,15 @@ window_close_common(winid_t win, gboolean destroy_node)
 	if(destroy_node)
 		g_node_destroy(win->window_node);
 	
-	trash_window_thread_independent(glk_data, win);
+	win->magic = MAGIC_FREE;
+	
+	g_list_foreach(win->history, (GFunc)g_free, NULL);
+	g_list_free(win->history);
+	
+	g_string_free(win->buffer, TRUE);
+	g_hash_table_destroy(win->hyperlinks);
+	g_free(win->current_hyperlink);
+	g_free(win);
 }
 
 /**
@@ -509,6 +501,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_signal_handler_block(textview, win->char_input_keypress_handler);
 			win->line_input_keypress_handler = g_signal_connect(textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win);
 			g_signal_handler_block(textview, win->line_input_keypress_handler);
+			win->shutdown_keypress_handler = g_signal_connect(textview, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win);
+			g_signal_handler_block(textview, win->shutdown_keypress_handler);
 		}
 		    break;
 		
@@ -547,10 +541,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_signal_handler_block(textview, win->char_input_keypress_handler);
 			win->line_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win );
 			g_signal_handler_block(textview, win->line_input_keypress_handler);
-			
+			win->shutdown_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win );
+			g_signal_handler_block(textview, win->shutdown_keypress_handler);			
 			win->insert_text_handler = g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(after_window_insert_text), win );
 			g_signal_handler_block(textbuffer, win->insert_text_handler);
-
 
 			/* Create an editable tag to indicate uneditable parts of the window
 			(for line input) */

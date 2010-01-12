@@ -55,7 +55,7 @@ enum {
     PROP_PROTECT,
 	PROP_DEFAULT_FONT_DESCRIPTION,
 	PROP_MONOSPACE_FONT_DESCRIPTION,
-	PROP_SPACING
+	PROP_SPACING,
 };
 
 enum {
@@ -88,6 +88,8 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->css_file = "style.css";
 	priv->default_styles = g_new0(StyleSet,1);
 	priv->current_styles = g_new0(StyleSet,1);
+	priv->style_initialized = FALSE;
+	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->running = FALSE;
     priv->program = NULL;
     priv->thread = NULL;
@@ -97,6 +99,8 @@ chimara_glk_init(ChimaraGlk *self)
     priv->event_queue_not_full = g_cond_new();
     priv->abort_lock = g_mutex_new();
     priv->abort_signalled = FALSE;
+	priv->shutdown_lock = g_mutex_new();
+	priv->shutdown_key_pressed = g_cond_new();
 	priv->arrange_lock = g_mutex_new();
 	priv->rearranged = g_cond_new();
 	priv->needs_rearrange = FALSE;
@@ -110,8 +114,6 @@ chimara_glk_init(ChimaraGlk *self)
     priv->current_stream = NULL;
     priv->stream_list = NULL;
 	priv->timer_id = 0;
-	priv->style_initialized = FALSE;
-	priv->needs_reset = FALSE;
 	priv->in_startup = FALSE;
 	priv->current_dir = NULL;
 }
@@ -170,9 +172,23 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
     }
 }
 
-void
-_chimara_glk_free_nonwindow_private_data(ChimaraGlkPrivate *priv)
+static void
+chimara_glk_finalize(GObject *object)
 {
+    ChimaraGlk *self = CHIMARA_GLK(object);
+	CHIMARA_GLK_USE_PRIVATE(self, priv);
+
+	/* Free widget properties */
+	pango_font_description_free(priv->default_font_desc);
+	pango_font_description_free(priv->monospace_font_desc);
+	g_free(priv->final_message);
+	/* Free styles */
+	g_hash_table_destroy(priv->default_styles->text_buffer);
+	g_hash_table_destroy(priv->default_styles->text_grid);
+	g_hash_table_destroy(priv->current_styles->text_buffer);
+	g_hash_table_destroy(priv->current_styles->text_grid);
+	priv->style_initialized = FALSE;
+	
     /* Free the event queue */
     g_mutex_lock(priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
@@ -182,86 +198,32 @@ _chimara_glk_free_nonwindow_private_data(ChimaraGlkPrivate *priv)
 	priv->event_queue = NULL;
 	g_mutex_unlock(priv->event_lock);
 	g_mutex_free(priv->event_lock);
-	
-	/* Free the abort signaling mechanism */
+    /* Free the abort signaling mechanism */
 	g_mutex_lock(priv->abort_lock);
 	/* Make sure no other thread is busy with this */
 	g_mutex_unlock(priv->abort_lock);
 	g_mutex_free(priv->abort_lock);
 	priv->abort_lock = NULL;
-
-	/* Unref input queues */
-	g_async_queue_unref(priv->char_input_queue);
-	g_async_queue_unref(priv->line_input_queue);
-	
-	/* Free styles */
-	pango_font_description_free(priv->default_font_desc);
-	pango_font_description_free(priv->monospace_font_desc);
-
-	g_free(priv->current_dir);
-	g_hash_table_destroy(priv->default_styles->text_buffer);
-	g_hash_table_destroy(priv->default_styles->text_grid);
-	g_hash_table_destroy(priv->current_styles->text_buffer);
-	g_hash_table_destroy(priv->current_styles->text_grid);
-}
-
-/* Internal function: main thread version of destroy_windows_below, only more
- DESTRUCTO-MATIC! */
-static void
-trash_windows_recursive(ChimaraGlkPrivate *priv, winid_t win)
-{
-	switch(win->type)
-	{
-		case wintype_Blank:
-	    case wintype_TextGrid:
-		case wintype_TextBuffer:
-			gtk_widget_unparent(win->frame);
-			break;
-
-		case wintype_Pair:
-			trash_windows_recursive(priv, win->window_node->children->data);
-			trash_windows_recursive(priv, win->window_node->children->next->data);
-			break;
-
-		default:
-			ILLEGAL_PARAM("Unknown window type: %u", win->type);
-			return;
-	}
-	trash_stream_thread_independent(priv, win->window_stream);
-	trash_window_thread_independent(priv, win);
-}
-
-void
-_chimara_glk_free_window_private_data(ChimaraGlkPrivate *priv)
-{
-	/* Destroy the window tree */
-	if(priv->root_window) {
-		trash_windows_recursive(priv, priv->root_window->data);
-		g_node_destroy(priv->root_window);
-	}
-	
+	/* Free the shutdown keypress signaling mechanism */
+	g_mutex_lock(priv->shutdown_lock);
+	g_cond_free(priv->shutdown_key_pressed);
+	g_mutex_unlock(priv->shutdown_lock);
+	priv->shutdown_lock = NULL;
 	/* Free the window arrangement signaling */
 	g_mutex_lock(priv->arrange_lock);
 	g_cond_free(priv->rearranged);
 	g_mutex_unlock(priv->arrange_lock);
 	g_mutex_free(priv->arrange_lock);
 	priv->arrange_lock = NULL;
+	/* Unref input queues (this should destroy them since any Glk thread has stopped by now */
+	g_async_queue_unref(priv->char_input_queue);
+	g_async_queue_unref(priv->line_input_queue);
+	
+	/* Free other stuff */
+	if(priv->current_dir)
+		g_free(priv->current_dir);
 
-	/* Remove the dispatch callbacks */
-	priv->register_obj = NULL;
-	priv->unregister_obj = NULL;
-	priv->register_arr = NULL;
-	priv->unregister_arr = NULL;
-}
-
-static void
-chimara_glk_finalize(GObject *object)
-{
-    ChimaraGlk *self = CHIMARA_GLK(object);
-	CHIMARA_GLK_USE_PRIVATE(self, priv);
-	_chimara_glk_free_nonwindow_private_data(priv);
-	_chimara_glk_free_window_private_data(priv);
-
+	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
 
@@ -603,19 +565,18 @@ static void
 chimara_glk_stopped(ChimaraGlk *self)
 {
     CHIMARA_GLK_USE_PRIVATE(self, priv);
-	printf("stopped signal received\n");
     priv->running = FALSE;
 
     /* Free the plugin */
 	if( priv->program && !g_module_close(priv->program) )
 	    g_warning( "Error closing module: %s", g_module_error() );
+	priv->program = NULL;
 }
 
 static void
 chimara_glk_started(ChimaraGlk *self)
 {
 	CHIMARA_GLK_USE_PRIVATE(self, priv);
-	printf("started signal received\n");
 	priv->running = TRUE;
 }
 
@@ -1106,6 +1067,7 @@ glk_enter(struct StartupData *startup)
 	extern GPrivate *glk_data_key;
 	g_private_set(glk_data_key, startup->glk_data);
 	
+	/* Acquire the Glk thread's references to the input queues */
 	g_async_queue_ref(startup->glk_data->char_input_queue);
 	g_async_queue_ref(startup->glk_data->line_input_queue);
 	
@@ -1125,15 +1087,13 @@ glk_enter(struct StartupData *startup)
 	}
 	
 	/* Run main function */
-    g_signal_emit_by_name(startup->glk_data->self, "started");
-	(startup->glk_main)();
-	g_signal_emit_by_name(startup->glk_data->self, "stopped");
-	/* FIXME: hack. should be done by the signal above but for some reason
-	 * this doesn't work */
-	chimara_glk_stopped(startup->glk_data->self);
-
+	glk_main_t glk_main = startup->glk_main;
 	g_slice_free(struct StartupData, startup);
-	return NULL;
+    g_signal_emit_by_name(startup->glk_data->self, "started");
+	glk_main();
+	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
+	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
+	return NULL; 
 }
 
 /**
@@ -1168,13 +1128,6 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	struct StartupData *startup = g_slice_new0(struct StartupData);
-
-	/* If anything was left over from the previous run, destroy it */
-	if(priv->needs_reset) {
-		_chimara_glk_free_window_private_data(priv);
-		priv->needs_reset = FALSE;
-		chimara_glk_init(glk);
-	}
 	
     /* Open the module to run */
     g_assert( g_module_supported() );
@@ -1228,7 +1181,6 @@ chimara_glk_stop(ChimaraGlk *glk)
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
     CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
-	printf("stopping (%d)...\n", priv->running);
     /* Don't do anything if not running a program */
     if(!priv->running)
     	return;
@@ -1239,6 +1191,10 @@ chimara_glk_stop(ChimaraGlk *glk)
 		g_mutex_unlock(priv->abort_lock);
 		/* Stop blocking on the event queue condition */
 		event_throw(glk, evtype_Abort, NULL, 0, 0);
+		/* Stop blocking on the shutdown key press condition */
+		g_mutex_lock(priv->shutdown_lock);
+		g_cond_signal(priv->shutdown_key_pressed);
+		g_mutex_unlock(priv->shutdown_lock);
 	}
 }
 
@@ -1257,7 +1213,10 @@ chimara_glk_wait(ChimaraGlk *glk)
     /* Don't do anything if not running a program */
     if(!priv->running)
     	return;
+	/* Unlock GDK mutex, because the Glk program might need to use it for shutdown */
+	gdk_threads_leave();
     g_thread_join(priv->thread);
+	gdk_threads_enter();
 }
 
 /**

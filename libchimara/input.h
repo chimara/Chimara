@@ -10,6 +10,7 @@
 #include "event.h"
 #include "strio.h"
 
+G_GNUC_INTERNAL gboolean on_shutdown_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win);
 G_GNUC_INTERNAL gboolean on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win);
 G_GNUC_INTERNAL gboolean on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win);
 G_GNUC_INTERNAL void after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win);

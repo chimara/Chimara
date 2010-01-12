@@ -34,6 +34,9 @@ struct _ChimaraGlkPrivate {
 	/* Hashtable containing the default and current style */
 	struct StyleSet *default_styles;
 	struct StyleSet *current_styles;
+	gboolean style_initialized; /* Have styles been initialized */
+	/* Final message displayed when game exits */
+	gchar *final_message;
 
 	/* *** Threading data *** */
 	/* Whether program is running */
@@ -50,6 +53,9 @@ struct _ChimaraGlkPrivate {
     /* Abort mechanism */
     GMutex *abort_lock;
     gboolean abort_signalled;
+	/* Key press after shutdown mechanism */
+	GMutex *shutdown_lock;
+	GCond *shutdown_key_pressed;
 	/* Window arrangement locks */
 	GMutex *arrange_lock;
 	GCond *rearranged;
@@ -81,10 +87,6 @@ struct _ChimaraGlkPrivate {
 	void (*unregister_obj)(void *, glui32, gidispatch_rock_t);
 	gidispatch_rock_t (*register_arr)(void *, glui32, char *);
 	void (*unregister_arr)(void *, glui32, char *, gidispatch_rock_t);
-	/* Have styles been initialized */
-	gboolean style_initialized;
-	/* Is widget still displaying windows from last run */
-	gboolean needs_reset;
 
 	/* *** Platform-dependent Glk library data *** */
 	/* Flag for functions to find out if they are being called from startup code */
@@ -95,8 +97,6 @@ struct _ChimaraGlkPrivate {
 
 #define CHIMARA_GLK_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), CHIMARA_TYPE_GLK, ChimaraGlkPrivate))
 #define CHIMARA_GLK_USE_PRIVATE(o, n) ChimaraGlkPrivate *n = CHIMARA_GLK_PRIVATE(o)
-
-G_GNUC_INTERNAL void _chimara_glk_free_nonwindow_private_data(ChimaraGlkPrivate *self);
 
 G_END_DECLS
 
