@@ -108,9 +108,9 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_Hyperlinks:
 			return 1;
 
-		/* Hyperlinks supported on textbuffers only at the moment */
+		/* Hyperlinks supported on textbuffers and textgrids */
 		case gestalt_HyperlinkInput:
-			return val == wintype_TextBuffer;
+			return val == wintype_TextBuffer || val == wintype_TextGrid;
 			
 		/* Unsupported capabilities */
 		case gestalt_MouseInput:

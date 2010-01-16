@@ -9,6 +9,7 @@
 #include "input.h"
 #include "style.h"
 #include "hyperlink.h"
+#include "mouse.h"
 
 
 enum InputRequestType
@@ -73,6 +74,7 @@ struct glk_window_struct
 	gulong insert_text_handler;
 	gulong tag_event_handler;
 	gulong shutdown_keypress_handler;
+	gulong button_press_event_handler;
 	/* Window buffer */
 	GString *buffer;
 	/* Hyperlinks */

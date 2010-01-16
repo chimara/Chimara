@@ -7,12 +7,14 @@
 void print_help();
 void do_style_test();
 void do_link_test();
+void do_mouse_test();
 
 winid_t mainwin;
 winid_t statuswin;
 
 void glk_main(void)
 {
+	char stringbuffer[128];
     event_t ev;
     mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 0);
     if(!mainwin)
@@ -42,6 +44,9 @@ void glk_main(void)
 			else if( !strncmp(buffer, "link", 4) ) {
 				do_link_test();
 			}
+			else if( !strncmp(buffer, "mouse", 4) ) {
+				do_mouse_test();
+			}
 			else {
 				glk_put_string("Huh?\n");
 			}
@@ -50,15 +55,15 @@ void glk_main(void)
 		else if(ev.type == evtype_Hyperlink)
 		{
 			glk_cancel_line_event(mainwin, NULL);
-			if(ev.val1 == 1)
-				glk_put_string("Link 1 was clicked\n");
-			if(ev.val1 == 2)
-				glk_put_string("Link 2 was clicked\n");
-			if(ev.val1 == 3)
-				glk_put_string("Link 3 was clicked\n");
-			if(ev.val1 == 4)
-				glk_put_string("Link 4 was clicked\n");
-
+			snprintf(stringbuffer, 128, "Link %d was clicked\n", ev.val1);
+			glk_put_string(stringbuffer);
+    		glk_request_line_event(mainwin, buffer, 255, 0);
+		}
+		else if(ev.type == evtype_MouseInput)
+		{
+			glk_cancel_line_event(mainwin, NULL);
+			snprintf(stringbuffer, 128, "Mouse click: x=%d, y=%d\n", ev.val1, ev.val2);
+			glk_put_string(stringbuffer);
     		glk_request_line_event(mainwin, buffer, 255, 0);
 		}
     }
@@ -131,6 +136,12 @@ do_link_test() {
 }
 
 void
+do_mouse_test() {
+	glk_request_mouse_event(mainwin);
+	glk_request_mouse_event(statuswin);
+}
+
+void
 print_help() {
-	glk_put_string("The following commands are supported:\n - help (this help text)\n - style (perform style test)\n - link (perform hyperlink test)\n - quit (quit the program)\n");
+	glk_put_string("The following commands are supported:\n - help (this help text)\n - style (perform style test)\n - link (perform hyperlink test)\n - mouse (perform mouse test)\n - quit (quit the program)\n");
 }
