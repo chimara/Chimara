@@ -56,7 +56,7 @@ glk_set_hyperlink_stream(strid_t str, glui32 linkval)
 	g_return_if_fail(str != NULL);
 	g_return_if_fail(str->type == STREAM_TYPE_WINDOW);
 	g_return_if_fail(str->window != NULL);
-	g_return_if_fail(str->window->type == wintype_TextBuffer);
+	g_return_if_fail(str->window->type == wintype_TextBuffer || str->window->type == wintype_TextGrid);
 
 	flush_window_buffer(str->window);
 
@@ -138,7 +138,7 @@ glk_request_hyperlink_event(winid_t win)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win != NULL);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
 	g_hash_table_foreach(win->hyperlinks, hyperlink_unblock_event_handler, NULL);
 
@@ -156,7 +156,7 @@ glk_cancel_hyperlink_event(winid_t win)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win != NULL);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
 	g_hash_table_foreach(win->hyperlinks, hyperlink_block_event_handler, NULL);
 }

@@ -9,6 +9,7 @@ void do_style_test();
 void do_link_test();
 
 winid_t mainwin;
+winid_t statuswin;
 
 void glk_main(void)
 {
@@ -16,6 +17,8 @@ void glk_main(void)
     mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 0);
     if(!mainwin)
         return;
+
+	statuswin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed, 3, wintype_TextGrid, 1);
     
     glk_set_window(mainwin);
     
@@ -51,6 +54,11 @@ void glk_main(void)
 				glk_put_string("Link 1 was clicked\n");
 			if(ev.val1 == 2)
 				glk_put_string("Link 2 was clicked\n");
+			if(ev.val1 == 3)
+				glk_put_string("Link 3 was clicked\n");
+			if(ev.val1 == 4)
+				glk_put_string("Link 4 was clicked\n");
+
     		glk_request_line_event(mainwin, buffer, 255, 0);
 		}
     }
@@ -100,12 +108,26 @@ do_style_test() {
 
 void
 do_link_test() {
+    glk_set_window(mainwin);
 	glk_set_hyperlink(1);
 	glk_put_string("This is link 1\n");
 	glk_set_hyperlink(2);
 	glk_put_string("This is link 2\n");
 	glk_set_hyperlink(0);
+
+    glk_set_window(statuswin);
+	glk_set_hyperlink(3);
+	glk_window_move_cursor(statuswin, 0, 0);
+	glk_put_string("This is link 3\n");
+	glk_set_hyperlink(4);
+	glk_window_move_cursor(statuswin, 0, 1);
+	glk_put_string("This is link 4\n");
+	glk_set_hyperlink(0);
+
 	glk_request_hyperlink_event(mainwin);
+	glk_request_hyperlink_event(statuswin);
+
+    glk_set_window(mainwin);
 }
 
 void
