@@ -547,8 +547,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_signal_handler_block(textview, win->shutdown_keypress_handler);			
 			win->insert_text_handler = g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(after_window_insert_text), win );
 			g_signal_handler_block(textbuffer, win->insert_text_handler);
-			win->button_press_event_handler = g_signal_connect( textview, "button-press-event", G_CALLBACK(on_window_button_press), win );
-			g_signal_handler_block(textview, win->button_press_event_handler);
 
 			/* Create an editable tag to indicate uneditable parts of the window
 			(for line input) */
