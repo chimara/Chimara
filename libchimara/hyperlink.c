@@ -83,8 +83,6 @@ glk_set_hyperlink_stream(strid_t str, glui32 linkval)
 		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(textbuffer);
 		gtk_text_tag_table_add(tags, new_hyperlink->tag);
 
-		printf("inserting link %d\n", linkval);
-
 		gint *linkval_pointer = g_new0(gint, 1);
 		*linkval_pointer = linkval;
 		g_hash_table_insert(str->window->hyperlinks, linkval_pointer, new_hyperlink);
@@ -100,7 +98,6 @@ hyperlink_unblock_event_handler(gpointer key, gpointer value, gpointer user_data
 {
 	hyperlink_t *link = (hyperlink_t *) value;
 	g_signal_handler_unblock(link->tag, link->event_handler);
-	printf("unblocking link %d\n", link->value);
 }
 
 /* Internal function used to iterate over all the hyperlinks, blocking the event handler */

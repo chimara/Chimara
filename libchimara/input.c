@@ -436,7 +436,7 @@ on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 	/* Only one keypress will be handled */
 	win->input_request_type = INPUT_REQUEST_NONE;
-	g_signal_handler_block( win->widget, win->char_input_keypress_handler );
+	g_signal_handler_block(win->widget, win->char_input_keypress_handler);
 
 	return TRUE;
 }

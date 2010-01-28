@@ -10,6 +10,7 @@
 #include "style.h"
 #include "hyperlink.h"
 #include "mouse.h"
+#include "graphics.h"
 
 
 enum InputRequestType
@@ -75,11 +76,14 @@ struct glk_window_struct
 	gulong tag_event_handler;
 	gulong shutdown_keypress_handler;
 	gulong button_press_event_handler;
+	gulong size_allocate_handler;
 	/* Window buffer */
 	GString *buffer;
 	/* Hyperlinks */
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;
+	/* Graphics */
+	glui32 background_color;
 };
 
 #endif

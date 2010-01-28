@@ -64,6 +64,11 @@ struct _ChimaraGlkPrivate {
 	/* Input queues */
 	GAsyncQueue *char_input_queue;
 	GAsyncQueue *line_input_queue;
+	/* Resource loading locks */
+	GMutex *resource_lock;
+	GCond *resource_loaded;
+	GCond *resource_info_available;
+	guint32 resource_available;
 
 	/* *** Glk library data *** */
     /* User-defined interrupt handler */

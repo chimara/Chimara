@@ -16,13 +16,13 @@ libchimara_la_SOURCES = \
 	fileref.c fileref.h \
 	garglk.c garglk.h \
 	gestalt.c \
+	graphics.c graphics.h \
 	gi_blorb.c gi_blorb.h \
 	gi_dispa.c gi_dispa.h \
 	glk.c glk.h \
 	glkstart.h \
 	glkunix.c glkunix.h \
 	hyperlink.c hyperlink.h \
-	image.c \
 	init.c init.h \
 	input.c input.h \
 	magic.c magic.h \
@@ -33,7 +33,7 @@ libchimara_la_SOURCES = \
 	strio.c strio.h \
 	style.c style.h \
 	timer.c timer.h \
-	window.c window.h 
+	window.c window.h
 libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \

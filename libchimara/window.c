@@ -558,6 +558,28 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_text_buffer_create_mark(textbuffer, "input_position", &end, TRUE);
 		}
 			break;
+
+		case wintype_Graphics:
+		{
+			// TODO: Find real size
+			GdkPixmap *newmap = gdk_pixmap_new(NULL, 800, 600, 24);
+		    GtkWidget *image = gtk_image_new_from_pixmap(newmap, NULL);
+			g_object_unref(newmap);
+
+			gtk_widget_show(image);
+
+		    win->widget = image;
+		    win->frame = image;
+
+		    		
+			/* Connect signal handlers */
+			win->button_press_event_handler = g_signal_connect(image, "button-press-event", G_CALLBACK(on_window_button_press), win);
+			g_signal_handler_block(image, win->button_press_event_handler);
+			win->shutdown_keypress_handler = g_signal_connect(image, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win);
+			g_signal_handler_block(image, win->shutdown_keypress_handler);			
+			win->size_allocate_handler = g_signal_connect(image, "size-allocate", G_CALLBACK(on_graphics_size_allocate), win);
+		}
+		    break;
 			
 		default:
 			gdk_threads_leave();
@@ -660,6 +682,7 @@ destroy_windows_below(winid_t win, stream_result_t *result)
 		case wintype_Blank:
 	    case wintype_TextGrid:
 		case wintype_TextBuffer:
+		case wintype_Graphics:
 			gtk_widget_unparent(win->frame);
 			break;
 
@@ -914,6 +937,18 @@ glk_window_clear(winid_t win)
 			gdk_threads_leave();
 		}
 			break;
+
+		case wintype_Graphics:
+		{
+			/* Wait for the window's size to be updated */
+			g_mutex_lock(glk_data->arrange_lock);
+			if(glk_data->needs_rearrange)
+				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+			g_mutex_unlock(glk_data->arrange_lock);
+
+			glk_window_erase_rect(win, 0, 0, win->widget->allocation.width, win->widget->allocation.height);
+		}
+			break;
 		
 		default:
 			ILLEGAL_PARAM("Unknown window type: %d", win->type);
@@ -1077,6 +1112,21 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
                 *widthptr = (glui32)(win->widget->allocation.width / win->unit_width);
             if(heightptr != NULL)
                 *heightptr = (glui32)(win->widget->allocation.height / win->unit_height);
+            gdk_threads_leave();
+            
+            break;
+
+		case wintype_Graphics:
+			g_mutex_lock(glk_data->arrange_lock);
+			if(glk_data->needs_rearrange)
+				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
+			g_mutex_unlock(glk_data->arrange_lock);
+			
+            gdk_threads_enter();
+            if(widthptr != NULL)
+                *widthptr = (glui32)(win->widget->allocation.width);
+            if(heightptr != NULL)
+                *heightptr = (glui32)(win->widget->allocation.height);
             gdk_threads_leave();
             
             break;

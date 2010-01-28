@@ -7,4 +7,7 @@
 #include "chimara-glk-private.h"
 #include "magic.h"
 
+void giblorb_print_contents(giblorb_map_t *map);
+gchar* giblorb_get_error_message(giblorb_err_t err);
+
 #endif

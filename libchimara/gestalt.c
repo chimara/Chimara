@@ -115,15 +115,21 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		/* Mouse support present in textgrids */
 		case gestalt_MouseInput:
 			return val == wintype_TextGrid;
+
+		case gestalt_Graphics:
+			return 1;
+
+		case gestalt_DrawImage:
+			return val == wintype_Graphics;
+
+		case gestalt_GraphicsTransparency:
+			return 1;
 			
 		/* Unsupported capabilities */
-		case gestalt_Graphics:
-		case gestalt_DrawImage:
 		case gestalt_Sound:
 		case gestalt_SoundVolume:
 		case gestalt_SoundNotify:
 		case gestalt_SoundMusic:
-		case gestalt_GraphicsTransparency:
 		/* Selector not supported */	
 		default:
 			return 0;

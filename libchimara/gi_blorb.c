@@ -597,5 +597,3 @@ static void giblorb_free(void *ptr)
 {
     g_free(ptr);
 }
-
-
