@@ -62,7 +62,7 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 
 	/* Determine the image dimensions */
 	if(!size_determined) {
-		WARNING("Cannot read image size: file data trimmed?");
+		WARNING("Cannot read image size");
 		g_free(info);
 		return FALSE;
 	}
@@ -72,8 +72,6 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 	if(height != NULL)
 		*height =info->height;
 	g_free(info);
-
-	//printf("size loaded: %d x %d\n", (int) *width, (int) *height);
 
 	return TRUE;
 }
@@ -86,10 +84,40 @@ on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_
 	size_determined = TRUE;
 }
 
+/*** Called when the graphics window is resized. Resize the backing pixmap if necessary ***/
 void
-on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t *win)
+on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t win)
 {
-	printf("size allocated: %dx%d\n", allocation->width, allocation->height);
+	printf("allocate to: %dx%d\n", allocation->width, allocation->height);
+	GdkPixmap *oldmap;
+	gtk_image_get_pixmap( GTK_IMAGE(widget), &oldmap, NULL );
+	gint oldwidth = 0;
+	gint oldheight = 0;
+ 
+	/* Determine whether a pixmap exists with the correct size */
+	gboolean needs_resize = FALSE;
+	if(oldmap == NULL)
+		needs_resize = TRUE;
+	else {
+		gdk_drawable_get_size( GDK_DRAWABLE(oldmap), &oldwidth, &oldheight );
+		if(oldwidth != allocation->width || oldheight != allocation->height)
+			needs_resize = TRUE;
+	}
+
+	if(needs_resize) {
+		printf("needs resize\n");
+		/* Create a new pixmap */
+		GdkPixmap *newmap = gdk_pixmap_new(widget->window, allocation->width, allocation->height, -1);
+		gdk_draw_rectangle( GDK_DRAWABLE(newmap), widget->style->white_gc, TRUE, 0, 0, allocation->width, allocation->height);
+
+		/* Copy the contents of the old pixmap */
+		if(oldmap != NULL)
+			gdk_draw_drawable( GDK_DRAWABLE(newmap), widget->style->white_gc, GDK_DRAWABLE(oldmap), 0, 0, 0, 0, oldwidth, oldheight);
+		
+		/* Use the new pixmap */
+		gtk_image_set_from_pixmap( GTK_IMAGE(widget), newmap, NULL );
+		g_object_unref(newmap);
+	}
 }
 
 glui32
@@ -106,8 +134,6 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2) {
 	info->resource_number = image;
 	guchar *buffer;
 	GdkPixmap *canvas;
-
-	//printf("glk_image_get_info(%d)\n", image);
 
 	/* Lookup the proper resource */
 	blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &res, giblorb_ID_Pict, image);
@@ -135,6 +161,7 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2) {
 
 		total_read += num_read;
 	}
+	printf("Loading done\n");
 	giblorb_unload_chunk(glk_data->resource_map, image);
 	g_free(buffer);
 
@@ -152,11 +179,13 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2) {
 		return FALSE;
 	}
 
+	// TODO: FIX hang?
 	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
 	gdk_pixbuf_loader_close(loader, &pixbuf_error);
 
 	/* Update the screen */
 	gtk_widget_queue_draw(win->widget);
+
 	return TRUE;
 }
 

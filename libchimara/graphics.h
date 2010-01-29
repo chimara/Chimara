@@ -14,6 +14,6 @@ struct image_info {
 	gint width, height;
 };
 
-void on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t *win);
+void on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t win);
 
 #endif

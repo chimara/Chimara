@@ -561,16 +561,13 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 		case wintype_Graphics:
 		{
-			// TODO: Find real size
-			GdkPixmap *newmap = gdk_pixmap_new(NULL, 800, 600, 24);
-		    GtkWidget *image = gtk_image_new_from_pixmap(newmap, NULL);
-			g_object_unref(newmap);
-
+		    GtkWidget *image = gtk_image_new_from_pixmap(NULL, NULL);
 			gtk_widget_show(image);
 
+			win->unit_width = 1;
+			win->unit_height = 1;
 		    win->widget = image;
 		    win->frame = image;
-
 		    		
 			/* Connect signal handlers */
 			win->button_press_event_handler = g_signal_connect(image, "button-press-event", G_CALLBACK(on_window_button_press), win);
