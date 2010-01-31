@@ -196,7 +196,88 @@ on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 glui32
 glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height)
 {
-	glk_image_draw(win, image, val1, val2);
+	VALID_WINDOW(win, return FALSE);
+	g_return_val_if_fail(win->type == wintype_Graphics, FALSE);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	giblorb_result_t res;
+	giblorb_err_t blorb_error = 0;
+	GError *pixbuf_error = NULL;
+	struct image_info *info = g_new0(struct image_info, 1);
+	info->resource_number = image;
+	guchar *buffer;
+	GdkPixmap *canvas;
+
+	/* Lookup the proper resource */
+	blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &res, giblorb_ID_Pict, image);
+	if(blorb_error != giblorb_err_None) {
+		WARNING_S( "Error loading resource", giblorb_get_error_message(blorb_error) );
+		return FALSE;
+	}
+
+	/* Load the resource */
+	GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+	g_signal_connect( loader, "closed", G_CALLBACK(on_pixbuf_closed), NULL ); 
+	gdk_pixbuf_loader_set_size(loader, width, height);
+	glk_stream_set_position(glk_data->resource_file, res.data.startpos, seekmode_Start);
+	buffer = g_malloc( BUFFER_SIZE * sizeof(guchar) );
+
+	guint32 total_read = 0;
+	image_loaded = FALSE;
+	while(total_read < res.length) {
+		guint32 num_read = glk_get_buffer_stream(glk_data->resource_file, (char *) buffer, BUFFER_SIZE);
+
+		if( !gdk_pixbuf_loader_write(loader, buffer, MIN(BUFFER_SIZE, num_read), &pixbuf_error) ) {
+			WARNING_S("Cannot read image", pixbuf_error->message);
+			giblorb_unload_chunk(glk_data->resource_map, image);
+			gdk_pixbuf_loader_close(loader, &pixbuf_error);
+			g_free(buffer);
+			return FALSE;
+		}
+
+		total_read += num_read;
+	}
+
+	if( !gdk_pixbuf_loader_close(loader, &pixbuf_error) ) {
+		WARNING_S("Cannot read image", pixbuf_error->message);
+		giblorb_unload_chunk(glk_data->resource_map, image);
+		g_free(buffer);
+		return FALSE;
+	}
+
+	if(!image_loaded) {
+		/* Wait for the PixbufLoader to finish loading the image */
+		g_mutex_lock(glk_data->resource_lock);
+		while(!image_loaded) {
+			g_cond_wait(glk_data->resource_loaded, glk_data->resource_lock);
+		}
+		g_mutex_unlock(glk_data->resource_lock);
+	}
+
+	giblorb_unload_chunk(glk_data->resource_map, image);
+	g_free(buffer);
+	
+	gdk_threads_enter();
+
+   	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
+	if(canvas == NULL) {
+		WARNING("Could not get pixmap");
+		return FALSE;
+	}
+
+	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+	if(pixbuf == NULL) {
+		WARNING("Could not read image");
+		return FALSE;
+	}
+
+	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
+
+	/* Update the screen */
+	gtk_widget_queue_draw(win->widget);
+
+	gdk_threads_leave();
+
 	return TRUE;
 }
 
