@@ -22,8 +22,6 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 	info->resource_number = image;
 	guchar *buffer;
 
-	//printf("glk_image_get_info(%d)\n", image);
-
 	/* Lookup the proper resource */
 	blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &res, giblorb_ID_Pict, image);
 	if(blorb_error != giblorb_err_None) {
@@ -154,6 +152,8 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 
 	giblorb_unload_chunk(glk_data->resource_map, image);
 	g_free(buffer);
+	
+	gdk_threads_enter();
 
    	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
 	if(canvas == NULL) {
@@ -167,13 +167,12 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 		return FALSE;
 	}
 
-	printf("Drawing image %d\n", (int)image);
-
-	// TODO: fix hang
 	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
 
 	/* Update the screen */
 	gtk_widget_queue_draw(win->widget);
+
+	gdk_threads_leave();
 
 	return TRUE;
 }
@@ -181,19 +180,23 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 void
 on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 {
-	printf("closed\n");
+	gdk_threads_enter();
+
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	g_mutex_lock(glk_data->resource_lock);
 	image_loaded = TRUE;
 	g_cond_broadcast(glk_data->resource_loaded);
 	g_mutex_unlock(glk_data->resource_lock);
+
+	gdk_threads_leave();
 }
 
 
 glui32
 glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height)
 {
+	glk_image_draw(win, image, val1, val2);
 	return TRUE;
 }
 
@@ -208,16 +211,20 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_Graphics);
 
+
+	gdk_threads_enter();
+
 	GdkPixmap *map;
 	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &map, NULL );
 	gdk_draw_rectangle( GDK_DRAWABLE(map), win->widget->style->white_gc, TRUE, left, top, width, height);
 	gtk_widget_queue_draw(win->widget);
+
+	gdk_threads_leave();
 }
 
 void
 glk_window_erase_rect(winid_t win, glsi32 left, glsi32 top, glui32 width, glui32 height)
 {
-	printf("erasing rect: %d %d %d %d\n", left, top, width, height);
 	glk_window_fill_rect(win, win->background_color, left, top, width, height);
 }
 
@@ -228,8 +235,7 @@ void glk_window_flow_break(winid_t win)
 /*** Called when the graphics window is resized. Resize the backing pixmap if necessary ***/
 void
 on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t win)
-{
-	printf("allocate to: %dx%d\n", allocation->width, allocation->height);
+{ 
 	GdkPixmap *oldmap;
 	gtk_image_get_pixmap( GTK_IMAGE(widget), &oldmap, NULL );
 	gint oldwidth = 0;
@@ -246,7 +252,6 @@ on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t 
 	}
 
 	if(needs_resize) {
-		printf("needs resize\n");
 		/* Create a new pixmap */
 		GdkPixmap *newmap = gdk_pixmap_new(widget->window, allocation->width, allocation->height, -1);
 		gdk_draw_rectangle( GDK_DRAWABLE(newmap), widget->style->white_gc, TRUE, 0, 0, allocation->width, allocation->height);
