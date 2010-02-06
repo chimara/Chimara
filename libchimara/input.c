@@ -8,14 +8,16 @@ extern GPrivate *glk_data_key;
 /* Forward declarations */
 static int finish_text_buffer_line_input(winid_t win, gboolean emit_signal);
 static int finish_text_grid_line_input(winid_t win, gboolean emit_signal);
+static void cancel_old_input_request(winid_t win);
 
 /* Internal function: code common to both flavors of char event request */
 void
 request_char_event_common(winid_t win, gboolean unicode)
 {
 	VALID_WINDOW(win, return);
-	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+
+	cancel_old_input_request(win);
 
 	flush_window_buffer(win);
 
@@ -239,9 +241,10 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(buf);
-	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 	g_return_if_fail(initlen <= maxlen);
+
+	cancel_old_input_request(win);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
@@ -293,10 +296,10 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(buf);
-	g_return_if_fail(win->input_request_type == INPUT_REQUEST_NONE);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 	g_return_if_fail(initlen <= maxlen);
 
+	cancel_old_input_request(win);
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	/* Register the buffer */
@@ -895,4 +898,26 @@ force_line_input_from_queue(winid_t win, event_t *event)
 	event->win = win;
 	event->val1 = chars_written;
 	event->val2 = 0;
+}
+
+/*** Internal function: cancels any pending input requests on the window and presents a warning if not INPUT_REQUEST_NONE ***/
+void
+cancel_old_input_request(winid_t win)
+{
+	switch(win->input_request_type) {
+	case INPUT_REQUEST_NONE:
+		break; /* All is well */
+	case INPUT_REQUEST_CHARACTER:
+	case INPUT_REQUEST_CHARACTER_UNICODE:
+		glk_cancel_char_event(win);
+		WARNING("Cancelling pending char event");
+		break;
+	case INPUT_REQUEST_LINE:
+	case INPUT_REQUEST_LINE_UNICODE:
+		glk_cancel_line_event(win, NULL);
+		WARNING("Cancelling pending line event");
+		break;
+	default:
+		WARNING("Could not cancel pending input request: unknown input request");
+	}
 }
