@@ -69,6 +69,8 @@ struct _ChimaraGlkPrivate {
 	GCond *resource_loaded;
 	GCond *resource_info_available;
 	guint32 resource_available;
+	/* Image cache */
+	GSList *image_cache;
 
 	/* *** Glk library data *** */
     /* User-defined interrupt handler */

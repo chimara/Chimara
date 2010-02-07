@@ -71,19 +71,21 @@ load_image_in_cache(glui32 image, gint width, gint height)
 	g_mutex_unlock(glk_data->resource_lock);
 
 	/* Store the image in the cache */
+	gdk_threads_enter();
+
 	if( g_slist_length(glk_data->image_cache) >= IMAGE_CACHE_MAX_NUM ) {
-		printf("Cache size exceeded\n");
 		struct image_info *head = (struct image_info*) glk_data->image_cache->data;
 		gdk_pixbuf_unref(head->pixbuf);
 		g_free(head);
 		glk_data->image_cache = g_slist_remove_link(glk_data->image_cache, glk_data->image_cache);
 	}
-	printf("Loading pixbuf\n");
 	info->pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+	gdk_pixbuf_ref(info->pixbuf);
 	info->width = gdk_pixbuf_get_width(info->pixbuf);
 	info->height = gdk_pixbuf_get_height(info->pixbuf);
-	printf("Caching pixbuf\n");
 	glk_data->image_cache = g_slist_prepend(glk_data->image_cache, info);
+
+	gdk_threads_leave();
 
 	g_object_unref(loader);
 	return info;
@@ -128,54 +130,57 @@ clear_image_cache(struct image_info *data, gpointer user_data)
 static struct image_info*
 image_cache_find(struct image_info* to_find)
 {
-	printf("Finding image %d\n", to_find->resource_number);
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GSList *link = glk_data->image_cache;
 
+	gdk_threads_enter();
+
 	/* Empty cache */
 	if(link == NULL) {
-		printf("Cache is empty\n");
+		gdk_threads_leave();
+		printf("Cache miss for image %d\n", to_find->resource_number);
 		return NULL;
 	}
 
 	/* Iterate over the cache to find the correct image and size */
 	do {
 		struct image_info *info = (struct image_info*) link->data;
-		printf("Examining cache entry %d\n", info->resource_number);
 		if(info->resource_number == to_find->resource_number) {
 			/* Check size: are we looking for a scaled version or the original one? */
 			if(to_find->scaled) {
 				if(info->width >= to_find->width && info->height >= to_find->height) {
+					gdk_threads_leave();
+					printf("Cache hit for image %d\n", to_find->resource_number);
 					return info; /* Found a good enough match */
 				}
 			} else {
 				if(!info->scaled) {
-					printf("Cache hit\n");
+					gdk_threads_leave();
+					printf("Cache hit for image %d\n", to_find->resource_number);
 					return info; /* Found a match */
 				}
 			}
 		}
 	} while( (link = g_slist_next(link)) );
 
+	gdk_threads_leave();
+
+	printf("Cache miss for image %d\n", to_find->resource_number);
 	return NULL; /* No match found */
 }
 
 glui32
 glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 {
-	printf("get_info(%d)\n", image);
 	struct image_info *to_find = g_new0(struct image_info, 1);
 	struct image_info *found;
 	to_find->resource_number = image;
 	to_find->scaled = FALSE; /* we want the original image size */
 
 	if( !(found = image_cache_find(to_find)) ) {
-		printf("Cache miss for %d\n", image);
 		found = load_image_in_cache(image, 0, 0);
 		if(found == NULL)
 			return FALSE;
-	} else {
-		printf("Cache hit for %d\n", image);
 	}
 
 	if(width != NULL)
@@ -188,7 +193,6 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 glui32
 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 {
-	printf("image_draw(%d)\n", image);
 	VALID_WINDOW(win, return FALSE);
 	g_return_val_if_fail(win->type == wintype_Graphics, FALSE);
 
@@ -214,8 +218,7 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 		return FALSE;
 	}
 
-	printf("image info: %d x %d, scaled=%d, pixbufaddr=%d\n", info->width, info->height, (int)info->scaled, (int)info->pixbuf);
-	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, info->pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
+	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, GDK_PIXBUF((GdkPixbuf*)info->pixbuf), 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
 
 	/* Update the screen */
 	gtk_widget_queue_draw(win->widget);

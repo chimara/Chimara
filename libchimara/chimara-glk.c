@@ -107,10 +107,11 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->ignore_next_arrange_event = FALSE;
 	priv->char_input_queue = g_async_queue_new();
 	priv->line_input_queue = g_async_queue_new();
+	/* Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
 	priv->resource_lock = g_mutex_new();
 	priv->resource_loaded = g_cond_new();
 	priv->resource_info_available = g_cond_new();
-	/* Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
+	priv->image_cache = NULL;
 	priv->interrupt_handler = NULL;
     priv->root_window = NULL;
     priv->fileref_list = NULL;
@@ -223,6 +224,8 @@ chimara_glk_finalize(GObject *object)
 	g_cond_free(priv->resource_info_available);
 	g_mutex_unlock(priv->resource_lock);
 	g_mutex_free(priv->resource_lock);
+	g_slist_foreach(priv->image_cache, (GFunc)clear_image_cache, NULL);
+	g_slist_free(priv->image_cache);
 	/* Unref input queues (this should destroy them since any Glk thread has stopped by now */
 	g_async_queue_unref(priv->char_input_queue);
 	g_async_queue_unref(priv->line_input_queue);
