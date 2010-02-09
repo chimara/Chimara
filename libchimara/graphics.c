@@ -169,6 +169,32 @@ image_cache_find(struct image_info* to_find)
 	return NULL; /* No match found */
 }
 
+/**
+ * glk_image_get_info:
+ * @image: An image resource number.
+ * @width: Pointer to a location at which to store the image's width.
+ * @height: Pointer to a location at which to store the image's height.
+ *
+ * This gets information about the image resource with the given identifier. It
+ * returns %TRUE if there is such an image, and %FALSE if not. You can also pass
+ * pointers to width and height variables; if the image exists, the variables
+ * will be filled in with the width and height of the image, in pixels. (You can
+ * pass %NULL for either width or height if you don't care about that 
+ * information.)
+ * 
+ * <note><para>
+ *   You should always use this function to measure the size of images when you 
+ *   are creating your display. Do this even if you created the images, and you
+ *   know how big they <quote>should</quote> be. This is because images may be 
+ *   scaled in translating from one platform to another, or even from one 
+ *   machine to another. A Glk library might display all images larger than 
+ *   their original size, because of screen resolution or player preference. 
+ *   Images will be scaled proportionally, but you still need to call 
+ *   glk_image_get_info() to determine their absolute size.
+ * </para></note>
+ * 
+ * Returns: %TRUE if @image is a valid identifier, %FALSE if not.
+ */
 glui32
 glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 {
@@ -190,6 +216,34 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 	return TRUE;
 }
 
+/**
+ * glk_image_draw:
+ * @win: A graphics or text buffer window.
+ * @image: An image resource number.
+ * @val1: The x coordinate at which to draw the image (if @win is a graphics 
+ * window); or, an <link linkend="chimara-imagealign-InlineUp">image 
+ * alignment</link> constant (if @win is a text window).
+ * @val2: The y coordinate at which to draw the image (if @win is a graphics
+ * window); this parameter is ignored if @win is a text buffer window.
+ *
+ * This draws the given image resource in the given window. The position of the
+ * image is given by @val1 and @val2, but their meaning varies depending on what
+ * kind of window you are drawing in. See <link 
+ * linkend="chimara-Graphics-in-Graphics-Windows">Graphics in Graphics 
+ * Windows</link> and <link linkend="Graphics-in-Text-Buffer-Windows">Graphics 
+ * in Text Buffer Windows</link>.
+ * 
+ * This function returns a flag indicating whether the drawing operation 
+ * succeeded.
+ * <note><para>
+ *   A %FALSE result can occur for many reasons. The image data might be 
+ *   corrupted; the library may not have enough memory to operate; there may be 
+ *   no image with the given identifier; the window might not support image 
+ *   display; and so on.
+ * </para></note>
+ *
+ * Returns: %TRUE if the operation succeeded, %FALSE if not.
+ */
 glui32
 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 {
@@ -228,7 +282,29 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 	return TRUE;
 }
 
-
+/**
+ * glk_image_draw_scaled:
+ * @win: A graphics or text buffer window.
+ * @image: An image resource number.
+ * @val1: The x coordinate at which to draw the image (if @win is a graphics 
+ * window); or, an <link linkend="chimara-imagealign-InlineUp">image 
+ * alignment</link> constant (if @win is a text window).
+ * @val2: The y coordinate at which to draw the image (if @win is a graphics
+ * window); this parameter is ignored if @win is a text buffer window.
+ * @width: The width of the image.
+ * @height: The height of the image.
+ *
+ * This is similar to glk_image_draw(), but it scales the image to the given 
+ * @width and @height, instead of using the image's standard size. (You can 
+ * measure the standard size with glk_image_get_info().)
+ * 
+ * If @width or @height is zero, nothing is drawn. Since those arguments are 
+ * unsigned integers, they cannot be negative. If you pass in a negative number,
+ * it will be interpreted as a very large positive number, which is almost 
+ * certain to end badly. 
+ *
+ * Returns: %TRUE if the operation succeeded, %FALSE otherwise.
+ */
 glui32
 glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height)
 {
@@ -286,11 +362,51 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 	return TRUE;
 }
 
+/**
+ * glk_window_set_background_color:
+ * @win: A graphics window.
+ * @color: a 32-bit RGB color value.
+ *
+ * This sets the window's background color. It does not change what is currently
+ * displayed; it only affects subsequent clears and resizes. The initial 
+ * background color of each window is white.
+ * 
+ * Colors are encoded in a 32-bit value: the top 8 bits must be zero, the next 8
+ * bits are the red value, the next 8 bits are the green value, and the bottom 8
+ * bits are the blue value. Color values range from 0 to 255.
+ * <note><para>
+ *   So <code>0x00000000</code> is black, <code>0x00FFFFFF</code> is white, and 
+ *   <code>0x00FF0000</code> is bright red.
+ * </para></note>
+ * 
+ * <note><para>
+ *   This function may only be used with graphics windows. To set background 
+ *   colors in a text window, use text styles with color hints; see <link 
+ *   linkend="Styles">Styles</link>.
+ * </para></note>
+ */
 void
-glk_window_set_background_color(winid_t win, glui32 color) {
+glk_window_set_background_color(winid_t win, glui32 color) 
+{
+	VALID_WINDOW(win, return);
+	g_return_if_fail(win->type == wintype_Graphics);
+	
 	win->background_color = color;
 }
 
+/**
+ * glk_window_fill_rect:
+ * @win: A graphics window.
+ * @color: A 32-bit RGB color value, see glk_window_set_background_color().
+ * @left: The x coordinate of the top left corner of the rectangle.
+ * @top: The y coordinate of the top left corner of the rectangle.
+ * @width: The width of the rectangle.
+ * @height: The height of the rectangle.
+ *
+ * This fills the given rectangle with the given color. It is legitimate for
+ * part of the rectangle to fall outside the window. If width or height is zero,
+ * nothing is drawn. 
+ */
 void
 glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height)
 {
@@ -308,6 +424,19 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 	gdk_threads_leave();
 }
 
+/**
+ * glk_window_erase_rect:
+ * @win: A graphics window.
+ * @left: The x coordinate of the top left corner of the rectangle.
+ * @top: The y coordinate of the top left corner of the rectangle.
+ * @width: The width of the rectangle.
+ * @height: The height of the rectangle.
+ *
+ * This fills the given rectangle with the window's background color.
+ * 
+ * You can also fill an entire graphics window with its background color by 
+ * calling glk_window_clear().
+ */
 void
 glk_window_erase_rect(winid_t win, glsi32 left, glsi32 top, glui32 width, glui32 height)
 {

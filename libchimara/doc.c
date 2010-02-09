@@ -483,6 +483,57 @@
  */
 
 /**
+ * SECTION:glk-mouse-events
+ * @short_description: Events representing a mouse click
+ * @include: libchimara/glk.h
+ *
+ * On some platforms, Glk can recognize when the mouse (or other pointer) is 
+ * used to select a spot in a window. You can request mouse input only in text 
+ * grid windows and graphics windows.
+ * 
+ * A window can have mouse input and character/line input pending at the same
+ * time.
+ * 
+ * If the player clicks in a window which has a mouse input event pending,
+ * glk_select() will return an event whose type is %evtype_MouseInput. Again,
+ * once this happens, the request is complete, and you must request another if
+ * you want further mouse input.
+ * 
+ * In the event structure, @win tells what window the event came from.
+ * 
+ * In a text grid window, the @val1 and @val2 fields are the x and y coordinates
+ * of the character that was clicked on. 
+ * <note><para>So @val1 is the column, and @val2 is the row.</para></note>
+ * The top leftmost character is considered to be (0,0).
+ * 
+ * In a graphics window, they are the x and y coordinates of the pixel that was
+ * clicked on. Again, the top left corner of the window is (0,0).
+ * 
+ * <note><para>
+ *   Most mouse-based idioms define standard functions for mouse hits in text
+ *   windows &mdash; typically selecting or copying text. It is up to the
+ *   library to separate this from Glk mouse input. The library may choose to
+ *   select text when it is clicked normally, and cause Glk mouse events when
+ *   text is control-clicked. Or the other way around. Or it may be the
+ *   difference between clicking and double-clicking. Or the library may
+ *   reserve a particular mouse button, on a multi-button mouse. It may even
+ *   specify a keyboard key to be the "mouse button", referring to wherever the
+ *   mouse cursor is when the key is hit. Or some even more esoteric positioning
+ *   system. You need only know that the user can do it, or not.
+ * </para></note> 
+ * <note><para>
+ *   However, since different platforms will handle this issue differently, you
+ *   should be careful how you instruct the player in your program. Do not tell
+ *   the player to <quote>double-click</quote>, <quote>right-click</quote>, or
+ *   <quote>control-click</quote> in a window. The preferred term is <quote>to
+ *   touch the window</quote>, or a spot in the window.
+ * </para></note>
+ * <note><para>
+ *   Goofy, but preferred.
+ * </para></note>
+ */
+
+/**
  * SECTION:glk-timer-events
  * @short_description: Events sent at fixed intervals
  * @include: libchimara/glk.h
@@ -841,6 +892,92 @@
  */
 
 /**
+ * SECTION:glk-image-resources
+ * @short_description: Graphics in Glk
+ * @include: libchimara/glk.h
+ *
+ * In accordance with this modern age, Glk provides for a modicum of graphical
+ * flair. It does not attempt to be a complete graphical toolkit. Those already
+ * exist. Glk strikes the usual uncomfortable balance between power, 
+ * portability, and ease of implementation: commands for arranging pre-supplied
+ * images on the screen and intermixed with text.
+ * 
+ * Graphics is an optional capability in Glk; not all libraries support 
+ * graphics. This should not be a surprise.
+ * 
+ * Most of the graphics commands in Glk deal with image resources. Your program
+ * does not have to worry about how images are stored. Everything is a resource,
+ * and a resource is referred to by an integer identifier. You may, for example,
+ * call a function to display image number 17. The format, loading, and 
+ * displaying of that image is entirely up to the Glk library for the platform
+ * in question.
+ * 
+ * Of course, it is also desirable to have a platform-independent way to store
+ * sounds and images. Blorb is the official resource-storage format of Glk. A
+ * Glk library does not have to understand Blorb, but it is more likely to
+ * understand Blorb than any other format.
+ *
+ * <note><para>
+ *   Glk does not specify the exact format of images, but Blorb does. Images in 
+ *   a Blorb archive must be PNG or JPEG files. More formats may be added if 
+ *   real-world experience shows it to be desirable. However, that is in the 
+ *   domain of the Blorb specification. The Glk spec, and Glk programming, will
+ *   not change.
+ * </para></note>
+ * 
+ * At present, images can only be drawn in graphics windows and text buffer 
+ * windows. In fact, a library may not implement both of these possibilities.
+ * You should test each with the %gestalt_DrawImage selector if you plan to use
+ * it. See <link linkend="chimara-Testing-for-Graphics-Capabilities">Testing for
+ * Graphics Capabilities</link>. 
+ */
+
+/**
+ * SECTION:glk-graphics-windows
+ * @short_description: Drawing graphics in graphics windows
+ * @include: libchimara/glk.h
+ *
+ * A graphics window is a rectangular canvas of pixels, upon which you can draw
+ * images. The contents are entirely under your control. You can draw as many
+ * images as you like, at any positions &mdash; overlapping if you like. If the
+ * window is resized, you are responsible for redrawing everything. See <link
+ * linkend="wintype-Graphics">Graphics Windows</link>.
+ * 
+ * <note><para>
+ *   Note that graphics windows do not support a full set of object-drawing 
+ *   commands, nor can you draw text in them. That may be available in a future 
+ *   Glk extension. For now, it seems reasonable to limit the task to a single 
+ *   primitive, the drawing of a raster image. And then there's the ability to
+ *   fill a rectangle with a solid color &mdash; a small extension, and 
+ *   hopefully no additional work for the library, since it can already clear 
+ *   with arbitrary background colors. In fact, if glk_window_fill_rect() did 
+ *   not exist, an author could invent it &mdash; by briefly setting the
+ *   background color, erasing a rectangle, and restoring.
+ * </para></note>
+ * 
+ * If you call glk_image_draw() or glk_image_draw_scaled() in a graphics window,
+ * @val1 and @val2 are interpreted as X and Y coordinates. The image will be 
+ * drawn with its upper left corner at this position.
+ * 
+ * It is legitimate for part of the image to fall outside the window; the excess
+ * is not drawn. Note that these are signed arguments, so you can draw an image
+ * which falls outside the left or top edge of the window, as well as the right
+ * or bottom.
+ * 
+ * There are a few other commands which apply to graphics windows.
+ */
+
+/**
+ * SECTION:glk-graphics-testing
+ * @short_description: Checking whether the library supports graphics
+ * @include: libchimara/glk.h
+ *
+ * Before calling Glk graphics functions, you should use the gestalt selector
+ * %gestalt_Graphics. To test for additional capabilities, you can also use the
+ * %gestalt_DrawImage and %gestalt_GraphicsTransparency selectors.
+ */
+ 
+/**
  * SECTION:glk-creating-hyperlinks
  * @short_description: Printing text as a hyperlink
  * @include: libchimara/glk.h
@@ -1029,6 +1166,35 @@
  */
 
 /**
+ * GLK_MODULE_IMAGE:
+ *
+ * If you are writing a C program, there is an additional complication. A
+ * library which does not support graphics may not implement the graphics
+ * functions at all. Even if you put gestalt tests around your graphics calls,
+ * you may get link-time errors. If the <filename
+ * class="headerfile">glk.h</filename> file is so old that it does not declare
+ * the graphics functions and constants, you may even get compile-time errors.
+ *
+ * To avoid this, you can perform a preprocessor test for the existence of
+ * %GLK_MODULE_IMAGE. If this is defined, so are all the functions and constants
+ * described in this section. If not, not.
+ *
+ * <note><para>
+ *   To be extremely specific, there are two ways this can happen. If the 
+ *   <filename class="headerfile">glk.h</filename> file that comes with the
+ *   library is too old to have the graphics declarations in it, it will of
+ *   course lack %GLK_MODULE_IMAGE as well. If the <filename 
+ *   class="headerfile">glk.h</filename> file is recent, but the library is old,
+ *   the definition of %GLK_MODULE_IMAGE should be removed from <filename 
+ *   class="headerfile">glk.h</filename>, to avoid link errors. This is not a
+ *   great solution. A better one is for the library to implement the graphics
+ *   functions as stubs that do nothing (or cause run-time errors). Since no
+ *   program will call the stubs without testing %gestalt_Graphics, this is
+ *   sufficient.
+ * </para></note>
+ */
+ 
+/**
  * GLK_MODULE_HYPERLINKS:
  * 
  * If you are writing a C program, you can perform a preprocessor test for the
@@ -1196,6 +1362,96 @@
  */
 
 /**
+ * gestalt_MouseInput:
+ *
+ * You can test whether mouse input is supported with the %gestalt_MouseInput 
+ * selector.
+ * |[ res = glk_gestalt(gestalt_MouseInput, windowtype); ]|
+ * This will return %TRUE (1) if windows of the given type support mouse input.
+ * If this returns %FALSE (0), it is still legal to call
+ * glk_request_mouse_event(), but it will have no effect, and you will never get
+ * mouse events.
+ */ 
+ 
+/**
+ * gestalt_Timer:
+ *
+ * You can test whether the library supports timer events:
+ * |[ res = #glk_gestalt(#gestalt_Timer, 0); ]|
+ * This returns 1 if timer events are supported, and 0 if they are not.
+ */
+
+/**
+ * gestalt_Graphics:
+ * 
+ * Before calling Glk graphics functions, you should use the following gestalt
+ * selector:
+ * |[
+ *     glui32 res;
+ *     res = glk_gestalt(gestalt_Graphics, 0);
+ * ]|
+ * This returns 1 if the overall suite of graphics functions is available. This
+ * includes glk_image_draw(), glk_image_draw_scaled(), glk_image_get_info(),
+ * glk_window_erase_rect(), glk_window_fill_rect(),
+ * glk_window_set_background_color(), and glk_window_flow_break(). It also
+ * includes the capability to create graphics windows.
+ * 
+ * If this selector returns 0, you should not try to call these functions. They
+ * may have no effect, or they may cause a run-time error. If you try to create
+ * a graphics window, you will get %NULL. 
+ */
+
+/**
+ * gestalt_DrawImage:
+ * 
+ * This selector returns 1 if images can be drawn in windows of the given type. 
+ * If it returns 0, glk_image_draw() will fail and return %FALSE. You should 
+ * test %wintype_Graphics and %wintype_TextBuffer separately, since libraries 
+ * may implement both, neither, or only one.  
+ */
+ 
+/**
+ * gestalt_Hyperlinks:
+ *
+ * You can test whether the library supports hyperlinks:
+ * |[ 
+ * #glui32 res;
+ * res = #glk_gestalt(#gestalt_Hyperlinks, 0); 
+ * ]|
+ * This returns 1 if the overall suite of hyperlinks functions is available.
+ * This includes glk_set_hyperlink(), glk_set_hyperlink_stream(),
+ * glk_request_hyperlink_event(), glk_cancel_hyperlink_event().
+ *
+ * If this selector returns 0, you should not try to call these functions. They
+ * may have no effect, or they may cause a run-time error.
+ */
+
+/**
+ * gestalt_HyperlinkInput:
+ *
+ * You can test whether hyperlinks are supported with the 
+ * %gestalt_HyperlinkInput selector:
+ * |[ res = #glk_gestalt(#gestalt_HyperlinkInput, windowtype); ]|
+ * This will return %TRUE (1) if windows of the given type support hyperlinks.
+ * If this returns %FALSE (0), it is still legal to call glk_set_hyperlink() and
+ * glk_request_hyperlink_event(), but they will have no effect, and you will
+ * never get hyperlink events.
+ */
+
+/**
+ * gestalt_GraphicsTransparency:
+ *
+ * This returns 1 if images with alpha channels can actually be drawn with the
+ * appropriate degree of transparency. If it returns 0, the alpha channel is
+ * ignored; fully transparent areas will be drawn in an implementation-defined
+ * color.
+ * <note><para>
+ *   The JPEG format does not support transparency or alpha channels; the PNG 
+ *   format does.
+ * </para></note>
+ */
+
+/**
  * gestalt_Unicode:
  *
  * The basic text functions will be available in every Glk library. The Unicode
@@ -1227,42 +1483,6 @@
  * 
  * To avoid this, you can perform a preprocessor test for the existence of
  * #GLK_MODULE_UNICODE. 
- */
-
-/**
- * gestalt_Timer:
- *
- * You can test whether the library supports timer events:
- * |[ res = #glk_gestalt(#gestalt_Timer, 0); ]|
- * This returns 1 if timer events are supported, and 0 if they are not.
- */
-
-/**
- * gestalt_Hyperlinks:
- *
- * You can test whether the library supports hyperlinks:
- * |[ 
- * #glui32 res;
- * res = #glk_gestalt(#gestalt_Hyperlinks, 0); 
- * ]|
- * This returns 1 if the overall suite of hyperlinks functions is available.
- * This includes glk_set_hyperlink(), glk_set_hyperlink_stream(),
- * glk_request_hyperlink_event(), glk_cancel_hyperlink_event().
- *
- * If this selector returns 0, you should not try to call these functions. They
- * may have no effect, or they may cause a run-time error.
- */
-
-/**
- * gestalt_HyperlinkInput:
- *
- * You can test whether hyperlinks are supported with the 
- * %gestalt_HyperlinkInput selector:
- * |[ res = #glk_gestalt(#gestalt_HyperlinkInput, windowtype); ]|
- * This will return %TRUE (1) if windows of the given type support hyperlinks.
- * If this returns %FALSE (0), it is still legal to call glk_set_hyperlink() and
- * glk_request_hyperlink_event(), but they will have no effect, and you will
- * never get hyperlink events.
  */
  
 /**

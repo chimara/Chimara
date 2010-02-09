@@ -69,7 +69,7 @@
       <xi:include href="xml/glk-events.xml"/>
       <xi:include href="xml/glk-character-input-events.xml"/>
       <xi:include href="xml/glk-line-input-events.xml"/>
-      <!--<xi:include href="xml/glk-mouse-events.xml"/>-->
+      <xi:include href="xml/glk-mouse-events.xml"/>
       <xi:include href="xml/glk-timer-events.xml"/>
       <xi:include href="xml/glk-other-events.sgml"/>
 	</chapter>
@@ -98,14 +98,14 @@
     </chapter>
     
     <!-- Chapter 7. Graphics -->
-<!--    <chapter>
+    <chapter>
       <title>Graphics</title>
       <xi:include href="xml/glk-image-resources.xml"/>
       <xi:include href="xml/glk-graphics-windows.xml"/>
-      <xi:include href="xml/glk-graphics-text.xml"/>
+      <!--<xi:include href="xml/glk-graphics-text.xml"/>-->
       <xi:include href="xml/glk-graphics-testing.xml"/>
     </chapter>
--->    
+    
     <!-- Chapter 8. Sound -->
 <!--    <chapter>
       <title>Sound</title>
