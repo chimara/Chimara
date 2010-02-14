@@ -450,6 +450,8 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	switch(win->type)
 	{
 		case wintype_TextBuffer:
+
+			/* History up/down */
 			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
 				|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
 			{
@@ -494,6 +496,24 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				g_signal_handler_unblock(buffer, win->insert_text_handler);
 				return TRUE;
 			}
+
+			/* Move to beginning/end of input field */
+			else if(event->keyval == GDK_Home) {
+				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+				GtkTextIter input_iter;
+				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+				gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
+				gtk_text_buffer_place_cursor(buffer, &input_iter);
+				return TRUE;
+			}
+			else if(event->keyval == GDK_End) {
+				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+				GtkTextIter end_iter;
+				gtk_text_buffer_get_end_iter(buffer, &end_iter);
+				gtk_text_buffer_place_cursor(buffer, &end_iter);
+				return TRUE;
+			}
+
 			return FALSE;
 
 		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
