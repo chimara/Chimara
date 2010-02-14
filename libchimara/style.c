@@ -513,7 +513,7 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 
 /* Internal function: parses a glk color to a #hex-value */
 static void
-color_format(glui32 val, gchar *buffer)
+glkcolor_to_hex(glui32 val, gchar *buffer)
 {
 	g_return_if_fail(buffer != NULL);
 
@@ -524,9 +524,21 @@ color_format(glui32 val, gchar *buffer)
 	);
 }
 
+/* Internal function: parses a glk color to a GdkColor */
+GdkColor*
+glkcolor_to_gdkcolor(glui32 val)
+{
+	GdkColor* color = g_new0(GdkColor, 1);
+	color->red = (val & 0xff0000) >> 16;
+	color->green = (val & 0x00ff00) >> 8;
+	color->blue = val & 0x0000ff;
+
+	return color;
+}
+
 /* Internal function: parses a GdkColor to a glk color */
 static glui32
-color_parse_gdk(GdkColor *color)
+gdkcolor_to_glkcolor(GdkColor *color)
 {
 	g_return_val_if_fail(color != NULL, 0);
 	return (glui32) color->pixel;
@@ -591,7 +603,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 		break;
 
 	case stylehint_TextColor:
-		color_format(val, color);
+		glkcolor_to_hex(val, color);
 
 		if(!reverse_color)
 			g_object_set(tag_object, "foreground", color, "foreground-set", TRUE, NULL);
@@ -601,7 +613,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 		break;
 
 	case stylehint_BackColor:
-		color_format(val, color);
+		glkcolor_to_hex(val, color);
 
 		if(!reverse_color)
 			g_object_set(tag_object, "background", color, "background-set", TRUE, NULL);
@@ -704,12 +716,12 @@ query_tag(GtkTextTag *tag, glui32 hint)
 
 	case stylehint_TextColor:
 		g_object_get(tag, "foreground-gdk", &colval, NULL);
-		return color_parse_gdk(colval);
+		return gdkcolor_to_glkcolor(colval);
 		break;
 
 	case stylehint_BackColor:
 		g_object_get(tag, "background-gdk", &colval, NULL);
-		return color_parse_gdk(colval);
+		return gdkcolor_to_glkcolor(colval);
 		break;
 
 	case stylehint_ReverseColor:

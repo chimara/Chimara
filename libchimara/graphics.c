@@ -7,6 +7,7 @@
 extern GPrivate *glk_data_key;
 void on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info);
 void on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data);
+glui32 draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2);
 
 static gboolean image_loaded;
 static gboolean size_determined;
@@ -143,20 +144,28 @@ image_cache_find(struct image_info* to_find)
 	}
 
 	/* Iterate over the cache to find the correct image and size */
+	struct image_info *match = NULL;
 	do {
 		struct image_info *info = (struct image_info*) link->data;
 		if(info->resource_number == to_find->resource_number) {
 			/* Check size: are we looking for a scaled version or the original one? */
 			if(to_find->scaled) {
-				if(info->width >= to_find->width && info->height >= to_find->height) {
+
+				if(info->width == to_find->width && info->height == to_find->height) {
+					/* Prescaled image found */
 					gdk_threads_leave();
-					printf("Cache hit for image %d\n", to_find->resource_number);
-					return info; /* Found a good enough match */
+					printf("Exact cache hit for image %d\n", to_find->resource_number);
+					return info;
+				}
+				else if(info->width >= to_find->width && info->height >= to_find->height) {
+					/* Larger image found, needs to be scaled down in order to work */
+					gdk_threads_leave();
+					match = info;
 				}
 			} else {
 				if(!info->scaled) {
 					gdk_threads_leave();
-					printf("Cache hit for image %d\n", to_find->resource_number);
+					printf("Exact cache hit for image %d\n", to_find->resource_number);
 					return info; /* Found a match */
 				}
 			}
@@ -165,8 +174,12 @@ image_cache_find(struct image_info* to_find)
 
 	gdk_threads_leave();
 
-	printf("Cache miss for image %d\n", to_find->resource_number);
-	return NULL; /* No match found */
+	if(match == NULL)
+		printf("Cache miss for image %d\n", to_find->resource_number);
+	else
+		printf("Approx cache hit for image %d\n", to_find->resource_number);
+
+	return match;
 }
 
 /**
@@ -248,11 +261,10 @@ glui32
 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 {
 	VALID_WINDOW(win, return FALSE);
-	g_return_val_if_fail(win->type == wintype_Graphics, FALSE);
+	g_return_val_if_fail(win->type == wintype_Graphics || win->type == wintype_TextBuffer, FALSE);
 
 	struct image_info *to_find = g_new0(struct image_info, 1);
 	struct image_info *info;
-	GdkPixmap *canvas;
 
 	/* Lookup the proper resource */
 	to_find->resource_number = image;
@@ -264,22 +276,7 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 			return FALSE;
 	}
 
-	gdk_threads_enter();
-
-   	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
-	if(canvas == NULL) {
-		WARNING("Could not get pixmap");
-		return FALSE;
-	}
-
-	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, GDK_PIXBUF((GdkPixbuf*)info->pixbuf), 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
-
-	/* Update the screen */
-	gtk_widget_queue_draw(win->widget);
-
-	gdk_threads_leave();
-
-	return TRUE;
+	return draw_image_common(win, info->pixbuf, val1, val2);
 }
 
 /**
@@ -309,13 +306,12 @@ glui32
 glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height)
 {
 	VALID_WINDOW(win, return FALSE);
-	g_return_val_if_fail(win->type == wintype_Graphics, FALSE);
+	g_return_val_if_fail(win->type == wintype_Graphics || win->type == wintype_TextBuffer, FALSE);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	struct image_info *to_find = g_new0(struct image_info, 1);
 	struct image_info *info;
 	struct image_info *scaled_info;
-	GdkPixmap *canvas;
 
 	/* Lookup the proper resource */
 	to_find->resource_number = image;
@@ -325,14 +321,6 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 		info = load_image_in_cache(image, width, height);
 		if(info == NULL)
 			return FALSE;
-	}
-
-	gdk_threads_enter();
-
-   	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
-	if(canvas == NULL) {
-		WARNING("Could not get pixmap");
-		return FALSE;
 	}
 
 	/* Scale the image if necessary */
@@ -352,13 +340,66 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 		info = scaled_info;
 	}
 
-	gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, info->pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
+	return draw_image_common(win, info->pixbuf, val1, val2);
+}
 
-	/* Update the screen */
-	gtk_widget_queue_draw(win->widget);
+/* Internal function: draws a pixbuf to a graphics window of text buffer */
+glui32
+draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
+{
+	GdkPixmap *canvas;
+	gdk_threads_enter();
+
+	switch(win->type) {
+	case wintype_Graphics:
+	{
+		gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
+		if(canvas == NULL) {
+			WARNING("Could not get pixmap");
+			return FALSE;
+		}
+
+		gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
+
+		/* Update the screen */
+		gtk_widget_queue_draw(win->widget);
+	}
+		break;
+
+	case wintype_TextBuffer:
+	{
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		GtkTextIter end, start;
+		gtk_text_buffer_get_end_iter(buffer, &end);
+		start = end;
+
+		flush_window_buffer(win);
+		gtk_text_buffer_insert_pixbuf(buffer, &end, pixbuf);
+		gtk_text_iter_forward_char(&end);
+
+		gint height = 0;
+		switch(val1) {
+		case imagealign_InlineDown:
+			height -= win->unit_height;
+			break;
+		case imagealign_InlineCenter:
+			height = -win->unit_height / 2;
+			break;
+		case imagealign_InlineUp:
+		default:
+			height = 0;
+		}
+
+		if(height != 0) {
+			GtkTextTag *tag = gtk_text_buffer_create_tag(buffer, NULL, "rise", PANGO_SCALE * (-height), NULL);
+			gtk_text_buffer_apply_tag(buffer, tag, &start, &end);
+		}
+	}
+		break;
+
+	}
 
 	gdk_threads_leave();
-
 	return TRUE;
 }
 
@@ -418,8 +459,12 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 
 	GdkPixmap *map;
 	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &map, NULL );
-	gdk_draw_rectangle( GDK_DRAWABLE(map), win->widget->style->white_gc, TRUE, left, top, width, height);
+
+	GdkGC *gc = gdk_gc_new(map);
+	gdk_gc_set_foreground( gc, glkcolor_to_gdkcolor(color) );
+	gdk_draw_rectangle( GDK_DRAWABLE(map), gc, TRUE, left, top, width, height);
 	gtk_widget_queue_draw(win->widget);
+	g_object_unref(gc);
 
 	gdk_threads_leave();
 }

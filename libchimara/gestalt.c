@@ -120,7 +120,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 			return 1;
 
 		case gestalt_DrawImage:
-			return val == wintype_Graphics;
+			return val == wintype_Graphics || val == wintype_TextBuffer;
 
 		case gestalt_GraphicsTransparency:
 			return 1;
