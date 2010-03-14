@@ -166,27 +166,35 @@ chimara_if_set_property(GObject *object, guint prop_id, const GValue *value, GPa
     {
     	case PROP_PIRACY_MODE:
     		PROCESS_FLAG(priv->flags, CHIMARA_IF_PIRACY_MODE, g_value_get_boolean(value));
+    		g_object_notify(object, "piracy-mode");
     		break;
     	case PROP_TANDY_BIT:
     		PROCESS_FLAG(priv->flags, CHIMARA_IF_TANDY_BIT, g_value_get_boolean(value));
+    		g_object_notify(object, "tandy-bit");
     		break;
     	case PROP_EXPAND_ABBREVIATIONS:
     		PROCESS_FLAG(priv->flags, CHIMARA_IF_EXPAND_ABBREVIATIONS, g_value_get_boolean(value));
+    		g_object_notify(object, "expand-abbreviations");
     		break;
     	case PROP_IGNORE_ERRORS:
     		PROCESS_FLAG(priv->flags, CHIMARA_IF_IGNORE_ERRORS, g_value_get_boolean(value));
+    		g_object_notify(object, "ignore-errors");
     		break;
     	case PROP_TYPO_CORRECTION:
     		PROCESS_FLAG(priv->flags, CHIMARA_IF_TYPO_CORRECTION, g_value_get_boolean(value));
+    		g_object_notify(object, "typo-correction");
     		break;
     	case PROP_INTERPRETER_NUMBER:
     		priv->interpreter_number = g_value_get_uint(value);
+    		g_object_notify(object, "interpreter-number");
     		break;
     	case PROP_RANDOM_SEED:
     		priv->random_seed = g_value_get_int(value);
+    		g_object_notify(object, "random-seed");
     		break;
     	case PROP_RANDOM_SEED_SET:
     		priv->random_seed_set = g_value_get_boolean(value);
+    		g_object_notify(object, "random-seed-set");
     		break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);

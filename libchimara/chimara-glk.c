@@ -840,6 +840,7 @@ chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive)
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
     priv->interactive = interactive;
+    g_object_notify(G_OBJECT(glk), "interactive");
 }
 
 /**
@@ -876,6 +877,7 @@ chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect)
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
     priv->protect = protect;
+    g_object_notify(G_OBJECT(glk), "protect");
 }
 
 /**
@@ -913,7 +915,7 @@ chimara_glk_set_default_font_description(ChimaraGlk *glk, PangoFontDescription *
 	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	pango_font_description_free(priv->default_font_desc);
 	priv->default_font_desc = pango_font_description_copy(font);
-	
+	g_object_notify(G_OBJECT(glk), "default-font-description");
 	/* TODO: Apply the font description to all the windows and recalculate the sizes */
 }
 
@@ -941,6 +943,7 @@ chimara_glk_set_default_font_string(ChimaraGlk *glk, const gchar *font)
 	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	pango_font_description_free(priv->default_font_desc);
 	priv->default_font_desc = fontdesc;
+	g_object_notify(G_OBJECT(glk), "default-font-description");
 	
 	/* TODO: Apply the font description to all the windows and recalculate the sizes */
 }
@@ -980,6 +983,7 @@ chimara_glk_set_monospace_font_description(ChimaraGlk *glk, PangoFontDescription
 	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	pango_font_description_free(priv->monospace_font_desc);
 	priv->monospace_font_desc = pango_font_description_copy(font);
+	g_object_notify(G_OBJECT(glk), "monospace-font-description");
 	
 	/* TODO: Apply the font description to all the windows and recalculate the sizes */
 }
@@ -1008,6 +1012,7 @@ chimara_glk_set_monospace_font_string(ChimaraGlk *glk, const gchar *font)
 	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	pango_font_description_free(priv->monospace_font_desc);
 	priv->monospace_font_desc = fontdesc;
+	g_object_notify(G_OBJECT(glk), "monospace-font-description");
 	
 	/* TODO: Apply the font description to all the windows and recalculate the sizes */
 }
@@ -1045,6 +1050,7 @@ chimara_glk_set_spacing(ChimaraGlk *glk, guint spacing)
 	
 	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 	priv->spacing = spacing;
+	g_object_notify(G_OBJECT(glk), "spacing");
 }
 
 /**
