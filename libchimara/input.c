@@ -514,6 +514,15 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				return TRUE;
 			}
 
+			/* Handle the enter key, which could occur in the middle of the sentence. */
+			else if(event->keyval == GDK_Return || event->keyval == GDK_KP_Enter) {
+				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+				GtkTextIter end_iter;
+				gtk_text_buffer_get_end_iter(buffer, &end_iter);
+				gtk_text_buffer_place_cursor(buffer, &end_iter);
+				return FALSE; 
+			}
+
 			return FALSE;
 
 		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
