@@ -27,6 +27,7 @@ libchimara_la_SOURCES = \
 	input.c input.h \
 	magic.c magic.h \
 	mouse.c \
+	pager.c pager.h \
 	resource.c resource.h \
 	schannel.c \
 	stream.c stream.h \

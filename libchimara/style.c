@@ -15,6 +15,7 @@ static gboolean style_accept_style_selector(GScanner *scanner);
 static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
 static void style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table);
 static void style_table_copy(gpointer key, gpointer tag, gpointer target_table);
+static void text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list);
 GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
 
 /**
@@ -80,6 +81,16 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 	str->style = get_tag_name(styl);
 }
 
+/* Internal function: call this to initialize the layout of the 'more' prompt. */
+void
+style_init_more_prompt(winid_t win)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	win->pager_layout = gtk_widget_create_pango_layout(win->widget, "More");
+	pango_layout_set_attributes(win->pager_layout, glk_data->pager_attr_list);
+}
+
 /* Internal function: call this to initialize the default styles to a textbuffer. */
 void
 style_init_textbuffer(GtkTextBuffer *buffer)
@@ -94,6 +105,7 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 	/* Copy the current text tags to the textbuffer's tag table */
 	g_hash_table_foreach(glk_data->current_styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
+
 
 /* Internal function: call this to initialize the default styles to a textgrid. */
 void
@@ -265,6 +277,10 @@ style_init()
 	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
+	GtkTextTag *pager_tag = gtk_text_tag_new("pager");
+	g_object_set(pager_tag, "foreground", "#ffffff", "background", "#000000", NULL);
+	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
+
 	glk_data->default_styles->text_grid = default_text_grid_styles;
 	glk_data->default_styles->text_buffer = default_text_buffer_styles;
 
@@ -298,6 +314,8 @@ style_init()
 	g_hash_table_foreach(default_text_buffer_styles, style_table_copy, current_text_buffer_styles);
 	glk_data->current_styles->text_grid = current_text_grid_styles;
 	glk_data->current_styles->text_buffer = current_text_buffer_styles;
+
+	text_tag_to_attr_list(pager_tag, glk_data->pager_attr_list);
 
 	glk_data->style_initialized = TRUE;
 }
@@ -875,4 +893,62 @@ get_current_font(guint32 wintype)
 	g_object_get( G_OBJECT(normal), "font-desc", &font, NULL );
 
 	return font;
+}
+
+/* Internal function copying the attributes of a text tag to a pango attribute list */
+static void
+text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
+{
+	gboolean set;
+	GdkColor *foreground, *background;
+	gchar *string;
+	PangoFontDescription *font_desc;
+	gboolean strikethrough;
+	PangoUnderline underline;
+
+	g_object_get(tag, "foreground-set", &set, "foreground-gdk", &foreground, NULL);
+	if(set) {
+		pango_attr_list_insert(
+			list,
+			pango_attr_foreground_new(foreground->red, foreground->green, foreground->blue)
+		);
+	}
+	g_object_get(tag, "background-set", &set, "background-gdk", &background, NULL);
+	if(set) {
+		pango_attr_list_insert(
+			list,
+			pango_attr_background_new(background->red, background->green, background->blue)
+		);
+	}
+	g_object_get(tag, "language-set", &set, "language", &string, NULL);
+	if(set) {
+		pango_attr_list_insert(
+			list,
+			pango_attr_language_new( pango_language_from_string(string) )
+		);
+	}
+
+	/* Font description updates the following properties simultaniously:
+	 * family, style, weight, variant, stretch, size
+	 */
+	g_object_get(tag, "font-desc", &font_desc, NULL);
+	pango_attr_list_insert(
+		list,
+		pango_attr_font_desc_new(font_desc)
+	);
+
+	g_object_get(tag, "strikethrough-set", &set, "strikethrough", &strikethrough, NULL);
+	if(set) {
+		pango_attr_list_insert(
+			list,
+			pango_attr_strikethrough_new(strikethrough)
+		);
+	}
+	g_object_get(tag, "underline-set", &set, "underline", &underline, NULL);
+	if(set) {
+		pango_attr_list_insert(
+			list,
+			pango_attr_underline_new(underline)
+		);
+	}
 }

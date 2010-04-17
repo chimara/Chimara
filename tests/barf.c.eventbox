@@ -77,20 +77,20 @@ move_pager_and_get_scroll_distance(GtkTextView *textview)
 
 /* Helper function: turn on paging for this textview */
 static void
-start_paging(GtkTextView *textview)
+start_paging(GtkWidget *eventbox)
 {
 	currently_paging = TRUE;
-	g_signal_handler_unblock(textview, expose_handler);
-	g_signal_handler_unblock(textview, pager_handler);
+	g_signal_handler_unblock(eventbox, expose_handler);
+	g_signal_handler_unblock(eventbox, pager_handler);
 }
 
 /* Helper function: turn off paging for this textview */
 static void
-stop_paging(GtkTextView *textview)
+stop_paging(GtkWidget *eventbox)
 {
 	currently_paging = FALSE;
-	g_signal_handler_block(textview, expose_handler);
-	g_signal_handler_block(textview, pager_handler);
+	g_signal_handler_block(eventbox, expose_handler);
+	g_signal_handler_block(eventbox, pager_handler);
 }
 
 /* Update the pager position after new text is inserted in the buffer */
@@ -103,8 +103,10 @@ after_insert(GtkTextBuffer *buffer, GtkTextIter *location, gchar *text, gint len
 	/* Move the pager to the last visible character in the buffer */
 	gint scroll_distance = move_pager_and_get_scroll_distance(textview);
 	
-	if(scroll_distance > 0 && !currently_paging)
-		start_paging(textview);
+	if(scroll_distance > 0 && !currently_paging) {
+		GtkWidget *eventbox = gtk_widget_get_parent( gtk_widget_get_parent(GTK_WIDGET(textview)) );
+		start_paging(eventbox);
+	}
 }
 
 static void
@@ -116,25 +118,26 @@ adjustment_changed(GtkAdjustment *adjustment, GtkTextView *textview)
 	/* Move the pager, etc. */
 	gint scroll_distance = move_pager_and_get_scroll_distance(textview);
 	
+	GtkWidget *eventbox = gtk_widget_get_parent( gtk_widget_get_parent(GTK_WIDGET(textview)) );
 	if(scroll_distance > 0 && !currently_paging)
-		start_paging(textview);
+		start_paging(eventbox);
 	else if(scroll_distance == 0 && currently_paging)
-		stop_paging(textview);
+		stop_paging(eventbox);
 	
 	/* Refresh the widget so that any extra "more" prompts disappear */
-	gtk_widget_queue_draw(GTK_WIDGET(textview));
+	gtk_widget_queue_draw(GTK_WIDGET(eventbox));
 }
 
 /* Handle key press events in the textview while paging is active */
 static gboolean
-pager_wait(GtkTextView *textview, GdkEventKey *event, GtkTextBuffer *buffer)
+pager_wait(GtkTextView *eventbox, GdkEventKey *event, GtkTextBuffer *buffer)
 {
 	/*** ALTERNATIVE, POSSIBLY INFERIOR, METHOD OF SCROLLING ***
 	GtkTextMark *pagermark = gtk_text_buffer_get_mark(buffer, "pager_position");
 	gtk_text_view_scroll_to_mark(textview, pagermark, 0.0, TRUE, 0.0, 0.0);
 	*/
 
-	GtkWidget *scrolledwindow = gtk_widget_get_parent(GTK_WIDGET(textview));
+	GtkWidget *scrolledwindow = gtk_bin_get_child(GTK_BIN(eventbox));
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
 	gdouble step_increment, page_size, upper, lower, value;
 	g_object_get(adj, 
@@ -163,7 +166,7 @@ pager_wait(GtkTextView *textview, GdkEventKey *event, GtkTextBuffer *buffer)
 
 /* Draw the "more" prompt on top of the buffer, after the regular expose event has run */
 static gboolean
-expose_prompt(GtkTextView *textview, GdkEventExpose *event)
+expose_prompt(GtkEventBox *eventbox, GdkEventExpose *event)
 {
 	GdkGC *context = gdk_gc_new(GDK_DRAWABLE(event->window));
 
@@ -173,7 +176,8 @@ expose_prompt(GtkTextView *textview, GdkEventExpose *event)
 
 	gdk_draw_layout_with_colors(event->window, context, 
 		winx + winwidth - promptwidth, 
-		winy + winheight - promptheight, 
+		//winy + winheight - promptheight, 
+		winy - 5, 
 		prompt, &white, &red);
 	
 	return FALSE; /* Propagate event further */
@@ -188,6 +192,9 @@ main(int argc, char **argv)
 	GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_size_request(window, 400, 400);
 	GtkWidget *button = gtk_button_new_with_label("Barf");
+	GtkWidget *eventbox = gtk_event_box_new();
+//	gtk_event_box_set_above_child( GTK_EVENT_BOX(eventbox), TRUE );
+	GTK_WIDGET_SET_FLAGS(eventbox, GTK_APP_PAINTABLE);
 	GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 	GtkWidget *textview = gtk_text_view_new();
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD_CHAR);
@@ -196,13 +203,14 @@ main(int argc, char **argv)
 	
 	/* Pack all the widgets into their containers */
 	gtk_container_add(GTK_CONTAINER(scrolledwindow), textview);
+	gtk_container_add(GTK_CONTAINER(eventbox), scrolledwindow);
 	gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), scrolledwindow, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), eventbox, TRUE, TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(window), vbox);
 	gtk_widget_show_all(window);
 	
 	/* Set up the textview widget to receive exposure events, must be done after widget has been shown */
-	gdk_window_set_events(gtk_widget_get_window(textview), GDK_EXPOSURE_MASK);
+	gdk_window_set_events(gtk_widget_get_window(eventbox), GDK_EXPOSURE_MASK);
 
 	/* Create the 'more' prompt */
 	prompt = gtk_widget_create_pango_layout(GTK_WIDGET(textview), "More");
@@ -215,10 +223,10 @@ main(int argc, char **argv)
 	g_signal_connect_after(buffer, "insert-text", G_CALLBACK(after_insert), textview);
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
 	g_signal_connect_after(adj, "value-changed", G_CALLBACK(adjustment_changed), textview);
-	pager_handler = g_signal_connect(textview, "key-press-event", G_CALLBACK(pager_wait), buffer);
-	g_signal_handler_block(textview, pager_handler);
-	expose_handler = g_signal_connect_after(textview, "expose-event", G_CALLBACK(expose_prompt), NULL);
-	g_signal_handler_block(textview, expose_handler);
+	pager_handler = g_signal_connect(eventbox, "key-press-event", G_CALLBACK(pager_wait), buffer);
+	g_signal_handler_block(eventbox, pager_handler);
+	expose_handler = g_signal_connect(eventbox, "expose-event", G_CALLBACK(expose_prompt), NULL);
+	g_signal_handler_block(eventbox, expose_handler);
 	
 	/* Create the pager position mark; it stands for the last character in the buffer
 	 that has been on-screen */

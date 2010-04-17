@@ -34,9 +34,12 @@ struct _ChimaraGlkPrivate {
 	/* Hashtable containing the default and current style */
 	struct StyleSet *default_styles;
 	struct StyleSet *current_styles;
+	PangoAttrList *pager_attr_list;
 	gboolean style_initialized; /* Have styles been initialized */
 	/* Final message displayed when game exits */
 	gchar *final_message;
+	/* Image cache */
+	GSList *image_cache;
 
 	/* *** Threading data *** */
 	/* Whether program is running */
@@ -69,8 +72,6 @@ struct _ChimaraGlkPrivate {
 	GCond *resource_loaded;
 	GCond *resource_info_available;
 	guint32 resource_available;
-	/* Image cache */
-	GSList *image_cache;
 
 	/* *** Glk library data *** */
     /* User-defined interrupt handler */

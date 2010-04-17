@@ -3,6 +3,7 @@
 #include "magic.h"
 #include "chimara-glk-private.h"
 #include "gi_dispa.h"
+#include "pager.h"
 
 extern GPrivate *glk_data_key;
 
@@ -65,6 +66,10 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_string_free(win->buffer, TRUE);
 	g_hash_table_destroy(win->hyperlinks);
 	g_free(win->current_hyperlink);
+
+	if(win->pager_layout)
+		g_object_unref(win->pager_layout);
+
 	g_free(win);
 }
 
@@ -525,12 +530,13 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
 			gtk_widget_show_all(scrolledwindow);
 
-			/* Create the styles available to the window stream */
-			style_init_textbuffer(textbuffer);
-			gtk_widget_modify_font( textview, get_current_font(wintype) );
-			
 			win->widget = textview;
 			win->frame = scrolledwindow;
+			
+			/* Create the styles available to the window stream */
+			style_init_textbuffer(textbuffer);
+			style_init_more_prompt(win);
+			gtk_widget_modify_font( textview, get_current_font(wintype) );
 			
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
@@ -539,14 +545,27 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_object_unref(zero);
 
 			/* Connect signal handlers */
+			
+			/* Pager */
+			win->pager_expose_handler = g_signal_connect( textview, "expose-event", G_CALLBACK(pager_on_expose), win );
+			g_signal_handler_block(textview, win->pager_expose_handler);
+			win->pager_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(pager_on_key_press_event), win );
+			g_signal_handler_block(textview, win->pager_keypress_handler);
+			g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(pager_after_insert_text), win );
+			GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
+			g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
+
+			/* Char and line input */
 			win->char_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
 			g_signal_handler_block(textview, win->char_input_keypress_handler);
 			win->line_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_line_input_key_press_event), win );
 			g_signal_handler_block(textview, win->line_input_keypress_handler);
-			win->shutdown_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win );
-			g_signal_handler_block(textview, win->shutdown_keypress_handler);			
 			win->insert_text_handler = g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(after_window_insert_text), win );
 			g_signal_handler_block(textbuffer, win->insert_text_handler);
+
+			/* Shutdown key press */
+			win->shutdown_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win );
+			g_signal_handler_block(textview, win->shutdown_keypress_handler);			
 
 			/* Create an editable tag to indicate uneditable parts of the window
 			(for line input) */
@@ -556,6 +575,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			GtkTextIter end;
 			gtk_text_buffer_get_end_iter(textbuffer, &end);
 			gtk_text_buffer_create_mark(textbuffer, "input_position", &end, TRUE);
+
+			/* Create the pager position mark; it stands for the last character in the buffer
+			 that has been on-screen */
+			gtk_text_buffer_create_mark(textbuffer, "pager_position", &end, TRUE);
 		}
 			break;
 

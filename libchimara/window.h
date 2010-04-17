@@ -77,6 +77,8 @@ struct glk_window_struct
 	gulong shutdown_keypress_handler;
 	gulong button_press_event_handler;
 	gulong size_allocate_handler;
+	gulong pager_expose_handler;
+	gulong pager_keypress_handler;
 	/* Window buffer */
 	GString *buffer;
 	/* Hyperlinks */
@@ -84,6 +86,9 @@ struct glk_window_struct
 	struct hyperlink *current_hyperlink;
 	/* Graphics */
 	glui32 background_color;
+	/* Pager (textbuffer only) */
+	gboolean currently_paging;
+	PangoLayout *pager_layout;
 };
 
 #endif

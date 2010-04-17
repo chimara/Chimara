@@ -75,3 +75,7 @@ buffer.user1 {
 buffer.user2 {
 }
 
+buffer.pager {
+	color: #ffffff;
+	background-color: #303030;
+}

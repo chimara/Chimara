@@ -88,6 +88,7 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->css_file = "style.css";
 	priv->default_styles = g_new0(StyleSet,1);
 	priv->current_styles = g_new0(StyleSet,1);
+	priv->pager_attr_list = pango_attr_list_new();
 	priv->style_initialized = FALSE;
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->running = FALSE;
@@ -191,6 +192,7 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->default_styles->text_grid);
 	g_hash_table_destroy(priv->current_styles->text_buffer);
 	g_hash_table_destroy(priv->current_styles->text_grid);
+	pango_attr_list_unref(priv->pager_attr_list);
 	priv->style_initialized = FALSE;
 	
     /* Free the event queue */
