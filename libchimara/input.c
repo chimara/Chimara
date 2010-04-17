@@ -28,9 +28,7 @@ request_char_event_common(winid_t win, gboolean unicode)
 
 	gdk_threads_enter();
 
-	/* If the request is in a text buffer window, scroll to the end of the
-	 text buffer. TODO: This may scroll text off the top of the window that the
-	 user hasn't read yet. We need to implement a paging mechanism. */
+	/*
 	if(win->type == wintype_TextBuffer)
 	{
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
@@ -38,8 +36,8 @@ request_char_event_common(winid_t win, gboolean unicode)
 		gtk_text_buffer_get_end_iter(buffer, &iter);
 		gtk_text_buffer_place_cursor(buffer, &iter);
 		gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), gtk_text_buffer_get_insert(buffer));
-		/* Why doesn't this always work?? */
-	}
+		// Why doesn't this always work?? 
+	} */
 
 	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
 	gdk_threads_leave();
@@ -456,6 +454,8 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
 			{
 				/* Prevent falling off the end of the history list */
+				if(win->history == NULL)
+					return TRUE;
 				if( (event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
 					&& win->history_pos && win->history_pos->next == NULL)
 					return TRUE;
