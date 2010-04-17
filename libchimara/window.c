@@ -568,6 +568,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->unit_height = 1;
 		    win->widget = image;
 		    win->frame = image;
+			win->background_color = 0x00FFFFFF;
 		    		
 			/* Connect signal handlers */
 			win->button_press_event_handler = g_signal_connect(image, "button-press-event", G_CALLBACK(on_window_button_press), win);

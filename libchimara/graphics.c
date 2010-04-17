@@ -139,7 +139,6 @@ image_cache_find(struct image_info* to_find)
 	/* Empty cache */
 	if(link == NULL) {
 		gdk_threads_leave();
-		printf("Cache miss for image %d\n", to_find->resource_number);
 		return NULL;
 	}
 
@@ -154,7 +153,6 @@ image_cache_find(struct image_info* to_find)
 				if(info->width == to_find->width && info->height == to_find->height) {
 					/* Prescaled image found */
 					gdk_threads_leave();
-					printf("Exact cache hit for image %d\n", to_find->resource_number);
 					return info;
 				}
 				else if(info->width >= to_find->width && info->height >= to_find->height) {
@@ -165,7 +163,6 @@ image_cache_find(struct image_info* to_find)
 			} else {
 				if(!info->scaled) {
 					gdk_threads_leave();
-					printf("Exact cache hit for image %d\n", to_find->resource_number);
 					return info; /* Found a match */
 				}
 			}
@@ -173,11 +170,6 @@ image_cache_find(struct image_info* to_find)
 	} while( (link = g_slist_next(link)) );
 
 	gdk_threads_leave();
-
-	if(match == NULL)
-		printf("Cache miss for image %d\n", to_find->resource_number);
-	else
-		printf("Approx cache hit for image %d\n", to_find->resource_number);
 
 	return match;
 }
@@ -454,14 +446,15 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_Graphics);
 
-
 	gdk_threads_enter();
 
 	GdkPixmap *map;
 	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &map, NULL );
 
 	GdkGC *gc = gdk_gc_new(map);
-	gdk_gc_set_foreground( gc, glkcolor_to_gdkcolor(color) );
+	GdkColor gdkcolor;
+	glkcolor_to_gdkcolor(color, &gdkcolor);
+	gdk_gc_set_rgb_fg_color(gc, &gdkcolor);
 	gdk_draw_rectangle( GDK_DRAWABLE(map), gc, TRUE, left, top, width, height);
 	gtk_widget_queue_draw(win->widget);
 	g_object_unref(gc);

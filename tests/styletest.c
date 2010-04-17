@@ -137,8 +137,11 @@ do_link_test() {
 
 void
 do_mouse_test() {
-	glk_request_mouse_event(mainwin);
+    glk_set_window(statuswin);
+	glk_window_move_cursor(statuswin, 0, 0);
+	glk_put_string("Click me......\n");
 	glk_request_mouse_event(statuswin);
+	glk_set_window(mainwin);
 }
 
 void

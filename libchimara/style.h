@@ -10,7 +10,7 @@ G_GNUC_INTERNAL void style_init();
 G_GNUC_INTERNAL PangoFontDescription* get_current_font(guint32 wintype);
 G_GNUC_INTERNAL GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
 
-G_GNUC_INTERNAL GdkColor* glkcolor_to_gdkcolor(glui32 val);
+G_GNUC_INTERNAL void glkcolor_to_gdkcolor(glui32 val, GdkColor *color);
 
 typedef struct StyleSet {
 	GHashTable *text_grid;

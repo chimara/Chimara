@@ -525,15 +525,12 @@ glkcolor_to_hex(glui32 val, gchar *buffer)
 }
 
 /* Internal function: parses a glk color to a GdkColor */
-GdkColor*
-glkcolor_to_gdkcolor(glui32 val)
+void
+glkcolor_to_gdkcolor(glui32 val, GdkColor *color)
 {
-	GdkColor* color = g_new0(GdkColor, 1);
-	color->red = (val & 0xff0000) >> 16;
-	color->green = (val & 0x00ff00) >> 8;
-	color->blue = val & 0x0000ff;
-
-	return color;
+	color->red = 256 * ((val & 0xff0000) >> 16);
+	color->green = 256 * ((val & 0x00ff00) >> 8);
+	color->blue = 256 * (val & 0x0000ff);
 }
 
 /* Internal function: parses a GdkColor to a glk color */

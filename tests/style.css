@@ -14,6 +14,7 @@
  * input
  * user1
  * user2
+ * hyperlink
  *
  * Possible style hints:
  * font-family (string)
@@ -72,4 +73,8 @@ buffer.user1 {
 }
 
 buffer.user2 {
+}
+
+buffer.hyperlink {
+	color: #ff0000;
 }
