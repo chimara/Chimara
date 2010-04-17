@@ -5,9 +5,13 @@
 /* Helper function: move the pager to the last visible position in the buffer,
  and return the distance between the pager and the end of the buffer in buffer
  coordinates */
-static gint
-move_pager_and_get_scroll_distance(GtkTextView *textview)
+static void
+move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gint *scroll_distance)
 {
+	while( gtk_events_pending() ) {
+		gtk_main_iteration();
+	}
+
 	GdkRectangle pagerpos, endpos, visiblerect;
 	GtkTextIter oldpager, newpager, end;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(textview);
@@ -25,11 +29,12 @@ move_pager_and_get_scroll_distance(GtkTextView *textview)
 	gtk_text_buffer_get_iter_at_mark(buffer, &newpager, pager);
 	gtk_text_view_get_iter_location(textview, &newpager, &pagerpos);
 	gtk_text_view_get_iter_location(textview, &end, &endpos);
+
+	g_printerr("View height = %d\n", visiblerect.height);
+	g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);
 	
-	//g_printerr("View height = %d\n", visiblerect.height);
-	//g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);
-	
-	return endpos.y - pagerpos.y;
+	*view_height = visiblerect.height;
+	*scroll_distance = endpos.y - pagerpos.y;
 }
 
 /* Helper function: turn on paging for this textview */
@@ -50,18 +55,32 @@ stop_paging(winid_t win)
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
 }
 
-/* Update the pager position after new text is inserted in the buffer */
+/* Update the pager position after new text is inserted in the buffer and the
+text view has calculated where it is */
 void
-pager_after_insert_text(GtkTextBuffer *buffer, GtkTextIter *location, gchar *text, gint len, winid_t win)
+pager_after_size_allocate(GtkTextView *view, GtkAllocation *allocation, winid_t win)
 {
 	while(gtk_events_pending())
 		gtk_main_iteration();
 	
 	/* Move the pager to the last visible character in the buffer */
-	gint scroll_distance = move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget) );
+	gint view_height, scroll_distance;
+	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
 	
-	if(scroll_distance > 0 && !win->currently_paging)
-		start_paging(win);
+	if(!win->currently_paging) {
+		if(scroll_distance > view_height) {
+			start_paging(win);
+			/* Seriously... */
+			gdk_window_invalidate_rect(gtk_widget_get_window(win->widget), NULL, TRUE);
+		}
+		else if(scroll_distance > 0) {
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+			gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), gtk_text_buffer_get_mark(buffer, "end_position"));
+			while( gtk_events_pending() ) {
+				gtk_main_iteration();
+			}
+		}
+	}
 }
 
 void
@@ -71,7 +90,8 @@ pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
 		gtk_main_iteration();
 	
 	/* Move the pager, etc. */
-	gint scroll_distance = move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget) );
+	gint scroll_distance, view_height;
+   	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
 	
 	if(scroll_distance > 0 && !win->currently_paging)
 		start_paging(win);
@@ -86,11 +106,6 @@ pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
 gboolean
 pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 {
-	/*** ALTERNATIVE, POSSIBLY INFERIOR, METHOD OF SCROLLING ***
-	GtkTextMark *pagermark = gtk_text_buffer_get_mark(buffer, "pager_position");
-	gtk_text_view_scroll_to_mark(textview, pagermark, 0.0, TRUE, 0.0, 0.0);
-	*/
-
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->frame) );
 	gdouble step_increment, page_size, upper, lower, value;
 	g_object_get(adj, 
@@ -131,12 +146,6 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 
 	/* Draw the 'more' tag */
 	GdkGC *context = gdk_gc_new(GDK_DRAWABLE(event->window));
-	/*
-	gdk_draw_layout_with_colors(event->window, context, 
-		winx + winwidth - promptwidth, 
-		winy + winheight - promptheight, 
-		prompt, &white, &red);
-	*/
 	gdk_draw_layout(event->window, context, 
 		winx + winwidth - promptwidth, 
 		winy + winheight - promptheight, 

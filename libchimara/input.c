@@ -27,18 +27,6 @@ request_char_event_common(winid_t win, gboolean unicode)
 	g_signal_handler_unblock( win->widget, win->char_input_keypress_handler );
 
 	gdk_threads_enter();
-
-	/*
-	if(win->type == wintype_TextBuffer)
-	{
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextIter iter;
-		gtk_text_buffer_get_end_iter(buffer, &iter);
-		gtk_text_buffer_place_cursor(buffer, &iter);
-		gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), gtk_text_buffer_get_insert(buffer));
-		// Why doesn't this always work?? 
-	} */
-
 	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
 	gdk_threads_leave();
 
@@ -192,9 +180,6 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
         gtk_text_buffer_insert(buffer, &end_iter, inserttext, -1);
 		gtk_text_buffer_get_end_iter(buffer, &end_iter); /* update after text insertion */
 	}
-
-    /* Scroll to input point */
-    gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), input_position);
 
 	/* Apply the correct style to the input prompt */
 	GtkTextIter input_iter;

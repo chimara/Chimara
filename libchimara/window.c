@@ -547,11 +547,13 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* Connect signal handlers */
 			
 			/* Pager */
-			win->pager_expose_handler = g_signal_connect( textview, "expose-event", G_CALLBACK(pager_on_expose), win );
+			/* "size-allocate"? Really? WTF, GTK? */
+			g_signal_connect_after( textview, "size-allocate", G_CALLBACK(pager_after_size_allocate), win );
+			win->pager_expose_handler = g_signal_connect_after( textview, "expose-event", G_CALLBACK(pager_on_expose), win );
 			g_signal_handler_block(textview, win->pager_expose_handler);
 			win->pager_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(pager_on_key_press_event), win );
 			g_signal_handler_block(textview, win->pager_keypress_handler);
-			g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(pager_after_insert_text), win );
+			//g_signal_connect_after( textbuffer, "insert-text", G_CALLBACK(pager_after_insert_text), win );
 			GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
 			g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
 
@@ -571,10 +573,11 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			(for line input) */
 			gtk_text_buffer_create_tag(textbuffer, "uneditable", "editable", FALSE, "editable-set", TRUE, NULL);
 
-			/* Mark the position where the user will input text */
+			/* Mark the position where the user will input text and the end mark */
 			GtkTextIter end;
 			gtk_text_buffer_get_end_iter(textbuffer, &end);
 			gtk_text_buffer_create_mark(textbuffer, "input_position", &end, TRUE);
+			gtk_text_buffer_create_mark(textbuffer, "end_position", &end, FALSE);
 
 			/* Create the pager position mark; it stands for the last character in the buffer
 			 that has been on-screen */
