@@ -46,7 +46,7 @@ abort_glk(void)
 	shutdown_glk_pre();
 	shutdown_glk_post();
 	/* If program is terminated by g_thread_exit() instead of returning from the
-	 glk_main() function, then the line in glk_enter() where the "stopped" 
+	 glk_main() function, then the line in glk_exit() where the "stopped" 
 	 signal is emitted will not be reached. So we have to emit it here. */
 	if(!glk_data->in_startup)
 		g_signal_emit_by_name(glk_data->self, "stopped");

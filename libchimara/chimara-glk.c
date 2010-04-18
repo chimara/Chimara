@@ -579,11 +579,6 @@ chimara_glk_stopped(ChimaraGlk *self)
 {
     CHIMARA_GLK_USE_PRIVATE(self, priv);
     priv->running = FALSE;
-
-    /* Free the plugin */
-	if( priv->program && !g_module_close(priv->program) )
-	    g_warning( "Error closing module: %s", g_module_error() );
-	priv->program = NULL;
 }
 
 static void
@@ -1159,8 +1154,12 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	/* COMPAT: avoid usage of slices */
 	struct StartupData *startup = g_new0(struct StartupData,1);
 	
-    /* Open the module to run */
     g_assert( g_module_supported() );
+	/* If there is already a module loaded, free it first -- you see, we want to
+	 * keep modules loaded as long as possible to avoid crashes in stack unwinding */
+	if( priv->program && !g_module_close(priv->program) )
+		g_warning( "Error closing module :%s", g_module_error() );
+	/* Open the module to run */
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
     if(!priv->program)
