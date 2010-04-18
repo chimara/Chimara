@@ -248,9 +248,16 @@ chimara_if_command(ChimaraIF *self, gchar *input, gchar *response)
 	/* Default signal handler */
 }
 
-/* G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
+/* COMPAT: G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
 #ifndef G_PARAM_STATIC_STRINGS
+
+/* COMPAT: G_PARAM_STATIC_NAME and friends only appeared in GTK 2.8 */
+#if GTK_CHECK_VERSION(2,8,0)
 #define G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
+#else
+#define G_PARAM_STATIC_STRINGS (0)
+#endif
+
 #endif
 
 static void

@@ -44,9 +44,18 @@
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
 
+/* Iliad includes */
+#include <liberdm/erdm.h>
+#include <liberipc/eripcviewer.h>
+#include <liberipc/eripctoolbar.h>
+#include <liberipc/eripcbusyd.h>
+
 /* Global pointers to widgets */
 GtkWidget *window = NULL;
 GtkWidget *glk = NULL;
+
+static erClientChannel_t erbusyChannel;
+static erClientChannel_t ertoolbarChannel;
 
 static void
 on_started(ChimaraGlk *glk)
@@ -115,6 +124,22 @@ create_window(void)
 	gtk_container_add( GTK_CONTAINER(window), vbox );
 }
 
+static void
+iliad_popup_keyboard()
+{
+	erIpcStartClient(ER_TOOLBAR_CHANNEL, &ertoolbarChannel);
+	tbSelectIconSet(ertoolbarChannel, ER_PDF_VIEWER_UA_ID);
+	tbClearIconSet(ertoolbarChannel, ER_PDF_VIEWER_UA_ID);
+
+	// Turn off trashcan
+	tbAppendPlatformIcon(  ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_trashcan, -1);
+	tbSetStatePlatformIcon(ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_trashcan, iconState_grey );
+
+	// Enable then pop up keyboard
+	tbAppendPlatformIcon(  ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_keyboard, -1);
+	tbSetStatePlatformIcon(ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_keyboard, iconState_selected);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -144,7 +169,8 @@ main(int argc, char *argv[])
 		return 1;
 	}
 	//chimara_glk_run( CHIMARA_GLK(glk), ".libs/multiwin.so", argc, argv, NULL);
-
+	
+	iliad_popup_keyboard();
 
   	gdk_threads_enter();
 	gtk_main();

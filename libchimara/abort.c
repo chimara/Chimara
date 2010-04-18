@@ -143,7 +143,13 @@ shutdown_glk_post(void)
 	/* Empty the event queue */
 	g_mutex_lock(glk_data->event_lock);
 	g_queue_foreach(glk_data->event_queue, (GFunc)g_free, NULL);
-	g_queue_clear(glk_data->event_queue);
+
+	/* COMPAT: g_queue_clear could be used here, but only appeared in 2.14 */
+	// g_queue_clear(glk_data->event_queue);
+	g_list_free(glk_data->event_queue->head);
+	glk_data->event_queue->head = glk_data->event_queue->tail = NULL;
+	glk_data->event_queue->length = 0;
+
 	g_mutex_unlock(glk_data->event_lock);
 	
 	/* Reset the abort signaling mechanism */

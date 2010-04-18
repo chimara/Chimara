@@ -617,9 +617,16 @@ chimara_glk_text_buffer_output(ChimaraGlk *self, guint window_rock, gchar *text)
 	/* Default signal handler */
 }
 
-/* G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
+/* COMPAT: G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
 #ifndef G_PARAM_STATIC_STRINGS
+
+/* COMPAT: G_PARAM_STATIC_NAME and friends only appeared in GTK 2.8 */
+#if GTK_CHECK_VERSION(2,8,0)
 #define G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
+#else
+#define G_PARAM_STATIC_STRINGS (0)
+#endif
+
 #endif
 
 static void
@@ -1107,7 +1114,9 @@ glk_enter(struct StartupData *startup)
 	
 	/* Run main function */
 	glk_main_t glk_main = startup->glk_main;
-	g_slice_free(struct StartupData, startup);
+	
+	/* COMPAT: avoid usage of slices */
+	g_free(startup);
     g_signal_emit_by_name(startup->glk_data->self, "started");
 	glk_main();
 	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
@@ -1146,7 +1155,9 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	}
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	struct StartupData *startup = g_slice_new0(struct StartupData);
+
+	/* COMPAT: avoid usage of slices */
+	struct StartupData *startup = g_new0(struct StartupData,1);
 	
     /* Open the module to run */
     g_assert( g_module_supported() );
