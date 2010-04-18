@@ -5,7 +5,7 @@
 # Initialize Autoconf 
 # Args: (human-readable package name, package version, bug report address, 
 # tarballname)
-AC_INIT([chimara], [0.1])
+AC_INIT([chimara], [0.9])
 # Sanity check to make sure we are running Autoconf from the right directory
 AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
 # Put m4 macros in their own directory
@@ -25,6 +25,8 @@ LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
 AC_SUBST(LT_VERSION_INFO)
 
 ### REQUIREMENTS ##############################################################
+# Recommended GTK version: at least 2.12
+# Recommended Glib version: at least 2.16
 GTK_REQUIRED_VERSION=2.6
 GLIB_REQUIRED_VERSION=2.6
 GTK_DOC_REQUIRED_VERSION=1.9

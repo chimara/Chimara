@@ -71,9 +71,17 @@ create_window(void)
 	GError *error = NULL;
 
    	builder = gtk_builder_new();
-	if( !gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", &error) ) {
-		error_dialog(NULL, error, "Error while building interface: ");	
-		return;
+	if( !gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/chimara.ui", &error) ) {
+#ifdef DEBUG
+		g_error_free(error);
+		error = NULL;
+		if( !gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", &error) ) {
+#endif /* DEBUG */
+			error_dialog(NULL, error, "Error while building interface: ");	
+			return;
+#ifdef DEBUG
+		}
+#endif /* DEBUG */
 	}
 
 	window = GTK_WIDGET(load_object("chimara"));
@@ -119,9 +127,17 @@ create_window(void)
 	gtk_recent_chooser_add_filter(recent, filter);
 
 	uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
-		error_dialog(NULL, error, "Error while building interface: ");
-		return;
+	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/chimara.menus", &error) ) {
+#ifdef DEBUG
+		g_error_free(error);
+		error = NULL;
+		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
+#endif /* DEBUG */
+			error_dialog(NULL, error, "Error while building interface: ");
+			return;
+#ifdef DEBUG
+		}
+#endif /* DEBUG */
 	}
 	
 	glk = chimara_if_new();

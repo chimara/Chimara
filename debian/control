@@ -10,7 +10,7 @@ Build-Depends: cdbs,
                libglib2.0-dev, 
                libgtk2.0-dev
 Standards-Version: 3.7.3
-Homepage: <insert the upstream URL, if relevant>
+Homepage: http://lassie.student.utwente.nl/chimara
 
 Package: libchimara0
 Section: libs
@@ -46,7 +46,7 @@ Description: Documentation for the Chimara Glk library
  .
  This package contains the Chimara reference manual.
 
-Package: libchimara-player
+Package: chimara-player
 Section: games
 Architecture: any
 Depends: ${misc:Depends}

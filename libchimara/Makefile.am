@@ -5,9 +5,9 @@ AM_CFLAGS = -Wall
 lib_LTLIBRARIES = libchimara.la
 
 if TARGET_ILIAD
-	plugindir = "../interpreters"
+pluginpath = "../interpreters"
 else
-	plugindir = $(pkglibdir)
+pluginpath = $(pkglibdir)
 endif
 
 libchimara_la_SOURCES = \
@@ -32,7 +32,7 @@ libchimara_la_SOURCES = \
 	init.c init.h \
 	input.c input.h \
 	magic.c magic.h \
-	mouse.c \
+	mouse.c mouse.h \
 	pager.c pager.h \
 	resource.c resource.h \
 	schannel.c \
@@ -44,7 +44,7 @@ libchimara_la_SOURCES = \
 libchimara_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
-	-DPLUGINDIR=\""$(plugindir)"\" \
+	-DPLUGINDIR=\""$(pluginpath)"\" \
 	-DPLUGINSOURCEDIR=\""$(abs_builddir)/../interpreters"\" \
 	-I$(top_srcdir)
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)

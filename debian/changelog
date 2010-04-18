@@ -1,7 +1,6 @@
-chimara (0.1-1) unstable; urgency=low
+chimara (0.9-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
-  * TODO FIXME when actually doing release
+  * Initial release (Closes: #36) 
 
- -- Philip Chimento <philip.chimento@gmail.com>  Sat, 28 Nov 2009 00:57:21 +0100
+ -- Philip Chimento <philip.chimento@gmail.com>  Sun, 18 Apr 2009 17:03:21 +0100
 
