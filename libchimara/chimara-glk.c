@@ -85,7 +85,7 @@ chimara_glk_init(ChimaraGlk *self)
     priv->protect = FALSE;
 	priv->default_font_desc = pango_font_description_from_string("Serif");
 	priv->monospace_font_desc = pango_font_description_from_string("Monospace");
-	priv->css_file = "style.css";
+	priv->css_file = NULL;
 	priv->default_styles = g_new0(StyleSet,1);
 	priv->current_styles = g_new0(StyleSet,1);
 	priv->pager_attr_list = pango_attr_list_new();
