@@ -66,6 +66,10 @@ pager_after_size_allocate(GtkTextView *view, GtkAllocation *allocation, winid_t 
 	/* Move the pager to the last visible character in the buffer */
 	gint view_height, scroll_distance;
 	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
+
+	if(view_height <= 1)
+		/* Paging is unusable when window is too small */
+		return;
 	
 	if(!win->currently_paging) {
 		if(scroll_distance > view_height) {
