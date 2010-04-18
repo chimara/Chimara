@@ -24,7 +24,7 @@ stream_new_common(glui32 rock)
 	/* Add it to the global stream list */
 	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
 	str->stream_list = glk_data->stream_list;
-	
+
 	return str;
 }
 

@@ -30,8 +30,8 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	gtk_text_view_get_iter_location(textview, &newpager, &pagerpos);
 	gtk_text_view_get_iter_location(textview, &end, &endpos);
 
-	g_printerr("View height = %d\n", visiblerect.height);
-	g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);
+	/*g_printerr("View height = %d\n", visiblerect.height);
+	g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);*/
 	
 	*view_height = visiblerect.height;
 	*scroll_distance = endpos.y - pagerpos.y;

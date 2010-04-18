@@ -26,7 +26,7 @@ window_new_common(glui32 rock)
 	win->window_stream->type = STREAM_TYPE_WINDOW;
 	win->window_stream->window = win;
 	win->window_stream->style = "normal";
-	
+
 	win->echo_stream = NULL;
 	win->input_request_type = INPUT_REQUEST_NONE;
 	win->line_input_buffer = NULL;
@@ -826,7 +826,12 @@ glk_window_close(winid_t win, stream_result_t *result)
 	if(pair_node != NULL)
 	{
 		gboolean new_child_on_left = ( pair_node == g_node_first_sibling(pair_node) );
-		GNode *sibling_node = pair_node->children; /* only one child left */
+
+		/* Lookup our sibling */
+		GNode *sibling_node = pair_node->children;
+		if(sibling_node == win->window_node)
+			sibling_node = sibling_node->next;
+
 		GNode *new_parent_node = pair_node->parent;
 		g_node_unlink(pair_node);
 		g_node_unlink(sibling_node);
@@ -844,6 +849,7 @@ glk_window_close(winid_t win, stream_result_t *result)
 				g_node_append(new_parent_node, sibling_node);
 		}
 
+		stream_close_common( ((winid_t) pair_node->data)->window_stream, NULL );
 		window_close_common( (winid_t) pair_node->data, TRUE);
 	} 
 	else /* it was the root window */
