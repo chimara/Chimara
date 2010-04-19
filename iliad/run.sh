@@ -5,4 +5,4 @@ cd $scriptdir
 cd chimara
 export HOME=`pwd`
 #./xepdmgr :0 ./iliad ../games/anchor.z8
-./iliad ../games/anchor.z8
+./chimara ../games/anchor.z8

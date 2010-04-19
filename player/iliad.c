@@ -125,7 +125,7 @@ create_window(void)
 }
 
 static void
-iliad_popup_keyboard()
+iliad_init_toolbar()
 {
 	erIpcStartClient(ER_TOOLBAR_CHANNEL, &ertoolbarChannel);
 	tbSelectIconSet(ertoolbarChannel, ER_PDF_VIEWER_UA_ID);
@@ -138,6 +138,16 @@ iliad_popup_keyboard()
 	// Enable then pop up keyboard
 	tbAppendPlatformIcon(  ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_keyboard, -1);
 	tbSetStatePlatformIcon(ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_keyboard, iconState_selected);
+}
+
+static void
+iliad_clear_toolbar()
+{
+	// Turn on trashcan
+	tbSetStatePlatformIcon(ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_trashcan, iconState_normal );
+
+	// Disable the keyboard
+	tbSetStatePlatformIcon(ertoolbarChannel, ER_PDF_VIEWER_UA_ID, iconID_keyboard, iconState_normal);
 }
 
 int
@@ -170,7 +180,7 @@ main(int argc, char *argv[])
 	}
 	//chimara_glk_run( CHIMARA_GLK(glk), ".libs/multiwin.so", argc, argv, NULL);
 	
-	iliad_popup_keyboard();
+	iliad_init_toolbar();
 
   	gdk_threads_enter();
 	gtk_main();
@@ -178,6 +188,8 @@ main(int argc, char *argv[])
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
+
+	iliad_clear_toolbar();
 
 	return 0;
 }

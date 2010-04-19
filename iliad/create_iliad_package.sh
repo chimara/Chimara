@@ -24,10 +24,10 @@ cp ../interpreters/glulxe/.libs/glulxe.so Chimara/interpreters/
 cp ../interpreters/nitfol/.libs/nitfol.so Chimara/interpreters/
 
 # Games
-cp ../tests/anchor.z8 iliad/Chimara/games/
-cp ../tests/CoSv3.blb iliad/Chimara/games/
+cp ../tests/anchor.z8 Chimara/games/
+cp ../tests/CoSv3.blb Chimara/games/
 
 # Create zip file
-zip -r chimara-${VERSION}.zip Chimara
+tar czvf chimara-${VERSION}.tar.gz Chimara
 
-echo "Iliad package created: chimara-${VERSION}.zip"
+echo "Iliad package created: chimara-${VERSION}.tar.gz"
