@@ -148,17 +148,20 @@ pager_wait(GtkTextView *textview, GdkEventKey *event, GtkTextBuffer *buffer)
 	switch (event->keyval) {
 		case GDK_space: case GDK_KP_Space: case GDK_Page_Down: case GDK_KP_Page_Down:
 			gtk_adjustment_set_value(adj, CLAMP(value + page_size, lower, upper - page_size));
-			return TRUE;
+			break;
 		case GDK_Page_Up: case GDK_KP_Page_Up:
 			gtk_adjustment_set_value(adj, CLAMP(value - page_size, lower, upper - page_size));
-			return TRUE;
+			break;
 		case GDK_Return: case GDK_KP_Enter:
 			gtk_adjustment_set_value(adj, CLAMP(value + step_increment, lower, upper - page_size));
-			return TRUE;
+			break;
 			/* don't handle "up" and "down", they're used for input history */
+		default:
+			return FALSE; /* if the key wasn't handled here, pass it to other handlers */
 	}
-	
-	return FALSE; /* if the key wasn't handled here, pass it to other handlers */
+
+	gdk_window_process_updates(gtk_widget_get_window(GTK_WIDGET(textview)), TRUE);
+	return TRUE; /* handled it, stop this event now */
 }
 
 /* Draw the "more" prompt on top of the buffer, after the regular expose event has run */

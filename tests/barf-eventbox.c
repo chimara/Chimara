@@ -168,6 +168,11 @@ pager_wait(GtkTextView *eventbox, GdkEventKey *event, GtkTextBuffer *buffer)
 static gboolean
 expose_prompt(GtkEventBox *eventbox, GdkEventExpose *event)
 {
+	g_printerr("Eventbox expose callback!\n");
+
+	while(gtk_events_pending())
+		gtk_main_iteration();
+	
 	GdkGC *context = gdk_gc_new(GDK_DRAWABLE(event->window));
 
 	gint winx, winy, winwidth, winheight;
@@ -181,6 +186,20 @@ expose_prompt(GtkEventBox *eventbox, GdkEventExpose *event)
 		prompt, &white, &red);
 	
 	return FALSE; /* Propagate event further */
+}
+
+static gboolean
+expose_scroll(GtkScrolledWindow *scroll, GdkEventExpose *event)
+{
+	g_printerr("Scrolled window expose callback!\n");
+	return FALSE;
+}
+
+static gboolean
+expose_textview(GtkTextView *textview, GdkEventExpose *event)
+{
+	g_printerr("Text view expose callback!\n");
+	return FALSE;
 }
 
 int
@@ -225,8 +244,11 @@ main(int argc, char **argv)
 	g_signal_connect_after(adj, "value-changed", G_CALLBACK(adjustment_changed), textview);
 	pager_handler = g_signal_connect(eventbox, "key-press-event", G_CALLBACK(pager_wait), buffer);
 	g_signal_handler_block(eventbox, pager_handler);
-	expose_handler = g_signal_connect(eventbox, "expose-event", G_CALLBACK(expose_prompt), NULL);
+	expose_handler = g_signal_connect_after(eventbox, "expose-event", G_CALLBACK(expose_prompt), NULL);
 	g_signal_handler_block(eventbox, expose_handler);
+
+	g_signal_connect(scrolledwindow, "expose-event", G_CALLBACK(expose_scroll), NULL);
+	g_signal_connect(textview, "expose-event", G_CALLBACK(expose_textview), NULL);
 	
 	/* Create the pager position mark; it stands for the last character in the buffer
 	 that has been on-screen */
