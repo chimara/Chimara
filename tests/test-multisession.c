@@ -40,14 +40,16 @@ main(int argc, char **argv)
 	gtk_paned_set_position(GTK_PANED(hpaned), 400);
 	
 	GtkWidget *frotz = chimara_glk_new();
-	chimara_glk_set_default_font_string(CHIMARA_GLK(frotz), "Lucida Sans 12");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(frotz), "Lucida Console 12");
+	chimara_glk_set_css_from_string(CHIMARA_GLK(frotz),
+	    "buffer.normal { font-family: 'Lucida Sans'; font-size: 12; }"
+	    "grid.normal { font-family: 'Lucida Console'; font-size: 12; }");
 	g_signal_connect(frotz, "started", G_CALLBACK(on_started), "Frotz");
 	g_signal_connect(frotz, "stopped", G_CALLBACK(on_stopped), "Frotz");
 	
 	GtkWidget *nitfol = chimara_glk_new();
-	chimara_glk_set_default_font_string(CHIMARA_GLK(nitfol), "Bitstream Charter 12");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(nitfol), "Luxi Mono 12");
+	chimara_glk_set_css_from_string(CHIMARA_GLK(frotz),
+	    "buffer.normal { font-family: 'Bitstream Charter'; font-size: 12; }"
+	    "grid.normal { font-family: 'Luxi Mono'; font-size: 12; }");
 	g_signal_connect(nitfol, "started", G_CALLBACK(on_started), "Nitfol");
 	g_signal_connect(nitfol, "stopped", G_CALLBACK(on_stopped), "Nitfol");
 

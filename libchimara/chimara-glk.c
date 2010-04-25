@@ -1,5 +1,10 @@
 /* licensing and copyright information here */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 #include <math.h>
 #include <gtk/gtk.h>
 #include <config.h>
@@ -53,8 +58,6 @@ enum {
     PROP_0,
     PROP_INTERACTIVE,
     PROP_PROTECT,
-	PROP_DEFAULT_FONT_DESCRIPTION,
-	PROP_MONOSPACE_FONT_DESCRIPTION,
 	PROP_SPACING,
 };
 
@@ -83,13 +86,9 @@ chimara_glk_init(ChimaraGlk *self)
     priv->self = self;
     priv->interactive = TRUE;
     priv->protect = FALSE;
-	priv->default_font_desc = pango_font_description_from_string("Serif");
-	priv->monospace_font_desc = pango_font_description_from_string("Monospace");
-	priv->css_file = NULL;
 	priv->default_styles = g_new0(StyleSet,1);
 	priv->current_styles = g_new0(StyleSet,1);
 	priv->pager_attr_list = pango_attr_list_new();
-	priv->style_initialized = FALSE;
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->running = FALSE;
     priv->program = NULL;
@@ -121,6 +120,8 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->timer_id = 0;
 	priv->in_startup = FALSE;
 	priv->current_dir = NULL;
+
+	style_init(self);
 }
 
 static void
@@ -136,12 +137,6 @@ chimara_glk_set_property(GObject *object, guint prop_id, const GValue *value, GP
         case PROP_PROTECT:
             chimara_glk_set_protect( glk, g_value_get_boolean(value) );
             break;
-		case PROP_DEFAULT_FONT_DESCRIPTION:
-			chimara_glk_set_default_font_description( glk, (PangoFontDescription *)g_value_get_pointer(value) );
-			break;
-		case PROP_MONOSPACE_FONT_DESCRIPTION:
-			chimara_glk_set_monospace_font_description( glk, (PangoFontDescription *)g_value_get_pointer(value) );
-			break;
 		case PROP_SPACING:
 			chimara_glk_set_spacing( glk, g_value_get_uint(value) );
 			break;
@@ -163,12 +158,6 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
         case PROP_PROTECT:
             g_value_set_boolean(value, priv->protect);
             break;
-		case PROP_DEFAULT_FONT_DESCRIPTION:
-			g_value_set_pointer(value, priv->default_font_desc);
-			break;
-		case PROP_MONOSPACE_FONT_DESCRIPTION:
-			g_value_set_pointer(value, priv->monospace_font_desc);
-			break;
 		case PROP_SPACING:
 			g_value_set_uint(value, priv->spacing);
 			break;
@@ -184,8 +173,6 @@ chimara_glk_finalize(GObject *object)
 	CHIMARA_GLK_USE_PRIVATE(self, priv);
 
 	/* Free widget properties */
-	pango_font_description_free(priv->default_font_desc);
-	pango_font_description_free(priv->monospace_font_desc);
 	g_free(priv->final_message);
 	/* Free styles */
 	g_hash_table_destroy(priv->default_styles->text_buffer);
@@ -193,7 +180,6 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->current_styles->text_buffer);
 	g_hash_table_destroy(priv->current_styles->text_grid);
 	pango_attr_list_unref(priv->pager_attr_list);
-	priv->style_initialized = FALSE;
 	
     /* Free the event queue */
     g_mutex_lock(priv->event_lock);
@@ -233,8 +219,7 @@ chimara_glk_finalize(GObject *object)
 	g_async_queue_unref(priv->line_input_queue);
 	
 	/* Free other stuff */
-	if(priv->current_dir)
-		g_free(priv->current_dir);
+	g_free(priv->current_dir);
 
 	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
@@ -752,36 +737,6 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
         FALSE,
         G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
 
-	/* We can't use G_PARAM_CONSTRUCT on these because then the constructor will
-	 initialize them with NULL */
-	/**
-	 * ChimaraGlk:default-font-description:
-	 * 
-	 * Pointer to a #PangoFontDescription describing the default proportional 
-	 * font, to be used in text buffer windows for example.
-	 *
-	 * Default value: font description created from the string 
-	 * <quote>Sans</quote>
-	 */
-	g_object_class_install_property(object_class, PROP_DEFAULT_FONT_DESCRIPTION, 
-		g_param_spec_pointer("default-font-description", _("Default Font"),
-		_("Font description of the default proportional font"),
-		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
-
-	/**
-	 * ChimaraGlk:monospace-font-description:
-	 *
-	 * Pointer to a #PangoFontDescription describing the default monospace font,
-	 * to be used in text grid windows and %style_Preformatted, for example.
-	 *
-	 * Default value: font description created from the string 
-	 * <quote>Monospace</quote>
-	 */
-	g_object_class_install_property(object_class, PROP_MONOSPACE_FONT_DESCRIPTION, 
-		g_param_spec_pointer("monospace-font-description", _("Monospace Font"),
-		_("Font description of the default monospace font"),
-		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
-
 	/**
 	 * ChimaraGlk:spacing:
 	 *
@@ -903,140 +858,87 @@ chimara_glk_get_protect(ChimaraGlk *glk)
 }
 
 /**
- * chimara_glk_set_default_font_description:
+ * chimara_glk_set_css_to_default:
  * @glk: a #ChimaraGlk widget
- * @font: a #PangoFontDescription
  *
- * Sets @glk's default proportional font. See 
- * #ChimaraGlk:default-font-description.
+ * Resets the styles for text buffer and text grid windows to their defaults.
  */
-void 
-chimara_glk_set_default_font_description(ChimaraGlk *glk, PangoFontDescription *font)
+void
+chimara_glk_set_css_to_default(ChimaraGlk *glk)
 {
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-	g_return_if_fail(font);
-	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	pango_font_description_free(priv->default_font_desc);
-	priv->default_font_desc = pango_font_description_copy(font);
-	g_object_notify(G_OBJECT(glk), "default-font-description");
-	/* TODO: Apply the font description to all the windows and recalculate the sizes */
+	reset_default_styles(glk);
 }
 
 /**
- * chimara_glk_set_default_font_string:
+ * chimara_glk_set_css_from_file:
  * @glk: a #ChimaraGlk widget
- * @font: string representation of a font description
+ * @filename: path to a CSS file, or %NULL
+ * @error: location to store a <link linkend="glib-GError">GError</link>, or 
+ * %NULL
  *
- * Sets @glk's default proportional font according to the string @font, which
- * must be a string in the form <quote><replaceable>FAMILY-LIST</replaceable> 
- * [<replaceable>STYLE-OPTIONS</replaceable>] 
- * [<replaceable>SIZE</replaceable>]</quote>, such as <quote>Charter,Utopia 
- * Italic 12</quote> or <quote>Sans</quote>. See 
- * #ChimaraGlk:default-font-description.
- */
-void 
-chimara_glk_set_default_font_string(ChimaraGlk *glk, const gchar *font)
-{
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-	g_return_if_fail(font || *font);
-	
-	PangoFontDescription *fontdesc = pango_font_description_from_string(font);
-	g_return_if_fail(fontdesc);
-	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	pango_font_description_free(priv->default_font_desc);
-	priv->default_font_desc = fontdesc;
-	g_object_notify(G_OBJECT(glk), "default-font-description");
-	
-	/* TODO: Apply the font description to all the windows and recalculate the sizes */
-}
-	
-/**
- * chimara_glk_get_default_font_description:
- * @glk: a #ChimaraGlk widget
- * 
- * Returns @glk's default proportional font.
+ * Sets the styles for text buffer and text grid windows according to the CSS
+ * file @filename. Note that the styles are set cumulatively on top of whatever
+ * the styles are at the time this function is called; to reset the styles to
+ * their defaults, use chimara_glk_set_css_to_default().
  *
- * Return value: a newly-allocated #PangoFontDescription which must be freed
- * using pango_font_description_free(), or %NULL on error.
+ * Returns: %TRUE on success, %FALSE if an error occurred, in which case @error
+ * will be set.
  */
-PangoFontDescription *
-chimara_glk_get_default_font_description(ChimaraGlk *glk)
+gboolean 
+chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **error)
 {
-	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), NULL);
+	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
+	g_return_val_if_fail(filename, FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+	int fd = open(filename, O_RDONLY);
+	if(fd == -1) {
+		*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno), 
+		    _("Error opening file \"%s\": %s"), filename, g_strerror(errno));
+		return FALSE;
+	}
+
+	GScanner *scanner = create_css_file_scanner();
+	g_scanner_input_file(scanner, fd);
+	scanner->input_name = filename;
+	scan_css_file(scanner, glk);
+
+	/* Set the current style to a copy of the default style */
+	/* FIXME this is not correct */
+	copy_default_styles_to_current_styles(glk);
 	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	return pango_font_description_copy(priv->default_font_desc);
+	if(close(fd) == -1) {
+		*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno),
+		    _("Error closing file \"%s\": %s"), filename, g_strerror(errno));
+		return FALSE;
+	}
+	return TRUE;
 }
 
 /**
- * chimara_glk_set_monospace_font_description:
+ * chimara_glk_set_css_from_string:
  * @glk: a #ChimaraGlk widget
- * @font: a #PangoFontDescription
+ * @filename: a string containing CSS code
  *
- * Sets @glk's default monospace font. See 
- * #ChimaraGlk:monospace-font-description.
+ * Sets the styles for text buffer and text grid windows according to @css. Note
+ * that the styles are set cumulatively on top of whatever the styles are at the
+ * time this function is called; to reset the styles to their defaults, use 
+ * chimara_glk_set_css_to_default().
  */
 void 
-chimara_glk_set_monospace_font_description(ChimaraGlk *glk, PangoFontDescription *font)
+chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css)
 {
 	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-	g_return_if_fail(font);
+	g_return_if_fail(css || *css);
 	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	pango_font_description_free(priv->monospace_font_desc);
-	priv->monospace_font_desc = pango_font_description_copy(font);
-	g_object_notify(G_OBJECT(glk), "monospace-font-description");
-	
-	/* TODO: Apply the font description to all the windows and recalculate the sizes */
-}
+	GScanner *scanner = create_css_file_scanner();
+	g_scanner_input_text(scanner, css, strlen(css));
+	scanner->input_name = "<string>";
+	scan_css_file(scanner, glk);
 
-/**
- * chimara_glk_set_monospace_font_string:
- * @glk: a #ChimaraGlk widget
- * @font: string representation of a font description
- *
- * Sets @glk's default monospace font according to the string @font, which must
- * be a string in the form <quote><replaceable>FAMILY-LIST</replaceable> 
- * [<replaceable>STYLE-OPTIONS</replaceable>] 
- * [<replaceable>SIZE</replaceable>]</quote>, such as <quote>Courier 
- * Bold 12</quote> or <quote>Monospace</quote>. See 
- * #ChimaraGlk:monospace-font-description.
- */
-void 
-chimara_glk_set_monospace_font_string(ChimaraGlk *glk, const gchar *font)
-{
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-	g_return_if_fail(font || *font);
-	
-	PangoFontDescription *fontdesc = pango_font_description_from_string(font);
-	g_return_if_fail(fontdesc);
-	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	pango_font_description_free(priv->monospace_font_desc);
-	priv->monospace_font_desc = fontdesc;
-	g_object_notify(G_OBJECT(glk), "monospace-font-description");
-	
-	/* TODO: Apply the font description to all the windows and recalculate the sizes */
-}
-	
-/**
- * chimara_glk_get_monospace_font_description:
- * @glk: a #ChimaraGlk widget
- * 
- * Returns @glk's default monospace font.
- *
- * Return value: a newly-allocated #PangoFontDescription which must be freed
- * using pango_font_description_free(), or %NULL on error.
- */
-PangoFontDescription *
-chimara_glk_get_monospace_font_description(ChimaraGlk *glk)
-{
-	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), NULL);
-	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	return pango_font_description_copy(priv->monospace_font_desc);
+	/* Set the current style to a copy of the default style */
+	/* FIXME this is not correct */
+	copy_default_styles_to_current_styles(glk);
 }
 
 /**
@@ -1144,6 +1046,8 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 {
     g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
     g_return_val_if_fail(plugin, FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+	
 	if(chimara_glk_get_running(glk)) {
 		g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_ALREADY_RUNNING, _("There was already a plugin running."));
 		return FALSE;

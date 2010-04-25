@@ -13,7 +13,7 @@ bin_PROGRAMS = chimara_iliad
 
 else
 
-dist_pkgdata_DATA = chimara.ui chimara.menus 
+dist_pkgdata_DATA = chimara.ui chimara.menus style.css
 bin_PROGRAMS = chimara
 
 chimara_SOURCES = main.c callbacks.c error.c error.h

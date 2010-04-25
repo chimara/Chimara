@@ -23,10 +23,6 @@ struct _ChimaraGlkPrivate {
     gboolean interactive;
     /* Whether file operations are allowed */
     gboolean protect;
-	/* Font description of proportional font */
-	PangoFontDescription *default_font_desc;
-	/* Font description of monospace font */
-	PangoFontDescription *monospace_font_desc;
 	/* Spacing between Glk windows */
 	guint spacing;
 	/* The CSS file to read style defaults from */
@@ -35,7 +31,6 @@ struct _ChimaraGlkPrivate {
 	struct StyleSet *default_styles;
 	struct StyleSet *current_styles;
 	PangoAttrList *pager_attr_list;
-	gboolean style_initialized; /* Have styles been initialized */
 	/* Final message displayed when game exits */
 	gchar *final_message;
 	/* Image cache */

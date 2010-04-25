@@ -142,6 +142,23 @@ create_window(void)
 	
 	glk = chimara_if_new();
 	g_object_set(glk, "ignore-errors", TRUE, NULL);
+	if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_DATA_DIR "/style.css", &error) ) {
+#ifdef DEBUG
+		g_error_free(error);
+		error = NULL;
+		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/style.css", &error) ) {
+#endif /* DEBUG */
+			error_dialog(NULL, error, "Couldn't open CSS file: ");
+			return;
+#ifdef DEBUG
+		}
+#endif /* DEBUG */
+	}
+	
+	/* DON'T UNCOMMENT THIS your eyes will burn
+	 but it is a good test of programmatically altering just one style
+	chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
+	    "buffer.normal { font-family: 'Comic Sans MS'; }");*/
 	
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)

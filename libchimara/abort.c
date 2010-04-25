@@ -176,6 +176,4 @@ shutdown_glk_post(void)
 	glk_data->unregister_obj = NULL;
 	glk_data->register_arr = NULL;
 	glk_data->unregister_arr = NULL;
-	
-	/* Leave the style_initialized flag as it is, since the CSS file is a widget property */
 }

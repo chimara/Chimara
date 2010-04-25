@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <fcntl.h>
 #include <string.h>
 #include "chimara-glk-private.h"
 #include "glk.h"
@@ -11,7 +10,7 @@
 extern GPrivate *glk_data_key;
 
 static gboolean style_accept(GScanner *scanner, GTokenType token);
-static gboolean style_accept_style_selector(GScanner *scanner);
+static gboolean style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk);
 static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
 static void style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table);
 static void style_table_copy(gpointer key, gpointer tag, gpointer target_table);
@@ -98,9 +97,6 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 	g_return_if_fail(buffer != NULL);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	if( G_UNLIKELY(!glk_data->style_initialized) ) {
-		style_init();
-	}
 
 	/* Copy the current text tags to the textbuffer's tag table */
 	g_hash_table_foreach(glk_data->current_styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
@@ -114,9 +110,6 @@ style_init_textgrid(GtkTextBuffer *buffer)
 	g_return_if_fail(buffer != NULL);
 	
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	if( G_UNLIKELY(!glk_data->style_initialized) ) {
-		style_init();
-	}
 
 	/* Copy the current text tags to the textgrid's tag table */
 	g_hash_table_foreach(glk_data->current_styles->text_grid, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
@@ -141,7 +134,7 @@ style_table_copy(gpointer key, gpointer tag, gpointer target_table)
 }
 
 /* Internal function that copies a text tag */
-GtkTextTag*
+GtkTextTag *
 gtk_text_tag_copy(GtkTextTag *tag)
 {
 	GtkTextTag *copy;
@@ -150,7 +143,7 @@ gtk_text_tag_copy(GtkTextTag *tag)
 
 	copy = gtk_text_tag_new(tag->name);
 	gtk_text_attributes_copy_values(tag->values, copy->values);
-
+	
 	#define _COPY_FLAG(flag) copy->flag = tag->flag
 		_COPY_FLAG (bg_color_set);
 		_COPY_FLAG (bg_color_set);
@@ -186,18 +179,22 @@ gtk_text_tag_copy(GtkTextTag *tag)
 
 /* Internal function that reads the default styles from a CSS file */
 void
-style_init()
+style_init(ChimaraGlk *glk)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	
 	GHashTable *default_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *default_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *current_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *current_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GtkTextTag *tag;
 
+	PangoFontDescription *default_font_desc = pango_font_description_from_string("Serif");
+	PangoFontDescription *monospace_font_desc = pango_font_description_from_string("Monospace");
+	
 	/* Initialise the default styles for a text grid */
 	tag = gtk_text_tag_new("normal");
-	g_object_set(tag, "font-desc", glk_data->monospace_font_desc, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
@@ -205,7 +202,7 @@ style_init()
 	g_hash_table_insert(default_text_grid_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
-	g_object_set(tag, "font-desc", glk_data->monospace_font_desc, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
@@ -238,7 +235,7 @@ style_init()
 
 	/* Tags for the textbuffer */
 	tag = gtk_text_tag_new("normal");
-	g_object_set(tag, "font-desc", glk_data->default_font_desc, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
@@ -246,7 +243,7 @@ style_init()
 	g_hash_table_insert(default_text_buffer_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
-	g_object_set(tag, "font-desc", glk_data->monospace_font_desc, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
@@ -281,45 +278,60 @@ style_init()
 	g_object_set(pager_tag, "foreground", "#ffffff", "background", "#000000", NULL);
 	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
 
-	glk_data->default_styles->text_grid = default_text_grid_styles;
-	glk_data->default_styles->text_buffer = default_text_buffer_styles;
-
-	/* Create the CSS file scanner */
-	GScanner *scanner = g_scanner_new(NULL);
-
-	if(glk_data->css_file != NULL) {
-		int f = open(glk_data->css_file, O_RDONLY);
-		if(f != -1)
-		{
-			g_scanner_input_file(scanner, f);
-			scanner->input_name = glk_data->css_file;
-			scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
-			scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
-			scanner->config->symbol_2_token = TRUE;
-			scanner->config->cpair_comment_single = NULL;
-			scanner->config->scan_float = FALSE;
-
-			/* Run the scanner over the CSS file, overriding defaults */
-			while( g_scanner_peek_next_token(scanner) != G_TOKEN_EOF) {
-				if( !style_accept_style_selector(scanner) )
-					break;
-			}
-
-			g_scanner_destroy(scanner);
-		}
-		else
-			g_warning("Could not find CSS file");
-	}
+	pango_font_description_free(default_font_desc);
+	pango_font_description_free(monospace_font_desc);
+	
+	priv->default_styles->text_grid = default_text_grid_styles;
+	priv->default_styles->text_buffer = default_text_buffer_styles;
+	priv->current_styles->text_grid = current_text_grid_styles;
+	priv->current_styles->text_buffer = current_text_buffer_styles;
 
 	/* Set the current style to a copy of the default style */
-	g_hash_table_foreach(default_text_grid_styles, style_table_copy, current_text_grid_styles);
-	g_hash_table_foreach(default_text_buffer_styles, style_table_copy, current_text_buffer_styles);
-	glk_data->current_styles->text_grid = current_text_grid_styles;
-	glk_data->current_styles->text_buffer = current_text_buffer_styles;
+	copy_default_styles_to_current_styles(glk);
 
-	text_tag_to_attr_list(pager_tag, glk_data->pager_attr_list);
+	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
+}
 
-	glk_data->style_initialized = TRUE;
+/* Reset style tables to the library's internal defaults */
+void
+reset_default_styles(ChimaraGlk *glk)
+{
+	/* TODO: write this function */
+}
+
+/* Copy the default styles to the current styles
+ FIXME: This function is temporary and will not be needed later on */
+void
+copy_default_styles_to_current_styles(ChimaraGlk *glk)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_hash_table_foreach(priv->default_styles->text_grid, style_table_copy, priv->current_styles->text_grid);
+	g_hash_table_foreach(priv->default_styles->text_buffer, style_table_copy, priv->current_styles->text_buffer);
+}
+
+/* Create the CSS file scanner */
+GScanner *
+create_css_file_scanner(void)
+{
+	GScanner *scanner = g_scanner_new(NULL);
+	scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
+	scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
+	scanner->config->symbol_2_token = TRUE;
+	scanner->config->cpair_comment_single = NULL;
+	scanner->config->scan_float = FALSE;
+	return scanner;
+}
+
+/* Run the scanner over the CSS file, overriding the default styles */
+void
+scan_css_file(GScanner *scanner, ChimaraGlk *glk)
+{
+	while( g_scanner_peek_next_token(scanner) != G_TOKEN_EOF) {
+		if( !style_accept_style_selector(scanner, glk) )
+			break;
+	}
+
+	g_scanner_destroy(scanner);
 }
 
 /* Internal function: parses a token */
@@ -327,19 +339,18 @@ static gboolean
 style_accept(GScanner *scanner, GTokenType token)
 {
 	GTokenType next = g_scanner_get_next_token(scanner);
-   	if(next	!= token ) {
+   	if(next	!= token) {
 		g_scanner_unexp_token(scanner, token, NULL, NULL, NULL, "CSS Error", 1);
 		return FALSE;
-	} else {
-		return TRUE;
 	}
+	return TRUE;
 }
 
 /* Internal function: parses a style selector */
 static gboolean
-style_accept_style_selector(GScanner *scanner)
+style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
 	GtkTextTag *current_tag;
 	gchar *field;
@@ -368,9 +379,9 @@ style_accept_style_selector(GScanner *scanner)
 	}
 
 	if( !strcmp(field, "buffer") )
-		current_tag = g_hash_table_lookup(glk_data->default_styles->text_buffer, value.v_identifier);
+		current_tag = g_hash_table_lookup(priv->default_styles->text_buffer, value.v_identifier);
 	else
-		current_tag = g_hash_table_lookup(glk_data->default_styles->text_grid, value.v_identifier);
+		current_tag = g_hash_table_lookup(priv->default_styles->text_grid, value.v_identifier);
 
 	if(current_tag == NULL) {
 		g_scanner_error(scanner, "CSS Error: invalid style identifier");
@@ -563,7 +574,7 @@ gdkcolor_to_glkcolor(GdkColor *color)
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
 static void
-apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
+apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 hint, glsi32 val)
 {
 	g_return_if_fail(tag != NULL);
 
@@ -616,7 +627,15 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 		break;
 
 	case stylehint_Proportional:
-		g_object_set(tag_object, "font-desc", val ? glk_data->default_font_desc : glk_data->monospace_font_desc, NULL);
+	{
+		gchar *font_family;
+		GtkTextTag *font_tag = g_hash_table_lookup(
+		    wintype == wintype_TextBuffer? glk_data->default_styles->text_buffer : glk_data->default_styles->text_grid,
+		    val? "normal" : "preformatted");
+		g_object_get(font_tag, "family", &font_family, NULL);
+		g_object_set(tag_object, "family", font_family, "family-set", TRUE, NULL);
+		g_free(font_family);
+	}
 		break;
 
 	case stylehint_TextColor:
@@ -670,12 +689,12 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 hint, glsi32 val)
 		WARNING("Unknown style hint");
 	}
 }
-/*Internal function: queries a text tag for the value of a given style hint */
+
+/* Internal function: queries a text tag for the value of a given style hint */
 static gint
-query_tag(GtkTextTag *tag, glui32 hint)
+query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 {
 	gint intval;
-	GObject *objval;
 	GdkColor *colval;
 
 	g_return_val_if_fail(tag != NULL, 0);
@@ -686,64 +705,65 @@ query_tag(GtkTextTag *tag, glui32 hint)
 	case stylehint_Indentation:
 		g_object_get(tag, "left_margin", &intval, NULL);
 		return intval/5;
-		break;
 	
 	case stylehint_ParaIndentation:
 		g_object_get(tag, "indent", &intval, NULL);
 		return intval/5;
-		break;
 
 	case stylehint_Justification:
 		g_object_get(tag, "justification", &intval, NULL);
 		switch(intval) {
-			case GTK_JUSTIFY_LEFT: return stylehint_just_LeftFlush; break;
-			case GTK_JUSTIFY_FILL: return stylehint_just_LeftRight; break;
-			case GTK_JUSTIFY_CENTER: return stylehint_just_Centered; break;
-			case GTK_JUSTIFY_RIGHT: return stylehint_just_RightFlush; break;
+			case GTK_JUSTIFY_LEFT: return stylehint_just_LeftFlush;
+			case GTK_JUSTIFY_FILL: return stylehint_just_LeftRight;
+			case GTK_JUSTIFY_CENTER: return stylehint_just_Centered;
+			case GTK_JUSTIFY_RIGHT: return stylehint_just_RightFlush;
 			default: 
 				WARNING("Unknown justification");
 				return stylehint_just_LeftFlush;
 		}
-		break;
 
 	case stylehint_Weight:
 		g_object_get(tag, "weight", &intval, NULL);
 		switch(intval) {
-			case PANGO_WEIGHT_LIGHT: return -1; break;
-			case PANGO_WEIGHT_NORMAL: return 0; break;
-			case PANGO_WEIGHT_BOLD: return 1; break;
+			case PANGO_WEIGHT_LIGHT: return -1;
+			case PANGO_WEIGHT_NORMAL: return 0;
+			case PANGO_WEIGHT_BOLD: return 1;
 			default: WARNING("Unknown font weight"); return 0;
 		}
-		break;
 
 	case stylehint_Size:
 		g_object_get(tag, "size", &intval, NULL);
 		return (intval/2)-14;
-		break;
 
 	case stylehint_Oblique:
 		g_object_get(tag, "style", &intval , NULL);
 		return intval == PANGO_STYLE_ITALIC ? 1 : 0;
-		break;
 
 	case stylehint_Proportional:
-		g_object_get(tag, "font-desc", &objval, NULL);
-		return objval == (GObject *)glk_data->monospace_font_desc ? 0 : 1;
-		break;
+		/* Use pango_font_family_is_monospace()? */
+	{
+		gchar *font_family, *query_font_family;
+		GtkTextTag *font_tag = g_hash_table_lookup(
+		    wintype == wintype_TextBuffer? glk_data->default_styles->text_buffer : glk_data->default_styles->text_grid,
+		    "preformatted");
+		g_object_get(font_tag, "family", &font_family, NULL);
+		g_object_get(tag, "family", &query_font_family, NULL);
+		gint retval = strcmp(font_family, query_font_family)? 0 : 1;
+		g_free(font_family);
+		g_free(query_font_family);
+		return retval;
+	}
 
 	case stylehint_TextColor:
 		g_object_get(tag, "foreground-gdk", &colval, NULL);
 		return gdkcolor_to_glkcolor(colval);
-		break;
 
 	case stylehint_BackColor:
 		g_object_get(tag, "background-gdk", &colval, NULL);
 		return gdkcolor_to_glkcolor(colval);
-		break;
 
 	case stylehint_ReverseColor:
 		return GPOINTER_TO_INT( g_object_get_data(G_OBJECT(tag), "reverse_color") );
-		break;
 
 	default:
 		WARNING("Unknown style hint");
@@ -772,19 +792,15 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	if( G_UNLIKELY(!glk_data->style_initialized) ) {
-		style_init();
-	}
-
 	GtkTextTag *to_change;
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
 		to_change = g_hash_table_lookup( glk_data->current_styles->text_buffer, get_tag_name(styl) );
-		apply_stylehint_to_tag(to_change, hint, val);
+		apply_stylehint_to_tag(to_change, wintype_TextBuffer, hint, val);
 	}
 
 	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
 		to_change = g_hash_table_lookup( glk_data->current_styles->text_grid, get_tag_name(styl) );
-		apply_stylehint_to_tag(to_change, hint, val);
+		apply_stylehint_to_tag(to_change, wintype_TextGrid, hint, val);
 	}
 }
 
@@ -811,11 +827,11 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 	switch(wintype) {
 	case wintype_TextBuffer:
 		tag = g_hash_table_lookup( glk_data->default_styles->text_buffer, get_tag_name(styl) );
-		glk_stylehint_set( wintype, styl, hint, query_tag(tag, hint) );
+		glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
 		break;
 	case wintype_TextGrid:
 		tag = g_hash_table_lookup( glk_data->default_styles->text_grid, get_tag_name(styl) );
-		glk_stylehint_set( wintype, styl, hint, query_tag(tag, hint) );
+		glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
 	default:
 		return;
 	}
@@ -825,7 +841,7 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
  * glk_style_distinguish:
  * @win: The window in which the styles are to be distinguished.
  * @styl1: The first style to be distinguished from the second style.
- * @styl2: The second styel to be distinguished from the first style.
+ * @styl2: The second style to be distinguished from the first style.
  * 
  * Returns: TRUE if the two styles are visually distinguishable in the given window.
  * If they are not, it returns FALSE.
@@ -844,7 +860,7 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
  * @result: Address to write the result to.
  * 
  * This function can be used to query the current value of a particular style hint.
- * Returns: TRUE upon successul retrievel, otherwise FALSE.
+ * Returns: TRUE upon successul retrieval, otherwise FALSE.
  */
 glui32
 glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
@@ -855,11 +871,11 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 	switch(win->type) {
 	case wintype_TextBuffer:
 		tag = g_hash_table_lookup( glk_data->current_styles->text_buffer, get_tag_name(styl) );
-		*result = query_tag(tag, hint);
+		*result = query_tag(tag, win->type, hint);
 		break;
 	case wintype_TextGrid:
 		tag = g_hash_table_lookup( glk_data->current_styles->text_grid, get_tag_name(styl) );
-		*result = query_tag(tag, hint);
+		*result = query_tag(tag, win->type, hint);
 	default:
 		return FALSE;
 	}
@@ -870,15 +886,11 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 /* Internal function returning the current default font for a window type
  * This can be used later for size calculations. Only wintype_TextGrid and wintype_TextBuffer are
  * supported for now */
-PangoFontDescription*
+PangoFontDescription *
 get_current_font(guint32 wintype)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GtkTextTag *normal;
-
-	if( G_UNLIKELY(!glk_data->style_initialized) ) {
-		style_init();
-	}
 
 	switch(wintype) {
 	case wintype_TextGrid:
