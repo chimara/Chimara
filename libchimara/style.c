@@ -22,9 +22,9 @@ GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
  * @styl: The style to apply
  *
  * Changes the style of the current output stream. @styl should be one of the
- * <code>style_</code> constants listed above. However, any value is actually
- * legal; if the interpreter does not recognize the style value, it will treat
- * it as %style_Normal.
+ * <code>style_</code> constants. However, any value is actually legal; if the 
+ * interpreter does not recognize the style value, it will treat it as 
+ * %style_Normal.
  * <note><para>
  *  This policy allows for the future definition of styles without breaking old
  *  Glk libraries.
@@ -780,7 +780,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
  * @val: The style hint. The meaning of this depends on @hint.
  *
  * Sets a hint about the appearance of one style for a particular type of 
- * window. You can also set wintype to %wintype_AllTypes, which sets a hint for 
+ * window. You can also set @wintype to %wintype_AllTypes, which sets a hint for 
  * all types of window.
  * <note><para>
  *  There is no equivalent constant to set a hint for all styles of a single 
@@ -810,9 +810,9 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
  * @styl: The style to set a hint for.
  * @hint: The type of style hint, one of the <code>stylehint_</code> constants.
  *
- * Resets a hint about the appearance of one style for a particular type of 
- * window to it's default value. You can also set wintype to %wintype_AllTypes, which resets a hint for 
- * all types of window.
+ * Clears a hint about the appearance of one style for a particular type of 
+ * window to its default value. You can also set @wintype to %wintype_AllTypes, 
+ * which clears a hint for all types of window.
  * <note><para>
  *  There is no equivalent constant to reset a hint for all styles of a single 
  *  window type.
@@ -843,12 +843,20 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
  * @styl1: The first style to be distinguished from the second style.
  * @styl2: The second style to be distinguished from the first style.
  * 
- * Returns: TRUE if the two styles are visually distinguishable in the given window.
- * If they are not, it returns FALSE.
+ * Decides whether two styles are visually distinguishable in the given window.
+ * The exact meaning of this is left for the library to determine.
+ * <note><title>Chimara</title><para>
+ *   Currently, all styles of one window are assumed to be mutually
+ *   distinguishable.
+ * </para></note>
+ * 
+ * Returns: %TRUE (1) if the two styles are visually distinguishable. If they 
+ * are not, it returns %FALSE (0).
  */
 glui32
 glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
 {
+	/* FIXME */
 	return styl1 != styl2;
 }
 
@@ -859,7 +867,66 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
  * @hint: The stylehint to measure.
  * @result: Address to write the result to.
  * 
- * This function can be used to query the current value of a particular style hint.
+ * Tries to test an attribute of one style in the given window @win. The library
+ * may not be able to determine the attribute; if not, this returns %FALSE (0).
+ * If it can, it returns %TRUE (1) and stores the value in the location pointed
+ * at by @result. 
+ * <note><para>
+ *   As usual, it is legal for @result to be %NULL, although fairly pointless.
+ * </para></note>
+ *
+ * The meaning of the value depends on the hint which was tested:
+ * <variablelist>
+ * <varlistentry>
+ *   <term>%stylehint_Indentation, %stylehint_ParaIndentation</term>
+ *   <listitem><para>The indentation and paragraph indentation. These are in a
+ *   metric which is platform-dependent.</para>
+ *   <note><para>Most likely either characters or pixels.</para></note>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_Justification</term>
+ *   <listitem><para>One of the constants %stylehint_just_LeftFlush,
+ *   %stylehint_just_LeftRight, %stylehint_just_Centered, or
+ *   %stylehint_just_RightFlush.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_Size</term>
+ *   <listitem><para>The font size. Again, this is in a platform-dependent
+ *   metric.</para>
+ *   <note><para>Pixels, points, or simply 1 if the library does not support
+ *   varying font sizes.</para></note>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_Weight</term>
+ *   <listitem><para>1 for heavy-weight fonts (boldface), 0 for normal weight,
+ *   and -1 for light-weight fonts.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_Oblique</term>
+ *   <listitem><para>1 for oblique fonts (italic), or 0 for normal angle.</para>
+ *   </listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_Proportional</term>
+ *   <listitem><para>1 for proportional-width fonts, or 0 for fixed-width.
+ *   </para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_TextColor, %stylehint_BackColor</term>
+ *   <listitem><para>These are values from 0x00000000 to 0x00FFFFFF, encoded as
+ *   described in <link 
+ *   linkend="chimara-Suggesting-the-Appearance-of-Styles">Suggesting the
+ *   Appearance of Styles</link>.</para></listitem>
+ * </varlistentry>
+ * <varlistentry>
+ *   <term>%stylehint_ReverseColor</term>
+ *   <listitem><para>0 for normal printing, 1 if the foreground and background
+ *   colors are reversed.</para></listitem>
+ * </varlistentry>
+ * </variablelist>
+ * 
  * Returns: TRUE upon successul retrieval, otherwise FALSE.
  */
 glui32
@@ -871,11 +938,13 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 	switch(win->type) {
 	case wintype_TextBuffer:
 		tag = g_hash_table_lookup( glk_data->current_styles->text_buffer, get_tag_name(styl) );
-		*result = query_tag(tag, win->type, hint);
+		if(result)
+			*result = query_tag(tag, win->type, hint);
 		break;
 	case wintype_TextGrid:
 		tag = g_hash_table_lookup( glk_data->current_styles->text_grid, get_tag_name(styl) );
-		*result = query_tag(tag, win->type, hint);
+		if(result)
+			*result = query_tag(tag, win->type, hint);
 	default:
 		return FALSE;
 	}

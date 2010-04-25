@@ -862,6 +862,9 @@ chimara_glk_get_protect(ChimaraGlk *glk)
  * @glk: a #ChimaraGlk widget
  *
  * Resets the styles for text buffer and text grid windows to their defaults.
+ * <para><warning>
+ *   This function is not implemented yet.
+ * </warning></para>
  */
 void
 chimara_glk_set_css_to_default(ChimaraGlk *glk)
@@ -920,10 +923,10 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
  * @glk: a #ChimaraGlk widget
  * @filename: a string containing CSS code
  *
- * Sets the styles for text buffer and text grid windows according to @css. Note
- * that the styles are set cumulatively on top of whatever the styles are at the
- * time this function is called; to reset the styles to their defaults, use 
- * chimara_glk_set_css_to_default().
+ * Sets the styles for text buffer and text grid windows according to the CSS
+ * code @css. Note that the styles are set cumulatively on top of whatever the 
+ * styles are at the time this function is called; to reset the styles to their
+ * defaults, use chimara_glk_set_css_to_default().
  */
 void 
 chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css)

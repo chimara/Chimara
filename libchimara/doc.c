@@ -761,6 +761,29 @@
  */
 
 /**
+ * SECTION:glk-style-measure
+ * @short_description: Finding out how the library displays your style hints
+ * @include: libchimara/glk.h
+ *
+ * You can suggest the appearance of a window's style before the window is
+ * created; after the window is created, you can test the style's actual
+ * appearance. These functions do not test the style hints; they test the
+ * attribute of the style as it appears to the player.
+ *
+ * Note that although you cannot change the appearance of a window's styles
+ * after the window is created, the library can. A platform may support dynamic
+ * preferences, which allow the player to change text formatting while your
+ * program is running.
+ * <note><para>
+ *   Changes that affect window size (such as font size changes) will be
+ *   signalled by an %evtype_Arrange event. However, more subtle changes (such
+ *   as text color differences) are not signalled. If you test the appearance of
+ *   styles at the beginning of your program, you must keep in mind the
+ *   possibility that the player will change them later.
+ * </para></note>
+ */
+
+/**
  * SECTION:glk-stream-types
  * @short_description: Window, memory, and file streams
  * @include: libchimara/glk.h
@@ -965,6 +988,21 @@
  * or bottom.
  * 
  * There are a few other commands which apply to graphics windows.
+ */
+
+/**
+ * SECTION:glk-graphics-text
+ * @short_description: Drawing graphics inside or beside text
+ * @include: libchimara/glk.h
+ *
+ * A text buffer is a linear text stream. You can draw images in-line with this
+ * text. If you are familiar with HTML, you already understand this model. You
+ * draw images with flags indicating alignment. The library takes care of
+ * scrolling, resizing, and reformatting text buffer windows.
+ *
+ * If you call glk_image_draw() or glk_image_draw_scaled() in a text buffer
+ * window, @val1 gives the image alignment. The @val2 argument is currently
+ * unused, and should always be zero.
  */
 
 /**
@@ -2490,6 +2528,28 @@
  * A value for %stylehint_Justification representing right-justified text.
  */
 
+/**
+ * imagealign_InlineUp:
+ *
+ * The image appears at the current point in the text, sticking up. That is, the
+ * bottom edge of the image is aligned with the baseline of the line of text.
+ */
+
+/**
+ * imagealign_InlineDown:
+ *
+ * The image appears at the current point, and the top edge is aligned with the
+ * top of the line of text.
+ */
+
+/**
+ * imagealign_InlineCenter:
+ *
+ * The image appears at the current point, and it is centered between the top
+ * and baseline of the line of text. If the image is taller than the line of
+ * text, it will stick up and down equally.
+ */
+ 
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_DISPA.H ------------------*/
 
 /**

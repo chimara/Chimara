@@ -279,8 +279,7 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 *
 	 * Emitted once for each input-response cycle of an interactive fiction
 	 * game. Note that games with nontraditional input systems (i.e. not all
-	 * taking place in the same text buffer window) may throw this signal for a
-	 * loop.
+	 * taking place in the same text buffer window) may confuse this signal.
 	 */
 	chimara_if_signals[COMMAND] = g_signal_new("command",
 		G_OBJECT_CLASS_TYPE(klass), 0,
