@@ -122,8 +122,8 @@ glk_exit(void)
  *   loop, this is critical. In a C program, you can often eyeball it.
  *   </para>
  *   <para>But the next version of <filename>model.c</filename> will have a
- *   glk_tick() in the ornate printing loop of <function>verb_yada()</function>.
- *   Just to make the point.
+ *   glk_tick() in the ornate printing loop of 
+ *   <function>verb_yada&lpar;&rpar;</function>. Just to make the point.
  *   </para>
  * </note>
  */

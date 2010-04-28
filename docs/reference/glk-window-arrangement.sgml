@@ -30,7 +30,7 @@ Now you have two windows. In exactly the same way, you can split either of them 
 You can repeat this as often as you want. Every time you split a window, one new window is created. Therefore, the call that does this is called glk_window_open().
 </para>
 <note><para>
-It might have been less confusing to call it <quote>glk_split_window()</quote> &mdash; or it might have been more confusing. I picked one.
+It might have been less confusing to call it <quote>glk_split_window&lpar;&rpar;</quote> &mdash; or it might have been more confusing. I picked one.
 </para></note>
 <para>
 It is important to remember that the order of splitting matters. If you split twice, you don't have a trio of windows; you have a pair with another pair on one side. Mathematically, the window structure is a binary tree.

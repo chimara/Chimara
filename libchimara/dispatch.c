@@ -27,15 +27,15 @@ extern GPrivate *glk_data_key;
  * actually executing VM code.) You pass in two function pointers, matching the
  * following prototypes:
  * |[
- * #gidispatch_rock_t my_vm_reg_object(void *obj, #glui32 objclass);
- * void my_vm_unreg_object(void *obj, #glui32 objclass, #gidispatch_rock_t objrock);
+ * gidispatch_rock_t my_vm_reg_object(void *obj, glui32 objclass);
+ * void my_vm_unreg_object(void *obj, glui32 objclass, gidispatch_rock_t objrock);
  * ]|
  * 
- * Whenever the Glk library creates an object, it will call my_vm_reg_object(). 
- * It will pass the object pointer and the class number (from 0 to
- * <inlineequation><mathphrase>N - 1</mathphrase><alt>N - 
- * 1</alt></inlineequation>, where N is the value returned by
- * gidispatch_count_classes().)
+ * Whenever the Glk library creates an object, it will call 
+ * <function>my_vm_reg_object&lpar;&rpar;</function>. It will pass the object
+ * pointer and the class number (from 0 to <inlineequation><mathphrase>N - 
+ * 1</mathphrase><alt>N - 1</alt></inlineequation>, where N is the value 
+ * returned by gidispatch_count_classes().)
  * 
  * You can return any value in the #gidispatch_rock_t object; the library will
  * stash this away inside the object.
@@ -46,8 +46,8 @@ extern GPrivate *glk_data_key;
  * </para></note>
  * 
  * Whenever the Glk library destroys an object, it will call
- * my_vm_unreg_object(). It passes you the object pointer, class number, and the
- * object rock.
+ * <function>my_vm_unreg_object&lpar;&rpar;</function>. It passes you the object
+ * pointer, class number, and the object rock.
  *
  * One significant detail: It is possible that some Glk objects will already
  * exist when your glk_main() function is called.
@@ -58,8 +58,8 @@ extern GPrivate *glk_data_key;
  * </para></note>
  * 
  * So when you call gidispatch_set_object_registry(), it may immediately call
- * your my_vm_reg_object() callback, notifying you of the existing objects. You
- * must be prepared for this possibility.
+ * your <function>my_vm_reg_object&lpar;&rpar;</function> callback, notifying 
+ * you of the existing objects. You must be prepared for this possibility.
  * 
  * <note><para>
  *   If you are keeping hash tables, for example, create them before you call
@@ -144,17 +144,17 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  * 
  * Again, you pass in two function pointers:
  * |[
- * #gidispatch_rock_t my_vm_reg_array(void *array, #glui32 len, char *typecode);
- * void my_vm_unreg_array(void *array, #glui32 len, char *typecode, #gidispatch_rock_t objrock);
+ * gidispatch_rock_t my_vm_reg_array(void *array, glui32 len, char *typecode);
+ * void my_vm_unreg_array(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
  * ]|
  *
- * Whenever a Glk function retains an array, it will call my_vm_reg_array().
- * This occurs only if you pass an array to an argument with the
- * <code>"#!"</code> prefix.
+ * Whenever a Glk function retains an array, it will call 
+ * <function>my_vm_reg_array&lpar;&rpar;</function>. This occurs only if you 
+ * pass an array to an argument with the <code>"#!"</code> prefix.
  *
  * <note><para>
- *   But not in every such case. Wait for the my_vm_reg_array() call to confirm
- *   it.
+ *   But not in every such case. Wait for the
+ *   <function>my_vm_reg_array&lpar;&rpar;</function> call to confirm it.
  * </para></note>
  *
  * The library passes the array and its length, exactly as you put them in the
@@ -172,9 +172,9 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  * stash this away with the array.
  * 
  * When a Glk function releases a retained array, it will call
- * my_vm_unreg_array(). It passes back the same @array, @len, and @typecode
- * parameters, as well as the #gidispatch_rock_t you returned from
- * my_vm_reg_array().
+ * <function>my_vm_unreg_array&lpar;&rpar;</function>. It passes back the same
+ * @array, @len, and @typecode parameters, as well as the #gidispatch_rock_t you
+ * returned from <function>my_vm_reg_array&lpar;&rpar;</function>.
  * 
  * With these callbacks, you can maintain a collection of retained arrays. You
  * can use this to copy data from C arrays to your own data structures, or keep

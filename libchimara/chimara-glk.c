@@ -714,7 +714,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      *
      * Sets whether the widget is interactive. A Glk widget is normally 
      * interactive, but in non-interactive mode, keyboard and mouse input are 
-     * ignored and the Glk program is controlled by chimara_glk_feed_text(). 
+     * ignored and the Glk program is controlled by 
+     * chimara_glk_feed_char_input() and chimara_glk_feed_line_input(). 
      * <quote>More</quote> prompts when a lot of text is printed to a text 
 	 * buffer are also disabled. This is typically used when you wish to control
 	 * an interpreter program by feeding it a predefined list of commands.
@@ -876,8 +877,8 @@ chimara_glk_set_css_to_default(ChimaraGlk *glk)
  * chimara_glk_set_css_from_file:
  * @glk: a #ChimaraGlk widget
  * @filename: path to a CSS file, or %NULL
- * @error: location to store a <link linkend="glib-GError">GError</link>, or 
- * %NULL
+ * @error: location to store a <link 
+ * linkend="glib-Error-Reporting">GError</link>, or %NULL
  *
  * Sets the styles for text buffer and text grid windows according to the CSS
  * file @filename. Note that the styles are set cumulatively on top of whatever
@@ -921,7 +922,7 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 /**
  * chimara_glk_set_css_from_string:
  * @glk: a #ChimaraGlk widget
- * @filename: a string containing CSS code
+ * @css: a string containing CSS code
  *
  * Sets the styles for text buffer and text grid windows according to the CSS
  * code @css. Note that the styles are set cumulatively on top of whatever the 
@@ -1031,8 +1032,8 @@ glk_enter(struct StartupData *startup)
  * class="header">glk.h</filename>
  * @argc: Number of command line arguments in @argv
  * @argv: Array of command line arguments to pass to the plugin
- * @error: location to store a <link linkend="glib-GError">GError</link>, or 
- * %NULL
+ * @error: location to store a <link 
+ * linkend="glib-Error-Reporting">GError</link>, or %NULL
  *
  * Opens a Glk program compiled as a plugin. Sorts out its command line
  * arguments from #glkunix_arguments, calls its startup function

@@ -157,7 +157,7 @@
  * This is how you deal with opaque objects from a C program. If you are using
  * Glk through a virtual machine, matters will probably be different. Opaque
  * objects may be represented as integers, or as VM objects of some sort.
- * </para></note>
+ * </para></note></para>
  * <refsect2 id="chimara-Rocks"><!-- Indeed it does. -->
  * <title>Rocks</title>
  * <para>
@@ -177,7 +177,7 @@
  * For each class of opaque objects, there is an iterate function, which you can
  * use to obtain a list of all existing objects of that class. It takes the form
  * |[
- * <replaceable>CLASS</replaceable>id_t glk_<replaceable>CLASS</replaceable>_iterate(<replaceable>CLASS</replaceable>id_t <parameter>obj</parameter>, #glui32 *<parameter>rockptr</parameter>);
+ * CLASSid_t glk_CLASS_iterate(CLASSid_t obj, glui32 *rockptr);
  * ]|
  * ...where <code><replaceable>CLASS</replaceable></code> represents one of the
  * opaque object classes. 
@@ -203,10 +203,10 @@
  * <para>
  * You usually use this as follows:
  * |[
- * obj = glk_<replaceable>CLASS</replaceable>_iterate(NULL, NULL);
+ * obj = glk_CLASS_iterate(NULL, NULL);
  * while (obj) {
  *    /* ...do something with obj... *<!-- -->/
- *    obj = glk_<replaceable>CLASS</replaceable>_iterate(obj, NULL);
+ *    obj = glk_CLASS_iterate(obj, NULL);
  * }
  * ]|
  * </para>
@@ -1157,12 +1157,13 @@
  * GlkTerm. 
  *
  * When you compile a Glk program, you may define a function called 
- * glkunix_startup_code(), and an array <code>glkunix_arguments[]</code>. These
- * set up various Unix-specific options used by the Glk library. There is a
- * sample <quote><filename>glkstart.c</filename></quote> file included in this 
- * package; you should modify it to your needs.
+ * <function>glkunix_startup_code&lpar;&rpar;</function>, and an array 
+ * <code>glkunix_arguments[]</code>. These set up various Unix-specific options
+ * used by the Glk library. There is a sample 
+ * <quote><filename>glkstart.c</filename></quote> file included in this package;
+ * you should modify it to your needs.
  * 
- * |[ extern #glkunix_argumentlist_t glkunix_arguments[]; ]|
+ * |[ extern glkunix_argumentlist_t glkunix_arguments[]; ]|
  *  
  * The <code>glkunix_arguments[]</code> array is a list of command-line 
  * arguments that your program can accept. The library will sort these out of 
@@ -1267,8 +1268,8 @@
  * For an example of the gestalt mechanism, consider the selector
  * %gestalt_Version. If you do
  * |[
- * #glui32 res;
- * res = #glk_gestalt(#gestalt_Version, 0);
+ * glui32 res;
+ * res = glk_gestalt(gestalt_Version, 0);
  * ]|
  * <code>res</code> will be set to a 32-bit number which encodes the version of
  * the Glk spec which the library implements. The upper 16 bits stores the major
@@ -1283,8 +1284,8 @@
  * 0x00000700.
  *
  * |[
- * #glui32 res;
- * res = #glk_gestalt_ext(#gestalt_Version, 0, NULL, 0);
+ * glui32 res;
+ * res = glk_gestalt_ext(gestalt_Version, 0, NULL, 0);
  * ]|
  * does exactly the same thing. Note that, in either case, the second argument 
  * is not used; so you should always pass 0 to avoid future surprises.
@@ -1296,8 +1297,8 @@
  * If you set <code>ch</code> to a character code, or a special code (from
  * 0xFFFFFFFF down), and call
  * |[
- * #glui32 res;
- * res = #glk_gestalt(#gestalt_CharInput, ch);
+ * glui32 res;
+ * res = glk_gestalt(gestalt_CharInput, ch);
  * ]|
  * then <code>res</code> will be %TRUE (1) if that character can be typed by
  * the player in character input, and %FALSE (0) if not. See <link
@@ -1309,8 +1310,8 @@
  *
  * If you set <code>ch</code> to a character code, and call
  * |[
- * #glui32 res;
- * res = #glk_gestalt(#gestalt_LineInput, ch);
+ * glui32 res;
+ * res = glk_gestalt(gestalt_LineInput, ch);
  * ]|
  * then <code>res</code> will be %TRUE (1) if that character can be typed by the
  * player in line input, and %FALSE (0) if not. Note that if <code>ch</code> is 
@@ -1324,8 +1325,8 @@
  *
  * If you set <code>ch</code> to a character code (Latin-1 or higher), and call
  * |[
- * #glui32 res, len;
- * res = #glk_gestalt_ext(#gestalt_CharOutput, ch, &amp;len, 1);
+ * glui32 res, len;
+ * res = glk_gestalt_ext(gestalt_CharOutput, ch, &amp;len, 1);
  * ]|
  * then <code>res</code> will be one of %gestalt_CharOutput_CannotPrint,
  * %gestalt_CharOutput_ExactPrint, or %gestalt_CharOutput_ApproxPrint (see 
@@ -1353,11 +1354,11 @@
  *   Make sure you do not get confused by signed byte values. If you set a
  *   <quote><type>char</type></quote> variable <code>ch</code> to 0xFE, the 
  *   small-thorn character (&thorn;), and then call
- *   |[ res = #glk_gestalt(#gestalt_CharOutput, ch); ]|
+ *   |[ res = glk_gestalt(gestalt_CharOutput, ch); ]|
  *   then (by the definition of C/C++) <code>ch</code> will be sign-extended to
  *   0xFFFFFFFE, which is not a legitimate character, even in Unicode. You 
  *   should write
- *   |[ res = #glk_gestalt(#gestalt_CharOutput, (unsigned char)ch); ]|
+ *   |[ res = glk_gestalt(gestalt_CharOutput, (unsigned char)ch); ]|
  *   instead.
  * </para></note>
  * <note><para>
@@ -1415,7 +1416,7 @@
  * gestalt_Timer:
  *
  * You can test whether the library supports timer events:
- * |[ res = #glk_gestalt(#gestalt_Timer, 0); ]|
+ * |[ res = glk_gestalt(gestalt_Timer, 0); ]|
  * This returns 1 if timer events are supported, and 0 if they are not.
  */
 
@@ -1425,8 +1426,8 @@
  * Before calling Glk graphics functions, you should use the following gestalt
  * selector:
  * |[
- *     glui32 res;
- *     res = glk_gestalt(gestalt_Graphics, 0);
+ * glui32 res;
+ * res = glk_gestalt(gestalt_Graphics, 0);
  * ]|
  * This returns 1 if the overall suite of graphics functions is available. This
  * includes glk_image_draw(), glk_image_draw_scaled(), glk_image_get_info(),
@@ -1453,8 +1454,8 @@
  *
  * You can test whether the library supports hyperlinks:
  * |[ 
- * #glui32 res;
- * res = #glk_gestalt(#gestalt_Hyperlinks, 0); 
+ * glui32 res;
+ * res = glk_gestalt(gestalt_Hyperlinks, 0); 
  * ]|
  * This returns 1 if the overall suite of hyperlinks functions is available.
  * This includes glk_set_hyperlink(), glk_set_hyperlink_stream(),
@@ -1469,7 +1470,7 @@
  *
  * You can test whether hyperlinks are supported with the 
  * %gestalt_HyperlinkInput selector:
- * |[ res = #glk_gestalt(#gestalt_HyperlinkInput, windowtype); ]|
+ * |[ res = glk_gestalt(gestalt_HyperlinkInput, windowtype); ]|
  * This will return %TRUE (1) if windows of the given type support hyperlinks.
  * If this returns %FALSE (0), it is still legal to call glk_set_hyperlink() and
  * glk_request_hyperlink_event(), but they will have no effect, and you will
@@ -1497,7 +1498,7 @@
  * the following gestalt selector:
  * |[
  * glui32 res;
- * res = #glk_gestalt(#gestalt_Unicode, 0);
+ * res = glk_gestalt(gestalt_Unicode, 0);
  * ]|
  * 
  * This returns 1 if the Unicode functions are available. If it returns 0, you
@@ -1671,7 +1672,7 @@
  * events, this is platform-dependent. See %evtype_Arrange.
  *
  * For more about redraw events and how they affect graphics windows, see <link
- * linkend="chimara-Graphics-Windows">Graphics Windows</link>.
+ * linkend="wintype-Graphics">Graphics Windows</link>.
  */
 
 /**
@@ -1865,8 +1866,8 @@
  * This value is equal to the number of special keycodes. The last keycode is
  * always 
  * <inlineequation>
- *   <alt>(0x100000000 - <keysym>keycode_MAXVAL</keysym>)</alt>
- *   <mathphrase>(0x100000000 - <keysym>keycode_MAXVAL</keysym>)</mathphrase>
+ *   <alt>(0x100000000 - <code><keysym>keycode_MAXVAL</keysym></code>)</alt>
+ *   <mathphrase>(0x100000000 - <code><keysym>keycode_MAXVAL</keysym></code>)</mathphrase>
  * </inlineequation>
  * .
  */
@@ -2687,69 +2688,70 @@
  * For example, consider a hypothetical function, with selector 
  * <code>0xABCD</code>:
  * |[ 
- * void glk_glomp(#glui32 num, #winid_t win, #glui32 *numref, #strid_t *strref);
+ * void glk_glomp(glui32 num, winid_t win, glui32 *numref, strid_t *strref);
  * ]|
  * ...and the calls:
  * |[
- * #glui32 value;
- * #winid_t mainwin;
- * #strid_t gamefile;
+ * glui32 value;
+ * winid_t mainwin;
+ * strid_t gamefile;
  * glk_glomp(5, mainwin, &value, &gamefile);
  * ]|
  *
  * To perform this through gidispatch_call(), you would do the following:
  * |[
- * #gluniversal_t arglist[6];
+ * gluniversal_t arglist[6];
  * arglist[0].uint = 5;
  * arglist[1].opaqueref = mainwin;
  * arglist[2].ptrflag = TRUE;
  * arglist[3].uint = value;
  * arglist[4].ptrflag = TRUE;
  * arglist[5].opaqueref = gamefile;
- * #gidispatch_call(0xABCD, 6, arglist);
+ * gidispatch_call(0xABCD, 6, arglist);
  * value = arglist[3].uint;
  * gamefile = arglist[5].opaqueref;
  * ]|
  * 
  * Note that you copy the value of the reference arguments into and out of
- * @arglist. Of course, it may be that glk_glomp() only uses these as pass-out
+ * @arglist. Of course, it may be that 
+ * <function>glk_glomp&lpar;&rpar;</function> only uses these as pass-out
  * references or pass-in references; if so, you could skip copying in or out.
  *
  * For further examples:
  * |[
  * glk_glomp(7, mainwin, NULL, NULL);
  * ...or...
- * #gluniversal_t arglist[4];
+ * gluniversal_t arglist[4];
  * arglist[0].uint = 7;
  * arglist[1].opaqueref = mainwin;
  * arglist[2].ptrflag = FALSE;
  * arglist[3].ptrflag = FALSE;
- * #gidispatch_call(0xABCD, 4, arglist);
+ * gidispatch_call(0xABCD, 4, arglist);
  * ]|
  *
  * |[
  * glk_glomp(13, NULL, NULL, &gamefile);
  * ...or...
- * #gluniversal_t arglist[5];
+ * gluniversal_t arglist[5];
  * arglist[0].uint = 13;
  * arglist[1].opaqueref = NULL;
  * arglist[2].ptrflag = FALSE;
  * arglist[3].ptrflag = TRUE;
  * arglist[4].opaqueref = gamefile;
- * #gidispatch_call(0xABCD, 5, arglist);
+ * gidispatch_call(0xABCD, 5, arglist);
  * gamefile = arglist[4].opaqueref;
  * ]|
  *
  * |[
  * glk_glomp(17, NULL, &value, NULL);
  * ...or...
- * #gluniversal_t arglist[5];
+ * gluniversal_t arglist[5];
  * arglist[0].uint = 17;
  * arglist[1].opaqueref = NULL;
  * arglist[2].ptrflag = TRUE;
  * arglist[3].uint = value;
  * arglist[4].ptrflag = FALSE;
- * #gidispatch_call(0xABCD, 5, arglist);
+ * gidispatch_call(0xABCD, 5, arglist);
  * value = arglist[3].uint;
  * ]|
  * 
@@ -2765,10 +2767,10 @@
  * 
  * For example, the function glk_select() can be invoked as follows:
  * |[
- * #event_t ev;
- * #gluniversal_t arglist[5];
+ * event_t ev;
+ * gluniversal_t arglist[5];
  * arglist[0].ptrflag = TRUE;
- * #gidispatch_call(0x00C0, 5, arglist);
+ * gidispatch_call(0x00C0, 5, arglist);
  * ev.type = arglist[1].uint;
  * ev.win = arglist[2].opaqueref;
  * ev.val1 = arglist[3].uint;
@@ -2796,15 +2798,15 @@
  * 
  * For example, the function glk_put_buffer() can be invoked as follows:
  * |[
- * #char buf[64];
- * #glui32 len = 64;
- * #glk_put_buffer(buf, len);
+ * char buf[64];
+ * glui32 len = 64;
+ * glk_put_buffer(buf, len);
  * ...or...
- * #gluniversal_t arglist[3];
+ * gluniversal_t arglist[3];
  * arglist[0].ptrflag = TRUE;
  * arglist[1].array = buf;
  * arglist[2].uint = len;
- * #gidispatch_call(0x0084, 3, arglist);
+ * gidispatch_call(0x0084, 3, arglist);
  * ]|
  * 
  * Since you are passing a C char array to gidispatch_call(), the contents will
@@ -2826,14 +2828,14 @@
  * 
  * For example, the function glk_window_get_rock() can be invoked as follows:
  * |[
- * #glui32 rock;
- * #winid_t win;
- * rock = #glk_window_get_rock(win);
+ * glui32 rock;
+ * winid_t win;
+ * rock = glk_window_get_rock(win);
  * ...or...
- * #gluniversal_t arglist[3];
+ * gluniversal_t arglist[3];
  * arglist[0].opaqueref = win;
  * arglist[1].ptrflag = TRUE;
- * #gidispatch_call(0x0021, 3, arglist);
+ * gidispatch_call(0x0021, 3, arglist);
  * rock = arglist[2].uint;
  * ]|
  * </para></refsect3><para>
@@ -2847,7 +2849,9 @@
  * @uch: Stores an #unsigned #char.
  * @sch: Stores a #signed #char.
  * @ch: Stores a #char with the default signedness.
- * @charstr: Stores a %NULL-terminated string.
+ * @charstr: Stores a null-terminated string.
+ * @unicharstr: Stores a zero-terminated string of #glui32 values representing
+ * Unicode characters.
  * @array: Stores a pointer to an array, and should be followed by another 
  * #gluniversal_t with the array length stored in the @uint member.
  * @ptrflag: If %FALSE, represents an opaque reference or array that is %NULL,
@@ -2865,11 +2869,11 @@
  * This returns a string which encodes the proper argument list for the given
  * function. If there is no such function in the library, this returns %NULL.
  * 
- * The prototype string for the glk_glomp() function described above would be:
- * <code>"4IuQa&amp;Iu&amp;Qb:"</code>. The <code>"4"</code> is the number of
- * arguments (including the return value, if there is one, which in this case
- * there isn't.) <code>"Iu"</code> denotes an unsigned integer;
- * <code>"Qa"</code> is an opaque object of class 0 (window).
+ * The prototype string for the <function>glk_glomp&lpar;&rpar;</function> 
+ * function described above would be: <code>"4IuQa&amp;Iu&amp;Qb:"</code>. The 
+ * <code>"4"</code> is the number of arguments (including the return value, if 
+ * there is one, which in this case there isn't.) <code>"Iu"</code> denotes an 
+ * unsigned integer; <code>"Qa"</code> is an opaque object of class 0 (window).
  * <code>"&amp;Iu"</code> is a <emphasis>reference</emphasis> to an unsigned
  * integer, and <code>"&amp;Qb"</code> is a reference to a stream. The colon at
  * the end terminates the argument list; the return value would follow it, if
@@ -2877,8 +2881,9 @@
  * 
  * Note that the initial number (<code>"4"</code> in this case) is the number of
  * logical arguments, not the number of #gluniversal_t objects which will be
- * passed to gidispatch_call(). The glk_glomp() call uses anywhere from four to
- * six #gluniversal_t objects, as demonstrated above.
+ * passed to gidispatch_call(). The <function>glk_glomp&lpar;&rpar;</function> 
+ * call uses anywhere from four to six #gluniversal_t objects, as demonstrated 
+ * above.
  * 
  * The basic type codes:
  * <variablelist>
@@ -3183,6 +3188,12 @@
  
 /**
  * giblorb_result_t:
+ * @chunknum: The chunk number (for use in giblorb_unload_chunk(), etc.)
+ * @data: A union containing a pointer to the data @ptr (if you used 
+ * %giblorb_method_Memory) and the position in the file @startpos (if you used 
+ * %giblorb_method_FilePos)
+ * @length: The length of the data
+ * @chunktype: The type of the chunk.
  *
  * Holds information about a chunk loaded from a Blorb file, and the method of
  * accessing the chunk data. See giblorb_load_chunk_by_type() and
@@ -3334,11 +3345,11 @@
 
 /**
  * glkunix_argumentlist_t:
- * 
- * In each entry, name is the option as it would appear on the command line
- * (including the leading dash, if any.) The desc is a description of the
- * argument; this is used when the library is printing a list of options. And
- * argtype is one of the following constants:
+ * @name: the option as it would appear on the command line (including the 
+ * leading dash, if any.) 
+ * @desc: a description of the argument; this is used when the library is 
+ * printing a list of options.
+ * @argtype: one of the <code>glkunix_arg_</code> constants.
  * 
  * <variablelist>
  * <varlistentry>
@@ -3376,21 +3387,21 @@
  * If you don't care about command-line arguments, you must still define an
  * empty arguments list, as follows:
  * |[
- * #glkunix_argumentlist_t glkunix_arguments[] = {
- *  { NULL, #glkunix_arg_End, NULL }
+ * glkunix_argumentlist_t glkunix_arguments[] = {
+ *     { NULL, glkunix_arg_End, NULL }
  * };
  * ]|
  * 
  * Here is a more complete sample list:
  * |[
- * #glkunix_argumentlist_t glkunix_arguments[] = {
- *  { "", #glkunix_arg_ValueFollows, "filename: The game file to load." },
- *  { "-hum", #glkunix_arg_ValueFollows, "-hum NUM: Hum some NUM." },
- *  { "-bom", #glkunix_arg_ValueCanFollow, "-bom [ NUM ]: Do a bom (on
- *   the NUM, if given)." },
- *  { "-goo", #glkunix_arg_NoValue, "-goo: Find goo." },
- *  { "-wob", #glkunix_arg_NumberValue, "-wob NUM: Wob NUM times." },
- *  { NULL, #glkunix_arg_End, NULL }
+ * glkunix_argumentlist_t glkunix_arguments[] = {
+ *     { "", glkunix_arg_ValueFollows, "filename: The game file to load." },
+ *     { "-hum", glkunix_arg_ValueFollows, "-hum NUM: Hum some NUM." },
+ *     { "-bom", glkunix_arg_ValueCanFollow, "-bom [ NUM ]: Do a bom (on
+ *       the NUM, if given)." },
+ *     { "-goo", glkunix_arg_NoValue, "-goo: Find goo." },
+ *     { "-wob", glkunix_arg_NumberValue, "-wob NUM: Wob NUM times." },
+ *     { NULL, glkunix_arg_End, NULL }
  * };
  * ]|
  * This would match the arguments <quote><code>thingfile -goo -wob8 -bom -hum 
@@ -3399,7 +3410,7 @@
  * After the library parses the command line, it does various occult rituals of
  * initialization, and then calls glkunix_startup_code().
  *
- * |[ int glkunix_startup_code(#glkunix_startup_t *data); ]|
+ * |[ int glkunix_startup_code(glkunix_startup_t *data); ]|
  *
  * This should return %TRUE if everything initializes properly. If it returns
  * %FALSE, the library will shut down without ever calling your glk_main() 
@@ -3408,6 +3419,8 @@
 
 /**
  * glkunix_startup_t: 
+ * @argc: The number of arguments in @argv.
+ * @argv: Strings representing command line arguments.
  * 
  * The fields are a standard Unix <code>(argc, argv)</code> list, which contain
  * the arguments you requested from the command line. In deference to custom,

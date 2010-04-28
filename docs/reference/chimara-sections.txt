@@ -575,6 +575,8 @@ giblorb_ID_Pict
 giblorb_ID_Copyright
 giblorb_ID_AUTH
 giblorb_ID_ANNO
+<SUBSECTION Private>
+giblorb_make_id
 </SECTION>
 
 <SECTION>
@@ -602,6 +604,9 @@ glkunix_arg_ValueFollows
 glkunix_arg_ValueCanFollow
 glkunix_arg_NumberValue
 glkunix_arg_End
+<SUBSECTION Private>
+glkunix_startup_code
+NULL
 </SECTION>
 
 <SECTION>
@@ -609,4 +614,10 @@ glkunix_arg_End
 <TITLE>Unix Extensions</TITLE>
 glkunix_stream_open_pathname
 glkunix_set_base_file
+</SECTION>
+
+<SECTION>
+<FILE>glkext-garglk</FILE>
+<TITLE>Gargoyle Extensions</TITLE>
+garglk_set_reverse_video
 </SECTION>

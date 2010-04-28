@@ -192,7 +192,7 @@ glk_put_char_uni(glui32 ch)
  * equivalent to
  * |[
  * for (ptr = s; *ptr; ptr++)
- * 	#glk_put_char(*ptr);
+ *     glk_put_char(*ptr);
  * ]|
  * However, it may be more efficient.
  */
@@ -229,7 +229,7 @@ glk_put_string_uni(glui32 *s)
  * to:
  * |[
  * for (i = 0; i < len; i++)
- * 	#glk_put_char(buf[i]);
+ *     glk_put_char(buf[i]);
  * ]|
  * However, it may be more efficient.
  */

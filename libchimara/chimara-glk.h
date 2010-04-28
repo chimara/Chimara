@@ -40,32 +40,18 @@ typedef struct _ChimaraGlkClass {
 
 /**
  * ChimaraError:
+ * @CHIMARA_LOAD_MODULE_ERROR: There was an error opening the plugin containing 
+ * the Glk program. The error message from <link 
+ * linkend="g-module-error">g_module_error()</link> is appended to the <link
+ * linkend="GError">GError</link> message.
+ * @CHIMARA_NO_GLK_MAIN: The plugin containing the Glk program did not export a 
+ * glk_main() function.
+ * @CHIMARA_PLUGIN_NOT_FOUND: An appropriate interpreter plugin for the 
+ * autodetected game file type could not be found.
+ * @CHIMARA_PLUGIN_ALREADY_RUNNING: A plugin was opened while there was already
+ * another plugin running in the widget.
  * 
  * Error codes returned by #ChimaraGlk widgets and subclasses.
- * <variablelist>
- * <varlistentry>
- *   <term>CHIMARA_LOAD_MODULE_ERROR</term>
- *   <listitem><para>There was an error opening the plugin containing the Glk
- *   program. The error message from <link 
- *   linkend="g-module-error">g_module_error()</link> is appended to the <link
- *   linkend="GError">GError</link> message.</para></listitem>
- * </varlistentry>
- * <varlistentry>
- *   <term>CHIMARA_NO_GLK_MAIN</term>
- *   <listitem><para>The plugin containing the Glk program did not export a 
- *   glk_main() function.</para></listitem>
- * </varlistentry>
- * <varlistentry>
- *   <term>CHIMARA_PLUGIN_NOT_FOUND</term>
- *   <listitem><para>An appropriate interpreter plugin for the autodetected
- *   game file type could not be found.</para></listitem>
- * </varlistentry>
- * <varlistentry>
- *   <term>CHIMARA_PLUGIN_ALREADY_RUNNING</term>
- *   <listitem><para>A plugin was opened while there was already another plugin
- *   running in the widget.</para></listitem>
- * </varlistentry>
- * </variablelist>
  */
 typedef enum _ChimaraError {
 	CHIMARA_LOAD_MODULE_ERROR,
@@ -97,7 +83,7 @@ gboolean chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *a
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);
 gboolean chimara_glk_get_running(ChimaraGlk *glk);
-void chimara_glk_feed_char_input(ChimaraGlk *glk, guint32 keycode);
+void chimara_glk_feed_char_input(ChimaraGlk *glk, guint32 keyval);
 void chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text);
 
 G_END_DECLS

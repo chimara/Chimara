@@ -164,7 +164,7 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * <note><title>Chimara</title>
  * <para>
  * Chimara uses a <link 
- * linkend="gtk-GtkFileChooserDialog">GtkFileChooserDialog</link>. The default
+ * linkend="GtkFileChooserDialog">GtkFileChooserDialog</link>. The default
  * starting location for the dialog may be set with glkunix_set_base_file().
  * </para></note>
  *

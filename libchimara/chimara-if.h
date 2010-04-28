@@ -15,38 +15,68 @@ G_BEGIN_DECLS
 
 /**
  * ChimaraIFFormat:
- * 
+ * @CHIMARA_IF_FORMAT_Z5: Z-code version 5
+ * @CHIMARA_IF_FORMAT_Z6: Z-code version 6
+ * @CHIMARA_IF_FORMAT_Z8: Z-code version 8
+ * @CHIMARA_IF_FORMAT_Z_BLORB: Blorbed Z-code
+ * @CHIMARA_IF_FORMAT_GLULX: Glulx
+ * @CHIMARA_IF_FORMAT_GLULX_BLORB: Blorbed Glulx
+ *
  * Constants representing all game formats supported by the Chimara system.
  */
 typedef enum _ChimaraIFFormat {
+	/*< private >*/
 	CHIMARA_IF_FORMAT_NONE = -1,
+	/*< public >*/
 	CHIMARA_IF_FORMAT_Z5,
 	CHIMARA_IF_FORMAT_Z6,
 	CHIMARA_IF_FORMAT_Z8,
 	CHIMARA_IF_FORMAT_Z_BLORB,
 	CHIMARA_IF_FORMAT_GLULX,
 	CHIMARA_IF_FORMAT_GLULX_BLORB,
+	/*< private >*/
 	CHIMARA_IF_NUM_FORMATS
 } ChimaraIFFormat;
 
 /**
  * ChimaraIFInterpreter:
+ * @CHIMARA_IF_INTERPRETER_FROTZ: Frotz
+ * @CHIMARA_IF_INTERPRETER_NITFOL: Nitfol
+ * @CHIMARA_IF_INTERPRETER_GLULXE: Glulxe
+ * @CHIMARA_IF_INTERPRETER_GIT: Git
  * 
  * Constants representing the available interpreter plugins.
  */
 typedef enum _ChimaraIFInterpreter {
+    /*< private >*/
 	CHIMARA_IF_INTERPRETER_NONE = -1,
+	/*< public >*/
 	CHIMARA_IF_INTERPRETER_FROTZ,
 	CHIMARA_IF_INTERPRETER_NITFOL,
 	CHIMARA_IF_INTERPRETER_GLULXE,
 	CHIMARA_IF_INTERPRETER_GIT,
+	/*< private >*/
 	CHIMARA_IF_NUM_INTERPRETERS
 } ChimaraIFInterpreter;
 
 /**
  * ChimaraIFZmachineVersion:
+ * @CHIMARA_IF_ZMACHINE_DEFAULT: Use the interpreter's default interpreter
+ * number.
+ * @CHIMARA_IF_ZMACHINE_DECSYSTEM_20: DEC System 20
+ * @CHIMARA_IF_ZMACHINE_APPLE_IIE: Apple IIe
+ * @CHIMARA_IF_ZMACHINE_MACINTOSH: Apple Macintosh
+ * @CHIMARA_IF_ZMACHINE_AMIGA: Commodore Amiga
+ * @CHIMARA_IF_ZMACHINE_ATARI_ST: Atari ST
+ * @CHIMARA_IF_ZMACHINE_IBM_PC: IBM PC
+ * @CHIMARA_IF_ZMACHINE_COMMODORE_128: Commodore 128
+ * @CHIMARA_IF_ZMACHINE_COMMODORE_64: Commodore 64
+ * @CHIMARA_IF_ZMACHINE_APPLE_IIC: Apple IIc
+ * @CHIMARA_IF_ZMACHINE_APPLE_IIGS: Apple IIgs
+ * @CHIMARA_IF_ZMACHINE_TANDY_COLOR: Tandy Color Computer
  * 
- * Allowed values for the #ChimaraIF:interpreter-number property.
+ * Allowed values for the #ChimaraIF:interpreter-number property. All trademarks
+ * are the property of their respective owners.
  */
 typedef enum _ChimaraIFZmachineVersion {
 	CHIMARA_IF_ZMACHINE_DEFAULT = 0,
@@ -61,6 +91,7 @@ typedef enum _ChimaraIFZmachineVersion {
 	CHIMARA_IF_ZMACHINE_APPLE_IIC,
 	CHIMARA_IF_ZMACHINE_APPLE_IIGS,
 	CHIMARA_IF_ZMACHINE_TANDY_COLOR,
+	/*< private >*/
 	CHIMARA_IF_ZMACHINE_MAXVAL = CHIMARA_IF_ZMACHINE_TANDY_COLOR
 } ChimaraIFZmachineVersion;
 

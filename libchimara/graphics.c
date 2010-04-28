@@ -415,7 +415,7 @@ draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
  * <note><para>
  *   This function may only be used with graphics windows. To set background 
  *   colors in a text window, use text styles with color hints; see <link 
- *   linkend="Styles">Styles</link>.
+ *   linkend="chimara-Styles">Styles</link>.
  * </para></note>
  */
 void

@@ -23,21 +23,21 @@ It is possible that new event types will be defined in the future.
 </para></note>
 <note><para>
 This is also why you must put calls to glk_select() in loops. If you tried to read a character by simply writing
-<informalexample><programlisting>
-#glk_request_char_event(win);
-#glk_select(&amp;ev);
-</programlisting></informalexample>
+|[
+glk_request_char_event(win);
+glk_select(&amp;ev);
+]|
 you might not get a CharInput event back. You could get some not-yet-defined event which happened to occur before the player hit a key. Or, for that matter, a window arrangement event.
 </para></note>
 <note><para>
 It is not generally necessary to put a call to glk_select_poll() in a loop. You usually call glk_select_poll() to update the display or test if an event is available, not to wait for a particular event. However, if you are using sound notification events, and several sounds are playing, it might be important to make sure you knew about all sounds completed at any particular time. You would do this with
-<informalexample><programlisting>
-#glk_select_poll(&amp;ev);
-while (ev.type != #evtype_None) {
+|[
+glk_select_poll(&amp;ev);
+while (ev.type != evtype_None) {
     /* handle event */
-    #glk_select_poll(&amp;ev);
+    glk_select_poll(&amp;ev);
 }
-</programlisting></informalexample>
+]|
 </para>
 <para>
 Once glk_select_poll() returns #evtype_None, you should not call it again immediately. Do some work first. If you want to wait for an event, use glk_select(), not a loop of glk_select_poll().

@@ -12,7 +12,7 @@ extern GPrivate *glk_data_key;
 /**
  * glkunix_stream_open_pathname:
  * @pathname: A path to a file, in the system filename encoding. 
- * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
+ * @textmode: Bitfield with one or more of the <code>fileusage_</code> constants.
  * @rock: The new stream's rock value.
  *
  * Opens an arbitrary file, in read-only mode. Note that this function is
@@ -23,7 +23,7 @@ extern GPrivate *glk_data_key;
  * Returns: A new stream, or %NULL if the file operation failed.
  */
 strid_t
-glkunix_stream_open_pathname(char *pathname, glui32 usage, glui32 rock)
+glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	

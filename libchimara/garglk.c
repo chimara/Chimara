@@ -4,7 +4,7 @@
 
 extern GPrivate *glk_data_key;
 
-void
+static void
 apply_reverse_color(GtkTextTag *tag, gpointer data)
 {
 	g_object_set_data( G_OBJECT(tag), "reverse_color", data );
