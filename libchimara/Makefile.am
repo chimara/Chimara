@@ -35,7 +35,7 @@ libchimara_la_SOURCES = \
 	mouse.c mouse.h \
 	pager.c pager.h \
 	resource.c resource.h \
-	schannel.c \
+	schannel.c schannel.h \
 	stream.c stream.h \
 	strio.c strio.h \
 	style.c style.h \

@@ -1,6 +1,9 @@
 #include <glib.h>
 #include <libchimara/glk.h>
 
+#include "magic.h"
+#include "schannel.h"
+
 /**
  * glk_schannel_create:
  * @rock: The rock value to give the new sound channel.
