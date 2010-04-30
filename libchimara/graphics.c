@@ -481,8 +481,46 @@ glk_window_erase_rect(winid_t win, glsi32 left, glsi32 top, glui32 width, glui32
 	glk_window_fill_rect(win, win->background_color, left, top, width, height);
 }
 
+/**
+ * glk_window_flow_break:
+ * @win: A window.
+ *
+ * You may wish to <quote>break</quote> the stream of text down below the 
+ * current margin image. Since lines of text can be in any font and size, you 
+ * cannot do this by counting newlines. Instead, use this function.
+ *
+ * If the current point in the text is indented around a margin-aligned image, 
+ * this acts like the correct number of newlines to start a new line below the 
+ * image. (If there are several margin-aligned images, it goes below all of 
+ * them.) If the current point is not beside a margin-aligned image, this call 
+ * has no effect.
+ *
+ * When a text buffer window is resized, a flow-break behaves cleverly; it may 
+ * become active or inactive as necessary. You can consider this function to 
+ * insert an invisible mark in the text stream. The mark works out how many 
+ * newlines it needs to be whenever the text is formatted for display.
+ * 
+ * An example of the use of glk_window_flow_break(): If you display a 
+ * left-margin image at the start of every line, they can stack up in a strange 
+ * diagonal way that eventually squeezes all the text off the screen. 
+ * <note><para>
+ *   If you can't picture this, draw some diagrams. Make the margin images more 
+ *   than one line tall, so that each line starts already indented around the 
+ *   last image.
+ * </para></note>
+ * To avoid this problem, call glk_window_flow_break() immediately before 
+ * glk_image_draw() for every margin-aligned image.
+ * 
+ * In all windows other than text buffers, glk_window_flow_break() has no 
+ * effect. 
+ *
+ * <warning><para>
+ *   This function is not implemented yet.
+ * </para></warning>
+ */
 void glk_window_flow_break(winid_t win)
 {
+	VALID_WINDOW(win, return);
 }
 
 /*** Called when the graphics window is resized. Resize the backing pixmap if necessary ***/

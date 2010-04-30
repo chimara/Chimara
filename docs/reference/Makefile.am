@@ -92,6 +92,7 @@ content_files = version.xml \
 	glk-window-arrangement.sgml \
 	glk-display-style.sgml \
 	glk-other-events.sgml \
+	glk-sound-resources.sgml \
 	glk-porting.sgml \
 	dispatch.sgml \
 	blorb.sgml \

@@ -95,21 +95,16 @@ schanid_t
 <TITLE>The Gestalt System</TITLE>
 glk_gestalt_ext
 glk_gestalt
-<SUBSECTION The Version Number>
+<SUBSECTION Constants>
 gestalt_Version
-<SUBSECTION Testing for Unicode Capabilities>
 gestalt_Unicode
 GLK_MODULE_UNICODE
-<SUBSECTION Output>
 gestalt_CharOutput
 gestalt_CharOutput_CannotPrint
 gestalt_CharOutput_ApproxPrint
 gestalt_CharOutput_ExactPrint
-<SUBSECTION Line Input>
 gestalt_LineInput
-<SUBSECTION Character Input>
 gestalt_CharInput
-<SUBSECTION Constants>
 gestalt_MouseInput
 gestalt_Timer
 gestalt_Graphics
@@ -151,6 +146,7 @@ keycode_Func9
 keycode_Func10
 keycode_Func11
 keycode_Func12
+<SUBSECTION Private>
 keycode_MAXVAL
 </SECTION>
 
@@ -172,11 +168,12 @@ winmethod_Left
 winmethod_Right
 winmethod_Above
 winmethod_Below
-winmethod_DirMask
 winmethod_Fixed
 winmethod_Proportional
-winmethod_DivisionMask
 glk_window_close
+<SUBSECTION Private>
+winmethod_DirMask
+winmethod_DivisionMask
 </SECTION>
 
 <SECTION>
@@ -342,6 +339,7 @@ style_BlockQuote
 style_Input
 style_User1
 style_User2
+<SUBSECTION Private>
 style_NUMSTYLES
 </SECTION>
 
@@ -361,11 +359,12 @@ stylehint_Proportional
 stylehint_TextColor
 stylehint_BackColor
 stylehint_ReverseColor
-stylehint_NUMHINTS
 stylehint_just_LeftFlush
 stylehint_just_LeftRight
 stylehint_just_Centered
 stylehint_just_RightFlush
+<SUBSECTION Private>
+stylehint_NUMHINTS
 </SECTION>
 
 <SECTION>
@@ -398,9 +397,10 @@ fileusage_Data
 fileusage_SavedGame
 fileusage_Transcript
 fileusage_InputRecord
-fileusage_TypeMask
 fileusage_TextMode
 fileusage_BinaryMode
+<SUBSECTION Private>
+fileusage_TypeMask
 </SECTION>
 
 <SECTION>
@@ -619,5 +619,5 @@ glkunix_set_base_file
 <SECTION>
 <FILE>glkext-garglk</FILE>
 <TITLE>Gargoyle Extensions</TITLE>
-garglk_set_reverse_video
+garglk_set_reversevideo
 </SECTION>

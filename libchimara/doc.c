@@ -1003,6 +1003,24 @@
  * If you call glk_image_draw() or glk_image_draw_scaled() in a text buffer
  * window, @val1 gives the image alignment. The @val2 argument is currently
  * unused, and should always be zero.
+ *
+ * The two <quote>margin</quote> alignments require some care. To allow proper 
+ * positioning, images using %imagealign_MarginLeft and %imagealign_MarginRight 
+ * must be placed at the beginning of a line. That is, you may only call 
+ * glk_image_draw() (with these two alignments) in a window, if you have just 
+ * printed a newline to the window's stream, or if the window is entirely empty.
+ * If you margin-align an image in a line where text has already appeared, no 
+ * image will appear at all.
+ * 
+ * Inline-aligned images count as <quote>text</quote> for the purpose of this 
+ * rule.
+ * 
+ * You may have images in both margins at the same time.
+ * 
+ * It is also legal to have more than one image in the same margin (left or 
+ * right.) However, this is not recommended. It is difficult to predict how text
+ * will wrap in that situation, and libraries may err on the side of 
+ * conservatism. 
  */
 
 /**
@@ -1014,7 +1032,36 @@
  * %gestalt_Graphics. To test for additional capabilities, you can also use the
  * %gestalt_DrawImage and %gestalt_GraphicsTransparency selectors.
  */
- 
+
+/**
+ * SECTION:glk-sound-channels
+ * @short_description: Creating new sound channels and closing them
+ * @include: libchimara/glk.h
+ */
+
+/**
+ * SECTION:glk-playing-sounds
+ * @short_description: Producing noise
+ * @include: libchimara/glk.h
+ */
+
+/**
+ * SECTION:glk-sound-other
+ * @short_description: Miscellaneous functions for sound channels
+ * @include: libchimara/glk.h
+ */
+
+/**
+ * SECTION:glk-sound-testing
+ * @short_description: Checking whether the library supports sound
+ * @include: libchimara/glk.h
+ *
+ * Before calling Glk sound functions, you should use the %gestalt_Sound
+ * selector. To test for additional capabilities, you can use the 
+ * %gestalt_SoundMusic, %gestalt_SoundVolume, and %gestalt_SoundNotify 
+ * selectors.
+ */
+
 /**
  * SECTION:glk-creating-hyperlinks
  * @short_description: Printing text as a hyperlink
@@ -1232,6 +1279,21 @@
  *   sufficient.
  * </para></note>
  */
+
+/**
+ * GLK_MODULE_SOUND:
+ *
+ * If you are writing a C program, there is an additional complication. A 
+ * library which does not support sound may not implement the sound functions at
+ * all. Even if you put gestalt tests around your sound calls, you may get 
+ * link-time errors. If the <filename class="headerfile">glk.h</filename> file 
+ * is so old that it does not declare the sound functions and constants, you may
+ * even get compile-time errors.
+ * 
+ * To avoid this, you can perform a preprocessor test for the existence of
+ * %GLK_MODULE_SOUND. If this is defined, so are all the functions and constants
+ * described in this section. If not, not.
+ */ 
  
 /**
  * GLK_MODULE_HYPERLINKS:
@@ -1262,6 +1324,13 @@
  * members.
  */
 
+/**
+ * schanid_t:
+ * 
+ * Opaque structure representing a sound channel. It has no user-accessible
+ * members.
+ */
+  
 /**
  * gestalt_Version:
  *
@@ -1448,7 +1517,50 @@
  * test %wintype_Graphics and %wintype_TextBuffer separately, since libraries 
  * may implement both, neither, or only one.  
  */
- 
+
+/**
+ * gestalt_Sound:
+ *
+ * You can test whether the library supports sound: 
+ * |[
+ * glui32 res;
+ * res = glk_gestalt(gestalt_Sound, 0);
+ * ]|
+ * This returns 1 if the overall suite of sound functions is available. This 
+ * includes glk_schannel_create(), glk_schannel_destroy(), 
+ * glk_schannel_iterate(), glk_schannel_get_rock(), glk_schannel_play(),
+ * glk_schannel_play_ext(), glk_schannel_stop(), glk_schannel_set_volume(), and
+ * glk_sound_load_hint().
+ *
+ * If this selector returns 0, you should not try to call these functions. They 
+ * may have no effect, or they may cause a run-time error. 
+ */
+
+/**
+ * gestalt_SoundVolume:
+ *
+ * You can test whether the library supports setting the volume of sound 
+ * channels: 
+ * |[
+ * glui32 res;
+ * res = glk_gestalt(gestalt_SoundVolume, 0);
+ * ]|
+ * This selector returns 1 if the glk_schannel_set_volume() function works. If 
+ * it returns zero, glk_schannel_set_volume() has no effect.     
+ */
+
+/**
+ * gestalt_SoundNotify:
+ *
+ * You can test whether the library supports sound notification events:
+ * |[
+ * glui32 res;
+ * res = glk_gestalt(gestalt_SoundNotify, 0);
+ * ]| 
+ * This selector returns 1 if the library supports sound notification events. If
+ * it returns zero, you will never get such events. 
+ */
+
 /**
  * gestalt_Hyperlinks:
  *
@@ -1477,6 +1589,21 @@
  * never get hyperlink events.
  */
 
+/** 
+ * gestalt_SoundMusic:
+ *
+ * You can test whether music resources are supported:
+ * |[ res = glk_gestalt(gestalt_SoundMusic, 0); ]|
+ * This returns 1 if the library is capable of playing music sound resources. If 
+ * it returns 0, only sampled sounds can be played.
+ * <note><para>
+ *   <quote>Music sound resources</quote> means MOD songs &mdash; the only music
+ *   format that Blorb currently supports. The presence of this selector is, of 
+ *   course, an ugly hack. It is a concession to the current state of the Glk 
+ *   libraries, some of which can handle AIFF but not MOD sounds.
+ * </para></note>
+ */ 
+  
 /**
  * gestalt_GraphicsTransparency:
  *
@@ -1861,18 +1988,6 @@
  */
 
 /**
- * keycode_MAXVAL:
- *
- * This value is equal to the number of special keycodes. The last keycode is
- * always 
- * <inlineequation>
- *   <alt>(0x100000000 - <code><keysym>keycode_MAXVAL</keysym></code>)</alt>
- *   <mathphrase>(0x100000000 - <code><keysym>keycode_MAXVAL</keysym></code>)</mathphrase>
- * </inlineequation>
- * .
- */
-
-/**
  * style_Normal: 
  *
  * The style of normal or body text. A new window or stream always starts with
@@ -1956,12 +2071,6 @@
  * style_User2: 
  *
  * Another style available for your use. 
- */
- 
-/**
- * style_NUMSTYLES:
- * 
- * The number of styles defined in this library.
  */
 
 /**
@@ -2252,14 +2361,6 @@
  * When calling glk_window_open() with this @method, the new window will be 
  * below the old one which was split.
  */
-
-/**
- * winmethod_DirMask:
- *
- * Bitwise AND this value with a window splitting method argument to find
- * whether the split is %winmethod_Left, %winmethod_Right, %winmethod_Above, or
- * %winmethod_Below.
- */
  
 /**
  * winmethod_Fixed:
@@ -2273,13 +2374,6 @@
  *
  * When calling glk_window_open() with this @method, the new window will be 
  * a given proportion of the old window's size. (See glk_window_open()).
- */
- 
-/**
- * winmethod_DivisionMask:
- *
- * Bitwise AND this value with a window splitting method argument to find
- * whether the new window has %winmethod_Fixed or %winmethod_Proportional.
  */
  
 /** 
@@ -2498,12 +2592,6 @@
  *  others may support both, or neither.
  * </para></note>
  */
-
-/**
- * stylehint_NUMHINTS:
- *
- * The number of style hints defined in this library.
- */ 
  
 /**
  * stylehint_just_LeftFlush:
@@ -2549,6 +2637,25 @@
  * The image appears at the current point, and it is centered between the top
  * and baseline of the line of text. If the image is taller than the line of
  * text, it will stick up and down equally.
+ */
+
+/**
+ * imagealign_MarginLeft:
+ * 
+ * The image appears in the left margin. Subsequent text will be displayed to
+ * the right of the image, and will flow around it &mdash; that is, it will be
+ * left-indented for as many lines as it takes to pass the image.
+ *
+ * <warning><para>Margin images are not implemented yet.</para></warning>
+ */
+
+/**
+ * imagealign_MarginRight:
+ *
+ * The image appears in the right margin, and subsequent text will flow around
+ * it on the left.
+ *
+ * <warning><para>Margin images are not implemented yet.</para></warning>
  */
  
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_DISPA.H ------------------*/
@@ -3131,7 +3238,7 @@
  */
 
 /**
- * giblorb_method_DontLoad:
+ * giblorb_method_FilePos:
  *
  * Pass this to giblorb_load_chunk_by_type(), giblorb_load_chunk_by_number(), or
  * giblorb_load_resource() to get the position in the Blorb file at which the

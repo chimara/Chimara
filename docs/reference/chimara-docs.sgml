@@ -6,11 +6,7 @@
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
     <title>Chimara Reference Manual</title>
-    <releaseinfo>
-      for Chimara &version;. The latest version of this documentation can be 
-      found on-line at <ulink role="online-location" 
-      url="http://[SERVER]/chimara/index.html">http://[SERVER]/chimara/</ulink>.
-    </releaseinfo>
+    <releaseinfo>for Chimara &version;</releaseinfo>
   </bookinfo>
 
   <reference>
@@ -107,14 +103,15 @@
     </chapter>
     
     <!-- Chapter 8. Sound -->
-<!--    <chapter>
+    <chapter>
       <title>Sound</title>
+      <xi:include href="glk-sound-resources.sgml"/>
       <xi:include href="xml/glk-sound-channels.xml"/>
       <xi:include href="xml/glk-playing-sounds.xml"/>
       <xi:include href="xml/glk-sound-other.xml"/>
       <xi:include href="xml/glk-sound-testing.xml"/>
     </chapter>
--->    
+    
     <!-- Chapter 9. Hyperlinks -->
     <chapter>
       <title>Hyperlinks</title>
@@ -150,6 +147,7 @@
      <title>Glk Extensions</title>
      <xi:include href="xml/glkext-startup.xml"/>
      <xi:include href="xml/glkext-unix.xml"/>
+     <xi:include href="xml/glkext-garglk.xml"/>
     </appendix>
   </reference>
 </book>
