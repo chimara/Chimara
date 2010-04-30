@@ -1229,6 +1229,23 @@
  * generally be limited to finding and opening data files. There are a few Unix
  * Glk library functions which are convenient for this purpose.
  */
+
+/**
+ * SECTION:glkext-garglk
+ * @short_description: Gargoyle extensions to Glk
+ * @include: libchimara/glk.h, libchimara/garglk.h
+ *
+ * This section describes various extensions to Glk that were written for the
+ * popular interpreter <ulink 
+ * url="http://www.ccxvii.net/gargoyle/">Gargoyle</ulink> by Tor Andersson (now 
+ * maintained by Ben Cressey).
+ *
+ * These functions mostly serve to close the gap between Glk's input/output
+ * capabilities and what some interpreters expect. For example, 
+ * garglk_set_zcolors() displays the colors defined in the Z-machine standard,
+ * and garglk_set_story_name() can be used to give the host program a hint
+ * about what to display in the title bar of its window.
+ */ 
  
 /*---------------- TYPES AND CONSTANTS FROM GLK.H ----------------------------*/
 

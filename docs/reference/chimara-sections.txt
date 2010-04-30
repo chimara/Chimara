@@ -619,5 +619,32 @@ glkunix_set_base_file
 <SECTION>
 <FILE>glkext-garglk</FILE>
 <TITLE>Gargoyle Extensions</TITLE>
+GARGLK
+<SUBSECTION Functions>
+garglk_fileref_get_name
+garglk_set_program_name
+garglk_set_program_info
+garglk_set_story_name
+garglk_set_line_terminators
+garglk_unput_string
+garglk_unput_string_uni
+garglk_set_zcolors
 garglk_set_reversevideo
+<SUBSECTION Constants>
+zcolor_Current
+zcolor_Default
+zcolor_Black
+zcolor_Red
+zcolor_Green
+zcolor_Yellow
+zcolor_Blue
+zcolor_Magenta
+zcolor_Cyan
+zcolor_White
+zcolor_LightGrey
+zcolor_MediumGrey
+zcolor_DarkGrey
+keycode_Erase
+<SUBSECTION Private>
+zcolor_NUMCOLORS
 </SECTION>
