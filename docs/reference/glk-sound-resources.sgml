@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-Sound-Resources">
+<refmeta>
+<refentrytitle>Sound Resources</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>Sound Resources</refname>
+<refpurpose>Sound in Glk</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+As with graphics, so with sound. Sounds, however, obviously don't appear in windows. To play a sound in Glk, you must first create a sound channel to hold it. This is an entirely new class of opaque objects; there are <code>create</code> and <code>destroy</code> and <code>iterate</code> and <code>get_rock</code> functions for channels, just as there are for windows and streams and filerefs.
+</para><para>
+A channel can be playing exactly one sound at a time. If you want to play more than one sound simultaneously, you need more than one sound channel. On the other hand, a single sound can be played on several channels at the same time, or overlapping itself.
+</para><para>
+Sound is an optional capability in Glk.
+</para><para>
+As with images, sounds are kept in resources, and your program does not have to worry about the formatting or storage. A resource is referred to by an integer identifier.
+</para><para>
+A resource can theoretically contain any kind of sound data, of any length. A resource can even be infinitely long.
+<note><para>This would be represented by some sound encoding with a built-in repeat-forever flag &mdash; but that is among the details which are hidden from you.
+</para></note>
+A resource can also contain two or more channels of sound (stereo data). Do not confuse such in-sound channels with Glk sound channels. A single Glk sound channel suffices to play any sound, even stereo sounds.
+</para>
+<note><para>
+Again, Blorb is the official resource-storage format of Glk. Sounds in Blorb files can be encoded as AIFF, MOD, or MOD song data. See the Blorb specification for details.
+</para></note>
+</refsect1>
+</refentry>
