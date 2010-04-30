@@ -34,7 +34,7 @@ glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
 	g_return_val_if_fail(pathname, NULL);
 	g_return_val_if_fail(strlen(pathname) > 0, NULL);
 	
-	frefid_t fileref = fileref_new(pathname, rock, usage, filemode_Read);
+	frefid_t fileref = fileref_new(pathname, rock, textmode, filemode_Read);
 	return file_stream_new(fileref, filemode_Read, rock, FALSE);
 }
 
