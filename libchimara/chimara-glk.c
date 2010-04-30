@@ -30,7 +30,7 @@
  * SECTION:chimara-glk
  * @short_description: Widget which executes a Glk program
  * @stability: Unstable
- * @include: chimara/chimara-glk.h
+ * @include: libchimara/chimara-glk.h
  * 
  * The #ChimaraGlk widget opens and runs a Glk program. The program must be
  * compiled as a plugin module, with a function <function>glk_main()</function>
@@ -49,6 +49,72 @@
  * <ulink 
  * url="http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html">
  * Libtool manual</ulink>).
+ *
+ * You need to initialize multithreading in any program you use a #ChimaraGlk
+ * widget in. This means including the following incantation at the beginning
+ * of your program:
+ * |[
+ * if(!g_thread_supported())
+ *     g_thread_init(NULL);
+ * gdk_threads_init();
+ * ]|
+ * This initialization must take place <emphasis>before</emphasis> the call to
+ * gtk_init(). In addition to this, you must also protect your call to 
+ * gtk_main() by calling gdk_threads_enter() right before it, and 
+ * gdk_threads_leave() right after it.
+ *
+ * The following sample program shows how to initialize and construct a simple 
+ * GTK window that runs a Glk program:
+ * |[
+ * #include <glib.h>
+ * #include <gtk/gtk.h>
+ * #include <libchimara/chimara-glk.h>
+ *
+ * static gboolean
+ * quit(void)
+ * {
+ *     gtk_main_quit();
+ *     return TRUE;
+ * }
+ *
+ * int
+ * main(int argc, char *argv[])
+ * {
+ *     GtkWidget *window, *glk;
+ *     GError *error = NULL;
+ *     gchar *plugin_argv[] = { "plugin.so", "-option" };
+ *
+ *     /<!---->* Initialize threads and GTK *<!---->/
+ *     if(!g_thread_supported())
+ *         g_thread_init(NULL);
+ *     gdk_threads_init();
+ *     gtk_init(&argc, &argv);
+ *     
+ *     /<!---->* Construct the window and its contents. We quit the GTK main loop
+ *      * when the window's close button is clicked. *<!---->/
+ *     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+ *     g_signal_connect(window, "delete-event", G_CALLBACK(quit), NULL);
+ *     glk = chimara_glk_new();
+ *     gtk_container_add(GTK_CONTAINER(window), glk);
+ *     gtk_widget_show_all(window);
+ *     
+ *     /<!---->* Start the Glk program in a separate thread *<!---->/
+ *     if(!chimara_glk_run(CHIMARA_GLK(glk), "./plugin.so", 2, plugin_argv, &error))
+ *         g_error("Error starting Glk library: %s\n", error->message);
+ *     
+ *     /<!---->* Start the GTK main loop *<!---->/
+ *     gdk_threads_enter();
+ *     gtk_main();
+ *     gdk_threads_leave();
+ *
+ *     /<!---->* After the GTK main loop exits, signal the Glk program to shut down if
+ *      * it is still running, and wait for it to exit. *<!---->/
+ *     chimara_glk_stop(CHIMARA_GLK(glk));
+ *     chimara_glk_wait(CHIMARA_GLK(glk));
+ *
+ *     return 0;
+ * }
+ * ]|
  */
 
 typedef void (* glk_main_t) (void);
