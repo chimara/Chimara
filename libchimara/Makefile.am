@@ -51,7 +51,7 @@ libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)
 libchimara_la_LIBADD = @CHIMARA_LIBS@
 libchimara_la_LDFLAGS = -version-info $(LT_VERSION_INFO) \
 	-no-undefined \
-	-export-symbols-regex "^(glk|chimara|glkunix|giblorb|gidispatch)_"
+	-export-symbols-regex "^(glk|chimara|glkunix|giblorb|gidispatch|garglk)_"
 libchimara_includedir = $(includedir)/chimara/libchimara
 libchimara_include_HEADERS = \
 	chimara-glk.h \
@@ -59,6 +59,7 @@ libchimara_include_HEADERS = \
 	glk.h \
 	glkstart.h \
 	gi_blorb.h \
+	gi_dispa.h \
 	garglk.h
 
 BUILT_SOURCES = chimara-marshallers.c chimara-marshallers.h
