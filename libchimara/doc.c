@@ -1037,18 +1037,26 @@
  * SECTION:glk-sound-channels
  * @short_description: Creating new sound channels and closing them
  * @include: libchimara/glk.h
+ *
+ * Sounds in Glk are played through sound channels. Sound channels are another
+ * type of opaque object, like windows, streams, and file references.
  */
 
 /**
  * SECTION:glk-playing-sounds
  * @short_description: Producing noise
  * @include: libchimara/glk.h
+ *
+ * These functions play the actual sounds through the sound channels.
  */
 
 /**
  * SECTION:glk-sound-other
  * @short_description: Miscellaneous functions for sound channels
  * @include: libchimara/glk.h
+ *
+ * This section includes functions for sound channels that don't fit anywhere
+ * else.
  */
 
 /**
@@ -1078,6 +1086,9 @@
  * SECTION:glk-accepting-hyperlinks
  * @short_description: Generating and catching hyperlink navigation events
  * @include: libchimara/glk.h
+ *
+ * When you request a hyperlink event in a window, you will receive a hyperlink
+ * event when the player clicks on a hyperlink.
  */
 
 /**
@@ -1101,6 +1112,8 @@
  * SECTION:dispatch-dispatching
  * @short_description: Dispatching the call to the Glk library
  * @include: libchimara/glk.h, libchimara/gi_dispa.h
+ *
+ * The function gidispatch_call() invokes a function from the Glk library.
  */
  
 /**
