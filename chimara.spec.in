@@ -101,8 +101,9 @@ fi
 %doc %{_datadir}/doc/chimara/ChangeLog 
 %doc %{_datadir}/doc/chimara/NEWS
 %{_bindir}/chimara
-%{_pkgdatadir}/chimara.ui
-%{_pkgdatadir}/chimara.menus
+%{_datadir}/chimara/chimara.ui
+%{_datadir}/chimara/chimara.menus
+%{_datadir}/chimara/style.css
 
 %changelog
 * Fri Dec 4 2009 P. F. Chimento <philip.chimento@gmail.com>
