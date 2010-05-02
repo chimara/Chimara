@@ -258,7 +258,6 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 			if(str->unicode && str->ubuffer)
 			{
 				int copycount = MIN(len, str->buflen - str->mark);
-				g_printerr("Attempting to copy %d units; %d units of space left in buffer\n", len, str->buflen - str->mark);
 				memmove(str->ubuffer + str->mark, buf, copycount * sizeof(glui32));
 				str->mark += copycount;
 			}
@@ -266,7 +265,6 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 			{
 				gchar *latin1 = convert_ucs4_to_latin1_binary(buf, len);
 				int copycount = MIN(len, str->buflen - str->mark);
-				g_printerr("Attempting to copy %d units; %d units of space left in buffer\n", len, str->buflen - str->mark);
 				memmove(str->buffer + str->mark, latin1, copycount);
 				g_free(latin1);
 				str->mark += copycount;
