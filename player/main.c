@@ -66,6 +66,26 @@ load_object(const gchar *name)
 }
 
 static void
+change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkWindow *window)
+{
+	gchar *program_name, *story_name, *title;
+	g_object_get(glk, "program-name", &program_name, "story-name", &story_name, NULL);
+	if(!program_name) {
+		gtk_window_set_title(window, "Chimara");
+		return;
+	}
+	else if(!story_name)
+		title = g_strdup_printf("%s - Chimara", program_name);
+	else
+		title = g_strdup_printf("%s - %s - Chimara", program_name, story_name);
+		
+	g_free(program_name);
+	g_free(story_name);
+	gtk_window_set_title(window, title);
+	g_free(title);
+}
+
+static void
 create_window(void)
 {
 	GError *error = NULL;
@@ -146,7 +166,7 @@ create_window(void)
 #ifdef DEBUG
 		g_error_free(error);
 		error = NULL;
-		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/style.css", &error) ) {
+		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/macstyle.css", &error) ) {
 #endif /* DEBUG */
 			error_dialog(NULL, error, "Couldn't open CSS file: ");
 			return;
@@ -176,6 +196,8 @@ create_window(void)
 	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
 	
 	gtk_builder_connect_signals(builder, glk);
+	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);
+	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
 }
 
 int
