@@ -37,7 +37,7 @@ window_new_common(glui32 rock)
 	win->buffer = g_string_sized_new(1024);
 
 	/* Initialise hyperlink table */
-	win->hyperlinks = g_hash_table_new_full(g_int_hash, g_direct_equal, g_free, g_object_unref);
+	win->hyperlinks = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, g_free);
 	
 	return win;
 }
