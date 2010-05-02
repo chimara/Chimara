@@ -69,6 +69,10 @@ struct _ChimaraGlkPrivate {
 	guint32 resource_available;
 
 	/* *** Glk library data *** */
+	/* Info about current plugin */
+	gchar *program_name;
+	gchar *program_info;
+	gchar *story_name;
     /* User-defined interrupt handler */
     void (*interrupt_handler)(void);
     /* Global tree of all windows */

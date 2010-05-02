@@ -32,13 +32,13 @@ garglk_fileref_get_name(frefid_t fref)
  * &mdash; for example, in the title bar of a window. A typical use of this
  * function would be:
  * |[ garglk_set_program_name("SuperGlkFrotz 0.1"); ]|
- *
- * <warning><para>This function is not currently implemented.</para></warning>
  */
 void 
 garglk_set_program_name(const char *name)
 {
-	WARNING(_("Not implemented"));
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	glk_data->program_name = g_strdup(name);
+	g_object_notify(G_OBJECT(glk_data->self), "program-name");
 }
 
 /**
@@ -56,13 +56,13 @@ garglk_set_program_name(const char *name)
  *     "Glk port by Tor Andersson\n"
  *     "Animation, networking, and evil AI by Sven Metcalfe");
  * ]|
- *
- * <warning><para>This function is not currently implemented.</para></warning>
  */
 void 
 garglk_set_program_info(const char *info)
 {
-	WARNING(_("Not implemented"));
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	glk_data->program_info = g_strdup(info);
+	g_object_notify(G_OBJECT(glk_data->self), "program-info");
 }
 
 /**
@@ -75,13 +75,14 @@ garglk_set_program_info(const char *info)
  * anywhere &mdash; for example, in the title bar of a window. A typical use of
  * this function would be:
  * |[ garglk_set_story_name("Lighan Ses Lion, el Zarf"); ]|
- *
- * <warning><para>This function is not currently implemented.</para></warning>
  */
 void 
 garglk_set_story_name(const char *name)
 {
-	WARNING(_("Not implemented"));
+	g_printerr("garglk_set_story_name(\"%s\");\n", name);
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	glk_data->story_name = g_strdup(name);
+	g_object_notify(G_OBJECT(glk_data->self), "story-name");
 }
 
 /**

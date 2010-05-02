@@ -6,6 +6,7 @@
 #include <glib/gi18n-lib.h>
 #include "chimara-if.h"
 #include "chimara-glk.h"
+#include "chimara-glk-private.h"
 #include "chimara-marshallers.h"
 #include "init.h"
 
@@ -642,7 +643,14 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	GSList *ptr;
 	for(count = 0, ptr = args; ptr; count++, ptr = g_slist_next(ptr))
 		argv[count] = ptr->data;
-
+		
+	/* Set the story name */
+	/* We peek into ChimaraGlk's private data here, because GObject has no
+	equivalent to "protected" */
+	CHIMARA_GLK_USE_PRIVATE(self, glk_priv);
+	glk_priv->story_name = g_path_get_basename(gamefile);
+	g_object_notify(G_OBJECT(self), "story-name");
+	
 	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, argc, argv, error);
 	g_free(argv);
 	if(terpnumstr)

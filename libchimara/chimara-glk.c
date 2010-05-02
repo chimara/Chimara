@@ -125,6 +125,9 @@ enum {
     PROP_INTERACTIVE,
     PROP_PROTECT,
 	PROP_SPACING,
+	PROP_PROGRAM_NAME,
+	PROP_PROGRAM_INFO,
+	PROP_STORY_NAME
 };
 
 enum {
@@ -178,6 +181,9 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->resource_loaded = g_cond_new();
 	priv->resource_info_available = g_cond_new();
 	priv->image_cache = NULL;
+	priv->program_name = NULL;
+	priv->program_info = NULL;
+	priv->story_name = NULL;
 	priv->interrupt_handler = NULL;
     priv->root_window = NULL;
     priv->fileref_list = NULL;
@@ -227,7 +233,16 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
 		case PROP_SPACING:
 			g_value_set_uint(value, priv->spacing);
 			break;
-        default:
+		case PROP_PROGRAM_NAME:
+			g_value_set_string(value, priv->program_name);
+			break;
+		case PROP_PROGRAM_INFO:
+			g_value_set_string(value, priv->program_info);
+			break;
+		case PROP_STORY_NAME:
+			g_value_set_string(value, priv->story_name);
+			break;
+		default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
 }
@@ -286,6 +301,9 @@ chimara_glk_finalize(GObject *object)
 	
 	/* Free other stuff */
 	g_free(priv->current_dir);
+	g_free(priv->program_name);
+	g_free(priv->program_info);
+	g_free(priv->story_name);
 
 	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
@@ -630,6 +648,12 @@ chimara_glk_stopped(ChimaraGlk *self)
 {
     CHIMARA_GLK_USE_PRIVATE(self, priv);
     priv->running = FALSE;
+    priv->program_name = NULL;
+    g_object_notify(G_OBJECT(self), "program-name");
+    priv->program_info = NULL;
+    g_object_notify(G_OBJECT(self), "program-info");
+    priv->story_name = NULL;
+    g_object_notify(G_OBJECT(self), "story-name");
 }
 
 static void
@@ -815,7 +839,54 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		0, G_MAXUINT, 0,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
 	
-    /* Private data */
+	/**
+	 * ChimaraGlk:program-name:
+	 *
+	 * The name of the currently running Glk program. You cannot set this 
+	 * property yourself. It is set to the filename of the plugin when you call
+	 * chimara_glk_run(), but the plugin can change it by calling 
+	 * garglk_set_program_name(). To find out when this information changes,
+	 * for example to put the program name in the title bar of a window, connect
+	 * to the <code>::notify::program-name</code> signal.
+	 */
+	g_object_class_install_property(object_class, PROP_PROGRAM_NAME,
+		g_param_spec_string("program-name", _("Program name"),
+		_("Name of the currently running program"),
+		NULL,
+		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
+		
+	/**
+	 * ChimaraGlk:program-info:
+	 *
+	 * Information about the currently running Glk program. You cannot set this
+	 * property yourself. The plugin can change it by calling
+	 * garglk_set_program_info(). See also #ChimaraGlk:program-name.
+	 */
+	g_object_class_install_property(object_class, PROP_PROGRAM_INFO,
+		g_param_spec_string("program-info", _("Program info"),
+		_("Information about the currently running program"),
+		NULL,
+		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
+	
+	/**
+	 * ChimaraGlk:story-name:
+	 *
+	 * The name of the story currently running in the Glk interpreter. You
+	 * cannot set this property yourself. It is set to the story filename when
+	 * you call chimara_if_run_game(), but the plugin can change it by calling
+	 * garglk_set_story_name().
+	 *
+	 * Strictly speaking, this should be a property of #ChimaraIF, but it is
+	 * legal for any Glk program to call garglk_set_story_name(), even if it is
+	 * not an interpreter and does not load story files.
+	 */
+	g_object_class_install_property(object_class, PROP_STORY_NAME,
+		g_param_spec_string("story-name", _("Story name"),
+		_("Name of the story currently loaded in the interpreter"),
+		NULL,
+		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
+	
+	/* Private data */
     g_type_class_add_private(klass, sizeof(ChimaraGlkPrivate));
 }
 
@@ -1159,10 +1230,14 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 			startup->args.argv = g_new0(gchar *, 1);
 		}
 
-		/* Set the program name */
+		/* Set the program invocation name */
 		startup->args.argv[0] = g_strdup(plugin);
     }
 	startup->glk_data = priv;
+	
+	/* Set the program name */
+	priv->program_name = g_path_get_basename(plugin);
+	g_object_notify(G_OBJECT(glk), "program-name");
 	
     /* Run in a separate thread */
 	priv->thread = g_thread_create((GThreadFunc)glk_enter, startup, TRUE, error);
