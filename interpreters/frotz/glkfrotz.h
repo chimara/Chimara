@@ -35,6 +35,7 @@
 #include <time.h>
 
 #include "glk.h"
+#include <libchimara/garglk.h>
 
 extern int curr_status_ht;
 extern int mach_status_ht;
