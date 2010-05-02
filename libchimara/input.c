@@ -417,6 +417,11 @@ on_shutdown_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 gboolean
 on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 {
+	/* Ignore modifier keys, otherwise the char input will already trigger on 
+	the shift key when the user tries to type a capital letter */
+	if(event->is_modifier)
+		return FALSE; /* don't stop the event */
+	
 	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
 
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
