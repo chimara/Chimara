@@ -147,31 +147,51 @@
     <data>
       <row>
         <col id="0" translatable="yes">Glulxercise</col>
-        <col id="1" translatable="yes">glulxercise.ulx</col>
+        <col id="1">glulxercise.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">AccelFuncTest</col>
-        <col id="1" translatable="yes">accelfunctest.ulx</col>
+        <col id="1">accelfunctest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ArrayLimitTest</col>
+        <col id="1">arraylimittest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ExternalFile</col>
+        <col id="1">externalfile.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">InputEventText</col>
-        <col id="1" translatable="yes">inputeventtext.ulx</col>
+        <col id="1">inputeventtext.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">MemCopyTest</col>
-        <col id="1" translatable="yes">memcopytest.ulx</col>
+        <col id="1">memcopytest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">MemHeapTest</col>
-        <col id="1" translatable="yes">memheaptest.ulx</col>
+        <col id="1">memheaptest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">MemStreamTest</col>
-        <col id="1" translatable="yes">memstreamtest.ulx</col>
+        <col id="1">memstreamtest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">UniCaseTest</col>
+        <col id="1">unicasetest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">UnicodeTest</col>
-        <col id="1" translatable="yes">unicodetest.ulx</col>
+        <col id="1">unicodetest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">UniDictTest</col>
+        <col id="1">unidicttest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">WindowTest</col>
+        <col id="1">windowtest.ulx</col>
       </row>
     </data>
   </object>
