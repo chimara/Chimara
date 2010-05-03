@@ -768,7 +768,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	chimara_glk_signals[CHAR_INPUT] = g_signal_new("char-input",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, char_input), NULL, NULL,
-		chimara_marshal_VOID__UINT_UINT,
+		_chimara_marshal_VOID__UINT_UINT,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
 	/**
 	 * ChimaraGlk::line-input:
@@ -782,7 +782,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	chimara_glk_signals[LINE_INPUT] = g_signal_new("line-input",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, line_input), NULL, NULL,
-		chimara_marshal_VOID__UINT_STRING,
+		_chimara_marshal_VOID__UINT_STRING,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
 	/**
 	 * ChimaraGlk::text-buffer-output:
@@ -795,7 +795,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	chimara_glk_signals[TEXT_BUFFER_OUTPUT] = g_signal_new("text-buffer-output",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, text_buffer_output), NULL, NULL,
-		chimara_marshal_VOID__UINT_STRING,
+		_chimara_marshal_VOID__UINT_STRING,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
 
     /* Properties */

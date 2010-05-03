@@ -291,7 +291,7 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	chimara_if_signals[COMMAND] = g_signal_new("command",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraIFClass, command), NULL, NULL,
-		chimara_marshal_VOID__STRING_STRING,
+		_chimara_marshal_VOID__STRING_STRING,
 		G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
 	/* Properties */
