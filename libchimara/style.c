@@ -307,6 +307,9 @@ copy_default_styles_to_current_styles(ChimaraGlk *glk)
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	g_hash_table_foreach(priv->default_styles->text_grid, style_table_copy, priv->current_styles->text_grid);
 	g_hash_table_foreach(priv->default_styles->text_buffer, style_table_copy, priv->current_styles->text_buffer);
+
+	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->default_styles->text_buffer, "pager") );
+	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 }
 
 /* Create the CSS file scanner */
