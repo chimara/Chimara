@@ -288,8 +288,6 @@ style_init(ChimaraGlk *glk)
 
 	/* Set the current style to a copy of the default style */
 	copy_default_styles_to_current_styles(glk);
-
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 }
 
 /* Reset style tables to the library's internal defaults */
