@@ -170,7 +170,11 @@ winid_t
 glk_window_get_parent(winid_t win)
 {
 	VALID_WINDOW(win, return NULL);
+
 	/* Value will also be NULL if win is the root window */
+	if(win->window_node->parent == NULL)
+		return NULL;
+
 	return (winid_t)win->window_node->parent->data;
 }
 
