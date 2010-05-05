@@ -203,6 +203,7 @@ garglk_set_reversevideo(glui32 reverse)
 	g_return_if_fail(glk_data->current_stream != NULL);
 	g_return_if_fail(glk_data->current_stream->window != NULL);
 
-	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table( GTK_TEXT_BUFFER(glk_data->current_stream->window->widget) );
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(glk_data->current_stream->window->widget) );
+	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 	gtk_text_tag_table_foreach( tags, apply_reverse_color, GINT_TO_POINTER(reverse) );
 }
