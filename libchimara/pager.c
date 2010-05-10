@@ -8,10 +8,6 @@
 static void
 move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gint *scroll_distance)
 {
-	while( gtk_events_pending() ) {
-		gtk_main_iteration();
-	}
-
 	GdkRectangle pagerpos, endpos, visiblerect;
 	GtkTextIter oldpager, newpager, end;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(textview);
@@ -19,7 +15,12 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	
 	/* Get an iter at the lower right corner of the visible part of the buffer */
 	gtk_text_view_get_visible_rect(textview, &visiblerect);
-	gtk_text_view_get_iter_at_location(textview, &newpager, visiblerect.x + visiblerect.width, visiblerect.y + visiblerect.height);
+	gtk_text_view_get_iter_at_location(
+		textview,
+		&newpager,
+		visiblerect.x + visiblerect.width,
+		visiblerect.y + visiblerect.height
+	);
 	gtk_text_buffer_get_iter_at_mark(buffer, &oldpager, pager);
 	
 	gtk_text_buffer_move_mark(buffer, pager, &newpager);
@@ -30,8 +31,8 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	gtk_text_view_get_iter_location(textview, &newpager, &pagerpos);
 	gtk_text_view_get_iter_location(textview, &end, &endpos);
 
-	/*g_printerr("View height = %d\n", visiblerect.height);
-	g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);*/
+	g_printerr("View height = %d\n", visiblerect.height);
+	g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);
 	
 	*view_height = visiblerect.height;
 	*scroll_distance = endpos.y - pagerpos.y;
@@ -55,21 +56,23 @@ stop_paging(winid_t win)
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
 }
 
-/* Update the pager position after new text is inserted in the buffer and the
-text view has calculated where it is */
-void
-pager_after_size_allocate(GtkTextView *view, GtkAllocation *allocation, winid_t win)
+/* Check whether paging should be done. This function is called inside the 
+ * idle handler, after the textview has finished updating. */
+gboolean
+pager_check(gpointer data)
 {
-	while(gtk_events_pending())
-		gtk_main_iteration();
-	
+
+	printf("pager check...\n");
+	winid_t win = (winid_t) data;
+
+
 	/* Move the pager to the last visible character in the buffer */
 	gint view_height, scroll_distance;
 	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
 
 	if(view_height <= 1)
 		/* Paging is unusable when window is too small */
-		return;
+		return FALSE;
 	
 	if(!win->currently_paging) {
 		if(scroll_distance > view_height) {
@@ -84,20 +87,22 @@ pager_after_size_allocate(GtkTextView *view, GtkAllocation *allocation, winid_t 
 		}
 		else if(scroll_distance > 0) {
 			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-			gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), gtk_text_buffer_get_mark(buffer, "end_position"));
-			while( gtk_events_pending() ) {
-				gtk_main_iteration();
-			}
+			GtkTextMark *end = gtk_text_buffer_get_mark(buffer, "end_position");
+
+			gdk_threads_enter();
+			gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), end);
+			gdk_threads_leave();
 		}
 	}
+
+	/* Returning FALSE to prevent this function from being called multiple times */
+	return FALSE;
 }
 
+/* When the user scrolls up in a textbuffer, start paging. */
 void
 pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
 {
-	while(gtk_events_pending())
-		gtk_main_iteration();
-	
 	/* Move the pager, etc. */
 	gint scroll_distance, view_height;
    	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
@@ -162,3 +167,4 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 
 	return FALSE; /* Propagate event further */
 }
+
