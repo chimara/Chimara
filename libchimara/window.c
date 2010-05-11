@@ -559,7 +559,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->pager_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(pager_on_key_press_event), win );
 			g_signal_handler_block(textview, win->pager_keypress_handler);
 			GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
-			g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
+			win->pager_adjustment_handler = g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
 
 			/* Char and line input */
 			win->char_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
@@ -585,7 +585,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 			/* Create the pager position mark; it stands for the last character in the buffer
 			 that has been on-screen */
-			gtk_text_buffer_create_mark(textbuffer, "pager_position", &end, TRUE);
+			GtkTextMark *pager_position = gtk_text_buffer_create_mark(textbuffer, "pager_position", &end, TRUE);
+			gtk_text_mark_set_visible(pager_position, TRUE);
 		}
 			break;
 

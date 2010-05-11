@@ -435,6 +435,10 @@ on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	the shift key when the user tries to type a capital letter */
 	if(event->is_modifier)
 		return FALSE; /* don't stop the event */
+
+	/* All text up to the input position is now regarded as being read by the user */
+	if(win->type == wintype_TextBuffer)
+		pager_update(win);
 	
 	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
 
@@ -456,6 +460,8 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	switch(win->type)
 	{
 		case wintype_TextBuffer:
+			/* All text up to the input position is now regarded as being read by the user */
+			pager_update(win);
 
 			/* History up/down */
 			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up

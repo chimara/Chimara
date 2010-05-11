@@ -79,6 +79,7 @@ struct glk_window_struct
 	gulong size_allocate_handler;
 	gulong pager_expose_handler;
 	gulong pager_keypress_handler;
+	gulong pager_adjustment_handler;
 	/* Window buffer */
 	GString *buffer;
 	/* Hyperlinks */

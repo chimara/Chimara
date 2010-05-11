@@ -68,7 +68,6 @@ pager_check(gpointer data)
 	printf("pager check (idle)...\n");
 	winid_t win = (winid_t) data;
 
-
 	/* Move the pager to the last visible character in the buffer */
 	gint view_height, scroll_distance;
 	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE );
@@ -78,6 +77,15 @@ pager_check(gpointer data)
 	if(view_height <= 1)
 		/* Paging is unusable when window is too small */
 		return FALSE;
+	
+	/* Scroll past text already read by user. This is automatic scrolling, so disable the pager_ajustment_handler
+	 * first, that acts on the belief the scolling is performed by the user. */
+	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(win->frame));
+	g_signal_handler_block(adj, win->pager_adjustment_handler);
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+	GtkTextMark *pager_position = gtk_text_buffer_get_mark(buffer, "pager_position");
+	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(win->widget), pager_position, 0.0, TRUE, 0.0, 0.0);
+	g_signal_handler_unblock(adj, win->pager_adjustment_handler);
 	
 	if(!win->currently_paging) {
 		if(scroll_distance > view_height) {
@@ -89,14 +97,6 @@ pager_check(gpointer data)
 #else
 			gdk_window_invalidate_rect(win->widget->window, NULL, TRUE);
 #endif
-		}
-		else if(scroll_distance > 0) {
-			if(win->input_request_type != INPUT_REQUEST_NONE) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-				GtkTextMark *end = gtk_text_buffer_get_mark(buffer, "end_position");
-
-				gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), end);
-			}
 		}
 	}
 	gdk_threads_leave();
@@ -179,36 +179,6 @@ pager_after_expose_event(GtkTextView *textview, GdkEventExpose *event, winid_t w
 {
 	printf("pager check (expose)...\n");
 	g_idle_add(pager_check, win);
-
-//	/* Move the pager to the last visible character in the buffer */
-//	gint view_height, scroll_distance;
-//	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE );
-//
-//	if(view_height <= 1)
-//		/* Paging is unusable when window is too small */
-//		return FALSE;
-//	
-//	if(!win->currently_paging) {
-//		if(scroll_distance > view_height) {
-//			start_paging(win);
-//			/* Seriously... */
-//			/* COMPAT: */
-//#if GTK_CHECK_VERSION(2,14,0)
-//			gdk_window_invalidate_rect(gtk_widget_get_window(win->widget), NULL, TRUE);
-//#else
-//			gdk_window_invalidate_rect(win->widget->window, NULL, TRUE);
-//#endif
-//		}
-//		else if(scroll_distance > 0) {
-//			if(win->input_request_type != INPUT_REQUEST_NONE) {
-//				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-//				GtkTextMark *end = gtk_text_buffer_get_mark(buffer, "end_position");
-//
-//				gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), end);
-//			}
-//		}
-//	}
-
 	return FALSE;
 }
 
@@ -217,4 +187,15 @@ pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, win
 {
 	printf("pager check (size request)...\n");
 	g_idle_add(pager_check, win);
+}
+
+void
+pager_update(winid_t win)
+{
+	GtkTextIter input_iter;
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+	GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+	GtkTextMark *pager_position = gtk_text_buffer_get_mark(buffer, "pager_position");
+	gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
+	gtk_text_buffer_move_mark(buffer, pager_position, &input_iter);
 }
