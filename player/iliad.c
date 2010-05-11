@@ -49,10 +49,15 @@
 #include <liberipc/eripcviewer.h>
 #include <liberipc/eripctoolbar.h>
 #include <liberipc/eripcbusyd.h>
+/*#include "xepdmgrclient.h"*/
+
 
 /* Global pointers to widgets */
 GtkWidget *window = NULL;
 GtkWidget *glk = NULL;
+
+/* Display manager */
+/* sEpd *epd = NULL;*/
 
 static erClientChannel_t erbusyChannel;
 static erClientChannel_t ertoolbarChannel;
@@ -81,6 +86,23 @@ on_save()
 	chimara_glk_feed_line_input( CHIMARA_GLK(glk), "save" );
 }
 
+gboolean
+update_screen(gpointer data)
+{
+	printf("Update screen from idle handler\n");
+	dmDisplay(dmCmdPriorNormal, dmQFull);
+
+	return FALSE;
+}
+
+static void
+on_iliad_screen_update(ChimaraGlk *glk, gboolean typing)
+{
+	printf("Update screen\n");
+	g_idle_add_full(G_PRIORITY_DEFAULT_IDLE+100, update_screen, NULL, NULL);
+}
+
+
 static void
 create_window(void)
 {
@@ -93,11 +115,12 @@ create_window(void)
 		"border-width", 6, 
 		"spacing", 6,
 		"ignore-errors", TRUE,
+		"style-sheet", "style.css",
 		NULL);
-	chimara_glk_set_default_font_string(CHIMARA_GLK(glk), "Serif 12");
-	chimara_glk_set_monospace_font_string(CHIMARA_GLK(glk), "Monospace 12");
+
 	g_signal_connect(glk, "started", G_CALLBACK(on_started), NULL);
 	g_signal_connect(glk, "stopped", G_CALLBACK(on_stopped), NULL);
+	g_signal_connect(glk, "iliad-screen-update", G_CALLBACK(on_iliad_screen_update), NULL);
 	
 	GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
 	GtkWidget *toolbar = gtk_toolbar_new();
@@ -160,6 +183,15 @@ main(int argc, char *argv[])
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);
 #endif
+
+	/* Setup connection to display manager deamon */
+	/*
+	if( (epd = EpdInit(NULL)) == NULL ) {
+		g_critical("Could not connect to xepdmgr server\n");
+		return 1;
+	}
+	EpdRefreshAuto(epd, 0);
+	*/
 
 	if( !g_thread_supported() )
 		g_thread_init(NULL);

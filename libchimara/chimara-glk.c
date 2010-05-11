@@ -137,6 +137,7 @@ enum {
 	CHAR_INPUT,
 	LINE_INPUT,
 	TEXT_BUFFER_OUTPUT,
+	ILIAD_SCREEN_UPDATE,
 
 	LAST_SIGNAL
 };
@@ -687,6 +688,12 @@ chimara_glk_text_buffer_output(ChimaraGlk *self, guint window_rock, gchar *text)
 	/* Default signal handler */
 }
 
+static void
+chimara_glk_iliad_screen_update(ChimaraGlk *self, gboolean typing)
+{
+	/* Default signal handler */
+}
+
 /* COMPAT: G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
 #ifndef G_PARAM_STATIC_STRINGS
 
@@ -722,6 +729,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     klass->char_input = chimara_glk_char_input;
     klass->line_input = chimara_glk_line_input;
     klass->text_buffer_output = chimara_glk_text_buffer_output;
+    klass->iliad_screen_update = chimara_glk_iliad_screen_update;
+
     /**
      * ChimaraGlk::stopped:
      * @glk: The widget that received the signal
@@ -797,6 +806,20 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		G_STRUCT_OFFSET(ChimaraGlkClass, text_buffer_output), NULL, NULL,
 		_chimara_marshal_VOID__UINT_STRING,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
+	/**
+	 * ChimaraGlk::iliad-update-screen:
+	 * @self: The widget that received the signal
+	 * @typing: Whether to perform a typing or full screen update
+	 *
+	 * Iliad specific signal which is emitted whenever the screen needs to be updated.
+	 * Since iliad screen updates are very slow, updating should only be done when
+	 * necessary.
+	 */
+	chimara_glk_signals[ILIAD_SCREEN_UPDATE] = g_signal_new("iliad-screen-update",
+		G_OBJECT_CLASS_TYPE(klass), 0,
+		G_STRUCT_OFFSET(ChimaraGlkClass, iliad_screen_update), NULL, NULL,
+		_chimara_marshal_VOID__BOOLEAN,
+		G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 
     /* Properties */
     /**

@@ -36,6 +36,7 @@ typedef struct _ChimaraGlkClass {
 	void(* char_input) (ChimaraGlk *self, guint32 window_rock, guint keysym);
 	void(* line_input) (ChimaraGlk *self, guint32 window_rock, gchar *text);
 	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, gchar *text);
+	void(* iliad_screen_update) (ChimaraGlk *self, gboolean typing);
 } ChimaraGlkClass;
 
 /**
