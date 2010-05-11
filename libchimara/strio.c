@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <pager.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 

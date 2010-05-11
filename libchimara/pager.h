@@ -10,7 +10,7 @@ G_GNUC_INTERNAL gboolean pager_on_key_press_event(GtkTextView *textview, GdkEven
 G_GNUC_INTERNAL void pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win);
 G_GNUC_INTERNAL gboolean pager_check(gpointer data);
 G_GNUC_INTERNAL gboolean pager_after_expose_event(GtkTextView *textview, GdkEventExpose *event, winid_t win);
-
 G_GNUC_INTERNAL void pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, winid_t win);
+G_GNUC_INTERNAL void pager_update(winid_t win);
 
 #endif

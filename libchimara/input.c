@@ -33,12 +33,6 @@ request_char_event_common(winid_t win, gboolean unicode)
 
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
 	g_signal_emit_by_name(glk_data->self, "waiting");
-
-	/* Schedule a check for the pager */
-	/*
-	if(win->type == wintype_TextBuffer)
-		g_idle_add(pager_check, win);
-	*/
 }
 
 /**
@@ -203,11 +197,6 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
 	gtk_widget_grab_focus(win->widget);
 
 	gdk_threads_leave();
-
-	/* Schedule a check for the pager */
-	/*
-		g_idle_add(pager_check, win);
-		*/
 }
 
 /**
