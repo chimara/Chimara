@@ -62,10 +62,6 @@ flush_window_buffer(winid_t win)
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
 		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->buffer->str);
-
-		/* Schedule a check for the pager */
-		g_idle_add(pager_check, win);
-
 	}
 		break;
 

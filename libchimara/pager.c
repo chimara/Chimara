@@ -6,7 +6,7 @@
  and return the distance between the pager and the end of the buffer in buffer
  coordinates */
 static void
-move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gint *scroll_distance)
+move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gint *scroll_distance, gboolean move )
 {
 	GdkRectangle pagerpos, endpos, visiblerect;
 	GtkTextIter oldpager, newpager, end;
@@ -23,7 +23,8 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	);
 	gtk_text_buffer_get_iter_at_mark(buffer, &oldpager, pager);
 	
-	gtk_text_buffer_move_mark(buffer, pager, &newpager);
+	if(move)
+		gtk_text_buffer_move_mark(buffer, pager, &newpager);
 
 	/* Get the buffer coordinates of the pager and the end iter */
 	gtk_text_buffer_get_end_iter(buffer, &end);
@@ -42,6 +43,7 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 static void
 start_paging(winid_t win)
 {
+	printf("Start paging\n");
 	win->currently_paging = TRUE;
 	g_signal_handler_unblock(win->widget, win->pager_expose_handler);
 	g_signal_handler_unblock(win->widget, win->pager_keypress_handler);
@@ -51,6 +53,7 @@ start_paging(winid_t win)
 static void
 stop_paging(winid_t win)
 {
+	printf("Stop paging\n");
 	win->currently_paging = FALSE;
 	g_signal_handler_block(win->widget, win->pager_expose_handler);
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
@@ -62,13 +65,15 @@ gboolean
 pager_check(gpointer data)
 {
 
-	printf("pager check...\n");
+	printf("pager check (idle)...\n");
 	winid_t win = (winid_t) data;
 
 
 	/* Move the pager to the last visible character in the buffer */
 	gint view_height, scroll_distance;
-	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
+	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE );
+
+	gdk_threads_enter();
 
 	if(view_height <= 1)
 		/* Paging is unusable when window is too small */
@@ -86,14 +91,15 @@ pager_check(gpointer data)
 #endif
 		}
 		else if(scroll_distance > 0) {
-			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-			GtkTextMark *end = gtk_text_buffer_get_mark(buffer, "end_position");
+			if(win->input_request_type != INPUT_REQUEST_NONE) {
+				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+				GtkTextMark *end = gtk_text_buffer_get_mark(buffer, "end_position");
 
-			gdk_threads_enter();
-			gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), end);
-			gdk_threads_leave();
+				gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), end);
+			}
 		}
 	}
+	gdk_threads_leave();
 
 	/* Returning FALSE to prevent this function from being called multiple times */
 	return FALSE;
@@ -105,8 +111,8 @@ pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
 {
 	/* Move the pager, etc. */
 	gint scroll_distance, view_height;
-   	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance );
-	
+   	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, TRUE );
+
 	if(scroll_distance > 0 && !win->currently_paging)
 		start_paging(win);
 	else if(scroll_distance == 0 && win->currently_paging)
@@ -168,3 +174,47 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 	return FALSE; /* Propagate event further */
 }
 
+gboolean
+pager_after_expose_event(GtkTextView *textview, GdkEventExpose *event, winid_t win)
+{
+	printf("pager check (expose)...\n");
+	g_idle_add(pager_check, win);
+
+//	/* Move the pager to the last visible character in the buffer */
+//	gint view_height, scroll_distance;
+//	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE );
+//
+//	if(view_height <= 1)
+//		/* Paging is unusable when window is too small */
+//		return FALSE;
+//	
+//	if(!win->currently_paging) {
+//		if(scroll_distance > view_height) {
+//			start_paging(win);
+//			/* Seriously... */
+//			/* COMPAT: */
+//#if GTK_CHECK_VERSION(2,14,0)
+//			gdk_window_invalidate_rect(gtk_widget_get_window(win->widget), NULL, TRUE);
+//#else
+//			gdk_window_invalidate_rect(win->widget->window, NULL, TRUE);
+//#endif
+//		}
+//		else if(scroll_distance > 0) {
+//			if(win->input_request_type != INPUT_REQUEST_NONE) {
+//				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+//				GtkTextMark *end = gtk_text_buffer_get_mark(buffer, "end_position");
+//
+//				gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(win->widget), end);
+//			}
+//		}
+//	}
+
+	return FALSE;
+}
+
+void
+pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, winid_t win)
+{
+	printf("pager check (size request)...\n");
+	g_idle_add(pager_check, win);
+}

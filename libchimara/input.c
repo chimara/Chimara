@@ -1,6 +1,7 @@
 #include "charset.h"
 #include "magic.h"
 #include "input.h"
+#include "pager.h"
 #include "chimara-glk-private.h"
 
 extern GPrivate *glk_data_key;
@@ -32,6 +33,12 @@ request_char_event_common(winid_t win, gboolean unicode)
 
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
 	g_signal_emit_by_name(glk_data->self, "waiting");
+
+	/* Schedule a check for the pager */
+	/*
+	if(win->type == wintype_TextBuffer)
+		g_idle_add(pager_check, win);
+	*/
 }
 
 /**
@@ -196,6 +203,11 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
 	gtk_widget_grab_focus(win->widget);
 
 	gdk_threads_leave();
+
+	/* Schedule a check for the pager */
+	/*
+		g_idle_add(pager_check, win);
+		*/
 }
 
 /**
@@ -292,6 +304,8 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	/* Register the buffer */
 	if(glk_data->register_arr)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
+
+
 
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
 	win->line_input_buffer_unicode = buf;
