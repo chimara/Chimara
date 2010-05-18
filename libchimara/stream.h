@@ -50,6 +50,7 @@ struct glk_stream_struct
 	gchar *filename; /* Displayable filename in UTF-8 for error handling */
 
 	gchar *style; /* Name of the current style */
+	gchar *glk_style; /* Name of the current glk style override */
 	gboolean hyperlink_mode; /* When turned on, text written to the stream will be a hyperlink */
 };
 

@@ -13,7 +13,7 @@ static gboolean style_accept(GScanner *scanner, GTokenType token);
 static gboolean style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk);
 static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
 static void style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table);
-static void style_table_copy(gpointer key, gpointer tag, gpointer target_table);
+static void style_copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table);
 static void text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list);
 GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
 
@@ -38,6 +38,7 @@ glk_set_style(glui32 styl)
 	glk_set_style_stream(glk_data->current_stream, styl);
 }
 
+#define NUM_STYLES 13
 static const gchar* TAG_NAMES[] = {
 	"normal",
 	"emphasized",
@@ -49,18 +50,46 @@ static const gchar* TAG_NAMES[] = {
 	"block-quote",
 	"input",
 	"user1",
-	"user2"
+	"user2",
+	"hyperlink",
+	"pager"
+};
+
+static const gchar* GLK_TAG_NAMES[] = {
+	"glk-normal",
+	"glk-emphasized",
+	"glk-preformatted",
+	"glk-header",
+	"glk-subheader",
+	"glk-alert",
+	"glk-note",
+	"glk-block-quote",
+	"glk-input",
+	"glk-user1",
+	"glk-user2"
 };
 
 /* Internal function: mapping from style enum to tag name */
 static gchar*
 get_tag_name(glui32 style)
 {
-	if(style >= style_NUMSTYLES) {
+	if(style >= NUM_STYLES) {
 		WARNING("Unsupported style");
 		return "normal";
 	} else {
 		return (gchar*) TAG_NAMES[style];
+	}
+}
+
+/* Internal function: mapping from glk style enum to tag name */
+static gchar*
+get_glk_tag_name(glui32 style)
+{
+	if(style >= style_NUMSTYLES) {
+		WARNING("Unsupported style");
+		return "normal";
+	} else {
+		return (gchar*) GLK_TAG_NAMES[style];
 	}
 }
 
@@ -78,6 +107,7 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 
 	flush_window_buffer(str->window);
 	str->style = get_tag_name(styl);
+	str->glk_style = get_glk_tag_name(styl);
 }
 
 /* Internal function: call this to initialize the layout of the 'more' prompt. */
@@ -98,8 +128,11 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	/* Copy the current text tags to the textbuffer's tag table */
-	g_hash_table_foreach(glk_data->current_styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	/* Place the default text tags in the textbuffer's tag table */
+	g_hash_table_foreach(glk_data->styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+
+	/* Copy the override text tags to the textbuffers's tag table */
+	g_hash_table_foreach(glk_data->glk_styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
 
 
@@ -111,26 +144,33 @@ style_init_textgrid(GtkTextBuffer *buffer)
 	
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	/* Copy the current text tags to the textgrid's tag table */
-	g_hash_table_foreach(glk_data->current_styles->text_grid, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	/* Place the default text tags in the textbuffer's tag table */
+	g_hash_table_foreach(glk_data->styles->text_grid, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+
+	/* Copy the current text tags to the textbuffers's tag table */
+	g_hash_table_foreach(glk_data->glk_styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 }
 
 /* Internal function used to iterate over the default text tag table, applying them to a textbuffer */
 static void
 style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table)
 {
-	gtk_text_tag_table_add( tag_table, gtk_text_tag_copy(tag) );
+	g_return_if_fail(key != NULL);
+	g_return_if_fail(tag != NULL);
+	g_return_if_fail(tag_table != NULL);
+
+	gtk_text_tag_table_add(tag_table, tag);
 }
 
 /* Internal function used to iterate over a style table, copying it */
 static void
-style_table_copy(gpointer key, gpointer tag, gpointer target_table)
+style_copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table)
 {
 	g_return_if_fail(key != NULL);
 	g_return_if_fail(tag != NULL);
 	g_return_if_fail(target_table != NULL);
 
-	g_hash_table_insert(target_table, key, gtk_text_tag_copy( GTK_TEXT_TAG(tag) ));
+	gtk_text_tag_table_add(target_table, gtk_text_tag_copy( GTK_TEXT_TAG(tag) ));
 }
 
 /* Internal function that copies a text tag */
@@ -177,7 +217,7 @@ gtk_text_tag_copy(GtkTextTag *tag)
 	return copy;
 }
 
-/* Internal function that reads the default styles from a CSS file */
+/* Internal function that constructs the default styles */
 void
 style_init(ChimaraGlk *glk)
 {
@@ -185,8 +225,8 @@ style_init(ChimaraGlk *glk)
 	
 	GHashTable *default_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *default_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
-	GHashTable *current_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
-	GHashTable *current_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GHashTable *glk_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GHashTable *glk_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GtkTextTag *tag;
 
 	PangoFontDescription *default_font_desc = pango_font_description_from_string("Serif");
@@ -198,7 +238,7 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_grid_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
-	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
@@ -206,40 +246,48 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_grid_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
-	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "alert", tag);
 
 	tag = gtk_text_tag_new("note");
-	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "block-quote", tag);
 
-	g_hash_table_insert(default_text_grid_styles, "input", gtk_text_tag_new("input"));
-	g_hash_table_insert(default_text_grid_styles, "user1", gtk_text_tag_new("user1"));
-	g_hash_table_insert(default_text_grid_styles, "user2", gtk_text_tag_new("user2"));
+	tag = gtk_text_tag_new("input");
+	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	g_hash_table_insert(default_text_grid_styles, "input", tag);
+
+	tag = gtk_text_tag_new("user1");
+	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	g_hash_table_insert(default_text_grid_styles, "user1", tag);
+
+	tag = gtk_text_tag_new("user2");
+	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	g_hash_table_insert(default_text_grid_styles, "user2", tag);
 
 	tag = gtk_text_tag_new("hyperlink");
 	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "hyperlink", tag);
 
-	/* Tags for the textbuffer */
+	/* Initialise the default styles for a text buffer */
 	tag = gtk_text_tag_new("normal");
 	g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
-	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
@@ -247,47 +295,64 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_buffer_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	g_object_set(tag, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	g_object_set(tag, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
-	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "alert", tag);
 
 	tag = gtk_text_tag_new("note");
-	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "block-quote", tag);
 
-	g_hash_table_insert(default_text_buffer_styles, "input", gtk_text_tag_new("input"));
-	g_hash_table_insert(default_text_buffer_styles, "user1", gtk_text_tag_new("user1"));
-	g_hash_table_insert(default_text_buffer_styles, "user2", gtk_text_tag_new("user2"));
+	tag = gtk_text_tag_new("input");
+	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "input", tag);
+
+	tag = gtk_text_tag_new("user1");
+	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "user1", tag);
+
+	tag = gtk_text_tag_new("user2");
+	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "user2", tag);
 
 	tag = gtk_text_tag_new("hyperlink");
-	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	g_object_set(tag, "font-desc", default_font_desc, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
 	GtkTextTag *pager_tag = gtk_text_tag_new("pager");
-	g_object_set(pager_tag, "foreground", "#ffffff", "background", "#000000", NULL);
+	g_object_set(pager_tag, "font-desc", default_font_desc, "foreground", "#ffffff", "background", "#000000", NULL);
 	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
+	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 
 	pango_font_description_free(default_font_desc);
 	pango_font_description_free(monospace_font_desc);
 	
-	priv->default_styles->text_grid = default_text_grid_styles;
-	priv->default_styles->text_buffer = default_text_buffer_styles;
-	priv->current_styles->text_grid = current_text_grid_styles;
-	priv->current_styles->text_buffer = current_text_buffer_styles;
+	priv->styles->text_grid = default_text_grid_styles;
+	priv->styles->text_buffer = default_text_buffer_styles;
 
-	/* Set the current style to a copy of the default style */
-	copy_default_styles_to_current_styles(glk);
+
+	/* Initialize the GLK styles to empty tags */
+	int i;
+	for(i=0; i<style_NUMSTYLES; i++) {
+		tag = gtk_text_tag_new(GLK_TAG_NAMES[i]);
+		g_hash_table_insert(glk_text_grid_styles, (gchar*) GLK_TAG_NAMES[i], tag);
+		g_hash_table_insert(glk_text_buffer_styles, (gchar*) GLK_TAG_NAMES[i], tag);
+	}
+
+	priv->glk_styles->text_grid = glk_text_grid_styles;
+	priv->glk_styles->text_buffer = glk_text_buffer_styles;
+
 }
 
 /* Reset style tables to the library's internal defaults */
@@ -302,12 +367,14 @@ reset_default_styles(ChimaraGlk *glk)
 void
 copy_default_styles_to_current_styles(ChimaraGlk *glk)
 {
+	/*
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	g_hash_table_foreach(priv->default_styles->text_grid, style_table_copy, priv->current_styles->text_grid);
-	g_hash_table_foreach(priv->default_styles->text_buffer, style_table_copy, priv->current_styles->text_buffer);
+	g_hash_table_foreach(priv->styles->text_grid, style_table_copy, priv->glk_styles->text_grid);
+	g_hash_table_foreach(priv->styles->text_buffer, style_table_copy, priv->glk_styles->text_buffer);
 
-	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->default_styles->text_buffer, "pager") );
+	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
 	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
+	*/
 }
 
 /* Create the CSS file scanner */
@@ -327,12 +394,18 @@ create_css_file_scanner(void)
 void
 scan_css_file(GScanner *scanner, ChimaraGlk *glk)
 {
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
 	while( g_scanner_peek_next_token(scanner) != G_TOKEN_EOF) {
 		if( !style_accept_style_selector(scanner, glk) )
 			break;
 	}
 
 	g_scanner_destroy(scanner);
+
+	/* Update the pager prompt to the new style */
+	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
+	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 }
 
 /* Internal function: parses a token */
@@ -380,9 +453,9 @@ style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 	}
 
 	if( !strcmp(field, "buffer") )
-		current_tag = g_hash_table_lookup(priv->default_styles->text_buffer, value.v_identifier);
+		current_tag = g_hash_table_lookup(priv->styles->text_buffer, value.v_identifier);
 	else
-		current_tag = g_hash_table_lookup(priv->default_styles->text_grid, value.v_identifier);
+		current_tag = g_hash_table_lookup(priv->styles->text_grid, value.v_identifier);
 
 	if(current_tag == NULL) {
 		g_scanner_error(scanner, "CSS Error: invalid style identifier");
@@ -575,7 +648,7 @@ gdkcolor_to_glkcolor(GdkColor *color)
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
 static void
-apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 hint, glsi32 val)
+apply_stylehint_to_tag(GtkTextTag *tag, GtkTextTag *default_tag, glui32 wintype, glui32 hint, glsi32 val)
 {
 	g_return_if_fail(tag != NULL);
 
@@ -631,7 +704,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 hint, glsi32 val)
 	{
 		gchar *font_family;
 		GtkTextTag *font_tag = g_hash_table_lookup(
-		    wintype == wintype_TextBuffer? glk_data->default_styles->text_buffer : glk_data->default_styles->text_grid,
+		    wintype == wintype_TextBuffer? glk_data->styles->text_buffer : glk_data->styles->text_grid,
 		    val? "normal" : "preformatted");
 		g_object_get(font_tag, "family", &font_family, NULL);
 		g_object_set(tag_object, "family", font_family, "family-set", TRUE, NULL);
@@ -664,20 +737,25 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 hint, glsi32 val)
 			/* Flip the fore- and background colors */
 			GdkColor* foreground_color;
 			GdkColor* background_color;
-			gint f_set, b_set = 0;
+			gint f_set, b_set, df_set, db_set = 0;
 			g_object_get(tag_object, "foreground-set", &f_set, "background-set", &b_set, NULL);
+			g_object_get(default_tag, "foreground-set", &df_set, "background-set", &db_set, NULL);
 
 			if(f_set)
 				g_object_get(tag_object, "foreground-gdk", &foreground_color, NULL);
+			else if(df_set)
+				g_object_get(default_tag, "foreground-gdk", &foreground_color, NULL);
 			if(b_set)
 				g_object_get(tag_object, "background-gdk", &background_color, NULL);
+			else if(db_set)
+				g_object_get(default_tag, "background-gdk", &background_color, NULL);
 
-			if(b_set)
+			if(b_set || db_set)
 				g_object_set(tag_object, "foreground-gdk", background_color, NULL);
 			else
 				g_object_set(tag_object, "foreground", "#ffffff", NULL);
 
-			if(f_set)
+			if(f_set || df_set)
 				g_object_set(tag_object, "background-gdk", foreground_color, NULL);
 			else
 				g_object_set(tag_object, "background", "#000000", NULL);
@@ -745,7 +823,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 	{
 		gchar *font_family, *query_font_family;
 		GtkTextTag *font_tag = g_hash_table_lookup(
-		    wintype == wintype_TextBuffer? glk_data->default_styles->text_buffer : glk_data->default_styles->text_grid,
+		    wintype == wintype_TextBuffer? glk_data->styles->text_buffer : glk_data->styles->text_grid,
 		    "preformatted");
 		g_object_get(font_tag, "family", &font_family, NULL);
 		g_object_get(tag, "family", &query_font_family, NULL);
@@ -793,15 +871,17 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	GtkTextTag *to_change;
+	GtkTextTag *to_change, *default_tag;
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
-		to_change = g_hash_table_lookup( glk_data->current_styles->text_buffer, get_tag_name(styl) );
-		apply_stylehint_to_tag(to_change, wintype_TextBuffer, hint, val);
+		to_change = g_hash_table_lookup( glk_data->glk_styles->text_buffer, get_glk_tag_name(styl) );
+		default_tag = g_hash_table_lookup( glk_data->styles->text_buffer, get_tag_name(styl) );
+		apply_stylehint_to_tag(to_change, default_tag, wintype_TextBuffer, hint, val);
 	}
 
 	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
-		to_change = g_hash_table_lookup( glk_data->current_styles->text_grid, get_tag_name(styl) );
-		apply_stylehint_to_tag(to_change, wintype_TextGrid, hint, val);
+		to_change = g_hash_table_lookup( glk_data->glk_styles->text_grid, get_glk_tag_name(styl) );
+		default_tag = g_hash_table_lookup( glk_data->styles->text_grid, get_tag_name(styl) );
+		apply_stylehint_to_tag(to_change, default_tag, wintype_TextGrid, hint, val);
 	}
 }
 
@@ -827,11 +907,11 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 
 	switch(wintype) {
 	case wintype_TextBuffer:
-		tag = g_hash_table_lookup( glk_data->default_styles->text_buffer, get_tag_name(styl) );
+		tag = g_hash_table_lookup( glk_data->styles->text_buffer, get_glk_tag_name(styl) );
 		glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
 		break;
 	case wintype_TextGrid:
-		tag = g_hash_table_lookup( glk_data->default_styles->text_grid, get_tag_name(styl) );
+		tag = g_hash_table_lookup( glk_data->styles->text_grid, get_glk_tag_name(styl) );
 		glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
 	default:
 		return;
@@ -938,12 +1018,12 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 
 	switch(win->type) {
 	case wintype_TextBuffer:
-		tag = g_hash_table_lookup( glk_data->current_styles->text_buffer, get_tag_name(styl) );
+		tag = g_hash_table_lookup( glk_data->glk_styles->text_buffer, get_glk_tag_name(styl) );
 		if(result)
 			*result = query_tag(tag, win->type, hint);
 		break;
 	case wintype_TextGrid:
-		tag = g_hash_table_lookup( glk_data->current_styles->text_grid, get_tag_name(styl) );
+		tag = g_hash_table_lookup( glk_data->glk_styles->text_grid, get_glk_tag_name(styl) );
 		if(result)
 			*result = query_tag(tag, win->type, hint);
 	default:
@@ -964,10 +1044,10 @@ get_current_font(guint32 wintype)
 
 	switch(wintype) {
 	case wintype_TextGrid:
-		normal = g_hash_table_lookup(glk_data->current_styles->text_grid, "normal");
+		normal = g_hash_table_lookup(glk_data->styles->text_grid, "normal");
 		break;
 	case wintype_TextBuffer:
-		normal = g_hash_table_lookup(glk_data->current_styles->text_buffer, "normal");
+		normal = g_hash_table_lookup(glk_data->styles->text_buffer, "normal");
 		break;
 	default:
 		return NULL;

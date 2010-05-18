@@ -26,6 +26,7 @@ window_new_common(glui32 rock)
 	win->window_stream->type = STREAM_TYPE_WINDOW;
 	win->window_stream->window = win;
 	win->window_stream->style = "normal";
+	win->window_stream->glk_style = "normal";
 
 	win->echo_stream = NULL;
 	win->input_request_type = INPUT_REQUEST_NONE;

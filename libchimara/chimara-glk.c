@@ -156,8 +156,8 @@ chimara_glk_init(ChimaraGlk *self)
     priv->self = self;
     priv->interactive = TRUE;
     priv->protect = FALSE;
-	priv->default_styles = g_new0(StyleSet,1);
-	priv->current_styles = g_new0(StyleSet,1);
+	priv->styles = g_new0(StyleSet,1);
+	priv->glk_styles = g_new0(StyleSet,1);
 	priv->pager_attr_list = pango_attr_list_new();
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->running = FALSE;
@@ -257,10 +257,10 @@ chimara_glk_finalize(GObject *object)
 	/* Free widget properties */
 	g_free(priv->final_message);
 	/* Free styles */
-	g_hash_table_destroy(priv->default_styles->text_buffer);
-	g_hash_table_destroy(priv->default_styles->text_grid);
-	g_hash_table_destroy(priv->current_styles->text_buffer);
-	g_hash_table_destroy(priv->current_styles->text_grid);
+	g_hash_table_destroy(priv->styles->text_buffer);
+	g_hash_table_destroy(priv->styles->text_grid);
+	g_hash_table_destroy(priv->glk_styles->text_buffer);
+	g_hash_table_destroy(priv->glk_styles->text_grid);
 	pango_attr_list_unref(priv->pager_attr_list);
 	
     /* Free the event queue */
@@ -1067,10 +1067,6 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 	scanner->input_name = filename;
 	scan_css_file(scanner, glk);
 
-	/* Set the current style to a copy of the default style */
-	/* FIXME this is not correct */
-	copy_default_styles_to_current_styles(glk);
-	
 	if(close(fd) == -1) {
 		*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno),
 		    _("Error closing file \"%s\": %s"), filename, g_strerror(errno));
@@ -1099,10 +1095,6 @@ chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css)
 	g_scanner_input_text(scanner, css, strlen(css));
 	scanner->input_name = "<string>";
 	scan_css_file(scanner, glk);
-
-	/* Set the current style to a copy of the default style */
-	/* FIXME this is not correct */
-	copy_default_styles_to_current_styles(glk);
 }
 
 /**

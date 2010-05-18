@@ -11,7 +11,7 @@ G_GNUC_INTERNAL void style_init_textgrid(GtkTextBuffer *buffer);
 G_GNUC_INTERNAL void style_init_more_prompt(winid_t win);
 G_GNUC_INTERNAL void style_init(ChimaraGlk *glk);
 G_GNUC_INTERNAL void reset_default_styles(ChimaraGlk *glk);
-G_GNUC_INTERNAL void copy_default_styles_to_current_styles(ChimaraGlk *glk);
+/*G_GNUC_INTERNAL void copy_default_styles_to_current_styles(ChimaraGlk *glk);*/
 G_GNUC_INTERNAL GScanner *create_css_file_scanner(void);
 G_GNUC_INTERNAL void scan_css_file(GScanner *scanner, ChimaraGlk *glk);
 G_GNUC_INTERNAL PangoFontDescription *get_current_font(guint32 wintype);

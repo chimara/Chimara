@@ -27,9 +27,9 @@ struct _ChimaraGlkPrivate {
 	guint spacing;
 	/* The CSS file to read style defaults from */
 	gchar *css_file;
-	/* Hashtable containing the default and current style */
-	struct StyleSet *default_styles;
-	struct StyleSet *current_styles;
+	/* Hashtable containing the current styles set by CSS and GLK */
+	struct StyleSet *styles;
+	struct StyleSet *glk_styles;
 	PangoAttrList *pager_attr_list;
 	/* Final message displayed when game exits */
 	gchar *final_message;
