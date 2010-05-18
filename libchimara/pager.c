@@ -32,8 +32,10 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	gtk_text_view_get_iter_location(textview, &newpager, &pagerpos);
 	gtk_text_view_get_iter_location(textview, &end, &endpos);
 
+	/*
 	g_printerr("View height = %d\n", visiblerect.height);
 	g_printerr("End - Pager = %d\n", endpos.y - pagerpos.y);
+	*/
 	
 	*view_height = visiblerect.height;
 	*scroll_distance = endpos.y - pagerpos.y;
@@ -43,7 +45,6 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 static void
 start_paging(winid_t win)
 {
-	printf("Start paging\n");
 	win->currently_paging = TRUE;
 	g_signal_handler_unblock(win->widget, win->pager_expose_handler);
 	g_signal_handler_unblock(win->widget, win->pager_keypress_handler);
@@ -53,7 +54,6 @@ start_paging(winid_t win)
 static void
 stop_paging(winid_t win)
 {
-	printf("Stop paging\n");
 	win->currently_paging = FALSE;
 	g_signal_handler_block(win->widget, win->pager_expose_handler);
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
@@ -65,7 +65,6 @@ gboolean
 pager_check(gpointer data)
 {
 
-	printf("pager check (idle)...\n");
 	winid_t win = (winid_t) data;
 
 	/* Move the pager to the last visible character in the buffer */
@@ -177,7 +176,6 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 gboolean
 pager_after_expose_event(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 {
-	printf("pager check (expose)...\n");
 	g_idle_add(pager_check, win);
 	return FALSE;
 }
@@ -185,7 +183,6 @@ pager_after_expose_event(GtkTextView *textview, GdkEventExpose *event, winid_t w
 void
 pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, winid_t win)
 {
-	printf("pager check (size request)...\n");
 	g_idle_add(pager_check, win);
 }
 

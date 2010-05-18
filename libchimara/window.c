@@ -586,8 +586,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 			/* Create the pager position mark; it stands for the last character in the buffer
 			 that has been on-screen */
-			GtkTextMark *pager_position = gtk_text_buffer_create_mark(textbuffer, "pager_position", &end, TRUE);
-			gtk_text_mark_set_visible(pager_position, TRUE);
+			gtk_text_buffer_create_mark(textbuffer, "pager_position", &end, TRUE);
 		}
 			break;
 
