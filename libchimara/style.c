@@ -907,12 +907,16 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 
 	switch(wintype) {
 	case wintype_TextBuffer:
-		tag = g_hash_table_lookup( glk_data->styles->text_buffer, get_glk_tag_name(styl) );
-		glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
+		tag = g_hash_table_lookup( glk_data->glk_styles->text_buffer, get_glk_tag_name(styl) );
+		if(tag) {
+			glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
+		}
 		break;
 	case wintype_TextGrid:
-		tag = g_hash_table_lookup( glk_data->styles->text_grid, get_glk_tag_name(styl) );
-		glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
+		tag = g_hash_table_lookup( glk_data->glk_styles->text_grid, get_glk_tag_name(styl) );
+		if(tag) {
+			glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
+		}
 	default:
 		return;
 	}

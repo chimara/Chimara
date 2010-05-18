@@ -553,7 +553,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* Connect signal handlers */
 			
 			/* Pager */
-			//g_signal_connect_after( textview, "expose-event", G_CALLBACK(pager_after_expose_event), win );
 			g_signal_connect_after( textview, "size-request", G_CALLBACK(pager_after_size_request), win );
 			win->pager_expose_handler = g_signal_connect_after( textview, "expose-event", G_CALLBACK(pager_on_expose), win );
 			g_signal_handler_block(textview, win->pager_expose_handler);
