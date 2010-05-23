@@ -44,17 +44,19 @@
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
 
+#include "preferences.h"
+
 /* Static global pointers to widgets */
-static GtkBuilder *builder = NULL;
 static GtkUIManager *uimanager = NULL;
 static GtkWidget *window = NULL;
 static GtkWidget *glk = NULL;
 
 /* Global global pointers */
+GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
 
-static GObject *
+GObject *
 load_object(const gchar *name)
 {
 	GObject *retval;
@@ -108,6 +110,7 @@ create_window(void)
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
 	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
+	GtkActionGroup *style_actiongroup = GTK_ACTION_GROUP(load_object("style-actiongroup"));
 
 	/* Add all the actions to the action group. This for-loop is a temporary fix
 	and can be removed once Glade supports adding actions and accelerators to an
@@ -132,9 +135,20 @@ create_window(void)
 		"about", "",
 		NULL
 	};
+	const gchar *style_actions[] = { 
+		"align-left",
+		"align-justify",
+		"align-right",
+		"bold",
+		"italic",
+		"underline",
+		NULL
+	};
 	const gchar **ptr;
 	for(ptr = actions; *ptr; ptr += 2)
 		gtk_action_group_add_action_with_accel(actiongroup, GTK_ACTION(load_object(ptr[0])), ptr[1]);
+	for(ptr = style_actions; *ptr; ptr ++)
+		gtk_action_group_add_action(style_actiongroup, GTK_ACTION(load_object(*ptr)));
 	GtkRecentFilter *filter = gtk_recent_filter_new();
 	/* TODO: Use mimetypes and construct the filter dynamically depending on 
 	what plugins are installed */
@@ -189,15 +203,18 @@ create_window(void)
 
 	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/menubar");
-	GtkWidget *toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
+	//GtkWidget *toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
 
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
 	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
-	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
+	//gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
 	
 	gtk_builder_connect_signals(builder, glk);
 	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);
 	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
+	
+	/* Create preferences window */
+	preferences_create(CHIMARA_GLK(glk));
 }
 
 int
@@ -219,7 +236,6 @@ main(int argc, char *argv[])
 	create_window();
 	gtk_widget_show_all(window);
 
-	g_object_unref( G_OBJECT(builder) );
 	g_object_unref( G_OBJECT(uimanager) );
 
 	if(argc >= 2) {
@@ -235,6 +251,8 @@ main(int argc, char *argv[])
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
+
+	g_object_unref( G_OBJECT(builder) );
 
 	return 0;
 }

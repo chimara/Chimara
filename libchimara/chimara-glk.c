@@ -22,6 +22,7 @@
 #include "glkunix.h"
 #include "init.h"
 #include "magic.h"
+#include "style.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
@@ -1371,4 +1372,100 @@ chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text)
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	g_async_queue_push(priv->line_input_queue, g_strdup(text));
 	event_throw(glk, evtype_ForcedLineInput, NULL, 0, 0);
+}
+
+/**
+ * chimara_glk_get_tag:
+ * @glk: a #ChimarGlk widget
+ * @window: The type of window to retrieve the tag for
+ * @name: The name of the tag to retrieve
+ *
+ * Use this function to get a #GtkTextTag so style properties can be changed.
+ * See also #chimara_glk_set_css_from_string.
+ *
+ * The layout of the text in Chimara is controlled by two sets of tags: one set
+ * describing the style in text buffers and one for text grids. See also the
+ * GLK specification for the difference between the two. The main narrative of
+ * a game is usually rendered in text buffers, whereas text grids are mostly
+ * used for status bars and in game menus.
+ *
+ * The following tag names are supported:
+ * <itemizedlist>
+ *	<listitem><para>normal</para></listitem>
+ *	<listitem><para>emphasized</para></listitem>
+ *	<listitem><para>preformatted</para></listitem>
+ *	<listitem><para>header</para></listitem>
+ *	<listitem><para>subheader</para></listitem>
+ *	<listitem><para>alert</para></listitem>
+ *	<listitem><para>note</para></listitem>
+ *	<listitem><para>block-quote</para></listitem>
+ *	<listitem><para>input</para></listitem>
+ *	<listitem><para>user1</para></listitem>
+ *	<listitem><para>user2</para></listitem>
+ *	<listitem><para>hyperlink</para></listitem>
+ *	<listitem><para>pager</para></listitem>
+ * </itenizedlist>
+ */
+GtkTextTag*
+chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
+	switch(window) {
+	case CHIMARA_GLK_TEXT_BUFFER:
+		return GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, name) );
+		break;
+	case CHIMARA_GLK_TEXT_GRID:
+		return GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_grid, name) );
+		break;
+	default:
+		ILLEGAL_PARAM("Unknown window type: %u", window);
+		return NULL;
+	}
+}
+
+/**
+ * chimara_glk_get_tag:
+ * @glk: a #ChimarGlk widget
+ *
+ * Retrieves the possible tag names to use in #chimara_glk_get_tag.
+ */
+const gchar**
+chimara_glk_get_tag_names(ChimaraGlk *glk)
+{
+	return style_get_tag_names();
+}
+
+/**
+ * chimara_glk_get_num_tag_names:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Retrieves the number of style tags returned by #chimara_glk_get_tag_names.
+ */
+gint
+chimara_glk_get_num_tag_names(ChimaraGlk *glk)
+{
+	return CHIMARA_NUM_STYLES;
+}
+
+/**
+ * chimara_glk_update_style:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Processes style updates and updates the widget to reflect the new style.
+ * Call this every time you change a property of a #GtkTextTag retrieved by
+ * #chimara_glk_get_tag.
+ */
+void
+chimara_glk_update_style(ChimaraGlk *glk)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	style_update(glk);
+
+	/* Schedule a redraw */
+	g_mutex_lock(priv->arrange_lock);
+	priv->needs_rearrange = TRUE;
+	priv->ignore_next_arrange_event = TRUE;
+	g_mutex_unlock(priv->arrange_lock);
+	gtk_widget_queue_resize( GTK_WIDGET(priv->self) );
 }

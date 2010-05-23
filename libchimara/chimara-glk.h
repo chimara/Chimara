@@ -39,6 +39,11 @@ typedef struct _ChimaraGlkClass {
 	void(* iliad_screen_update) (ChimaraGlk *self, gboolean typing);
 } ChimaraGlkClass;
 
+typedef enum {
+	CHIMARA_GLK_TEXT_BUFFER,
+	CHIMARA_GLK_TEXT_GRID
+} ChimaraGlkWindowType;
+
 /**
  * ChimaraError:
  * @CHIMARA_LOAD_MODULE_ERROR: There was an error opening the plugin containing 
@@ -86,6 +91,10 @@ void chimara_glk_wait(ChimaraGlk *glk);
 gboolean chimara_glk_get_running(ChimaraGlk *glk);
 void chimara_glk_feed_char_input(ChimaraGlk *glk, guint32 keyval);
 void chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text);
+GtkTextTag *chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name);
+const gchar **chimara_glk_get_tag_names(ChimaraGlk *glk);
+gint chimara_glk_get_num_tag_names(ChimaraGlk *glk);
+void chimara_glk_update_style(ChimaraGlk *glk);
 
 G_END_DECLS
 

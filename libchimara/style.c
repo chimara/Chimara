@@ -38,7 +38,6 @@ glk_set_style(glui32 styl)
 	glk_set_style_stream(glk_data->current_stream, styl);
 }
 
-#define NUM_STYLES 13
 static const gchar* TAG_NAMES[] = {
 	"normal",
 	"emphasized",
@@ -69,11 +68,17 @@ static const gchar* GLK_TAG_NAMES[] = {
 	"glk-user2"
 };
 
+const gchar**
+style_get_tag_names()
+{
+	return TAG_NAMES;
+}
+
 /* Internal function: mapping from style enum to tag name */
-static gchar*
+static const gchar*
 get_tag_name(glui32 style)
 {
-	if(style >= NUM_STYLES) {
+	if(style >= CHIMARA_NUM_STYLES) {
 		WARNING("Unsupported style");
 		return "normal";
 	} else {
@@ -82,7 +87,7 @@ get_tag_name(glui32 style)
 }
 
 /* Internal function: mapping from glk style enum to tag name */
-static gchar*
+static const gchar*
 get_glk_tag_name(glui32 style)
 {
 	if(style >= style_NUMSTYLES) {
@@ -106,8 +111,8 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 		return;
 
 	flush_window_buffer(str->window);
-	str->style = get_tag_name(styl);
-	str->glk_style = get_glk_tag_name(styl);
+	str->style = (gchar*) get_tag_name(styl);
+	str->glk_style = (gchar*) get_glk_tag_name(styl);
 }
 
 /* Internal function: call this to initialize the layout of the 'more' prompt. */
@@ -1119,4 +1124,14 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 			pango_attr_underline_new(underline)
 		);
 	}
+}
+
+/* Update pager and reverse video tags */
+void
+style_update(ChimaraGlk *glk)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
+	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
+	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 }
