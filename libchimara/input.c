@@ -495,7 +495,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				gtk_text_buffer_get_end_iter(buffer, &end);
 
 				g_signal_handler_block(buffer, win->insert_text_handler);
-				gtk_text_buffer_insert_with_tags_by_name(buffer, &end, win->history_pos->data, -1, "input", NULL);
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &end, win->history_pos->data, -1, "default", "input", NULL);
 				g_signal_handler_unblock(buffer, win->insert_text_handler);
 				return TRUE;
 			}
@@ -912,7 +912,7 @@ force_line_input_from_queue(winid_t win, event_t *event)
 		/* Insert the forced input into the window */
 		gtk_text_buffer_get_end_iter(buffer, &end);
 		gchar *text_to_insert = g_strconcat(text, "\n", NULL);
-		gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "input", NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", NULL);
 		chars_written = finish_text_buffer_line_input(win, TRUE);
 	}
 	else if(win->type == wintype_TextGrid)

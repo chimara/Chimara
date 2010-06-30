@@ -39,6 +39,7 @@ glk_set_style(glui32 styl)
 }
 
 static const gchar* TAG_NAMES[] = {
+	"default",
 	"normal",
 	"emphasized",
 	"preformatted",
@@ -238,12 +239,17 @@ style_init(ChimaraGlk *glk)
 	PangoFontDescription *monospace_font_desc = pango_font_description_from_string("Monospace");
 	
 	/* Initialise the default styles for a text grid */
-	tag = gtk_text_tag_new("normal");
+	tag = gtk_text_tag_new("default");
 	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	g_hash_table_insert(default_text_grid_styles, "default", tag);
+
+	tag = gtk_text_tag_new("normal");
+	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
-	g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
@@ -251,35 +257,40 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_grid_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
-	g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "alert", tag);
 
 	tag = gtk_text_tag_new("note");
-	g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_grid_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "block-quote", tag);
 
 	tag = gtk_text_tag_new("input");
-	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "input", tag);
 
 	tag = gtk_text_tag_new("user1");
-	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "user1", tag);
 
 	tag = gtk_text_tag_new("user2");
-	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "user2", tag);
 
 	tag = gtk_text_tag_new("hyperlink");
@@ -287,12 +298,17 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_grid_styles, "hyperlink", tag);
 
 	/* Initialise the default styles for a text buffer */
-	tag = gtk_text_tag_new("normal");
+	tag = gtk_text_tag_new("default");
 	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	g_hash_table_insert(default_text_buffer_styles, "default", tag);
+
+	tag = gtk_text_tag_new("normal");
+	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
-	g_object_set(tag, "font-desc", default_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
@@ -300,39 +316,45 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_buffer_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	g_object_set(tag, "font-desc", default_font_desc, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	g_object_set(tag, "font-desc", default_font_desc, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
-	g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "alert", tag);
 
 	tag = gtk_text_tag_new("note");
-	g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	g_object_set(tag, "font-desc", default_font_desc, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "block-quote", tag);
 
 	tag = gtk_text_tag_new("input");
-	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "input", tag);
 
 	tag = gtk_text_tag_new("user1");
-	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "user1", tag);
 
 	tag = gtk_text_tag_new("user2");
-	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "user2", tag);
 
 	tag = gtk_text_tag_new("hyperlink");
-	g_object_set(tag, "font-desc", default_font_desc, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	//g_object_set(tag, "font-desc", default_font_desc, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
 	GtkTextTag *pager_tag = gtk_text_tag_new("pager");
@@ -446,29 +468,38 @@ style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 
 	field = g_strdup(value.v_identifier);
 
-	if( !style_accept(scanner, '.') )
-		return FALSE;
+	/* Parse the tag name to change */
+	if( g_scanner_peek_next_token(scanner) == '{') {
+		style_accept(scanner, '{');
+		if( !strcmp(field, "buffer") )
+			current_tag = g_hash_table_lookup(priv->styles->text_buffer, "default");
+		else
+			current_tag = g_hash_table_lookup(priv->styles->text_grid, "default");
+	} else {
+		if( !style_accept(scanner, '.') )
+			return FALSE;
 
-	token = g_scanner_get_next_token(scanner);
-	value = g_scanner_cur_value(scanner);
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 
-	if(token != G_TOKEN_IDENTIFIER) {
-		g_scanner_error(scanner, "CSS Error: style selector expected");
-		return FALSE;
+		if(token != G_TOKEN_IDENTIFIER) {
+			g_scanner_error(scanner, "CSS Error: style selector expected");
+			return FALSE;
+		}
+
+		if( !strcmp(field, "buffer") )
+			current_tag = g_hash_table_lookup(priv->styles->text_buffer, value.v_identifier);
+		else
+			current_tag = g_hash_table_lookup(priv->styles->text_grid, value.v_identifier);
+
+		if(current_tag == NULL) {
+			g_scanner_error(scanner, "CSS Error: invalid style identifier");
+			return FALSE;
+		}
+
+		if( !style_accept(scanner, '{') )
+			return FALSE;
 	}
-
-	if( !strcmp(field, "buffer") )
-		current_tag = g_hash_table_lookup(priv->styles->text_buffer, value.v_identifier);
-	else
-		current_tag = g_hash_table_lookup(priv->styles->text_grid, value.v_identifier);
-
-	if(current_tag == NULL) {
-		g_scanner_error(scanner, "CSS Error: invalid style identifier");
-		return FALSE;
-	}
-
-	if( !style_accept(scanner, '{') )
-		return FALSE;
 
 	while( g_scanner_peek_next_token(scanner) != '}') {
 		if( !style_accept_style_hint(scanner, current_tag) )
