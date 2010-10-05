@@ -38,8 +38,8 @@ glk_set_style(glui32 styl)
 	glk_set_style_stream(glk_data->current_stream, styl);
 }
 
+/* The first 11 tag names must correspond to the first 11 glk tag names as defined below */
 static const gchar* TAG_NAMES[] = {
-	"default",
 	"normal",
 	"emphasized",
 	"preformatted",
@@ -52,9 +52,11 @@ static const gchar* TAG_NAMES[] = {
 	"user1",
 	"user2",
 	"hyperlink",
-	"pager"
+	"pager",
+	"default"
 };
 
+/* The first 11 glk tag names must correspond to the first 11 tag names as defined above */
 static const gchar* GLK_TAG_NAMES[] = {
 	"glk-normal",
 	"glk-emphasized",
