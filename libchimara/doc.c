@@ -158,6 +158,7 @@
  * Glk through a virtual machine, matters will probably be different. Opaque
  * objects may be represented as integers, or as VM objects of some sort.
  * </para></note></para>
+ * <para>
  * <refsect2 id="chimara-Rocks"><!-- Indeed it does. -->
  * <title>Rocks</title>
  * <para>
