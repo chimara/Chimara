@@ -150,4 +150,10 @@
      <xi:include href="xml/glkext-garglk.xml"/>
     </appendix>
   </reference>
+  
+  <!-- Index -->
+  <index id="api-index">
+   <title>Index of symbols</title>
+   <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
 </book>
