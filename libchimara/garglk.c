@@ -79,7 +79,6 @@ garglk_set_program_info(const char *info)
 void 
 garglk_set_story_name(const char *name)
 {
-	g_printerr("garglk_set_story_name(\"%s\");\n", name);
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	glk_data->story_name = g_strdup(name);
 	g_object_notify(G_OBJECT(glk_data->self), "story-name");
