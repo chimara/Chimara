@@ -1,0 +1,14 @@
+.deps
+.libs
+Makefile
+Makefile.in
+copying.c
+dbg_help.h
+inform.c
+nitfol.info
+nitfol.la
+*.o
+*.lo
+*.texi
+startunix.c
+texinfo.tex
