@@ -180,7 +180,7 @@ create_window(void)
 #ifdef DEBUG
 		g_error_free(error);
 		error = NULL;
-		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/macstyle.css", &error) ) {
+		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/style.css", &error) ) {
 #endif /* DEBUG */
 			error_dialog(NULL, error, "Couldn't open CSS file: ");
 			return;
