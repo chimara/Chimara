@@ -71,13 +71,6 @@
  * #include <gtk/gtk.h>
  * #include <libchimara/chimara-glk.h>
  *
- * static gboolean
- * quit(void)
- * {
- *     gtk_main_quit();
- *     return TRUE;
- * }
- *
  * int
  * main(int argc, char *argv[])
  * {
@@ -94,10 +87,15 @@
  *     /<!---->* Construct the window and its contents. We quit the GTK main loop
  *      * when the window's close button is clicked. *<!---->/
  *     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
- *     g_signal_connect(window, "delete-event", G_CALLBACK(quit), NULL);
+ *     g_signal_connect(window, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
  *     glk = chimara_glk_new();
  *     gtk_container_add(GTK_CONTAINER(window), glk);
  *     gtk_widget_show_all(window);
+ *
+ *     /<!---->* Add a reference to the ChimaraGlk widget, since we want it to
+ *      * persist after the window's delete-event -- otherwise it will be destroyed
+ *      * with the window. *<!---->/
+ *     g_object_ref(glk);
  *     
  *     /<!---->* Start the Glk program in a separate thread *<!---->/
  *     if(!chimara_glk_run(CHIMARA_GLK(glk), "./plugin.so", 2, plugin_argv, &error))
@@ -112,6 +110,7 @@
  *      * it is still running, and wait for it to exit. *<!---->/
  *     chimara_glk_stop(CHIMARA_GLK(glk));
  *     chimara_glk_wait(CHIMARA_GLK(glk));
+ *     g_object_unref(glk);
  *
  *     return 0;
  * }
