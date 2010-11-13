@@ -10,7 +10,7 @@ TEST_PLUGIN_LIBTOOL_FLAGS = \
 	-export-symbols-regex "^glk_main$$" \
 	-rpath $(abs_builddir)
 
-noinst_PROGRAMS = test-multisession glulxercise plugin-loader
+noinst_PROGRAMS = test-multisession glulxercise plugin-loader test-close
 
 test_multisession_SOURCES = test-multisession.c
 test_multisession_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
@@ -24,6 +24,10 @@ glulxercise_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 plugin_loader_SOURCES = plugin-loader.c
 plugin_loader_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 plugin_loader_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
+
+test_close_SOURCES = test-close.c
+test_close_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
+test_close_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la styletest.la
 

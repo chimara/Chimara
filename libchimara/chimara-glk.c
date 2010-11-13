@@ -305,6 +305,8 @@ chimara_glk_finalize(GObject *object)
 	g_free(priv->program_name);
 	g_free(priv->program_info);
 	g_free(priv->story_name);
+	g_free(priv->styles);
+	g_free(priv->glk_styles);
 
 	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);

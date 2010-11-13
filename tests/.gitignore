@@ -8,3 +8,4 @@ Makefile.in
 glulxercise
 plugin-loader
 test-multisession
+test-close
