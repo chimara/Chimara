@@ -2,7 +2,7 @@
 MAJOR = 1
 MINOR = 2
 PATCH = 4
-version.h: Makefile
+version.h: Makefile.am
 	echo "// Automatically generated file -- do not edit!" > version.h
 	echo "#define GIT_MAJOR" $(MAJOR) >> version.h
 	echo "#define GIT_MINOR" $(MINOR) >> version.h
