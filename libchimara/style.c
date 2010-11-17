@@ -376,7 +376,7 @@ style_init(ChimaraGlk *glk)
 	for(i=0; i<style_NUMSTYLES; i++) {
 		tag = gtk_text_tag_new(GLK_TAG_NAMES[i]);
 		g_hash_table_insert(glk_text_grid_styles, (gchar*) GLK_TAG_NAMES[i], tag);
-		g_object_ref(tag); /* Add an extra reference since the tag is in two hashtables */
+		tag = gtk_text_tag_new(GLK_TAG_NAMES[i]);
 		g_hash_table_insert(glk_text_buffer_styles, (gchar*) GLK_TAG_NAMES[i], tag);
 	}
 
