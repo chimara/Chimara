@@ -104,7 +104,9 @@ chimara_if_waiting(ChimaraGlk *glk)
 	gchar *response = g_string_free(priv->response, FALSE);
 	priv->response = g_string_new("");
 
+	gdk_threads_enter();
 	g_signal_emit_by_name(glk, "command", priv->input, response);
+	gdk_threads_leave();
 
 	g_free(priv->input);
 	g_free(response);
