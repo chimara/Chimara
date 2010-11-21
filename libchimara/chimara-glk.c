@@ -1362,8 +1362,8 @@ chimara_glk_feed_char_input(ChimaraGlk *glk, guint keyval)
  * request. @text does not need to end with a newline. You can call this 
  * function even when no window has requested line input, in which case the text
  * will be saved for the following window that requests line input. This has the 
- * disadvantage that if more than one window has requested character input, it 
- * is arbitrary which one gets the text.
+ * disadvantage that if more than one window has requested line input, it is
+ * arbitrary which one gets the text.
  */
 void 
 chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text)
@@ -1373,6 +1373,40 @@ chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text)
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	g_async_queue_push(priv->line_input_queue, g_strdup(text));
 	event_throw(glk, evtype_ForcedLineInput, NULL, 0, 0);
+}
+
+/**
+ * chimara_glk_is_char_input_pending:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Use this function to tell if character input forced by 
+ * chimara_glk_feed_char_input() has been passed to an input request or not.
+ *
+ * Returns: %TRUE if forced character input is pending, %FALSE otherwise.
+ */
+gboolean
+chimara_glk_is_char_input_pending(ChimaraGlk *glk)
+{
+	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	return g_async_queue_length(priv->char_input_queue) > 0;
+}
+
+/**
+ * chimara_glk_is_line_input_pending:
+ * @glk: a #ChimaraGlk widget
+ *
+ * Use this function to tell if line input forced by 
+ * chimara_glk_feed_line_input() has been passed to an input request or not.
+ *
+ * Returns: %TRUE if forced line input is pending, %FALSE otherwise.
+ */
+gboolean
+chimara_glk_is_line_input_pending(ChimaraGlk *glk)
+{
+	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	return g_async_queue_length(priv->line_input_queue) > 0;
 }
 
 /**
