@@ -130,16 +130,26 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 
 /* Check whether paging should be done. This function is called after the
  * textview has finished validating text positions. */
-void pager_after_size_request(GtkTextView *textview, GtkRequisition
-		*requisition, winid_t win) {
+void 
+pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, winid_t win) 
+{
 	/* Move the pager to the last visible character in the buffer */
-	gint view_height, scroll_distance; move_pager_and_get_scroll_distance(
-			GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE
-			);
+	gint view_height, scroll_distance; 
+	move_pager_and_get_scroll_distance(GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE);
 
 	if(view_height <= 1)
 		/* Paging is unusable when window is too small */
 		return;
+
+	/* If not in interactive mode, then just scroll to the bottom. */
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(GTK_WIDGET(textview), CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	if(!chimara_glk_get_interactive(glk)) {
+		GtkTextIter end;
+		gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(textview), &end);
+		gtk_text_view_scroll_to_iter(textview, &end, 0.0, TRUE, 0.0, 0.0);
+		return;
+	}
 	
 	/* Scroll past text already read by user. This is automatic scrolling, so disable the pager_ajustment_handler
 	 * first, that acts on the belief the scolling is performed by the user. */
