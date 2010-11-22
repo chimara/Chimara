@@ -343,12 +343,13 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 glui32
 draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
 {
-	GdkPixmap *canvas;
-	gdk_threads_enter();
-
 	switch(win->type) {
 	case wintype_Graphics:
 	{
+		GdkPixmap *canvas;
+
+		gdk_threads_enter();
+
 		gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
 		if(canvas == NULL) {
 			WARNING("Could not get pixmap");
@@ -359,18 +360,23 @@ draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
 
 		/* Update the screen */
 		gtk_widget_queue_draw(win->widget);
+
+		gdk_threads_leave();
 	}
 		break;
 
 	case wintype_TextBuffer:
 	{
+		flush_window_buffer(win);
+
+		gdk_threads_enter();
+
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 		GtkTextIter end, start;
 		gtk_text_buffer_get_end_iter(buffer, &end);
-		start = end;
 
-		flush_window_buffer(win);
 		gtk_text_buffer_insert_pixbuf(buffer, &end, pixbuf);
+		start = end;
 		gtk_text_iter_forward_char(&end);
 
 		gint height = 0;
@@ -390,12 +396,11 @@ draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
 			GtkTextTag *tag = gtk_text_buffer_create_tag(buffer, NULL, "rise", PANGO_SCALE * (-height), NULL);
 			gtk_text_buffer_apply_tag(buffer, tag, &start, &end);
 		}
+
+		gdk_threads_leave();
 	}
 		break;
-
 	}
-
-	gdk_threads_leave();
 	return TRUE;
 }
 
