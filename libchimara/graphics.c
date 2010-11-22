@@ -22,6 +22,10 @@ load_image_in_cache(glui32 image, gint width, gint height)
 	guchar *buffer;
 
 	/* Lookup the proper resource */
+	if(!glk_data->resource_map) {
+		WARNING("No resource map has been loaded yet.");
+		return NULL;
+	}
 	blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &resource, giblorb_ID_Pict, image);
 	if(blorb_error != giblorb_err_None) {
 		WARNING_S( "Error loading resource", giblorb_get_error_message(blorb_error) );

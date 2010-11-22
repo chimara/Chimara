@@ -178,6 +178,7 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->char_input_queue = g_async_queue_new();
 	priv->line_input_queue = g_async_queue_new();
 	/* Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
+	priv->resource_map = NULL;
 	priv->resource_lock = g_mutex_new();
 	priv->resource_loaded = g_cond_new();
 	priv->resource_info_available = g_cond_new();
