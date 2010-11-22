@@ -220,7 +220,7 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 
 	if(width != NULL)
 		*width = found->width;
-	if(width != NULL)
+	if(height != NULL)
 		*height = found->height;
 	return TRUE;
 }
