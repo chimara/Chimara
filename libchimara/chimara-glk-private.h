@@ -89,6 +89,9 @@ struct _ChimaraGlkPrivate {
 	giblorb_map_t *resource_map;
 	/* File stream pointing to the blorb used as current resource map */
 	strid_t resource_file;
+	/* Optional callback for loading resource data */
+	ChimaraResourceLoadFunc resource_load_callback;
+	gpointer resource_load_callback_data;
 	/* Callbacks for registering and unregistering dispatch objects */
 	gidispatch_rock_t (*register_obj)(void *, glui32);
 	void (*unregister_obj)(void *, glui32, gidispatch_rock_t);

@@ -5,6 +5,8 @@ ChimaraGlk
 ChimaraError
 CHIMARA_ERROR
 chimara_error_quark
+ChimaraResourceLoadFunc
+ChimaraResourceType
 chimara_glk_new
 chimara_glk_set_interactive
 chimara_glk_get_interactive
@@ -21,6 +23,7 @@ chimara_glk_wait
 chimara_glk_get_running
 chimara_glk_feed_char_input
 chimara_glk_feed_line_input
+chimara_glk_set_resource_load_callback
 <SUBSECTION Standard>
 CHIMARA_GLK
 CHIMARA_IS_GLK

@@ -182,6 +182,8 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->resource_lock = g_mutex_new();
 	priv->resource_loaded = g_cond_new();
 	priv->resource_info_available = g_cond_new();
+	priv->resource_load_callback = NULL;
+	priv->resource_load_callback_data = NULL;
 	priv->image_cache = NULL;
 	priv->program_name = NULL;
 	priv->program_info = NULL;
@@ -1504,4 +1506,31 @@ chimara_glk_update_style(ChimaraGlk *glk)
 	priv->ignore_next_arrange_event = TRUE;
 	g_mutex_unlock(priv->arrange_lock);
 	gtk_widget_queue_resize( GTK_WIDGET(priv->self) );
+}
+
+/**
+ * chimara_glk_set_resource_load_callback:
+ * @glk: a #ChimaraGlk widget
+ * @func: a function to call for loading resources, or %NULL
+ * @user_data: user data to pass to @func, or %NULL
+ *
+ * Sometimes it is preferable to load image and sound resources from somewhere
+ * else than a Blorb file, for example while developing a game. Section 14 of
+ * the <ulink url="http://eblong.com/zarf/blorb/blorb.html#s14">Blorb
+ * specification</ulink> allows for this possibility. This function sets @func
+ * to be called when the Glk program requests loading an image or sound without
+ * a Blorb resource map having been loaded, optionally passing @user_data as an 
+ * extra parameter.
+ *
+ * Note that @func is only called if no Blorb resource map has been set; having
+ * a resource map in place overrides this function.
+ *
+ * To deactivate the callback, call this function with @func set to %NULL.
+ */
+void
+chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	priv->resource_load_callback = func;
+	priv->resource_load_callback_data = user_data;
 }

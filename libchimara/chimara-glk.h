@@ -67,6 +67,31 @@ typedef enum _ChimaraError {
 } ChimaraError;
 
 /**
+ * ChimaraResourceType:
+ * @CHIMARA_RESOURCE_SOUND: A sound file.
+ * @CHIMARA_RESOURCE_IMAGE: An image file.
+ *
+ * The type of resource that the Glk program is requesting, passed to a
+ * #ChimaraResourceLoadFunc.
+ */
+typedef enum _ChimaraResourceType {
+	CHIMARA_RESOURCE_SOUND,
+	CHIMARA_RESOURCE_IMAGE
+} ChimaraResourceType;
+
+/**
+ * ChimaraResourceLoadFunc:
+ *
+ * The type of function passed to chimara_glk_set_resource_load_callback(). It
+ * takes a #ChimaraResourceType constant, @usage, to indicate what sort of 
+ * resource to look for; @resnum is the resource number to look for, and
+ * @user_data is the user data provided along with the callback. The function
+ * must return an allocated string containing the filename where the resource
+ * can be found.
+ */
+typedef gchar * (*ChimaraResourceLoadFunc)(ChimaraResourceType usage, guint32 resnum, gpointer user_data);
+
+/**
  * CHIMARA_ERROR:
  *
  * The domain of errors raised by Chimara widgets.
@@ -97,6 +122,7 @@ GtkTextTag *chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, co
 const gchar **chimara_glk_get_tag_names(ChimaraGlk *glk);
 gint chimara_glk_get_num_tag_names(ChimaraGlk *glk);
 void chimara_glk_update_style(ChimaraGlk *glk);
+void chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data);
 
 G_END_DECLS
 

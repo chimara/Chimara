@@ -13,24 +13,11 @@ static gboolean image_loaded;
 static gboolean size_determined;
 
 static struct image_info*
-load_image_in_cache(glui32 image, gint width, gint height)
+load_image_from_blorb(giblorb_result_t resource, glui32 image, gint width, gint height)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	giblorb_err_t blorb_error = 0;
-	giblorb_result_t resource;
 	GError *pixbuf_error = NULL;
 	guchar *buffer;
-
-	/* Lookup the proper resource */
-	if(!glk_data->resource_map) {
-		WARNING("No resource map has been loaded yet.");
-		return NULL;
-	}
-	blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &resource, giblorb_ID_Pict, image);
-	if(blorb_error != giblorb_err_None) {
-		WARNING_S( "Error loading resource", giblorb_get_error_message(blorb_error) );
-		return NULL;
-	}
 
 	struct image_info *info = g_new0(struct image_info, 1);
 	info->resource_number = image;
@@ -75,6 +62,65 @@ load_image_in_cache(glui32 image, gint width, gint height)
 	}
 	g_mutex_unlock(glk_data->resource_lock);
 
+	info->pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+
+	g_object_unref(loader);
+	return info;
+}
+
+static struct image_info *
+load_image_from_file(const gchar *filename, glui32 image, gint width, gint height)
+{
+	GError *err = NULL;
+	
+	struct image_info *info = g_new0(struct image_info, 1);
+	info->resource_number = image;
+	
+	if(width > 0 && height > 0) {
+		info->scaled = TRUE;
+		info->pixbuf = gdk_pixbuf_new_from_file_at_size(filename, width, height, &err);
+	} else {
+		info->pixbuf = gdk_pixbuf_new_from_file(filename, &err);
+	}
+	if(!info->pixbuf) {
+		IO_WARNING("Error loading resource from alternative location", filename, err->message);
+		g_error_free(err);
+		g_free(info);
+		return NULL;
+	}
+
+	return info;
+}
+
+static struct image_info*
+load_image_in_cache(glui32 image, gint width, gint height)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	struct image_info *info = NULL;
+	
+	/* Lookup the proper resource */
+	if(!glk_data->resource_map) {
+		if(!glk_data->resource_load_callback) {
+			WARNING("No resource map has been loaded yet.");
+			return NULL;
+		}
+		gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_IMAGE, image, glk_data->resource_load_callback_data);
+		if(!filename) {
+			WARNING("Error loading resource from alternative location");
+			return NULL;
+		}
+		info = load_image_from_file(filename, image, width, height);
+		g_free(filename);
+	} else {
+		giblorb_result_t resource;
+		giblorb_err_t blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &resource, giblorb_ID_Pict, image);
+		if(blorb_error != giblorb_err_None) {
+			WARNING_S( "Error loading resource", giblorb_get_error_message(blorb_error) );
+			return NULL;
+		}
+		info = load_image_from_blorb(resource, image, width, height);
+	}
+
 	/* Store the image in the cache */
 	gdk_threads_enter();
 
@@ -84,15 +130,12 @@ load_image_in_cache(glui32 image, gint width, gint height)
 		g_free(head);
 		glk_data->image_cache = g_slist_remove_link(glk_data->image_cache, glk_data->image_cache);
 	}
-	info->pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
 	gdk_pixbuf_ref(info->pixbuf);
 	info->width = gdk_pixbuf_get_width(info->pixbuf);
 	info->height = gdk_pixbuf_get_height(info->pixbuf);
 	glk_data->image_cache = g_slist_prepend(glk_data->image_cache, info);
 
 	gdk_threads_leave();
-
-	g_object_unref(loader);
 	return info;
 }
 
