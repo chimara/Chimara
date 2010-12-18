@@ -1083,21 +1083,21 @@ PangoFontDescription *
 get_current_font(guint32 wintype)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	GtkTextTag *normal;
+	GtkTextTag *tag;
 
 	switch(wintype) {
 	case wintype_TextGrid:
-		normal = g_hash_table_lookup(glk_data->styles->text_grid, "normal");
+		tag = g_hash_table_lookup(glk_data->styles->text_grid, "default");
 		break;
 	case wintype_TextBuffer:
-		normal = g_hash_table_lookup(glk_data->styles->text_buffer, "normal");
+		tag = g_hash_table_lookup(glk_data->styles->text_buffer, "default");
 		break;
 	default:
 		return NULL;
 	}
 
 	PangoFontDescription *font;
-	g_object_get( G_OBJECT(normal), "font-desc", &font, NULL );
+	g_object_get( G_OBJECT(tag), "font-desc", &font, NULL );
 
 	return font;
 }
