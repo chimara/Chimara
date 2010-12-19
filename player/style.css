@@ -25,8 +25,12 @@
  * background-color (#hex-value)
  * text-align (left/right/center)
  */
-grid.normal {
-	font-size: 10;
+grid {
+	font-size: 14;
+}
+
+buffer {
+	font-size: 14;
 }
 
 grid.user1 {
@@ -34,18 +38,12 @@ grid.user1 {
 	background-color: #ffffff;
 }
 
-buffer.normal {
-	font-size: 10;
-}
-
 buffer.header {
-	font-size: 14;
 	font-weight: bold;
 	text-align: center;
 }
 
 buffer.subheader {
-	font-size: 12;
 	font-weight: bold;
 }
 

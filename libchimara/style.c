@@ -319,12 +319,12 @@ style_init(ChimaraGlk *glk)
 
 	tag = gtk_text_tag_new("header");
 	//g_object_set(tag, "font-desc", default_font_desc, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
 	//g_object_set(tag, "font-desc", default_font_desc, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
