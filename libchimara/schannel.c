@@ -44,12 +44,19 @@ glk_schannel_create(glui32 rock)
 	g_free(pipeline_name);
 
 	/* Create GStreamer elements to put in the pipeline */
-	s->source = gst_element_factory_make("fakesrc", NULL);
+	s->source = gst_element_factory_make("filesrc", NULL);
 	s->filter = gst_element_factory_make("identity", NULL);
-	s->sink = gst_element_factory_make("fakesink", NULL);
-	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->filter, s->sink, NULL);
-	if(!gst_element_link_many(s->source, s->filter, s->sink, NULL))
+	s->sink = gst_element_factory_make("autoaudiosink", NULL);
+	if(!s->source || !s->filter || !s->sink) {
+		WARNING("Could not create one or more GStreamer elements");
 		goto fail;
+	}
+		
+	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->filter, s->sink, NULL);
+	if(!gst_element_link_many(s->source, s->filter, s->sink, NULL)) {
+		WARNING("Could not link GStreamer elements");
+		goto fail;
+	}
 	
 	return s;
 
@@ -166,8 +173,7 @@ glk_schannel_get_rock(schanid_t chan)
 glui32 
 glk_schannel_play(schanid_t chan, glui32 snd)
 {
-	VALID_SCHANNEL(chan, return 0);
-	return 0;
+	return glk_schannel_play_ext(chan, snd, 1, 0);
 }
 
 /**
