@@ -80,6 +80,7 @@ glk_schannel_destroy(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 
+#ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	glk_data->schannel_list = g_list_delete_link(glk_data->schannel_list, chan->schannel_list);
@@ -95,6 +96,7 @@ glk_schannel_destroy(schanid_t chan)
 	
 	chan->magic = MAGIC_FREE;
 	g_free(chan);
+#endif
 }
 
 /**
@@ -116,6 +118,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 {
 	VALID_SCHANNEL_OR_NULL(chan, return NULL);
 
+#ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GList *retnode;
 	
@@ -130,6 +133,9 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 		*rockptr = glk_schannel_get_rock(retval);
 		
 	return retval;
+#else
+	return NULL;
+#endif /* GSTREAMER_SOUND */
 }
 
 /**
