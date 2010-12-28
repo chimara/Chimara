@@ -1,8 +1,15 @@
+#include <config.h>
 #include <glib.h>
 #include <libchimara/glk.h>
-
+#ifdef GSTREAMER_SOUND
+#include <gst/gst.h>
+#endif
 #include "magic.h"
 #include "schannel.h"
+#include "chimara-glk-private.h"
+#include "gi_dispa.h"
+
+extern GPrivate *glk_data_key;
 
 /**
  * glk_schannel_create:
@@ -13,14 +20,45 @@
  * Remember that it is possible that the library will be unable to create a new
  * channel, in which case glk_schannel_create() will return %NULL.
  *
- * <warning><para>This function is not implemented yet.</para></warning>
- *
  * Returns: A new sound channel, or %NULL.
  */
 schanid_t 
 glk_schannel_create(glui32 rock)
 {
+#ifdef GSTREAMER_SOUND
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	schanid_t s = g_new0(struct glk_schannel_struct, 1);
+	s->magic = MAGIC_SCHANNEL;
+	s->rock = rock;
+	if(glk_data->register_obj)
+		s->disprock = (*glk_data->register_obj)(s, gidisp_Class_Schannel);
+
+	/* Add it to the global sound channel list */
+	glk_data->schannel_list = g_list_prepend(glk_data->schannel_list, s);
+	s->schannel_list = glk_data->schannel_list;
+
+	/* Create a GStreamer pipeline for the sound channel */
+	gchar *pipeline_name = g_strdup_printf("pipeline-%p", s);
+	s->pipeline = gst_pipeline_new(pipeline_name);
+	g_free(pipeline_name);
+
+	/* Create GStreamer elements to put in the pipeline */
+	s->source = gst_element_factory_make("fakesrc", NULL);
+	s->filter = gst_element_factory_make("identity", NULL);
+	s->sink = gst_element_factory_make("fakesink", NULL);
+	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->filter, s->sink, NULL);
+	if(!gst_element_link_many(s->source, s->filter, s->sink, NULL))
+		goto fail;
+	
+	return s;
+
+fail:
+	glk_schannel_destroy(s);
 	return NULL;
+#else
+	return NULL;
+#endif /* GSTREAMER_SOUND */
 }
 
 /**
@@ -29,13 +67,27 @@ glk_schannel_create(glui32 rock)
  *
  * Destroys the channel. If the channel is playing a sound, the sound stops 
  * immediately (with no notification event).
- *
- * <warning><para>This function is not implemented yet.</para></warning>
  */
 void 
 glk_schannel_destroy(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	glk_data->schannel_list = g_list_delete_link(glk_data->schannel_list, chan->schannel_list);
+
+	if(glk_data->unregister_obj)
+	{
+		(*glk_data->unregister_obj)(chan, gidisp_Class_Schannel, chan->disprock);
+		chan->disprock.ptr = NULL;
+	}
+	
+	if(chan->pipeline)
+		g_object_unref(chan->pipeline);
+	
+	chan->magic = MAGIC_FREE;
+	g_free(chan);
 }
 
 /**
@@ -50,15 +102,27 @@ glk_schannel_destroy(schanid_t chan)
  * As that section describes, the order in which channels are returned is 
  * arbitrary.
  *
- * <warning><para>This function is not implemented yet.</para></warning>
- *
  * Returns: the next sound channel, or %NULL if there are no more.
  */
 schanid_t 
 glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 {
 	VALID_SCHANNEL_OR_NULL(chan, return NULL);
-	return NULL;
+
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	GList *retnode;
+	
+	if(chan == NULL)
+		retnode = glk_data->schannel_list;
+	else
+		retnode = chan->schannel_list->next;
+	schanid_t retval = retnode? (schanid_t)retnode->data : NULL;
+		
+	/* Store the sound channel's rock in rockptr */
+	if(retval && rockptr)
+		*rockptr = glk_schannel_get_rock(retval);
+		
+	return retval;
 }
 
 /**
@@ -68,15 +132,13 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
  * Retrieves the channel's rock value. See <link 
  * linkend="chimara-Rocks">Rocks</link>.
  *
- * <warning><para>This function is not implemented yet.</para></warning>
- *
  * Returns: A rock value.
  */
 glui32 
 glk_schannel_get_rock(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return 0);
-	return 0;
+	return chan->rock;
 }
 
 /**
