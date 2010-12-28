@@ -92,7 +92,7 @@ glk_schannel_destroy(schanid_t chan)
 	}
 	
 	if(chan->pipeline)
-		g_object_unref(chan->pipeline);
+		gst_object_unref(chan->pipeline);
 	
 	chan->magic = MAGIC_FREE;
 	g_free(chan);
