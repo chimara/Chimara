@@ -127,6 +127,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 			return 1;
 
 		case gestalt_Sound:
+		case gestalt_SoundVolume:
 #ifdef GSTREAMER_SOUND
 			return 1;
 #else
@@ -134,7 +135,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		case gestalt_SoundVolume:
 		case gestalt_SoundNotify:
 		case gestalt_SoundMusic:
 		/* Selector not supported */	

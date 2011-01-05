@@ -45,7 +45,7 @@ glk_schannel_create(glui32 rock)
 
 	/* Create GStreamer elements to put in the pipeline */
 	s->source = gst_element_factory_make("filesrc", NULL);
-	s->filter = gst_element_factory_make("identity", NULL);
+	s->filter = gst_element_factory_make("volume", NULL);
 	s->sink = gst_element_factory_make("autoaudiosink", NULL);
 	if(!s->source || !s->filter || !s->sink) {
 		WARNING("Could not create one or more GStreamer elements");
@@ -266,12 +266,20 @@ glk_schannel_stop(schanid_t chan)
  * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound
  * Capabilities</link>.
  *
- * <warning><para>This function is not implemented yet.</para></warning>
+ * <note><title>Chimara</title>
+ *   <para>Chimara supports volumes from 0 to 1000&percnt;, that is, values of
+ *   @vol up to 0xA0000.</para>
+ * </note>
  */
 void 
 glk_schannel_set_volume(schanid_t chan, glui32 vol)
 {
 	VALID_SCHANNEL(chan, return);
+#ifdef GSTREAMER_SOUND
+	gdouble volume_gst = (gdouble)vol / 0x10000;
+	g_printerr("Volume set to: %f\n", volume_gst);
+	g_object_set(chan->filter, "volume", CLAMP(volume_gst, 0.0, 10.0), NULL);
+#endif
 }
 
 /**
