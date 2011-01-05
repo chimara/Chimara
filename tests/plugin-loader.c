@@ -60,6 +60,7 @@ create_window(void)
     gtk_widget_set_size_request(window, 400, 400);
     g_signal_connect(window, "delete-event", G_CALLBACK(quit), NULL);
 	glk = chimara_glk_new();
+	g_object_ref(glk);
 	g_signal_connect(glk, "stopped", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_container_add(GTK_CONTAINER(window), glk);
 }
@@ -95,6 +96,7 @@ main(int argc, char *argv[])
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
+	g_object_unref(glk);
 
 	return 0;
 }
