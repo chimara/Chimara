@@ -29,7 +29,8 @@ test_close_SOURCES = test-close.c
 test_close_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_close_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
-noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la styletest.la
+noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la \
+	styletest.la test-userstyle.la
 
 first_la_SOURCES = first.c
 first_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
@@ -48,3 +49,6 @@ multiwin_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 
 styletest_la_SOURCES = styletest.c
 styletest_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
+
+test_userstyle_la_SOURCES = test-userstyle.c
+test_userstyle_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
