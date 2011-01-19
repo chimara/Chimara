@@ -1,5 +1,6 @@
 #include <config.h>
 #include <glib.h>
+#include <glib/gi18n.h>
 #include <libchimara/glk.h>
 #ifdef GSTREAMER_SOUND
 #include <gst/gst.h>
@@ -44,7 +45,7 @@ glk_schannel_create(glui32 rock)
 	g_free(pipeline_name);
 
 	/* Create GStreamer elements to put in the pipeline */
-	s->source = gst_element_factory_make("filesrc", NULL);
+	s->source = gst_element_factory_make("audiotestsrc", NULL);
 	s->filter = gst_element_factory_make("volume", NULL);
 	s->sink = gst_element_factory_make("autoaudiosink", NULL);
 	if(!s->source || !s->filter || !s->sink) {
@@ -82,6 +83,9 @@ glk_schannel_destroy(schanid_t chan)
 
 #ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
+		WARNING_S(_("Could not set GstElement state to"), "NULL");
 	
 	glk_data->schannel_list = g_list_delete_link(glk_data->schannel_list, chan->schannel_list);
 
@@ -172,8 +176,6 @@ glk_schannel_get_rock(schanid_t chan)
  *   in which case playing a MOD resource would fail if one was already playing.
  * </para></note>
  *
- * <warning><para>This function is not implemented yet.</para></warning>
- *
  * Returns: 1 on success, 0 on failure.
  */
 glui32 
@@ -215,8 +217,6 @@ glk_schannel_play(schanid_t chan, glui32 snd)
  * %gestalt_SoundNotify selector before you rely on it; see <link
  * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound 
  * Capabilities</link>.
- *
- * <warning><para>This function is not implemented yet.</para></warning>
  * 
  * Returns: 1 on success, 0 on failure.
  */
@@ -224,7 +224,15 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
+#ifdef GSTREAMER_SOUND
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
+		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
+		return 0;
+	}
+	return 1;
+#else
 	return 0;
+#endif
 }
 
 /**
@@ -233,13 +241,15 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
  *
  * Stops any sound playing in the channel. No notification event is generated,
  * even if you requested one. If no sound is playing, this has no effect.
- *
- * <warning><para>This function is not implemented yet.</para></warning>
  */
 void 
 glk_schannel_stop(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
+#ifdef GSTREAMER_SOUND
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_READY))
+		WARNING_S(_("Could not set GstElement state to"), "READY");
+#endif
 }
 
 /**
