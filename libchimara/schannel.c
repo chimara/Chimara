@@ -9,8 +9,15 @@
 #include "schannel.h"
 #include "chimara-glk-private.h"
 #include "gi_dispa.h"
+#include "gi_blorb.h"
+#include "resource.h"
 
 extern GPrivate *glk_data_key;
+
+static void
+on_new_decoded_pad(GstTypeFindElement *typefind, guint probability, GstCaps *caps)
+{
+	
 
 /**
  * glk_schannel_create:
@@ -45,19 +52,25 @@ glk_schannel_create(glui32 rock)
 	g_free(pipeline_name);
 
 	/* Create GStreamer elements to put in the pipeline */
-	s->source = gst_element_factory_make("audiotestsrc", NULL);
+	s->source = gst_element_factory_make("giostreamsrc", NULL);
+	s->decode = gst_element_factory_make("decodebin2", NULL);
 	s->filter = gst_element_factory_make("volume", NULL);
 	s->sink = gst_element_factory_make("autoaudiosink", NULL);
-	if(!s->source || !s->filter || !s->sink) {
-		WARNING("Could not create one or more GStreamer elements");
+	if(!s->source || !s->decode || !s->filter || !s->sink) {
+		WARNING(_("Could not create one or more GStreamer elements"));
 		goto fail;
 	}
 		
-	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->filter, s->sink, NULL);
-	if(!gst_element_link_many(s->source, s->filter, s->sink, NULL)) {
-		WARNING("Could not link GStreamer elements");
+	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->decode, s->filter, s->sink, NULL);
+	if(!gst_element_link(s->source, s->decode)) {
+		WARNING(_("Could not link GStreamer elements"));
 		goto fail;
 	}
+	if(!gst_element_link(s->filter, s->sink)) {
+		WARNING(_("Could not link GStreamer elements"));
+		goto fail;
+	}
+	g_signal_connect(s->decode, "new-decoded-pad", G_CALLBACK(on_new_decoded_pad), s);
 	
 	return s;
 
@@ -225,6 +238,27 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
 #ifdef GSTREAMER_SOUND
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	
+	if(!glk_data->resource_map) {
+		if(!glk_data->resource_load_callback) {
+			WARNING(_("No resource map has been loaded yet."));
+			return 0;
+		}
+		WARNING(_("Loading sound resources from alternative location not yet supported."));
+		return 0;
+	}
+	
+	giblorb_result_t resource;
+	giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
+	if(result != giblorb_err_None) {
+		WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+		return 0;
+	}
+	g_printerr("playing sound resource %d at %p, length %x\n", snd, resource.data.ptr, resource.length);
+	GInputStream *stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+	g_object_set(chan->source, "stream", stream, NULL);
+	
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
 		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
 		return 0;
