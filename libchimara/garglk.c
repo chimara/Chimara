@@ -167,44 +167,111 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	VALID_STREAM(str, return);
 	g_return_if_fail(str->window != NULL);
 
-	if (fg == zcolor_Transparent && fg == zcolor_Cursor) {
-		WARNING(_("zcolor_Transparent and zcolor_Cursor not implemented"));
-		return;
-	}
-
 	winid_t window = str->window;
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window->widget) );
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 	GdkColor fore, back;
-   	glkcolor_to_gdkcolor(fg, &fore);
-   	glkcolor_to_gdkcolor(bg, &back);
+	GdkColor *fore_pointer = NULL;
+	GdkColor *back_pointer = NULL;
+	gchar *fore_name;
+	gchar *back_name;
 
-	char *name = g_strdup_printf("zcolor:#%02X%02X%02X/#%02X%02X%02x",
-		((fg & 0xff0000) >> 16),
-		((fg & 0x00ff00) >> 8),
-		(fg & 0x0000ff),
-		((bg & 0xff0000) >> 16),
-		((bg & 0x00ff00) >> 8),
-		(bg & 0x0000ff)
-	);
+	switch(fg) {
+	case zcolor_Transparent:
+	case zcolor_Cursor:
+		WARNING(_("zcolor_Transparent, zcolor_Cursor not implemented"));
+		// Fallthrough to default
+	case zcolor_Default:
+		fore_name = "default";
+		break;
+	case zcolor_Current:
+	{
+		if(window->zcolor) {
+			// Get the current foreground color
+			GdkColor *current_color;
+			g_object_get(window->zcolor, "foreground-gdk", &current_color, NULL);
+			fore_name = g_strdup_printf("%02X%02X%02X", current_color->red, current_color->green, current_color->blue);
 
-	if(fg == zcolor_Default) {
+			// Copy the color and use it
+			fore.red = current_color->red;
+			fore.green = current_color->green;
+			fore.blue = current_color->blue;
+			fore_pointer = &fore;
+		} else {
+			fore_name = "default";
+		}
+		break;
+	}
+	default:
+		glkcolor_to_gdkcolor(fg, &fore);
+		fore_pointer = &fore;
+		fore_name = g_strdup_printf("%02X%02X%02X",
+			((fg & 0xff0000) >> 16),
+			((fg & 0x00ff00) >> 8),
+			(fg & 0x0000ff)
+		);
+	}
+
+	switch(bg) {
+	case zcolor_Transparent:
+	case zcolor_Cursor:
+		WARNING(_("zcolor_Transparent, zcolor_Cursor not implemented"));
+		// Fallthrough to default
+	case zcolor_Default:
+		back_name = "default";
+		break;
+	case zcolor_Current:
+	{
+		if(window->zcolor) {
+			// Get the current background color
+			GdkColor *current_color;
+			g_object_get(window->zcolor, "background-gdk", &current_color, NULL);
+			back_name = g_strdup_printf("%02X%02X%02X", current_color->red, current_color->green, current_color->blue);
+
+			// Copy the color and use it
+			back.red = current_color->red;
+			back.green = current_color->green;
+			back.blue = current_color->blue;
+			back_pointer = &back;
+		} else {
+			back_name = "default";
+		}
+		break;
+	}
+	default:
+		glkcolor_to_gdkcolor(bg, &back);
+		back_pointer = &back;
+		back_name = g_strdup_printf("%02X%02X%02X",
+			((bg & 0xff0000) >> 16),
+			((bg & 0x00ff00) >> 8),
+			(bg & 0x0000ff)
+		);
+	}
+
+	char *name = g_strdup_printf("zcolor:#%s/#%s", fore_name, back_name);
+
+	if(fore_pointer == NULL && back_pointer == NULL) {
+		// NULL value means to ignore the zcolor property altogether
 		window->zcolor = NULL;
 	} else {
+		// See if we have used this color combination before
 		GtkTextTag *tag = gtk_text_tag_table_lookup(tags, name);
+
 		if(tag == NULL) {
+			// Create a new texttag with the specified colors
 			tag = gtk_text_buffer_create_tag(
 				buffer,
 				name,
-				"foreground-gdk", &fore,
-				"foreground-set", TRUE,
-				"background-gdk", &back,
-				"background-set", TRUE,
+				"foreground-gdk", fore_pointer,
+				"foreground-set", fore_pointer != NULL,
+				"background-gdk", back_pointer,
+				"background-set", back_pointer != NULL,
 				NULL
 			);
 		}
 
+		// From now on, text will be drawn in the specified colors
 		window->zcolor = tag;
 	}
 }

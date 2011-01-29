@@ -760,9 +760,9 @@ apply_stylehint_to_tag(GtkTextTag *tag, GtkTextTag *default_tag, glui32 wintype,
 		glkcolor_to_gdkcolor(val, &color);
 
 		if(!reverse_color)
-			g_object_set(tag_object, "foreground", &color, "foreground-set", TRUE, NULL);
+			g_object_set(tag_object, "foreground-gdk", &color, "foreground-set", TRUE, NULL);
 		else
-			g_object_set(tag_object, "background", &color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "background-gdk", &color, "background-set", TRUE, NULL);
 
 		break;
 
@@ -770,9 +770,9 @@ apply_stylehint_to_tag(GtkTextTag *tag, GtkTextTag *default_tag, glui32 wintype,
 		glkcolor_to_gdkcolor(val, &color);
 
 		if(!reverse_color)
-			g_object_set(tag_object, "background", &color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "background-gdk", &color, "background-set", TRUE, NULL);
 		else
-			g_object_set(tag_object, "foreground", &color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "foreground-gdk", &color, "background-set", TRUE, NULL);
 
 		break;
 

@@ -76,8 +76,10 @@ flush_window_buffer(winid_t win)
 		}
 
 		// GLK Program's style overrides using garglk_set_zcolors()
-		if(win->zcolor != NULL)
+		if(win->zcolor != NULL) {
 			gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &end);
+		}
+
 
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
@@ -107,9 +109,9 @@ flush_window_buffer(winid_t win)
 		GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
 		GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
 
-		while(chars_left > available_space && !gtk_text_iter_is_end(&start))
+		while(chars_left > available_space && !gtk_text_iter_is_end(&insert))
 		{
-			GtkTextIter end = start;
+			GtkTextIter end = insert;
 			gtk_text_iter_forward_to_line_end(&end);
 			gtk_text_buffer_delete(buffer, &insert, &end);
 
@@ -134,11 +136,8 @@ flush_window_buffer(winid_t win)
 			}
 
 			// GLK Program's style overrides using garglk_set_zcolors()
-			/*
 			if(win->zcolor != NULL)
 				gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &insert);
-				*/
-
 
 			chars_left -= available_space;
 			gtk_text_iter_forward_line(&insert);
@@ -171,10 +170,8 @@ flush_window_buffer(winid_t win)
 			}
 
 			// GLK Program's style overrides using garglk_set_zcolors()
-			/*
 			if(win->zcolor != NULL)
 				gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &insert);
-				*/
 		}
 		
 		gtk_text_buffer_move_mark(buffer, cursor, &start);
