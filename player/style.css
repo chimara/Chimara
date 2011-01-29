@@ -26,11 +26,11 @@
  * text-align (left/right/center)
  */
 grid {
-	font-size: 14;
+	font-size: 11;
 }
 
 buffer {
-	font-size: 14;
+	font-size: 11;
 }
 
 grid.user1 {
@@ -40,7 +40,6 @@ grid.user1 {
 
 buffer.header {
 	font-weight: bold;
-	text-align: center;
 }
 
 buffer.subheader {
