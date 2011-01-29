@@ -138,7 +138,7 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	/* Place the default text tags in the textbuffer's tag table */
-	g_hash_table_foreach(glk_data->styles->text_buffer, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	g_hash_table_foreach(glk_data->styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 
 	/* Copy the override text tags to the textbuffers's tag table */
 	g_hash_table_foreach(glk_data->glk_styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
@@ -154,7 +154,7 @@ style_init_textgrid(GtkTextBuffer *buffer)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
 	/* Place the default text tags in the textbuffer's tag table */
-	g_hash_table_foreach(glk_data->styles->text_grid, style_add_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	g_hash_table_foreach(glk_data->styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 
 	/* Copy the current text tags to the textbuffers's tag table */
 	g_hash_table_foreach(glk_data->glk_styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));

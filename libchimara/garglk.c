@@ -184,7 +184,11 @@ garglk_set_zcolors(glui32 fg, glui32 bg)
 static void
 apply_reverse_color(GtkTextTag *tag, gpointer data)
 {
-	g_object_set_data( G_OBJECT(tag), "reverse_color", data );
+	const gchar *tag_name;
+	g_object_get(tag, "name", &tag_name, NULL);
+
+	if( g_str_has_prefix(tag_name, "glk-") )
+		g_object_set_data( G_OBJECT(tag), "reverse_color", data );
 }
 
 /**
