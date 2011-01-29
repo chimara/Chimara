@@ -4,6 +4,7 @@
 #include "stream.h"
 #include "fileref.h"
 #include "style.h"
+#include "garglk.h"
 
 extern GPrivate *glk_data_key;
 
@@ -164,7 +165,48 @@ void
 garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 {
 	VALID_STREAM(str, return);
-	WARNING(_("Not implemented"));
+	g_return_if_fail(str->window != NULL);
+
+	if (fg == zcolor_Transparent && fg == zcolor_Cursor) {
+		WARNING(_("zcolor_Transparent and zcolor_Cursor not implemented"));
+		return;
+	}
+
+	winid_t window = str->window;
+
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window->widget) );
+	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+	GdkColor fore, back;
+   	glkcolor_to_gdkcolor(fg, &fore);
+   	glkcolor_to_gdkcolor(bg, &back);
+
+	char *name = g_strdup_printf("zcolor:#%02X%02X%02X/#%02X%02X%02x",
+		((fg & 0xff0000) >> 16),
+		((fg & 0x00ff00) >> 8),
+		(fg & 0x0000ff),
+		((bg & 0xff0000) >> 16),
+		((bg & 0x00ff00) >> 8),
+		(bg & 0x0000ff)
+	);
+
+	if(fg == zcolor_Default) {
+		window->zcolor = NULL;
+	} else {
+		GtkTextTag *tag = gtk_text_tag_table_lookup(tags, name);
+		if(tag == NULL) {
+			tag = gtk_text_buffer_create_tag(
+				buffer,
+				name,
+				"foreground-gdk", &fore,
+				"foreground-set", TRUE,
+				"background-gdk", &back,
+				"background-set", TRUE,
+				NULL
+			);
+		}
+
+		window->zcolor = tag;
+	}
 }
 
 /**
@@ -185,29 +227,8 @@ garglk_set_zcolors(glui32 fg, glui32 bg)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
-	g_return_if_fail(glk_data->current_stream->window != NULL);
 
-	winid_t window = glk_data->current_stream->window;
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window->widget) );
-	//GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
-	GdkColor fore, back;
-   	glkcolor_to_gdkcolor(fg, &fore);
-   	glkcolor_to_gdkcolor(bg, &back);
-
-	gchar *id = g_strdup_printf("%d", ++window->last_zcolor_id);
-	printf("id = %s\nfg = %08X\nbg = %08X\n\n", id, fg, bg);
-	
-	GtkTextTag *tag = gtk_text_buffer_create_tag(
-		buffer,
-		g_strdup_printf("%d", ++window->last_zcolor_id),
-		"foreground-gdk", &fore,
-		"foreground-set", TRUE,
-		"background-gdk", &back,
-		"background-set", TRUE,
-		NULL
-	);
-
-	window->zcolor = tag;
+	garglk_set_zcolors_stream(glk_data->current_stream, fg, bg);
 }
 
 static void

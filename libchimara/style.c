@@ -657,19 +657,6 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 	return TRUE;
 }
 
-/* Internal function: parses a glk color to a #hex-value */
-static void
-glkcolor_to_hex(glui32 val, gchar *buffer)
-{
-	g_return_if_fail(buffer != NULL);
-
-	sprintf(buffer, "#%02X%02X%02X",
-		((val & 0xff0000) >> 16),
-		((val & 0x00ff00) >> 8),
-		(val & 0x0000ff)
-	);
-}
-
 /* Internal function: parses a glk color to a GdkColor */
 void
 glkcolor_to_gdkcolor(glui32 val, GdkColor *color)
@@ -699,7 +686,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, GtkTextTag *default_tag, glui32 wintype,
 	gint reverse_color = GPOINTER_TO_INT( g_object_get_data(tag_object, "reverse-color") );
 
 	int i = 0;
-	gchar color[20];
+	GdkColor color;
 	switch(hint) {
 	case stylehint_Indentation:
 		g_object_set(tag_object, "left-margin", 5*val, "left-margin-set", TRUE, NULL);
@@ -770,22 +757,22 @@ apply_stylehint_to_tag(GtkTextTag *tag, GtkTextTag *default_tag, glui32 wintype,
 		break;
 
 	case stylehint_TextColor:
-		glkcolor_to_hex(val, color);
+		glkcolor_to_gdkcolor(val, &color);
 
 		if(!reverse_color)
-			g_object_set(tag_object, "foreground", color, "foreground-set", TRUE, NULL);
+			g_object_set(tag_object, "foreground", &color, "foreground-set", TRUE, NULL);
 		else
-			g_object_set(tag_object, "background", color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "background", &color, "background-set", TRUE, NULL);
 
 		break;
 
 	case stylehint_BackColor:
-		glkcolor_to_hex(val, color);
+		glkcolor_to_gdkcolor(val, &color);
 
 		if(!reverse_color)
-			g_object_set(tag_object, "background", color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "background", &color, "background-set", TRUE, NULL);
 		else
-			g_object_set(tag_object, "foreground", color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "foreground", &color, "background-set", TRUE, NULL);
 
 		break;
 
