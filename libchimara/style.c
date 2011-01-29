@@ -749,7 +749,6 @@ apply_stylehint_to_tag(GtkTextTag *tag, GtkTextTag *default_tag, glui32 wintype,
 					step be a scaling of 1.2 */
 					scale = pow(1.2, (double)val);
 			}
-			g_printerr("Setting tag to %f\n", scale);
 			g_object_set(tag_object, "scale", scale, "scale-set", TRUE, NULL);
 		}
 		break;

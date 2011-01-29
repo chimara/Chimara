@@ -3,6 +3,7 @@
 #include "chimara-glk-private.h"
 #include "stream.h"
 #include "fileref.h"
+#include "style.h"
 
 extern GPrivate *glk_data_key;
 
@@ -177,8 +178,28 @@ garglk_set_zcolors(glui32 fg, glui32 bg)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	g_return_if_fail(glk_data->current_stream->window != NULL);
+
+	winid_t window = glk_data->current_stream->window;
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window->widget) );
+	//GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+	GdkColor fore, back;
+   	glkcolor_to_gdkcolor(fg, &fore);
+   	glkcolor_to_gdkcolor(bg, &back);
+
+	gchar *id = g_strdup_printf("%d", ++window->last_zcolor_id);
+	printf("id = %s\nfg = %08X\nbg = %08X\n\n", id, fg, bg);
 	
-	WARNING(_("Not implemented"));
+	GtkTextTag *tag = gtk_text_buffer_create_tag(
+		buffer,
+		g_strdup_printf("%d", ++window->last_zcolor_id),
+		"foreground-gdk", &fore,
+		"foreground-set", TRUE,
+		"background-gdk", &back,
+		"background-set", TRUE,
+		NULL
+	);
+
+	window->zcolor = tag;
 }
 
 static void

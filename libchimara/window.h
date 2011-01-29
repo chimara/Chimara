@@ -82,6 +82,9 @@ struct glk_window_struct
 	gulong pager_adjustment_handler;
 	/* Window buffer */
 	GString *buffer;
+	/* Styles */
+	GtkTextTag *zcolor;
+	glui32 last_zcolor_id;
 	/* Hyperlinks */
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;
