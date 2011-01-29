@@ -10,7 +10,7 @@ dist_noinst_SCRIPTS = copying.awk opt2glkc.pl y2help.pl
 pkglib_LTLIBRARIES = nitfol.la
 nitfol_la_SOURCES = automap.c automap.h binary.h copying.h debug.c debug.h \
 	decode.c decode.h errmesg.c errmesg.h globals.c globals.h hash.c hash.h \
-	iff.c iff.h infix.c infix.h inform.y inform.h init.c init.h io.c io.h \
+	iff.c iff.h infix.c infix.h inform.y inform.h init.c init.h io.c nio.h \
 	linkevil.h main.c main.h nitfol.h no_blorb.h objects.c objects.h op_call.c \
 	op_call.h op_jmp.c op_jmp.h oplist.c oplist.h op_math.c op_math.h \
 	op_save.c op_save.h op_table.c op_table.h op_v6.c op_v6.h portfunc.c \

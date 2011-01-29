@@ -8,6 +8,8 @@
 #include <glk.h>
 #include <glkstart.h> // This comes with the Glk library.
 
+#include <string.h>
+
 #ifdef USE_MMAP
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -27,7 +29,7 @@ glkunix_argumentlist_t glkunix_arguments[] =
 
 int gHasInited = 0;
 
-#ifdef CHIMARA_EXTENSIONS
+#ifdef GARGLK
 
 void fatalError (const char * s)
 {
@@ -52,7 +54,7 @@ void fatalError (const char * s)
     exit (1);
 }
 
-#endif /* CHIMARA_EXTENSIONS */
+#endif /* GARGLK */
 
 #ifdef USE_MMAP
 // Fast loader that uses some fancy Unix features.
@@ -62,11 +64,33 @@ char * gStartupError = 0;
 
 int glkunix_startup_code(glkunix_startup_t *data)
 {
+#ifdef GARGLK
+	{
+		char buf[255];
+		sprintf(buf, "Git %d.%d.%d", GIT_MAJOR, GIT_MINOR, GIT_PATCH);
+		garglk_set_program_name(buf);
+		sprintf(buf, "Git %d.%d.%d by Iain Merrick and David Kinder\n",
+				GIT_MAJOR, GIT_MINOR, GIT_PATCH);
+		garglk_set_program_info(buf);
+	}
+#endif /* GARGLK */
+
     if (data->argc <= 1)
     {
         gStartupError = "No file given";
         return 1;
     }
+
+#ifdef GARGLK
+	{
+		char *s;
+		s = strrchr(data->argv[1], '\\');
+		if (s) garglk_set_story_name(s+1);
+		s = strrchr(data->argv[1], '/');
+		if (s) garglk_set_story_name(s+1);
+	}
+#endif /* GARGLK */
+
     gFilename = data->argv[1];
     return 1;
 }
@@ -113,11 +137,33 @@ char * gStartupError = 0;
 
 int glkunix_startup_code(glkunix_startup_t *data)
 {
+#ifdef GARGLK
+	{
+		char buf[255];
+		sprintf(buf, "Git %d.%d.%d", GIT_MAJOR, GIT_MINOR, GIT_PATCH);
+		garglk_set_program_name(buf);
+		sprintf(buf, "Git %d.%d.%d by Iain Merrick and David Kinder\n",
+				GIT_MAJOR, GIT_MINOR, GIT_PATCH);
+		garglk_set_program_info(buf);
+	}
+#endif /* GARGLK */
+
     if (data->argc <= 1)
     {
         gStartupError = "No file given";
         return 1;
     }
+
+#ifdef GARGLK
+	{
+		char *s;
+		s = strrchr(data->argv[1], '\\');
+		if (s) garglk_set_story_name(s+1);
+		s = strrchr(data->argv[1], '/');
+		if (s) garglk_set_story_name(s+1);
+	}
+#endif /* GARGLK */
+
     gStream = glkunix_stream_open_pathname ((char*) data->argv[1], 0, 0);
     return 1;
 }

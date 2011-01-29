@@ -158,6 +158,14 @@ garglk_unput_string_uni(glui32 *str)
 	WARNING(_("Not implemented"));
 }
 
+/* TODO document */
+void
+garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
+{
+	VALID_STREAM(str, return);
+	WARNING(_("Not implemented"));
+}
+
 /**
  * garglk_set_zcolors:
  * @fg: one of the <code>zcolor_</code> constants.
@@ -178,13 +186,24 @@ garglk_set_zcolors(glui32 fg, glui32 bg)
 	g_return_if_fail(glk_data->current_stream != NULL);
 	g_return_if_fail(glk_data->current_stream->window != NULL);
 	
-	WARNING(_("Not implemented"));
+	garglk_set_zcolors_stream(glk_data->current_stream, fg, bg);
 }
 
 static void
 apply_reverse_color(GtkTextTag *tag, gpointer data)
 {
 	g_object_set_data( G_OBJECT(tag), "reverse_color", data );
+}
+
+/* TODO document */
+void
+garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
+{
+	VALID_STREAM(str, return);
+	
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(str->window->widget) );
+	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+	gtk_text_tag_table_foreach( tags, apply_reverse_color, GINT_TO_POINTER(reverse) );
 }
 
 /**
@@ -202,7 +221,5 @@ garglk_set_reversevideo(glui32 reverse)
 	g_return_if_fail(glk_data->current_stream != NULL);
 	g_return_if_fail(glk_data->current_stream->window != NULL);
 
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(glk_data->current_stream->window->widget) );
-	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
-	gtk_text_tag_table_foreach( tags, apply_reverse_color, GINT_TO_POINTER(reverse) );
+	garglk_set_reversevideo_stream(glk_data->current_stream, reverse);
 }

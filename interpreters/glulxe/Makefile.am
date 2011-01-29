@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = glulxe.la
 glulxe_la_SOURCES = accel.c exec.c files.c funcs.c gestalt.c gestalt.h glkop.c \
     glulxe.h heap.c main.c opcodes.h operand.c osdepend.c profile.c search.c \
-    serial.c string.c unixstrt.c vm.c 
+    serial.c string.c unixstrt.c vm.c float.c
 glulxe_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara -DOS_UNIX
 glulxe_la_CFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused \
     $(AM_CFLAGS)
