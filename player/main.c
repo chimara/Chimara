@@ -155,6 +155,7 @@ create_window(void)
 	const gchar *patterns[] = {
 		"*.z[1-8]", "*.[zg]lb", "*.[zg]blorb", "*.ulx", "*.blb", "*.blorb", NULL
 	};
+	
 	for(ptr = patterns; *ptr; ptr++)
 		gtk_recent_filter_add_pattern(filter, *ptr);
 	GtkRecentChooser *recent = GTK_RECENT_CHOOSER(load_object("recent"));
@@ -214,7 +215,7 @@ create_window(void)
 	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
 	
 	/* Create preferences window */
-	preferences_create(CHIMARA_GLK(glk));
+	//preferences_create(CHIMARA_GLK(glk));
 }
 
 int

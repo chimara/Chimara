@@ -26,16 +26,23 @@
  * text-align (left/right/center)
  */
 grid {
-	font-size: 14;
+	font-size: 11;
+	font-family: "Liberation Mono";
 }
 
 buffer {
-	font-size: 14;
+	color: #303030;
+	font-size: 11;
+	margin-bottom: 5;
 }
 
 grid.user1 {
 	color: #303030;
 	background-color: #ffffff;
+}
+
+buffer.emphasized {
+	font-size: 14;
 }
 
 buffer.header {
