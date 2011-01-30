@@ -37,6 +37,7 @@ glk_main(void)
 	char buffer[1024];
 	int len;
 	int finish = 0;
+	int repeat = 1;
 
 	event_t ev;
 	while(!finish) {
@@ -45,7 +46,11 @@ glk_main(void)
 		glk_select(&ev);
 		printf("Received event:\n");
 		printf("Type: %d\n", ev.type);
-		printf("Win: %d\n", glk_window_get_rock(ev.win) );
+		printf("Win: ");
+		if(ev.win)
+			printf( "%d\n", glk_window_get_rock(ev.win) );
+		else
+			printf("NULL\n");
 		printf("Var1: %d\n", ev.val1);
 		printf("Var2: %d\n", ev.val2);
 		switch(ev.type) {
@@ -59,15 +64,34 @@ glk_main(void)
 					finish = 1;
 				} else if(strcmp(buffer, "play") == 0) {
 					glk_put_string("Playing sound.\n");
-					if(!glk_schannel_play(sc, 3)) {
+					if(!glk_schannel_play_ext(sc, 3, repeat, 1)) {
 						fprintf(stderr, "Could not start sound channel.\n");
 						finish = 1;
 					}
+				} else if(strcmp(buffer, "stop") == 0) {
+					glk_put_string("Stopping sound.\n");
+					glk_schannel_stop(sc);
+				} else if(strcmp(buffer, "repeat") == 0) {
+					glk_put_string("Setting repeat to ");
+					if(repeat == 1) {
+						glk_put_string("TWICE.\n");
+						repeat = 2;
+					} else if(repeat == 2) {
+						glk_put_string("INFINITE.\n");
+						repeat = -1;
+					} else if(repeat == -1) {
+						glk_put_string("DON'T PLAY.\n");
+						repeat = 0;
+					} else if(repeat == 0) {
+						glk_put_string("ONCE.\n");
+						repeat = 1;
+					}
 				} else if(strcmp(buffer, "help") == 0) {
-					glk_put_string("Type PLAY or QUIT.\n");
+					glk_put_string("Type PLAY or REPEAT or STOP or QUIT.\n");
 				}
 				break;
 			case evtype_SoundNotify:
+				glk_cancel_line_event(mainwin, NULL);
 				glk_put_string("\nGot sound notify event!\n");
 				break;
 			default:

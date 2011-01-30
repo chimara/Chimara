@@ -11,6 +11,7 @@
 #include "gi_dispa.h"
 #include "gi_blorb.h"
 #include "resource.h"
+#include "event.h"
 
 extern GPrivate *glk_data_key;
 
@@ -81,6 +82,9 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 			}
 		} else {
 			clean_up_after_playing_sound(s);
+			/* Sound ended normally, send a notification if requested */
+			if(s->notify)
+				event_throw(s->glk, evtype_SoundNotify, NULL, s->resource, s->notify);
 		}
 		break;
 	default:
@@ -181,6 +185,9 @@ glk_schannel_create(glui32 rock)
 	/* Add it to the global sound channel list */
 	glk_data->schannel_list = g_list_prepend(glk_data->schannel_list, s);
 	s->schannel_list = glk_data->schannel_list;
+
+	/* Add a pointer to the ChimaraGlk widget, for convenience */
+	s->glk = glk_data->self;
 
 	/* Create a GStreamer pipeline for the sound channel */
 	gchar *pipeline_name = g_strdup_printf("pipeline-%p", s);
@@ -428,6 +435,8 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	}
 
 	chan->repeats = repeats;
+	chan->resource = snd;
+	chan->notify = notify;
 	g_object_set(chan->source, "stream", stream, NULL);
 	g_object_unref(stream); /* Now owned by GStreamer element */
 	

@@ -5,6 +5,7 @@
 #include <glib.h>
 #include "glk.h"
 #include "gi_dispa.h"
+#include "chimara-glk.h"
 #ifdef GSTREAMER_SOUND
 #include <gst/gst.h>
 #endif
@@ -17,7 +18,11 @@ struct glk_schannel_struct
 	/* Pointer to the list node in the global sound channel list that contains 
 	 this sound channel */
 	GList *schannel_list;
+	/* Pointer to the GTK widget this sound channel belongs to, for convenience */
+	ChimaraGlk *glk;
 
+	/* Resource number and notification ID of last played sound */
+	glui32 resource, notify;
 	/* How many times to repeat the last sound played (-1 = forever) */
 	glui32 repeats;
 	

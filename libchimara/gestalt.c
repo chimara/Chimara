@@ -126,8 +126,10 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_GraphicsTransparency:
 			return 1;
 
+		/* Capabilities supported if compiled with GStreamer */
 		case gestalt_Sound:
 		case gestalt_SoundVolume:
+		case gestalt_SoundNotify:
 #ifdef GSTREAMER_SOUND
 			return 1;
 #else
@@ -135,7 +137,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		case gestalt_SoundNotify:
 		case gestalt_SoundMusic:
 		/* Selector not supported */	
 		default:
