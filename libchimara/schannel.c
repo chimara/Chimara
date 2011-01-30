@@ -400,8 +400,23 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 			WARNING(_("No resource map has been loaded yet."));
 			return 0;
 		}
-		WARNING(_("Loading sound resources from alternative location not yet supported."));
-		return 0;
+		gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, snd, glk_data->resource_load_callback_data);
+		if(!filename) {
+			WARNING(_("Error loading resource from alternative location."));
+			return 0;
+		}
+
+		GError *err = NULL;
+		GFile *file = g_file_new_for_path(filename);
+		stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
+		if(!stream) {
+			IO_WARNING(_("Error loading resource from file"), filename, err->message);
+			g_free(filename);
+			g_object_unref(file);
+			return 0;
+		}
+		g_free(filename);
+		g_object_unref(file);
 	} else {
 		giblorb_result_t resource;
 		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);

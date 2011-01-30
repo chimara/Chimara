@@ -32,6 +32,7 @@ glk_main(void)
             nothing we can do without it, so exit. */
         return;
     }
+	glk_set_window(mainwin);
 
 	char buffer[1024];
 	int len;

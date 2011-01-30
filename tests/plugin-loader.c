@@ -65,6 +65,19 @@ create_window(void)
 	gtk_container_add(GTK_CONTAINER(window), glk);
 }
 
+static gchar *
+resource_load(ChimaraResourceType usage, guint32 resnum)
+{
+	char *resstr;
+	if(usage == CHIMARA_RESOURCE_IMAGE)
+		resstr = "PIC";
+	else if(usage == CHIMARA_RESOURCE_SOUND)
+		resstr = "SND";
+	else
+		resstr = "FCK";
+	return g_strdup_printf("%s%d", resstr, resnum);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -86,6 +99,8 @@ main(int argc, char *argv[])
 
 	if(argc < 2)
 		g_error("Must provide a plugin\n");
+
+	chimara_glk_set_resource_load_callback(CHIMARA_GLK(glk), (ChimaraResourceLoadFunc)resource_load, NULL);
 	
     if( !chimara_glk_run(CHIMARA_GLK(glk), argv[1], argc - 1, argv + 1, &error) )
    		g_error("Error starting Glk library: %s\n", error->message);
