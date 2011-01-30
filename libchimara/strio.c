@@ -31,6 +31,9 @@ write_utf8_to_window_buffer(winid_t win, gchar *s)
 void
 flush_window_buffer(winid_t win)
 {
+#ifdef DEBUG_STYLES
+	g_printf("%s\n", win->buffer->str);
+#endif
 	if(win->type != wintype_TextBuffer && win->type != wintype_TextGrid)
 		return;
 
@@ -80,6 +83,10 @@ flush_window_buffer(winid_t win)
 			gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &end);
 		}
 
+		// GLK Program's style overrides using garglk_set_reversevideo()
+		if(win->zcolor_reversed != NULL) {
+			gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, &start, &end);
+		}
 
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
@@ -139,6 +146,11 @@ flush_window_buffer(winid_t win)
 			if(win->zcolor != NULL)
 				gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &insert);
 
+			// GLK Program's style overrides using garglk_set_reversevideo()
+			if(win->zcolor_reversed != NULL) {
+				gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, &start, &insert);
+			}
+
 			chars_left -= available_space;
 			gtk_text_iter_forward_line(&insert);
 			available_space = win->width;
@@ -172,6 +184,11 @@ flush_window_buffer(winid_t win)
 			// GLK Program's style overrides using garglk_set_zcolors()
 			if(win->zcolor != NULL)
 				gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &insert);
+
+			// GLK Program's style overrides using garglk_set_reversevideo()
+			if(win->zcolor_reversed != NULL) {
+				gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, &start, &insert);
+			}
 		}
 		
 		gtk_text_buffer_move_mark(buffer, cursor, &start);
