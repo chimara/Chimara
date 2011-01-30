@@ -31,6 +31,9 @@ write_utf8_to_window_buffer(winid_t win, gchar *s)
 void
 flush_window_buffer(winid_t win)
 {
+#ifdef DEBUG_STYLES
+	g_printf("%s\n", win->buffer->str);
+#endif
 	if(win->type != wintype_TextBuffer && win->type != wintype_TextGrid)
 		return;
 
@@ -44,20 +47,45 @@ flush_window_buffer(winid_t win)
 	switch(win->type) {
 	case wintype_TextBuffer:
 	{
-		GtkTextIter iter;
-		gtk_text_buffer_get_end_iter(buffer, &iter);
+		GtkTextIter start, end;
+		gtk_text_buffer_get_end_iter(buffer, &end);
+		gint start_offset;
 
 		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+
 		GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
 		GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
 		GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
 
+		start_offset = gtk_text_iter_get_offset(&end);
+		gtk_text_buffer_insert(buffer, &end, win->buffer->str, -1);
+		gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
+
+		// Default style
+		gtk_text_buffer_apply_tag(buffer, default_tag, &start, &end);
+
+		// Player's style overrides
+		gtk_text_buffer_apply_tag(buffer, style_tag, &start, &end);
+
+		// GLK Program's style overrides
+		gtk_text_buffer_apply_tag(buffer, glk_style_tag, &start, &end);
+
+		// Link style overrides
 		if(win->window_stream->hyperlink_mode) {
 			GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
 			GtkTextTag *link_tag = win->current_hyperlink->tag;
-			gtk_text_buffer_insert_with_tags(buffer, &iter, win->buffer->str, -1, default_tag, style_tag, glk_style_tag, link_style_tag, link_tag, NULL);
-		} else {
-			gtk_text_buffer_insert_with_tags(buffer, &iter, win->buffer->str, -1, default_tag, style_tag, glk_style_tag, NULL);
+			gtk_text_buffer_apply_tag(buffer, link_style_tag, &start, &end);
+			gtk_text_buffer_apply_tag(buffer, link_tag, &start, &end);
+		}
+
+		// GLK Program's style overrides using garglk_set_zcolors()
+		if(win->zcolor != NULL) {
+			gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &end);
+		}
+
+		// GLK Program's style overrides using garglk_set_reversevideo()
+		if(win->zcolor_reversed != NULL) {
+			gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, &start, &end);
 		}
 
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
@@ -75,51 +103,91 @@ flush_window_buffer(winid_t win)
 		GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
 		
 		/* Get cursor position */
-		GtkTextIter start;
-		gtk_text_buffer_get_iter_at_mark(buffer, &start, cursor);
+		GtkTextIter start, insert;
+		gint start_offset;
+
+		gtk_text_buffer_get_iter_at_mark(buffer, &insert, cursor);
 		/* Spaces available on this line */
-		gint available_space = win->width - gtk_text_iter_get_line_offset(&start);
+		gint available_space = win->width - gtk_text_iter_get_line_offset(&insert);
 		
-		while(chars_left > available_space && !gtk_text_iter_is_end(&start))
+		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+		GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
+		GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
+		GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
+		GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
+
+		while(chars_left > available_space && !gtk_text_iter_is_end(&insert))
 		{
-			GtkTextIter end = start;
+			GtkTextIter end = insert;
 			gtk_text_iter_forward_to_line_end(&end);
-			gtk_text_buffer_delete(buffer, &start, &end);
+			gtk_text_buffer_delete(buffer, &insert, &end);
 
-			GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
-			GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
-			GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
-			GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
+			start_offset = gtk_text_iter_get_offset(&insert);
+			gtk_text_buffer_insert(buffer, &insert, win->buffer->str + (length - chars_left), available_space);
+			gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
 
+			// Default style
+			gtk_text_buffer_apply_tag(buffer, default_tag, &start, &insert);
+
+			// Player's style overrides
+			gtk_text_buffer_apply_tag(buffer, style_tag, &start, &insert);
+
+			// GLK Program's style overrides
+			gtk_text_buffer_apply_tag(buffer, glk_style_tag, &start, &insert);
+
+			// Link style overrides
 			if(win->window_stream->hyperlink_mode) {
-				GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
 				GtkTextTag *link_tag = win->current_hyperlink->tag;
-				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), available_space, default_tag, style_tag, glk_style_tag, link_style_tag, link_tag, NULL);
-			} else {
-				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), available_space, default_tag, style_tag, glk_style_tag, NULL);
+				gtk_text_buffer_apply_tag(buffer, link_style_tag, &start, &insert);
+				gtk_text_buffer_apply_tag(buffer, link_tag, &start, &insert);
+			}
+
+			// GLK Program's style overrides using garglk_set_zcolors()
+			if(win->zcolor != NULL)
+				gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &insert);
+
+			// GLK Program's style overrides using garglk_set_reversevideo()
+			if(win->zcolor_reversed != NULL) {
+				gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, &start, &insert);
 			}
 
 			chars_left -= available_space;
-			gtk_text_iter_forward_line(&start);
+			gtk_text_iter_forward_line(&insert);
 			available_space = win->width;
 		}
-		if(!gtk_text_iter_is_end(&start))
+		if(!gtk_text_iter_is_end(&insert))
 		{
-			GtkTextIter end = start;
+			GtkTextIter end = insert;
 			gtk_text_iter_forward_chars(&end, chars_left);
-			gtk_text_buffer_delete(buffer, &start, &end);
+			gtk_text_buffer_delete(buffer, &insert, &end);
 
-			GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
-			GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
-			GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
-			GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
+			start_offset = gtk_text_iter_get_offset(&insert);
+			gtk_text_buffer_insert(buffer, &insert, win->buffer->str + (length - chars_left), -1);
+			gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
 
+			// Default style
+			gtk_text_buffer_apply_tag(buffer, default_tag, &start, &insert);
+
+			// Player's style overrides
+			gtk_text_buffer_apply_tag(buffer, style_tag, &start, &insert);
+
+			// GLK Program's style overrides
+			gtk_text_buffer_apply_tag(buffer, glk_style_tag, &start, &insert);
+
+			// Link style overrides
 			if(win->window_stream->hyperlink_mode) {
-				GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
 				GtkTextTag *link_tag = win->current_hyperlink->tag;
-				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), -1, default_tag, style_tag, glk_style_tag, link_style_tag, link_tag, NULL);
-			} else {
-				gtk_text_buffer_insert_with_tags(buffer, &start, win->buffer->str + (length - chars_left), -1, default_tag, style_tag, glk_style_tag, NULL);
+				gtk_text_buffer_apply_tag(buffer, link_style_tag, &start, &insert);
+				gtk_text_buffer_apply_tag(buffer, link_tag, &start, &insert);
+			}
+
+			// GLK Program's style overrides using garglk_set_zcolors()
+			if(win->zcolor != NULL)
+				gtk_text_buffer_apply_tag(buffer, win->zcolor, &start, &insert);
+
+			// GLK Program's style overrides using garglk_set_reversevideo()
+			if(win->zcolor_reversed != NULL) {
+				gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, &start, &insert);
 			}
 		}
 		

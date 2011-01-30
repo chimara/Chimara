@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <libchimara/glk.h>
+#include <libchimara/garglk.h>
 
 void print_help();
 void do_style_test();
@@ -111,7 +112,12 @@ do_style_test() {
 	glk_set_style(style_User2);
 	glk_put_string("User2\n");
 
+	glk_set_style(style_Header);
+	garglk_set_zcolors(0xFF0000, 0x00FFFF);
+	glk_put_string("Zcolor test\n");
+
 	glk_set_style(style_Normal);
+	garglk_set_zcolors(0x000000, 0xFFFFFF);
 }
 
 void
