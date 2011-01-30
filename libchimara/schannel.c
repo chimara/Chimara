@@ -114,18 +114,15 @@ static void
 on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t s)
 {
 	gchar *type = gst_caps_to_string(caps);
-	if(strcmp(type, "application/ogg") == 0) 
-	{
+	if(strcmp(type, "application/ogg") == 0) {
 		s->demux = gst_element_factory_make("oggdemux", NULL);
 		s->decode = gst_element_factory_make("vorbisdec", NULL);
-		if(!s->demux || !s->decode)
-		{
+		if(!s->demux || !s->decode) {
 			WARNING(_("Could not create one or more GStreamer elements"));
 			goto finally;
 		}
 		gst_bin_add_many(GST_BIN(s->pipeline), s->demux, s->decode, NULL);
-		if(!gst_element_link(s->typefind, s->demux) || !gst_element_link(s->decode, s->convert))
-		{
+		if(!gst_element_link(s->typefind, s->demux) || !gst_element_link(s->decode, s->convert)) {
 			WARNING(_("Could not link GStreamer elements"));
 			goto finally;
 		}
@@ -133,24 +130,29 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 		 demuxer doesn't know what source pads it will have until it starts
 		 demuxing the stream */
 		g_signal_connect(s->demux, "pad-added", G_CALLBACK(on_ogg_demuxer_pad_added), s);
-	}
-	else if(strcmp(type, "audio/x-aiff") == 0)
-	{
+	} else if(strcmp(type, "audio/x-aiff") == 0) {
 		s->decode = gst_element_factory_make("aiffparse", NULL);
-		if(!s->decode)
-		{
+		if(!s->decode) {
 			WARNING(_("Could not create 'aiffparse' GStreamer element"));
 			goto finally;
 		}
 		gst_bin_add(GST_BIN(s->pipeline), s->decode);
-		if(!gst_element_link_many(s->typefind, s->decode, s->convert, NULL))
-		{
+		if(!gst_element_link_many(s->typefind, s->decode, s->convert, NULL)) {
 			WARNING(_("Could not link GStreamer elements"));
 			goto finally;
 		}
-	}
-	else
-	{
+	} else if(strcmp(type, "audio/x-mod") == 0) {
+		s->decode = gst_element_factory_make("modplug", NULL);
+		if(!s->decode) {
+			WARNING(_("Could not create 'modplug' GStreamer element"));
+			goto finally;
+		}
+		gst_bin_add(GST_BIN(s->pipeline), s->decode);
+		if(!gst_element_link_many(s->typefind, s->decode, s->convert, NULL)) {
+			WARNING(_("Could not link GStreamer elements"));
+			goto finally;
+		}
+	} else {
 		WARNING_S(_("Unexpected audio type in blorb"), type);
 	}
 

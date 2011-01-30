@@ -33,6 +33,9 @@ glk_main(void)
         return;
     }
 	glk_set_window(mainwin);
+	glk_put_string("Copy a sound file to the current directory and rename it "
+	    "to SND3. Supported formats: AIFF, OGG, MOD, S3M, IT, XM. Type 'play' "
+	    "to play it.\n");
 
 	char buffer[1024];
 	int len;
