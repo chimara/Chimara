@@ -199,7 +199,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 			// Get the current foreground color
 			GdkColor *current_color;
 			g_object_get(window->zcolor, "foreground-gdk", &current_color, NULL);
-			fore_name = g_strdup_printf("%02X%02X%02X", current_color->red, current_color->green, current_color->blue);
+			fore_name = gdkcolor_to_hex(current_color);
 
 			// Copy the color and use it
 			fore.red = current_color->red;
@@ -214,11 +214,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	default:
 		glkcolor_to_gdkcolor(fg, &fore);
 		fore_pointer = &fore;
-		fore_name = g_strdup_printf("%02X%02X%02X",
-			((fg & 0xff0000) >> 16),
-			((fg & 0x00ff00) >> 8),
-			(fg & 0x0000ff)
-		);
+		fore_name = glkcolor_to_hex(fg);
 	}
 
 	switch(bg) {
@@ -235,7 +231,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 			// Get the current background color
 			GdkColor *current_color;
 			g_object_get(window->zcolor, "background-gdk", &current_color, NULL);
-			back_name = g_strdup_printf("%02X%02X%02X", current_color->red, current_color->green, current_color->blue);
+			back_name = gdkcolor_to_hex(current_color);
 
 			// Copy the color and use it
 			back.red = current_color->red;
@@ -250,11 +246,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	default:
 		glkcolor_to_gdkcolor(bg, &back);
 		back_pointer = &back;
-		back_name = g_strdup_printf("%02X%02X%02X",
-			((bg & 0xff0000) >> 16),
-			((bg & 0x00ff00) >> 8),
-			(bg & 0x0000ff)
-		);
+		back_name = glkcolor_to_hex(bg);
 	}
 
 	if(fore_pointer == NULL && back_pointer == NULL) {
@@ -283,6 +275,16 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 
 		// From now on, text will be drawn in the specified colors
 		window->zcolor = tag;
+
+		// Update the reversed version if necessary
+		if(str->window->zcolor_reversed) {
+			gint reversed = GPOINTER_TO_INT( g_object_get_data( G_OBJECT(str->window->zcolor_reversed), "reverse-color" ) );
+
+			gdk_threads_leave();
+			garglk_set_reversevideo_stream(str, reversed != 0);
+			gdk_threads_enter();
+		}
+	
 	}
 
 	gdk_threads_leave();
@@ -367,11 +369,17 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 			"background-set", TRUE,
 			NULL
 		);
+		g_object_set_data( G_OBJECT(tag), "reverse-color", GINT_TO_POINTER(reverse) );
 	}
 
 	// From now on, text will be drawn in the specified colors
 	str->window->zcolor_reversed = tag;
-	
+
+	// Update the background of the gtktextview to correspond with the current background color
+	if(current_background != NULL) {
+		gtk_widget_modify_base(str->window->widget, GTK_STATE_NORMAL, current_background);
+	}
+
 	gdk_threads_leave();
 }
 

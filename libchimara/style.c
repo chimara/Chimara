@@ -13,7 +13,6 @@ extern GPrivate *glk_data_key;
 static gboolean style_accept(GScanner *scanner, GTokenType token);
 static gboolean style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk);
 static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
-static void style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table);
 static void style_copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table);
 static void text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list);
 GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
@@ -163,17 +162,6 @@ style_init_textgrid(GtkTextBuffer *buffer)
 
 	/* Copy the current text tags to the textbuffers's tag table */
 	g_hash_table_foreach(glk_data->glk_styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
-}
-
-/* Internal function used to iterate over the default text tag table, applying them to a textbuffer */
-static void
-style_add_tag_to_textbuffer(gpointer key, gpointer tag, gpointer tag_table)
-{
-	g_return_if_fail(key != NULL);
-	g_return_if_fail(tag != NULL);
-	g_return_if_fail(tag_table != NULL);
-
-	gtk_text_tag_table_add(tag_table, tag);
 }
 
 /* Internal function used to iterate over a style table, copying it */
@@ -398,21 +386,6 @@ void
 reset_default_styles(ChimaraGlk *glk)
 {
 	/* TODO: write this function */
-}
-
-/* Copy the default styles to the current styles
- FIXME: This function is temporary and will not be needed later on */
-void
-copy_default_styles_to_current_styles(ChimaraGlk *glk)
-{
-	/*
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	g_hash_table_foreach(priv->styles->text_grid, style_table_copy, priv->glk_styles->text_grid);
-	g_hash_table_foreach(priv->styles->text_buffer, style_table_copy, priv->glk_styles->text_buffer);
-
-	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
-	*/
 }
 
 /* Create the CSS file scanner */
@@ -670,6 +643,26 @@ glkcolor_to_gdkcolor(glui32 val, GdkColor *color)
 	color->red = 256 * ((val & 0xff0000) >> 16);
 	color->green = 256 * ((val & 0x00ff00) >> 8);
 	color->blue = 256 * (val & 0x0000ff);
+}
+
+/* Internal function: parses a glk color to a hex string */
+gchar*
+glkcolor_to_hex(glui32 val)
+{
+	return g_strdup_printf("%04X%04X%04X",
+		256 * ((val & 0xff0000) >> 16),
+		256 * ((val & 0x00ff00) >> 8),
+		256 * (val & 0x0000ff)
+	);
+}
+
+/* Internal function: parses a gdk color to a hex string */
+gchar*
+gdkcolor_to_hex(GdkColor *color)
+{
+	return g_strdup_printf("%04X%04X%04X",
+		color->red, color->green, color->blue
+	);
 }
 
 /* Internal function: parses a GdkColor to a glk color */
