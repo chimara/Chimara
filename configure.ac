@@ -105,6 +105,17 @@ AC_ARG_ENABLE([rpm],
 )
 AM_CONDITIONAL([BUILDING_RPM], [$TEST "x$rpm" = xtrue])
 
+### SOUND LIBRARY TO USE ######################################################
+
+AC_ARG_WITH([gstreamer],
+	[AS_HELP_STRING([--without-gstreamer], [Disable GStreamer sound])],
+	[],
+	[with_gstreamer=yes])
+SOUND_MODULE=
+AS_IF([$TEST "x$with_gstreamer" != xno], 
+	[AC_DEFINE([GSTREAMER_SOUND], [1], [Define to enable sound support with GStreamer])
+	SOUND_MODULE="gstreamer-0.10 >= 0.10.12 gstreamer-plugins-base-0.10 gstreamer-plugins-bad-0.10"])
+
 ### CHECK FOR LIBRARIES #######################################################
 
 # Libraries needed to build Chimara library
@@ -114,6 +125,7 @@ PKG_CHECK_MODULES([CHIMARA], [
 	gthread-2.0 
 	gmodule-2.0
 	pango
+	$SOUND_MODULE
 ])
 CHIMARA_LIBS="$CHIMARA_LIBS -lm"
 AC_SUBST(CHIMARA_LIBS)
