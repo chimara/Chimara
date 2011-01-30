@@ -91,6 +91,9 @@ struct _ChimaraGlkPrivate {
 	giblorb_map_t *resource_map;
 	/* File stream pointing to the blorb used as current resource map */
 	strid_t resource_file;
+	/* Information for opening external blorb file */
+	gboolean open_external_blorb;
+	gchar *external_blorb_pathname;
 	/* Optional callback for loading resource data */
 	ChimaraResourceLoadFunc resource_load_callback;
 	gpointer resource_load_callback_data;

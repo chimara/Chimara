@@ -668,6 +668,26 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	CHIMARA_GLK_USE_PRIVATE(self, glk_priv);
 	glk_priv->story_name = g_path_get_basename(gamefile);
 	g_object_notify(G_OBJECT(self), "story-name");
+
+	/* Check if an external blorb file is present */
+	/* FIXME: hardcoded path */
+	if(format == CHIMARA_IF_FORMAT_Z5
+	    || format == CHIMARA_IF_FORMAT_Z6
+	    || format == CHIMARA_IF_FORMAT_Z8
+	    || format == CHIMARA_IF_FORMAT_GLULX) {
+		gchar *path = g_path_get_dirname(gamefile);
+		gchar *scratch = g_path_get_basename(gamefile);
+		*(strrchr(scratch, '.')) = '\0';
+		gchar *blorbfile = g_strconcat(path, "/../Resources/", scratch, ".blb", NULL);
+		if(g_file_test(blorbfile, G_FILE_TEST_EXISTS)) {
+			glk_priv->open_external_blorb = TRUE;
+			glk_priv->external_blorb_pathname = blorbfile;
+		} else {
+			g_free(blorbfile);
+		}
+		g_free(path);
+		g_free(scratch);
+	}
 	
 	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, argc, argv, error);
 	g_free(argv);
