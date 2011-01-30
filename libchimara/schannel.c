@@ -70,9 +70,18 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 		g_free(debug_message);
 	}
 		break;
-	case GST_MESSAGE_EOS:
-		/* end-of-stream */
-		clean_up_after_playing_sound(s);
+	case GST_MESSAGE_EOS: /* End of stream */
+		/* Decrease repeats if not set to forever */
+		if(s->repeats != (glui32)-1)
+			s->repeats--;
+		if(s->repeats > 0) {
+			if(!gst_element_seek_simple(s->pipeline, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT, 0)) {
+				WARNING(_("Could not execute GStreamer seek"));
+				clean_up_after_playing_sound(s);
+			}
+		} else {
+			clean_up_after_playing_sound(s);
+		}
 		break;
 	default:
 		/* unhandled message */
@@ -371,12 +380,19 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-#ifdef GSTREAMER_SOUND	
+	g_printerr("Play sound %d with repeats %d and notify %d\n", snd, repeats, notify);
+#ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GInputStream *stream;
 
 	/* Stop the previous sound */
 	clean_up_after_playing_sound(chan);
+
+	/* Don't play if repeats = 0 */
+	if(repeats == 0) {
+		chan->repeats = 0;
+		return 1;
+	}
 
 	/* Load the sound into a GInputStream, by whatever method */
 	if(!glk_data->resource_map) {
@@ -396,6 +412,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
 	}
 
+	chan->repeats = repeats;
 	g_object_set(chan->source, "stream", stream, NULL);
 	
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {

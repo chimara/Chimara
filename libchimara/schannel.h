@@ -18,6 +18,9 @@ struct glk_schannel_struct
 	 this sound channel */
 	GList *schannel_list;
 
+	/* How many times to repeat the last sound played (-1 = forever) */
+	glui32 repeats;
+	
 #ifdef GSTREAMER_SOUND
 	/* Each sound channel is represented as a GStreamer pipeline.  */
 	GstElement *pipeline, *source, *typefind, *demux, *decode, *convert, *filter, *sink;
