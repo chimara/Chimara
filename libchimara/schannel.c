@@ -373,10 +373,12 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	VALID_SCHANNEL(chan, return 0);
 #ifdef GSTREAMER_SOUND	
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	GInputStream *stream;
 
 	/* Stop the previous sound */
 	clean_up_after_playing_sound(chan);
-	
+
+	/* Load the sound into a GInputStream, by whatever method */
 	if(!glk_data->resource_map) {
 		if(!glk_data->resource_load_callback) {
 			WARNING(_("No resource map has been loaded yet."));
@@ -384,15 +386,16 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		}
 		WARNING(_("Loading sound resources from alternative location not yet supported."));
 		return 0;
+	} else {
+		giblorb_result_t resource;
+		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
+		if(result != giblorb_err_None) {
+			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			return 0;
+		}
+		stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
 	}
-	
-	giblorb_result_t resource;
-	giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
-	if(result != giblorb_err_None) {
-		WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
-		return 0;
-	}
-	GInputStream *stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+
 	g_object_set(chan->source, "stream", stream, NULL);
 	
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
@@ -473,10 +476,41 @@ glk_schannel_set_volume(schanid_t chan, glui32 vol)
  * @flag is zero, the library may release memory or other resources associated
  * with the sound. Calling this function is always optional, and it has no
  * effect on what the library actually plays.
- *
- * <warning><para>This function is not implemented yet.</para></warning>
  */
 void 
 glk_sound_load_hint(glui32 snd, glui32 flag)
 {
+#ifdef GSTREAMER_SOUND
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	giblorb_result_t resource;
+	giblorb_err_t result;
+
+	/* Sound load hints only work for Blorb resource maps */
+	if(!glk_data->resource_map)
+		return;
+
+	if(flag) {
+		/* The sound load hint simply loads the resource from the resource map;
+		 loading a chunk more than once does nothing */
+		result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
+		if(result != giblorb_err_None) {
+			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			return;
+		}
+	} else {
+		/* Get the Blorb chunk number by loading the resource with
+		 method_DontLoad, then unload that chunk - has no effect if the chunk
+		 isn't loaded */
+		result = giblorb_load_resource(glk_data->resource_map, giblorb_method_DontLoad, &resource, giblorb_ID_Snd, snd);
+		if(result != giblorb_err_None) {
+			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			return;
+		}
+		result = giblorb_unload_chunk(glk_data->resource_map, resource.chunknum);
+		if(result != giblorb_err_None) {
+			WARNING_S( _("Error unloading chunk"), giblorb_get_error_message(result) );
+			return;
+		}
+	}
+#endif /* GSTREAMER_SOUND */
 }
