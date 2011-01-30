@@ -15,37 +15,64 @@
 extern GPrivate *glk_data_key;
 
 #ifdef GSTREAMER_SOUND
+/* Stop any currently playing sound on this channel, and remove any
+ format-specific GStreamer elements from the channel. */
+static void
+clean_up_after_playing_sound(schanid_t chan)
+{
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
+		WARNING_S(_("Could not set GstElement state to"), "NULL");
+	if(chan->demux)
+	{
+		gst_bin_remove(GST_BIN(chan->pipeline), chan->demux);
+		chan->demux = NULL;
+	}
+	if(chan->decode)
+	{
+		gst_bin_remove(GST_BIN(chan->pipeline), chan->decode);
+		chan->decode = NULL;
+	}
+}
+
+/* This signal is thrown whenever the GStreamer pipeline generates a message.
+ Most messages are harmless. */
 static void
 on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 {
-	g_print("Got %s message\n", GST_MESSAGE_TYPE_NAME(message));
+	/* g_printerr("Got %s message\n", GST_MESSAGE_TYPE_NAME(message)); */
 
+	GError *err;
+	gchar *debug_message;
+	
 	switch(GST_MESSAGE_TYPE(message)) {
 	case GST_MESSAGE_ERROR: 
 	{
-		GError *err;
-		gchar *debug;
-
-		gst_message_parse_error(message, &err, &debug);
-		g_print("Error: %s\n", err->message);
+		gst_message_parse_error(message, &err, &debug_message);
+		IO_WARNING(_("GStreamer error"), err->message, debug_message);
 		g_error_free(err);
-		g_free(debug);
+		g_free(debug_message);
+		clean_up_after_playing_sound(s);
 	}
 		break;
-	case GST_MESSAGE_STATE_CHANGED: 
+	case GST_MESSAGE_WARNING:
 	{
-		GstState old_state, new_state;
-		gst_message_parse_state_changed(message, &old_state, &new_state, NULL);
-    	g_print("Element %s changed state from %s to %s.\n",
-		    GST_OBJECT_NAME(message->src),
-		    gst_element_state_get_name(old_state),
-		    gst_element_state_get_name(new_state));
+		gst_message_parse_warning(message, &err, &debug_message);
+		IO_WARNING(_("GStreamer warning"), err->message, debug_message);
+		g_error_free(err);
+		g_free(debug_message);
+	}
+		break;
+	case GST_MESSAGE_INFO:
+	{
+		gst_message_parse_info(message, &err, &debug_message);
+		g_message("GStreamer info \"%s\": %s", err->message, debug_message);
+		g_error_free(err);
+		g_free(debug_message);
 	}
 		break;
 	case GST_MESSAGE_EOS:
 		/* end-of-stream */
-		if(!gst_element_set_state(s->pipeline, GST_STATE_READY))
-			WARNING_S(_("Could not set GstElement state to"), "READY");
+		clean_up_after_playing_sound(s);
 		break;
 	default:
 		/* unhandled message */
@@ -53,17 +80,23 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 	}
 }
 
+/* This signal is thrown when the OGG demuxer element has decided what kind of
+ outputs it will output. We connect the decoder element dynamically. */
 static void
 on_ogg_demuxer_pad_added(GstElement *demux, GstPad *pad, schanid_t s)
 {
 	GstPad *sinkpad;
-
+	
 	/* We can now link this pad with the vorbis-decoder sink pad */
 	sinkpad = gst_element_get_static_pad(s->decode, "sink");
-	gst_pad_link(pad, sinkpad);
+	if(gst_pad_link(pad, sinkpad) != GST_PAD_LINK_OK)
+		WARNING(_("Could not link OGG demuxer with Vorbis decoder"));
 	gst_object_unref(sinkpad);
 }
 
+/* This signal is thrown when the typefinder element has found the type of its
+ input. Now that we know what kind of input stream we have, we can connect the
+ proper demuxer/decoder elements. */
 static void
 on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t s)
 {
@@ -105,7 +138,7 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 	}
 	else
 	{
-		WARNING("Can't play that type, you FOOL!");
+		WARNING_S(_("Unexpected audio type in blorb"), type);
 	}
 
 finally:
@@ -161,7 +194,9 @@ glk_schannel_create(glui32 rock)
 		WARNING(_("Could not create one or more GStreamer elements"));
 		goto fail;
 	}
-		
+
+	/* Put the elements in the pipeline and link as many together as we can
+	 without knowing the type of the audio stream */
 	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->typefind, s->convert, s->filter, s->sink, NULL);
 	/* Link elements: Source -> typefinder -> ??? -> Converter -> Volume filter -> Sink */
 	if(!gst_element_link(s->source, s->typefind) || !gst_element_link_many(s->convert, s->filter, s->sink, NULL)) {
@@ -205,7 +240,8 @@ glk_schannel_destroy(schanid_t chan)
 		(*glk_data->unregister_obj)(chan, gidisp_Class_Schannel, chan->disprock);
 		chan->disprock.ptr = NULL;
 	}
-	
+
+	/* This also frees all the objects inside the pipeline */
 	if(chan->pipeline)
 		gst_object_unref(chan->pipeline);
 	
@@ -353,7 +389,6 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
 		return 0;
 	}
-	g_printerr("playing sound resource %d on channel %p\n", snd, chan);
 	GInputStream *stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
 	g_object_set(chan->source, "stream", stream, NULL);
 	
@@ -379,8 +414,7 @@ glk_schannel_stop(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 #ifdef GSTREAMER_SOUND
-	if(!gst_element_set_state(chan->pipeline, GST_STATE_READY))
-		WARNING_S(_("Could not set GstElement state to"), "READY");
+	clean_up_after_playing_sound(chan);
 #endif
 }
 
