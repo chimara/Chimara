@@ -18,10 +18,11 @@ extern GPrivate *glk_data_key;
 static void
 on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 {
-	/* g_print("Got %s message\n", GST_MESSAGE_TYPE_NAME(message)); */
+	g_print("Got %s message\n", GST_MESSAGE_TYPE_NAME(message));
 
 	switch(GST_MESSAGE_TYPE(message)) {
-	case GST_MESSAGE_ERROR: {
+	case GST_MESSAGE_ERROR: 
+	{
 		GError *err;
 		gchar *debug;
 
@@ -29,10 +30,22 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 		g_print("Error: %s\n", err->message);
 		g_error_free(err);
 		g_free(debug);
-		break;
 	}
+		break;
+	case GST_MESSAGE_STATE_CHANGED: 
+	{
+		GstState old_state, new_state;
+		gst_message_parse_state_changed(message, &old_state, &new_state, NULL);
+    	g_print("Element %s changed state from %s to %s.\n",
+		    GST_OBJECT_NAME(message->src),
+		    gst_element_state_get_name(old_state),
+		    gst_element_state_get_name(new_state));
+	}
+		break;
 	case GST_MESSAGE_EOS:
 		/* end-of-stream */
+		if(!gst_element_set_state(s->pipeline, GST_STATE_READY))
+			WARNING_S(_("Could not set GstElement state to"), "READY");
 		break;
 	default:
 		/* unhandled message */
