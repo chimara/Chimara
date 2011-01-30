@@ -429,6 +429,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 
 	chan->repeats = repeats;
 	g_object_set(chan->source, "stream", stream, NULL);
+	g_object_unref(stream); /* Now owned by GStreamer element */
 	
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
 		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
