@@ -371,8 +371,11 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-#ifdef GSTREAMER_SOUND
+#ifdef GSTREAMER_SOUND	
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	/* Stop the previous sound */
+	clean_up_after_playing_sound(chan);
 	
 	if(!glk_data->resource_map) {
 		if(!glk_data->resource_load_callback) {
