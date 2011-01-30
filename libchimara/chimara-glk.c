@@ -180,8 +180,6 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->line_input_queue = g_async_queue_new();
 	/* Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
 	priv->resource_map = NULL;
-	priv->open_external_blorb = FALSE;
-	priv->external_blorb_pathname = NULL;
 	priv->resource_lock = g_mutex_new();
 	priv->resource_loaded = g_cond_new();
 	priv->resource_info_available = g_cond_new();
@@ -1171,18 +1169,6 @@ glk_enter(struct StartupData *startup)
 		
 		if(!result)
 			return NULL;
-	}
-
-	/* Open external Blorb file if specified */
-	if(startup->glk_data->open_external_blorb) {
-		glkunix_set_base_file(startup->glk_data->external_blorb_pathname);
-		gchar *basename = g_path_get_basename(startup->glk_data->external_blorb_pathname);
-		frefid_t blorbref = glk_fileref_create_by_name(fileusage_BinaryMode | fileusage_Data, basename, 0);
-		g_free(basename);
-		strid_t blorbfile = glk_stream_open_file(blorbref, filemode_Read, 0);
-		giblorb_set_resource_map(blorbfile);
-		glk_fileref_destroy(blorbref);
-		g_printerr("Opening external blorb file\n");
 	}
 	
 	/* Run main function */
