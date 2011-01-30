@@ -14,10 +14,91 @@
 
 extern GPrivate *glk_data_key;
 
+#ifdef GSTREAMER_SOUND
 static void
-on_new_decoded_pad(GstTypeFindElement *typefind, guint probability, GstCaps *caps)
+on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 {
-	
+	/* g_print("Got %s message\n", GST_MESSAGE_TYPE_NAME(message)); */
+
+	switch(GST_MESSAGE_TYPE(message)) {
+	case GST_MESSAGE_ERROR: {
+		GError *err;
+		gchar *debug;
+
+		gst_message_parse_error(message, &err, &debug);
+		g_print("Error: %s\n", err->message);
+		g_error_free(err);
+		g_free(debug);
+		break;
+	}
+	case GST_MESSAGE_EOS:
+		/* end-of-stream */
+		break;
+	default:
+		/* unhandled message */
+		break;
+	}
+}
+
+static void
+on_ogg_demuxer_pad_added(GstElement *demux, GstPad *pad, schanid_t s)
+{
+	GstPad *sinkpad;
+
+	/* We can now link this pad with the vorbis-decoder sink pad */
+	sinkpad = gst_element_get_static_pad(s->decode, "sink");
+	gst_pad_link(pad, sinkpad);
+	gst_object_unref(sinkpad);
+}
+
+static void
+on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t s)
+{
+	gchar *type = gst_caps_to_string(caps);
+	if(strcmp(type, "application/ogg") == 0) 
+	{
+		s->demux = gst_element_factory_make("oggdemux", NULL);
+		s->decode = gst_element_factory_make("vorbisdec", NULL);
+		if(!s->demux || !s->decode)
+		{
+			WARNING(_("Could not create one or more GStreamer elements"));
+			goto finally;
+		}
+		gst_bin_add_many(GST_BIN(s->pipeline), s->demux, s->decode, NULL);
+		if(!gst_element_link(s->typefind, s->demux) || !gst_element_link(s->decode, s->convert))
+		{
+			WARNING(_("Could not link GStreamer elements"));
+			goto finally;
+		}
+		/* We link the demuxer and decoder together dynamically, since the
+		 demuxer doesn't know what source pads it will have until it starts
+		 demuxing the stream */
+		g_signal_connect(s->demux, "pad-added", G_CALLBACK(on_ogg_demuxer_pad_added), s);
+	}
+	else if(strcmp(type, "audio/x-aiff") == 0)
+	{
+		s->decode = gst_element_factory_make("aiffparse", NULL);
+		if(!s->decode)
+		{
+			WARNING(_("Could not create 'aiffparse' GStreamer element"));
+			goto finally;
+		}
+		gst_bin_add(GST_BIN(s->pipeline), s->decode);
+		if(!gst_element_link_many(s->typefind, s->decode, s->convert, NULL))
+		{
+			WARNING(_("Could not link GStreamer elements"));
+			goto finally;
+		}
+	}
+	else
+	{
+		WARNING("Can't play that type, you FOOL!");
+	}
+
+finally:
+	g_free(type);
+}
+#endif /* GSTREAMER_SOUND */
 
 /**
  * glk_schannel_create:
@@ -51,26 +132,30 @@ glk_schannel_create(glui32 rock)
 	s->pipeline = gst_pipeline_new(pipeline_name);
 	g_free(pipeline_name);
 
+	/* Watch for messages from the pipeline */
+	GstBus *bus = gst_pipeline_get_bus(GST_PIPELINE(s->pipeline));
+	gst_bus_add_signal_watch(bus);
+	g_signal_connect(bus, "message", G_CALLBACK(on_pipeline_message), s);
+	gst_object_unref(bus);
+
 	/* Create GStreamer elements to put in the pipeline */
 	s->source = gst_element_factory_make("giostreamsrc", NULL);
-	s->decode = gst_element_factory_make("decodebin2", NULL);
+	s->typefind = gst_element_factory_make("typefind", NULL);
+	s->convert = gst_element_factory_make("audioconvert", NULL);
 	s->filter = gst_element_factory_make("volume", NULL);
 	s->sink = gst_element_factory_make("autoaudiosink", NULL);
-	if(!s->source || !s->decode || !s->filter || !s->sink) {
+	if(!s->source || !s->typefind || !s->convert || !s->filter || !s->sink) {
 		WARNING(_("Could not create one or more GStreamer elements"));
 		goto fail;
 	}
 		
-	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->decode, s->filter, s->sink, NULL);
-	if(!gst_element_link(s->source, s->decode)) {
+	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->typefind, s->convert, s->filter, s->sink, NULL);
+	/* Link elements: Source -> typefinder -> ??? -> Converter -> Volume filter -> Sink */
+	if(!gst_element_link(s->source, s->typefind) || !gst_element_link_many(s->convert, s->filter, s->sink, NULL)) {
 		WARNING(_("Could not link GStreamer elements"));
 		goto fail;
 	}
-	if(!gst_element_link(s->filter, s->sink)) {
-		WARNING(_("Could not link GStreamer elements"));
-		goto fail;
-	}
-	g_signal_connect(s->decode, "new-decoded-pad", G_CALLBACK(on_new_decoded_pad), s);
+	g_signal_connect(s->typefind, "have-type", G_CALLBACK(on_type_found), s);
 	
 	return s;
 
@@ -255,7 +340,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
 		return 0;
 	}
-	g_printerr("playing sound resource %d at %p, length %x\n", snd, resource.data.ptr, resource.length);
+	g_printerr("playing sound resource %d on channel %p\n", snd, chan);
 	GInputStream *stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
 	g_object_set(chan->source, "stream", stream, NULL);
 	

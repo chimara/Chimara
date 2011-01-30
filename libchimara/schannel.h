@@ -20,7 +20,7 @@ struct glk_schannel_struct
 
 #ifdef GSTREAMER_SOUND
 	/* Each sound channel is represented as a GStreamer pipeline.  */
-	GstElement *pipeline, *source, *typefind, *decode, *filter, *sink;
+	GstElement *pipeline, *source, *typefind, *demux, *decode, *convert, *filter, *sink;
 #endif
 };
 
