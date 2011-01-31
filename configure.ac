@@ -114,7 +114,7 @@ AC_ARG_WITH([gstreamer],
 SOUND_MODULE=
 AS_IF([$TEST "x$with_gstreamer" != xno], 
 	[AC_DEFINE([GSTREAMER_SOUND], [1], [Define to enable sound support with GStreamer])
-	SOUND_MODULE="gstreamer-0.10 >= 0.10.12 gstreamer-plugins-base-0.10 gstreamer-plugins-bad-0.10"])
+	SOUND_MODULE="gstreamer-0.10 >= 0.10.12"])
 
 ### CHECK FOR LIBRARIES #######################################################
 
@@ -133,6 +133,25 @@ AC_SUBST(CHIMARA_LIBS)
 PKG_CHECK_MODULES([TEST], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0 >= $GLIB_REQUIRED_VERSION
+])
+
+# GStreamer plugins needed to run library
+AS_IF([$TEST "x$with_gstreamer" != xno], [
+	m4_defun([AX_GST_REQUIRE_ELEMENT],
+		[AM_GST_ELEMENT_CHECK([$1],
+			[],
+			[AC_MSG_ERROR([GStreamer element $1 not found. You need to install gstreamer-plugins-m4_default([$2], [base]).])]
+		)]
+	)
+	AX_GST_REQUIRE_ELEMENT([giostreamsrc])
+	AX_GST_REQUIRE_ELEMENT([typefind])
+	AX_GST_REQUIRE_ELEMENT([audioconvert])
+	AX_GST_REQUIRE_ELEMENT([volume])
+	AX_GST_REQUIRE_ELEMENT([oggdemux])
+	AX_GST_REQUIRE_ELEMENT([vorbisdec])
+	AX_GST_REQUIRE_ELEMENT([autoaudiosink], [good])
+	AX_GST_REQUIRE_ELEMENT([aiffparse], [bad])
+	AX_GST_REQUIRE_ELEMENT([modplug], [bad])
 ])
 
 # Plugin flags; include '-module' in each Makefile.am, because AC_SUBSTed
