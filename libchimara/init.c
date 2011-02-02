@@ -29,7 +29,9 @@ chimara_init(void)
 		/* Make sure GStreamer has been initialized if it hasn't been already;
 		in particular, if you want your program to parse GStreamer command line
 		options then you should do it yourself, before gtk_init(). */
-		if( !gst_is_initialized() )
+		
+		/* SUCKY DEBIAN: gst_is_initialized() supported from 0.10.30 onward */
+		/*if( !gst_is_initialized() )*/
 			gst_init(NULL, NULL);
 #endif
 
