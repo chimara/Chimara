@@ -88,6 +88,19 @@ AC_ARG_ENABLE([iliad],
 
 AM_CONDITIONAL([TARGET_ILIAD], [$TEST "x$iliad" = xtrue])
 
+### BUILD WITHOUT RECENT FILES MANAGER #########################################
+# (to work around a bug on OS X)
+AC_ARG_ENABLE([recent],
+	[AS_HELP_STRING([--disable-recent],[Omit recent files menu (to work around a bug on OS X])],
+	[AS_CASE([${enableval}],
+		[yes], [OPEN_RECENT_MENU_ITEM="<menuitem action=\"recent\"/>"],
+		[no], [OPEN_RECENT_MENU_ITEM="<!--  <menuitem action=\"recent\"/>-->"],
+		[AC_MSG_ERROR([bad value ${enableval} for --enable-recent])]
+	)],
+	[OPEN_RECENT_MENU_ITEM="<menuitem action=\"recent\"/>"]
+)
+AC_SUBST(OPEN_RECENT_MENU_ITEM)
+
 ### RPM CONFIGURATION ##########################################################
 # --enable-rpm requires rpm and rpmbuild
 AC_PATH_PROG([RPMBUILD], [rpmbuild], [notfound])
@@ -178,6 +191,7 @@ interpreters/glulxe/Makefile
 interpreters/git/Makefile
 tests/Makefile
 player/Makefile
+player/chimara.menus
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml

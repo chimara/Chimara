@@ -3,7 +3,7 @@
   <menubar>
     <menu action="game">
       <menuitem action="open"/>
-	  <!--  <menuitem action="recent"/>-->
+	  @OPEN_RECENT_MENU_ITEM@
       <separator/>
       <menuitem action="stop"/>
       <menuitem action="quit_chimara"/>
