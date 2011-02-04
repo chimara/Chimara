@@ -14,6 +14,9 @@
       <separator/>
       <menuitem action="preferences"/>
     </menu>
+    <menu action="view">
+      <menuitem action="toolbar"/>
+    </menu>
     <menu action="command">
       <menuitem action="undo"/>
       <menuitem action="save"/>

@@ -55,6 +55,7 @@ static GtkWidget *glk = NULL;
 GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
+GtkWidget *toolbar = NULL;
 
 GObject *
 load_object(const gchar *name)
@@ -110,6 +111,7 @@ create_window(void)
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
 	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
+	GtkToggleAction *toolbar_action = GTK_TOGGLE_ACTION(load_object("toolbar"));
 
 	const gchar **ptr;
 	GtkRecentFilter *filter = gtk_recent_filter_new();
@@ -188,11 +190,16 @@ create_window(void)
 
 	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/menubar");
-	//GtkWidget *toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
+	toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
+	gtk_widget_set_no_show_all(toolbar, TRUE);
+	if(gtk_toggle_action_get_active(toolbar_action))
+		gtk_widget_show(toolbar);
+	else
+		gtk_widget_hide(toolbar);
 
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
 	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
-	//gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
+	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
 	
 	gtk_builder_connect_signals(builder, glk);
 	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);

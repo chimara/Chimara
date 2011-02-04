@@ -185,6 +185,17 @@ on_preferences_activate(GtkAction *action, ChimaraGlk *glk)
 }
 
 void
+on_toolbar_toggled(GtkToggleAction *action, ChimaraGlk *glk)
+{
+	extern GtkWidget *toolbar;
+	
+	if(gtk_toggle_action_get_active(action))
+		gtk_widget_show(toolbar);
+	else
+		gtk_widget_hide(toolbar);
+}
+
+void
 on_undo_activate(GtkAction *action, ChimaraGlk *glk)
 {
 	chimara_glk_feed_line_input(glk, "undo");

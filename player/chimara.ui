@@ -4,6 +4,18 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkActionGroup" id="actiongroup">
     <child>
+      <object class="GtkToggleAction" id="toolbar">
+        <property name="label" translatable="yes">_Toolbar</property>
+        <property name="tooltip" translatable="yes">Show a toolbar at the top of the window</property>
+        <signal name="toggled" handler="on_toolbar_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="view">
+        <property name="label" translatable="yes">_View</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkAction" id="about">
         <property name="label">_About...</property>
         <property name="short_label">_About</property>
