@@ -110,52 +110,15 @@ create_window(void)
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
 	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
-	GtkActionGroup *style_actiongroup = GTK_ACTION_GROUP(load_object("style-actiongroup"));
 
-	/* Add all the actions to the action group. This for-loop is a temporary fix
-	and can be removed once Glade supports adding actions and accelerators to an
-	action group. */
-	const gchar *actions[] = { 
-		"game", "",
-		"open", "<ctrl>O", 
-		"recent", "",
-		"stop", "",
-		"quit_chimara", NULL, /* NULL means use stock accelerator */
-		"command", "",
-		"undo", "<ctrl>Z",
-		"save", NULL, 
-		"restore", "<ctrl>R", 
-		"restart", "",
-		"quit", "",
-		"edit", "",
-		"copy", NULL,
-		"paste", NULL,
-		"preferences", "",
-		"help", "",
-		"about", "",
-		NULL
-	};
-	const gchar *style_actions[] = { 
-		"align-left",
-		"align-justify",
-		"align-right",
-		"bold",
-		"italic",
-		"underline",
-		NULL
-	};
 	const gchar **ptr;
-	for(ptr = actions; *ptr; ptr += 2)
-		gtk_action_group_add_action_with_accel(actiongroup, GTK_ACTION(load_object(ptr[0])), ptr[1]);
-	for(ptr = style_actions; *ptr; ptr ++)
-		gtk_action_group_add_action(style_actiongroup, GTK_ACTION(load_object(*ptr)));
 	GtkRecentFilter *filter = gtk_recent_filter_new();
 	/* TODO: Use mimetypes and construct the filter dynamically depending on 
 	what plugins are installed */
 	const gchar *patterns[] = {
 		"*.z[1-8]", "*.[zg]lb", "*.[zg]blorb", "*.ulx", "*.blb", "*.blorb", NULL
 	};
-	
+
 	for(ptr = patterns; *ptr; ptr++)
 		gtk_recent_filter_add_pattern(filter, *ptr);
 	GtkRecentChooser *recent = GTK_RECENT_CHOOSER(load_object("recent"));
