@@ -139,7 +139,7 @@ create_window(void)
 		}
 #endif /* DEBUG */
 	}
-	
+
 	glk = chimara_if_new();
 	g_object_set(glk,
 	    "ignore-errors", TRUE,
@@ -230,6 +230,9 @@ main(int argc, char *argv[])
 
 	g_object_unref( G_OBJECT(uimanager) );
 
+	if(argc == 3) {
+		g_object_set(glk, "graphics-file", argv[2], NULL);
+	}
 	if(argc >= 2) {
 		if( !chimara_if_run_game(CHIMARA_IF(glk), argv[1], &error) ) {
 	   		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");

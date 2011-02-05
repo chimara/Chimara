@@ -87,6 +87,21 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		GError *error = NULL;
 		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+		/* See if there is a corresponding graphics file */
+		/* FIXME: hardcoded path */
+		gchar *path = g_path_get_dirname(filename);
+		gchar *scratch = g_path_get_basename(filename);
+		*(strrchr(scratch, '.')) = '\0';
+		gchar *blorbfile = g_strconcat(path, "/../Resources/", scratch, ".blb", NULL);
+		if(g_file_test(blorbfile, G_FILE_TEST_EXISTS)) {
+			g_object_set(glk, "graphics-file", blorbfile, NULL);
+			g_printerr("Setting graphics file to %s\n", blorbfile);
+		}
+		g_free(blorbfile);
+		g_free(path);
+		g_free(scratch);
+
 		if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
 			error_dialog(window, error, _("Could not open game file '%s': "), filename);
 			g_free(filename);
