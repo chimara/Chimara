@@ -1,9 +1,0 @@
-*.debhelper.log
-*.debhelper
-*.substvars
-stamp-*
-files
-libchimara0
-libchimara-dev
-libchimara-doc
-tmp
