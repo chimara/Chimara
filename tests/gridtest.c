@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <libchimara/glk.h>
+#include <libchimara/garglk.h>
 
 void glk_main(void)
 {
@@ -19,11 +20,36 @@ void glk_main(void)
     	glk_put_string("Window not big enough");
     	glk_exit();
     }
-    x = width / 2 - 10;
-    y = height / 2;
-    
+
     char *buffer = calloc(256, sizeof(char));
     assert(buffer);
+    
+	garglk_set_reversevideo(1);
+	for(y=0; y<height; y++) {
+		snprintf(buffer, 256, "%02d\n", y);
+		glk_put_string(buffer);
+	}
+	garglk_set_reversevideo(0);
+
+	glk_set_style(style_Emphasized);
+	for(y=0; y<height; y++) {
+		snprintf(buffer, 256, "%02d", y);
+		glk_window_move_cursor(mainwin, (y+1)*width-2, 0);
+		glk_put_string(buffer);
+	}
+	glk_set_style(style_Normal);
+
+    glk_window_move_cursor(mainwin, 2, 0);
+	glk_put_string("+");
+    glk_window_move_cursor(mainwin, width-3, 0);
+	glk_put_string("+");
+    glk_window_move_cursor(mainwin, 2, height-1);
+	glk_put_string("+");
+    glk_window_move_cursor(mainwin, width-3, height-1);
+	glk_put_string("+");
+
+    x = width / 2 - 10;
+    y = height / 2;
     
     glk_window_move_cursor(mainwin, x, y - 1);
     glk_put_string("Enter text, or 'quit'");

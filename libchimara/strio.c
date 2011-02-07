@@ -220,6 +220,44 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 					
 			    /* Text grid/buffer windows */
 			    case wintype_TextGrid:
+				{
+			        gchar *utf8 = convert_latin1_to_utf8(buf, len);
+			        if(utf8 != NULL) {
+						/* Deal with newlines */
+						int i;
+						gchar *line = utf8;
+						for(i=0; i<len; i++) {
+							if(utf8[i] == '\n') {
+								utf8[i] = '\0';
+								write_utf8_to_window_buffer(str->window, line);
+								flush_window_buffer(str->window);
+
+								/* Move cursor position forward to the next line */
+								gdk_threads_enter();
+								GtkTextIter cursor_pos;
+								GtkTextView *textview = GTK_TEXT_VIEW(str->window->widget);
+								GtkTextBuffer *buffer = gtk_text_view_get_buffer(textview);
+								GtkTextMark *cursor_mark = gtk_text_buffer_get_mark(buffer, "cursor_position");
+
+							    gtk_text_buffer_get_iter_at_mark( buffer, &cursor_pos, cursor_mark);
+								gtk_text_view_forward_display_line(textview, &cursor_pos);
+								gtk_text_view_backward_display_line_start(textview, &cursor_pos);
+								gtk_text_buffer_move_mark(buffer, cursor_mark, &cursor_pos);
+								gdk_threads_leave();
+
+								line = utf8 + (i < len-1 ? (i+1):(len-1));
+							}
+						}
+								
+						/* No more newlines left. */
+						write_utf8_to_window_buffer(str->window, line);
+						g_free(utf8);
+					}
+
+					str->write_count += len;
+				}
+					break;
+
 				case wintype_TextBuffer:
 			    {
 			        gchar *utf8 = convert_latin1_to_utf8(buf, len);
