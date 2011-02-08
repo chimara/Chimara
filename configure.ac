@@ -77,46 +77,35 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 
 ### ILIAD #####################################################################
 AC_ARG_ENABLE([iliad],
-  [AS_HELP_STRING([--enable-iliad],[Compiles Chimara for the iLiad])],
-  [AS_CASE([${enableval}],
-	   [yes], [iliad=true],
-	   [no], [iliad=false],
-	   [AC_MSG_ERROR([bad value ${enableval} for --enable-iliad])]
-   )],
-   [iliad=false]
-)
-
-AM_CONDITIONAL([TARGET_ILIAD], [$TEST "x$iliad" = xtrue])
+	[AS_HELP_STRING([--enable-iliad=@<:@yes/no@:>@],
+		[Compiles Chimara for the iLiad @<:@default=no@:>@])],
+	[],
+	[enable_iliad=no])
+AM_CONDITIONAL(TARGET_ILIAD, $TEST "x$enable_iliad" = xyes)
 
 ### BUILD WITHOUT RECENT FILES MANAGER #########################################
 # (to work around a bug on OS X)
 AC_ARG_ENABLE([recent],
-	[AS_HELP_STRING([--disable-recent],[Omit recent files menu (to work around a bug on OS X])],
-	[AS_CASE([${enableval}],
-		[yes], [OPEN_RECENT_MENU_ITEM="<menuitem action=\"recent\"/>"],
-		[no], [OPEN_RECENT_MENU_ITEM="<!--  <menuitem action=\"recent\"/>-->"],
-		[AC_MSG_ERROR([bad value ${enableval} for --enable-recent])]
-	)],
-	[OPEN_RECENT_MENU_ITEM="<menuitem action=\"recent\"/>"]
-)
+	[AS_HELP_STRING([--disable-recent],
+		[Omit recent files menu (to work around a bug on OS X])],
+	[],
+	[enable_recent=yes])
+AS_IF([$TEST "x$enable_recent" = "xyes"],
+	[OPEN_RECENT_MENU_ITEM="<menuitem action=\"recent\"/>"],
+	[OPEN_RECENT_MENU_ITEM="<!--  <menuitem action=\"recent\"/>-->"])
 AC_SUBST(OPEN_RECENT_MENU_ITEM)
 
 ### RPM CONFIGURATION ##########################################################
 # --enable-rpm requires rpm and rpmbuild
 AC_PATH_PROG([RPMBUILD], [rpmbuild], [notfound])
 AC_ARG_ENABLE([rpm],
-	[AS_HELP_STRING([--enable-rpm],[Configure for building RPM package [no] (requires rpm and rpmbuild)])],
-	[AS_CASE([${enableval}],
-		[yes], [AS_IF(
-			[$TEST "x$RPMBUILD" = xnotfound],
-				[AC_MSG_ERROR([rpmbuild is required for --enable-rpm])],
-			[rpm=true])],
-		[no],  [rpm=false],
-		[AC_MSG_ERROR([bad value ${enableval} for --enable-rpm])]
-	)],
-	[rpm=false]
-)
-AM_CONDITIONAL([BUILDING_RPM], [$TEST "x$rpm" = xtrue])
+	[AS_HELP_STRING([--enable-rpm=@<:@yes/no@:>@],
+		[Configure for building RPM package @<:@default=no@:>@ (requires rpm and rpmbuild)])],
+	[AS_IF([$TEST "x$enable_rpm" = xyes],
+		[AS_IF([$TEST "x$RPMBUILD" = xnotfound],
+			[AC_MSG_ERROR([rpmbuild is required for --enable-rpm])])])],
+	[enable_rpm=no])
+AM_CONDITIONAL(BUILDING_RPM, $TEST "x$enable_rpm" = xyes)
 
 ### SOUND LIBRARY TO USE ######################################################
 
