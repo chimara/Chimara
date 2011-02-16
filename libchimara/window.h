@@ -87,6 +87,7 @@ struct glk_window_struct
 	/* Hyperlinks */
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;
+	gboolean hyperlink_event_requested;
 	/* Graphics */
 	glui32 background_color;
 	/* Pager (textbuffer only) */
