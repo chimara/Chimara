@@ -1,6 +1,6 @@
 #include <config.h>
 #include <glib.h>
-#include <glib/gi18n.h>
+#include <glib/gi18n-lib.h>
 #include <libchimara/glk.h>
 #ifdef GSTREAMER_SOUND
 #include <gst/gst.h>
