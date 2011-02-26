@@ -24,4 +24,10 @@ chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 chimara_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 chimara_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
+schemasdir = $(datadir)/glib-2.0/schemas
+dist_schemas_DATA = org.chimara-if.gschema.xml
+
+install-data-hook:
+	glib-compile-schemas $(datadir)/glib-2.0/schemas
+
 endif

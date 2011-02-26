@@ -1,0 +1,17 @@
+<schemalist>
+  <schema id="org.chimara-if.chimara-player" path="/">
+    
+    <!-- Keys and key names are subject to change without notice, until we have
+     a spec-->
+    <!-- "b" = boolean; see documentation of GVariantType -->
+    
+    <key name="flep" type="b"> 
+      <default>false</default>
+      <summary>Flepping</summary>
+      <description>
+        Whether to flep or not while gronking a bloop.
+      </description>
+    </key>
+  
+  </schema>
+</schemalist>

@@ -40,6 +40,10 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+/* Use a custom GSettings backend for our preferences file */
+#define G_SETTINGS_ENABLE_BACKEND
+#include <gio/gsettingsbackend.h>
+
 #include "error.h"
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
@@ -56,6 +60,7 @@ GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
 GtkWidget *toolbar = NULL;
+GSettings *settings = NULL;
 
 GObject *
 load_object(const gchar *name)
@@ -206,7 +211,7 @@ create_window(void)
 	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
 	
 	/* Create preferences window */
-	//preferences_create(CHIMARA_GLK(glk));
+	preferences_create(CHIMARA_GLK(glk));
 }
 
 int
@@ -224,6 +229,11 @@ main(int argc, char *argv[])
 		g_thread_init(NULL);
 	gdk_threads_init();
 	gtk_init(&argc, &argv);
+
+	/* Initialize settings file */
+	gchar *keyfile = g_build_filename(g_get_home_dir(), ".chimara", NULL);
+	GSettingsBackend *backend = g_keyfile_settings_backend_new(keyfile, "/", "player");
+	settings = g_settings_new_with_backend("org.chimara-if.chimara-player", backend);
 
 	create_window();
 	gtk_widget_show_all(window);

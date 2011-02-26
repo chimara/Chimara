@@ -381,9 +381,16 @@ Philip Chimento</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
-              <object class="GtkFixed" id="fixed1">
+              <object class="GtkCheckButton" id="flep">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
+                <child>
+                  <object class="GtkLabel" id="flep-label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Turn on flepping</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child type="tab">

@@ -86,6 +86,11 @@ preferences_create(ChimaraGlk *glk)
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 
 	g_signal_connect(selection, "changed", G_CALLBACK(style_tree_select_callback), glk);
+
+	/* Bind the preferences to the entries in the preferences file */
+	extern GSettings *settings;
+	GObject *flep = G_OBJECT( load_object("flep") );
+	g_settings_bind(settings, "flep", flep, "active", G_SETTINGS_BIND_DEFAULT);
 }
 
 static void
