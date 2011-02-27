@@ -38,6 +38,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
 /* Use a custom GSettings backend for our preferences file */
@@ -231,11 +232,24 @@ main(int argc, char *argv[])
 	gdk_threads_init();
 	gtk_init(&argc, &argv);
 
-	/* Initialize settings file */
-	gchar *keyfile = g_build_filename(g_get_home_dir(), ".chimara", NULL);
+	/* Create configuration dir ~/.chimara */
+	gchar *configdir = g_build_filename(g_get_home_dir(), ".chimara", NULL);
+	if(!g_file_test(configdir, G_FILE_TEST_IS_DIR)
+		&& g_mkdir(configdir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
+		g_error(_("Cannot create configuration directory ~/.chimara"));
+	g_free(configdir);
+
+	/* Initialize settings file; it can be overridden by a "chimara-config" file
+	 in the current directory */
+	gchar *keyfile;
+	if(g_file_test("chimara-config", G_FILE_TEST_IS_REGULAR))
+		keyfile = g_strdup("chimara-config");
+	else
+		keyfile = g_build_filename(g_get_home_dir(), ".chimara", "config", NULL);
 	GSettingsBackend *backend = g_keyfile_settings_backend_new(keyfile, "/org/chimara-if/player/", NULL);
 	prefs_settings = g_settings_new_with_backend("org.chimara-if.player.preferences", backend);
 	state_settings = g_settings_new_with_backend("org.chimara-if.player.state", backend);
+	g_free(keyfile);
 
 	create_window();
 	gtk_widget_show_all(window);
