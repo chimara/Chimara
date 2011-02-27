@@ -5,3 +5,4 @@ Makefile.in
 *.o
 chimara
 chimara.menus
+*.gschema.valid
