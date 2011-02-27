@@ -60,7 +60,8 @@ GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
 GtkWidget *toolbar = NULL;
-GSettings *settings = NULL;
+GSettings *prefs_settings = NULL;
+GSettings *state_settings = NULL;
 
 GObject *
 load_object(const gchar *name)
@@ -232,8 +233,9 @@ main(int argc, char *argv[])
 
 	/* Initialize settings file */
 	gchar *keyfile = g_build_filename(g_get_home_dir(), ".chimara", NULL);
-	GSettingsBackend *backend = g_keyfile_settings_backend_new(keyfile, "/", "player");
-	settings = g_settings_new_with_backend("org.chimara-if.chimara-player", backend);
+	GSettingsBackend *backend = g_keyfile_settings_backend_new(keyfile, "/org/chimara-if/player/", NULL);
+	prefs_settings = g_settings_new_with_backend("org.chimara-if.player.preferences", backend);
+	state_settings = g_settings_new_with_backend("org.chimara-if.player.state", backend);
 
 	create_window();
 	gtk_widget_show_all(window);

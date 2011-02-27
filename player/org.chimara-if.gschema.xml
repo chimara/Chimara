@@ -1,10 +1,15 @@
 <schemalist>
-  <schema id="org.chimara-if.chimara-player" path="/">
-    
-    <!-- Keys and key names are subject to change without notice, until we have
-     a spec-->
-    <!-- "b" = boolean; see documentation of GVariantType -->
-    
+  <!-- Keys and key names are subject to change without notice, until we have
+  a spec-->
+  <!-- "b" = boolean; see documentation of GVariantType -->
+
+  <schema id="org.chimara-if.player" path="/org/chimara-if/player/">
+    <child name="preferences" schema="org.chimara-if.player.preferences"/>
+    <child name="state" schema="org.chimara-if.player.state"/>
+  </schema>
+
+  <schema id="org.chimara-if.player.preferences" path="/org/chimara-if/player/preferences/">
+
     <key name="flep" type="b"> 
       <default>false</default>
       <summary>Flepping</summary>
@@ -12,6 +17,19 @@
         Whether to flep or not while gronking a bloop.
       </description>
     </key>
-  
+
+  </schema>
+
+  <schema id="org.chimara-if.player.state" path="/org/chimara-if/player/state/">
+
+    <key name="last-open-path" type="ms">
+      <default>nothing</default>
+      <summary>Last open path</summary>
+      <description>
+        The path in which a game was last opened. The next Open dialog will
+        start in this path.
+      </description>
+    </key>
+
   </schema>
 </schemalist>

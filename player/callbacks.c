@@ -84,6 +84,16 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 	    NULL);
+
+	/* Get last opened path */
+	extern GSettings *state_settings;
+	gchar *path;
+	g_settings_get(state_settings, "last-open-path", "ms", &path);
+	if(path) {
+		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), path);
+		g_free(path);
+	}
+
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		GError *error = NULL;
 		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -102,6 +112,11 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 		g_free(path);
 		g_free(scratch);
 
+		path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
+		if(path) {
+			g_settings_set(state_settings, "last-open-path", "ms", path);
+			g_free(path);
+		}
 		if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
 			error_dialog(window, error, _("Could not open game file '%s': "), filename);
 			g_free(filename);
