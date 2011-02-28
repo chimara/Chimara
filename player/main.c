@@ -118,7 +118,13 @@ create_window(void)
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
 	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
+
+	/* Set the default value of the "View/Toolbar" menu item upon creation of a
+	 new window to the "show-toolbar-default" setting, but bind the setting
+	 one-way only - we don't want toolbars to disappear suddenly */
 	GtkToggleAction *toolbar_action = GTK_TOGGLE_ACTION(load_object("toolbar"));
+	gtk_toggle_action_set_active(toolbar_action, g_settings_get_boolean(state_settings, "show-toolbar-default"));
+	g_settings_bind(state_settings, "show-toolbar-default", toolbar_action, "active", G_SETTINGS_BIND_SET);
 
 	const gchar **ptr;
 	GtkRecentFilter *filter = gtk_recent_filter_new();
