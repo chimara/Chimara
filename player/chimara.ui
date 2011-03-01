@@ -4,77 +4,75 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkActionGroup" id="actiongroup">
     <child>
-      <object class="GtkAction" id="game">
-        <property name="label">_Game</property>
-        <property name="short_label" translatable="yes">_Game</property>
+      <object class="GtkToggleAction" id="toolbar">
+        <property name="label" translatable="yes">_Toolbar</property>
+        <property name="tooltip" translatable="yes">Show a toolbar at the top of the window</property>
+        <signal name="toggled" handler="on_toolbar_toggled" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="open">
-        <property name="label">_Open...</property>
-        <property name="short_label">_Open</property>
-        <property name="tooltip">Quit the current game and load a new one</property>
-        <property name="stock_id">gtk-media-play</property>
-        <signal name="activate" handler="on_open_activate" swapped="no"/>
-      </object>
-      <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
-    </child>
-    <child>
-      <object class="GtkAction" id="restore">
-        <property name="label">_Restore...</property>
-        <property name="short_label">_Restore</property>
-        <property name="tooltip">Restore a previously saved game</property>
-        <property name="stock_id">gtk-open</property>
-        <signal name="activate" handler="on_restore_activate" swapped="no"/>
-      </object>
-      <accelerator key="r" modifiers="GDK_CONTROL_MASK"/>
-    </child>
-    <child>
-      <object class="GtkAction" id="save">
-        <property name="label">_Save</property>
-        <property name="short_label" translatable="yes">_Save</property>
-        <property name="tooltip">Save the game</property>
-        <property name="stock_id">gtk-save</property>
-        <signal name="activate" handler="on_save_activate" swapped="no"/>
+      <object class="GtkAction" id="view">
+        <property name="label" translatable="yes">_View</property>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="quit_chimara">
-        <property name="label">_Quit Chimara</property>
-        <property name="short_label" translatable="yes">_Quit Chimara</property>
-        <property name="tooltip">Leave the program</property>
-        <property name="stock_id">gtk-quit</property>
-        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
+      <object class="GtkAction" id="about">
+        <property name="label">_About...</property>
+        <property name="short_label">_About</property>
+        <property name="tooltip">About this application</property>
+        <property name="stock_id">gtk-about</property>
+        <signal name="activate" handler="on_about_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="command">
-        <property name="label">_Command</property>
-        <property name="short_label" translatable="yes">_Command</property>
+      <object class="GtkAction" id="help">
+        <property name="label">_Help</property>
+        <property name="short_label" translatable="yes">_Help</property>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="edit">
-        <property name="label">_Edit</property>
-        <property name="short_label" translatable="yes">_Edit</property>
+      <object class="GtkAction" id="preferences">
+        <property name="label">P_references</property>
+        <property name="short_label" translatable="yes">P_references</property>
+        <property name="tooltip">Configure the application</property>
+        <property name="stock_id">gtk-preferences</property>
+        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="stop">
-        <property name="label">_Stop Game</property>
-        <property name="short_label">_Stop</property>
-        <property name="tooltip">Immediately stop the running game</property>
-        <property name="stock_id">gtk-stop</property>
-        <signal name="activate" handler="on_stop_activate" swapped="no"/>
+      <object class="GtkAction" id="paste">
+        <property name="label">_Paste</property>
+        <property name="short_label" translatable="yes">_Paste</property>
+        <property name="tooltip">Paste the clipboard</property>
+        <property name="stock_id">gtk-paste</property>
+        <signal name="activate" handler="on_paste_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkRecentAction" id="recent">
-        <property name="label">Open _Recent</property>
-        <property name="short_label" translatable="yes">Open _Recent</property>
-        <property name="limit">10</property>
-        <property name="sort_type">mru</property>
-        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
+      <object class="GtkAction" id="copy">
+        <property name="label">_Copy</property>
+        <property name="short_label" translatable="yes">_Copy</property>
+        <property name="tooltip">Copy the selection</property>
+        <property name="stock_id">gtk-copy</property>
+        <signal name="activate" handler="on_copy_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="quit">
+        <property name="label">_Quit</property>
+        <property name="short_label" translatable="yes">_Quit</property>
+        <property name="tooltip">Try to quit the game</property>
+        <property name="stock_id">gtk-media-stop</property>
+        <signal name="activate" handler="on_quit_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="restart">
+        <property name="label">Res_tart</property>
+        <property name="short_label" translatable="yes">Res_tart</property>
+        <property name="tooltip">Tell the game to restart</property>
+        <property name="stock_id">gtk-media-rewind</property>
+        <signal name="activate" handler="on_restart_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -88,75 +86,77 @@
       <accelerator key="z" modifiers="GDK_CONTROL_MASK"/>
     </child>
     <child>
-      <object class="GtkAction" id="restart">
-        <property name="label">Res_tart</property>
-        <property name="short_label" translatable="yes">Res_tart</property>
-        <property name="tooltip">Tell the game to restart</property>
-        <property name="stock_id">gtk-media-rewind</property>
-        <signal name="activate" handler="on_restart_activate" swapped="no"/>
+      <object class="GtkRecentAction" id="recent">
+        <property name="label">Open _Recent</property>
+        <property name="short_label" translatable="yes">Open _Recent</property>
+        <property name="limit">10</property>
+        <property name="sort_type">mru</property>
+        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="quit">
-        <property name="label">_Quit</property>
-        <property name="short_label" translatable="yes">_Quit</property>
-        <property name="tooltip">Try to quit the game</property>
-        <property name="stock_id">gtk-media-stop</property>
-        <signal name="activate" handler="on_quit_activate" swapped="no"/>
+      <object class="GtkAction" id="stop">
+        <property name="label">_Stop Game</property>
+        <property name="short_label">_Stop</property>
+        <property name="tooltip">Immediately stop the running game</property>
+        <property name="stock_id">gtk-stop</property>
+        <signal name="activate" handler="on_stop_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="copy">
-        <property name="label">_Copy</property>
-        <property name="short_label" translatable="yes">_Copy</property>
-        <property name="tooltip">Copy the selection</property>
-        <property name="stock_id">gtk-copy</property>
-        <signal name="activate" handler="on_copy_activate" swapped="no"/>
+      <object class="GtkAction" id="edit">
+        <property name="label">_Edit</property>
+        <property name="short_label" translatable="yes">_Edit</property>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="paste">
-        <property name="label">_Paste</property>
-        <property name="short_label" translatable="yes">_Paste</property>
-        <property name="tooltip">Paste the clipboard</property>
-        <property name="stock_id">gtk-paste</property>
-        <signal name="activate" handler="on_paste_activate" swapped="no"/>
+      <object class="GtkAction" id="command">
+        <property name="label">_Command</property>
+        <property name="short_label" translatable="yes">_Command</property>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="preferences">
-        <property name="label">P_references</property>
-        <property name="short_label" translatable="yes">P_references</property>
-        <property name="tooltip">Configure the application</property>
-        <property name="stock_id">gtk-preferences</property>
-        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
+      <object class="GtkAction" id="quit_chimara">
+        <property name="label">_Quit Chimara</property>
+        <property name="short_label" translatable="yes">_Quit Chimara</property>
+        <property name="tooltip">Leave the program</property>
+        <property name="stock_id">gtk-quit</property>
+        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="help">
-        <property name="label">_Help</property>
-        <property name="short_label" translatable="yes">_Help</property>
+      <object class="GtkAction" id="save">
+        <property name="label">_Save</property>
+        <property name="short_label" translatable="yes">_Save</property>
+        <property name="tooltip">Save the game</property>
+        <property name="stock_id">gtk-save</property>
+        <signal name="activate" handler="on_save_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="about">
-        <property name="label">_About...</property>
-        <property name="short_label">_About</property>
-        <property name="tooltip">About this application</property>
-        <property name="stock_id">gtk-about</property>
-        <signal name="activate" handler="on_about_activate" swapped="no"/>
+      <object class="GtkAction" id="restore">
+        <property name="label">_Restore...</property>
+        <property name="short_label">_Restore</property>
+        <property name="tooltip">Restore a previously saved game</property>
+        <property name="stock_id">gtk-open</property>
+        <signal name="activate" handler="on_restore_activate" swapped="no"/>
       </object>
+      <accelerator key="r" modifiers="GDK_CONTROL_MASK"/>
     </child>
     <child>
-      <object class="GtkAction" id="view">
-        <property name="label" translatable="yes">_View</property>
+      <object class="GtkAction" id="open">
+        <property name="label">_Open...</property>
+        <property name="short_label">_Open</property>
+        <property name="tooltip">Quit the current game and load a new one</property>
+        <property name="stock_id">gtk-media-play</property>
+        <signal name="activate" handler="on_open_activate" swapped="no"/>
       </object>
+      <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
     </child>
     <child>
-      <object class="GtkToggleAction" id="toolbar">
-        <property name="label" translatable="yes">_Toolbar</property>
-        <property name="tooltip" translatable="yes">Show a toolbar at the top of the window</property>
-        <signal name="toggled" handler="on_toolbar_toggled" swapped="no"/>
+      <object class="GtkAction" id="game">
+        <property name="label">_Game</property>
+        <property name="short_label" translatable="yes">_Game</property>
       </object>
     </child>
   </object>
@@ -574,6 +574,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">Align _left</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-justify-left</property>
+                                        <signal name="toggled" handler="on_toggle_left" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -588,6 +589,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">Align _center</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-justify-center</property>
+                                        <signal name="toggled" handler="on_toggle_center" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -602,6 +604,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">Align _right</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-justify-right</property>
+                                        <signal name="toggled" handler="on_toggle_right" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -616,6 +619,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">Align _justify</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-justify-fill</property>
+                                        <signal name="toggled" handler="on_toggle_justify" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -640,6 +644,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">_Bold</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-bold</property>
+                                        <signal name="toggled" handler="on_toggle_bold" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -654,6 +659,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">_Italic</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-italic</property>
+                                        <signal name="toggled" handler="on_toggle_italic" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -668,6 +674,7 @@ Philip Chimento</property>
                                         <property name="label" translatable="yes">_Underline</property>
                                         <property name="use_underline">True</property>
                                         <property name="stock_id">gtk-underline</property>
+                                        <signal name="toggled" handler="on_toggle_underline" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>

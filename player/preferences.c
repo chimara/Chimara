@@ -116,9 +116,9 @@ style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk)
 }
 
 void
-on_toggle_left(GtkToggleAction *action, ChimaraGlk *glk) {
+on_toggle_left(GtkToggleToolButton *button, ChimaraGlk *glk) {
 	/* No nothing if the button is deactivated */
-	if( !gtk_toggle_action_get_active(action) ) 
+	if( !gtk_toggle_tool_button_get_active(button) )
 		return;
 
 	/* Untoggle other alignment options */
@@ -134,8 +134,8 @@ on_toggle_left(GtkToggleAction *action, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_center(GtkToggleAction *action, ChimaraGlk *glk) {
-	if( !gtk_toggle_action_get_active(action) )
+on_toggle_center(GtkToggleToolButton *button, ChimaraGlk *glk) {
+	if( !gtk_toggle_tool_button_get_active(button) )
 		return;
 
 	/* Untoggle other alignment options */
@@ -151,8 +151,8 @@ on_toggle_center(GtkToggleAction *action, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_right(GtkToggleAction *action, ChimaraGlk *glk) {
-	if( !gtk_toggle_action_get_active(action) )
+on_toggle_right(GtkToggleToolButton *button, ChimaraGlk *glk) {
+	if( !gtk_toggle_tool_button_get_active(button) )
 		return;
 
 	/* Untoggle other alignment options */
@@ -168,8 +168,8 @@ on_toggle_right(GtkToggleAction *action, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_justify(GtkToggleAction *action, ChimaraGlk *glk) {
-	if( !gtk_toggle_action_get_active(action) )
+on_toggle_justify(GtkToggleToolButton *button, ChimaraGlk *glk) {
+	if( !gtk_toggle_tool_button_get_active(button) )
 		return;
 
 	/* Untoggle other alignment options */
@@ -185,8 +185,8 @@ on_toggle_justify(GtkToggleAction *action, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_bold(GtkToggleAction *action, ChimaraGlk *glk) {
-	if( gtk_toggle_action_get_active(action) )
+on_toggle_bold(GtkToggleToolButton *button, ChimaraGlk *glk) {
+	if( gtk_toggle_tool_button_get_active(button) )
 		g_object_set(current_tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
@@ -195,8 +195,8 @@ on_toggle_bold(GtkToggleAction *action, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_italic(GtkToggleAction *action, ChimaraGlk *glk) {
-	if( gtk_toggle_action_get_active(action) )
+on_toggle_italic(GtkToggleToolButton *button, ChimaraGlk *glk) {
+	if( gtk_toggle_tool_button_get_active(button) )
 		g_object_set(current_tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "style", PANGO_STYLE_NORMAL, "style-set", TRUE, NULL);
@@ -205,8 +205,8 @@ on_toggle_italic(GtkToggleAction *action, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_underline(GtkToggleAction *action, ChimaraGlk *glk) {
-	if( gtk_toggle_action_get_active(action) )
+on_toggle_underline(GtkToggleToolButton *button, ChimaraGlk *glk) {
+	if( gtk_toggle_tool_button_get_active(button) )
 		g_object_set(current_tag, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "underline", PANGO_UNDERLINE_NONE, "underline-set", TRUE, NULL);
