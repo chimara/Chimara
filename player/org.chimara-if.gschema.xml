@@ -18,6 +18,24 @@
       </description>
     </key>
 
+    <key name="resource-path" type="ms">
+      <default>nothing</default>
+      <summary>Resource path</summary>
+      <description>
+        Where to look for Blorb resource files containing graphics and sound;
+        normally, these are part of the story file itself, but they are provided
+        as separate files in some older games.
+      </description>
+    </key>
+
+    <key name="preferred-interpreters" type="a{ss}">
+      <default>[{'z5', 'frotz'}, {'z6', 'nitfol'}]</default>
+      <summary>Preferred interpreters</summary>
+      <description>
+        Preferred interpreters for opening each format of story file.
+      </description>
+    </key>
+
   </schema>
 
   <schema id="org.chimara-if.player.state" path="/org/chimara-if/player/state/">
