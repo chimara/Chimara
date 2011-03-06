@@ -91,6 +91,13 @@ preferences_create(ChimaraGlk *glk)
 	extern GSettings *prefs_settings;
 	GObject *flep = G_OBJECT( load_object("flep") );
 	g_settings_bind(prefs_settings, "flep", flep, "active", G_SETTINGS_BIND_DEFAULT);
+	GtkFileChooser *blorb_chooser = GTK_FILE_CHOOSER( load_object("blorb_file_chooser") );
+	char *filename;
+	g_settings_get(prefs_settings, "resource-path", "ms", &filename);
+	if(filename) {
+		gtk_file_chooser_set_filename(blorb_chooser, filename);
+		g_free(filename);
+	}
 }
 
 static void
@@ -239,4 +246,13 @@ on_font_set(GtkFontButton *button, ChimaraGlk *glk)
 	PangoFontDescription *font_description = pango_font_description_from_string(font_name);
 	g_object_set(current_tag, "font-desc", font_description, NULL);
 	chimara_glk_update_style(glk);
+}
+
+void
+on_resource_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)
+{
+	extern GSettings *prefs_settings;
+	char *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(button) );
+	g_settings_set(prefs_settings, "resource-path", "ms", filename);
+	g_free(filename);
 }

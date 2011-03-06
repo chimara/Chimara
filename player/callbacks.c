@@ -70,7 +70,35 @@ confirm_open_new_game(ChimaraGlk *glk)
 	return TRUE;
 }
 
-void 
+/* Internal function: See if there is a corresponding graphics file */
+static void
+search_for_graphics_file(const char *filename, ChimaraIF *glk)
+{
+
+	extern GSettings *prefs_settings;
+
+	/* First get the name of the story file */
+	char *scratch = g_path_get_basename(filename);
+	*(strrchr(scratch, '.')) = '\0';
+
+	/* Check in the stored resource path, if set */
+	char *resource_path;
+	g_settings_get(prefs_settings, "resource-path", "ms", &resource_path);
+
+	/* Otherwise check in the current directory */
+	if(!resource_path)
+		resource_path = g_path_get_dirname(filename);
+
+	char *blorbfile = g_strconcat(resource_path, "/", scratch, ".blb", NULL);
+	if(g_file_test(blorbfile, G_FILE_TEST_EXISTS))
+		g_object_set(glk, "graphics-file", blorbfile, NULL);
+
+	g_free(blorbfile);
+	g_free(scratch);
+	g_free(resource_path);
+}
+
+void
 on_open_activate(GtkAction *action, ChimaraGlk *glk) 
 {
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
@@ -96,27 +124,10 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		GError *error = NULL;
-		gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		extern GSettings *prefs_settings;
+		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 
-		/* See if there is a corresponding graphics file */
-		/* FIXME: hardcoded path */
-		gchar *path = g_path_get_dirname(filename);
-		gchar *scratch = g_path_get_basename(filename);
-		*(strrchr(scratch, '.')) = '\0';
-		gchar *blorbfile = g_strconcat(path, "/../Resources/", scratch, ".blb", NULL);
-		if(g_file_test(blorbfile, G_FILE_TEST_EXISTS)) {
-			g_object_set(glk, "graphics-file", blorbfile, NULL);
-			g_printerr("Setting graphics file to %s\n", blorbfile);
-		}
-		g_free(blorbfile);
-		g_free(path);
-		g_free(scratch);
-
-		path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
-		if(path) {
-			g_settings_set(state_settings, "last-open-path", "ms", path);
-			g_free(path);
-		}
+		search_for_graphics_file(filename, CHIMARA_IF(glk));
 		if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
 			error_dialog(window, error, _("Could not open game file '%s': "), filename);
 			g_free(filename);
@@ -124,6 +135,12 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 			return;
 		}
 		
+		path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
+		if(path) {
+			g_settings_set(state_settings, "last-open-path", "ms", path);
+			g_free(path);
+		}
+
 		/* Add file to recent files list */
 		GtkRecentManager *manager = gtk_recent_manager_get_default();
 		gchar *uri;
@@ -149,29 +166,26 @@ on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
 	gchar *filename;
 	if(!(filename = g_filename_from_uri(uri, NULL, &error))) {
 		error_dialog(window, error, _("Could not open game file '%s': "), uri);
-		g_free(uri);
-		return;
+		goto finally;
 	}
 	
-	if(!confirm_open_new_game(glk)) {
-		g_free(filename);
-		g_free(uri);
-		return;
-	}
+	if(!confirm_open_new_game(glk))
+		goto finally2;
 	
+	search_for_graphics_file(filename, CHIMARA_IF(glk));
 	if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
 		error_dialog(window, error, _("Could not open game file '%s': "), filename);
-		g_free(filename);
-		g_free(uri);
-		return;
+		goto finally2;
 	}
-	g_free(filename);
 	
 	/* Add file to recent files list again, this updates it to most recently used */
 	GtkRecentManager *manager = gtk_recent_manager_get_default();
 	if(!gtk_recent_manager_add_item(manager, uri))
 		g_warning(_("Could not add URI '%s' to recent files list."), uri);
-	
+
+finally2:
+	g_free(filename);
+finally:
 	g_free(uri);
 }
 

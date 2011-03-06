@@ -842,6 +842,7 @@ Philip Chimento</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Where to look for Blorb resource files containing graphics and sound; normally, these are part of the story file itself, but they are provided as separate files in some older games.</property>
                         <property name="action">select-folder</property>
+                        <signal name="file-set" handler="on_resource_file_set" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
