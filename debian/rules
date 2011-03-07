@@ -5,5 +5,5 @@ include /usr/share/cdbs/1/class/gnome.mk
 
 
 # Add here any variable or target overrides you need.
-DEB_CONFIGURE_EXTRA_FLAGS = --enable-gtk-doc
+DEB_CONFIGURE_EXTRA_FLAGS = --enable-gtk-doc --disable-schemas-compile
 DEB_BUILD_OPTIONS = nocheck

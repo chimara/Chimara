@@ -28,3 +28,5 @@ gsettings_SCHEMAS = org.chimara-if.gschema.xml
 @GSETTINGS_RULES@
 
 endif
+
+EXTRA_DIST = $(gsettings_SCHEMAS)
