@@ -12,7 +12,7 @@ glulxe_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 #glulxdump_CPPFLAGS = -I$(top_srcdir)/src/libchimara
 #glulxdump_LDADD = ../../libchimara/libchimara.la
 
-pkglibexec_SCRIPTS = profile-analyze.py
+dist_pkglibexec_SCRIPTS = profile-analyze.py
 
 glulxedocdir = $(datadir)/doc/$(PACKAGE)/glulxe
 dist_glulxedoc_DATA = README

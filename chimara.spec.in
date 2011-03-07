@@ -53,12 +53,13 @@ using %{name}.
 %setup -q
 
 %build
-%configure --disable-static
+%configure --disable-static --disable-schemas-compile
 make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall
+# not macro makeinstall, this breaks stoopid GSETTINGS_RULES
+make install DESTDIR=$RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 rm -f $RPM_BUILD_ROOT/usr/share/info/dir
 
@@ -69,12 +70,20 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/ldconfig
 /sbin/install-info %{_infodir}/nitfol.info %{_infodir}/dir || :
 
+%post player
+if [ $1 -eq 1 ] ; then
+  glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+fi
+
 %preun
 if [ $1 = 0 ] ; then
   /sbin/install-info --delete %{_infodir}/nitfol.info %{_infodir}/dir || :
 fi
 
 %postun -p /sbin/ldconfig
+
+%postun player
+glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files
 %defattr(-,root,root,-)
@@ -85,6 +94,7 @@ fi
 %doc %{_infodir}/*.info*
 %{_libdir}/libchimara.so.*
 %{_libdir}/chimara/*.so
+%{_libexecdir}/chimara/profile-analyze.py
 
 %files devel
 %defattr(-,root,root,-)
@@ -104,8 +114,11 @@ fi
 %{_datadir}/chimara/chimara.ui
 %{_datadir}/chimara/chimara.menus
 %{_datadir}/chimara/style.css
+%{_datadir}/glib-2.0/schemas/org.chimara-if.gschema.xml
 
 %changelog
+* Mon Mar 7 2011 P. F. Chimento <philip.chimento@gmail.com>
+- Added glib-compile-schemas invocations.
 * Fri Dec 4 2009 P. F. Chimento <philip.chimento@gmail.com>
 - 0.1-1
 - Mended rpmlint warnings and errors.
