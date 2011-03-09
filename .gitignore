@@ -21,4 +21,5 @@ stamp-h1
 ylwrap
 *.anjuta*
 TODO.tasks
+intltool-*.in
 *~
