@@ -249,6 +249,26 @@ Philip Chimento</property>
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="available_interpreters">
+    <columns>
+      <!-- column-name Interpreter -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Frotz</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Nitfol</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Glulxe</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Git</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkDialog" id="prefswindow">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -793,7 +813,7 @@ Philip Chimento</property>
                                 <property name="can_focus">True</property>
                                 <property name="tooltip_text" translatable="yes">Which interpreter to use by default for each story format</property>
                                 <property name="model">interpreters</property>
-                                <property name="headers_visible">False</property>
+                                <property name="headers_visible">True</property>
                                 <property name="headers_clickable">False</property>
                                 <property name="rules_hint">True</property>
                                 <child>
@@ -811,7 +831,12 @@ Philip Chimento</property>
                                   <object class="GtkTreeViewColumn" id="interpreter_column">
                                     <property name="title">Interpreter</property>
                                     <child>
-                                      <object class="GtkCellRendererText" id="interpreter_renderer"/>
+                                      <object class="GtkCellRendererCombo" id="interpreter_renderer">
+                                        <property name="model">available_interpreters</property>
+                                        <property name="has_entry">False</property>
+                                        <property name="text_column">0</property>
+                                        <property name="editable">True</property>
+                                      </object>
                                       <attributes>
                                         <attribute name="text">1</attribute>
                                       </attributes>
