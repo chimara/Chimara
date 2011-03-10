@@ -254,20 +254,6 @@ Philip Chimento</property>
       <!-- column-name Interpreter -->
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Frotz</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Nitfol</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Glulxe</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Git</col>
-      </row>
-    </data>
   </object>
   <object class="GtkDialog" id="prefswindow">
     <property name="can_focus">False</property>
