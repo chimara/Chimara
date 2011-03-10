@@ -244,9 +244,9 @@ Philip Chimento</property>
   <object class="GtkListStore" id="interpreters">
     <columns>
       <!-- column-name Format -->
-      <column type="guint"/>
+      <column type="gchararray"/>
       <!-- column-name Interpreter -->
-      <column type="guint"/>
+      <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkDialog" id="prefswindow">
@@ -796,6 +796,28 @@ Philip Chimento</property>
                                 <property name="headers_visible">False</property>
                                 <property name="headers_clickable">False</property>
                                 <property name="rules_hint">True</property>
+                                <child>
+                                  <object class="GtkTreeViewColumn" id="format_column">
+                                    <property name="title">Format</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="format_renderer"/>
+                                      <attributes>
+                                        <attribute name="text">0</attribute>
+                                      </attributes>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkTreeViewColumn" id="interpreter_column">
+                                    <property name="title">Interpreter</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="interpreter_renderer"/>
+                                      <attributes>
+                                        <attribute name="text">1</attribute>
+                                      </attributes>
+                                    </child>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>

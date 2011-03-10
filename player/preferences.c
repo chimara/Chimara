@@ -98,6 +98,18 @@ preferences_create(ChimaraGlk *glk)
 		gtk_file_chooser_set_filename(blorb_chooser, filename);
 		g_free(filename);
 	}
+
+	/* Initialize the list of preferred interpreters */
+	GtkListStore *interp_list = GTK_LIST_STORE( load_object("interpreters") );
+	GVariantIter *iter;
+	char *format, *plugin;
+	g_settings_get(prefs_settings, "preferred-interpreters", "a{ss}", &iter);
+	while(g_variant_iter_loop(iter, "{ss}", &format, &plugin)) {
+		GtkTreeIter tree_iter;
+		gtk_list_store_append(interp_list, &tree_iter);
+		gtk_list_store_set(interp_list, &tree_iter, 0, format, 1, plugin, -1);
+	}
+	g_variant_iter_free(iter);
 }
 
 static void
