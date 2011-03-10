@@ -43,6 +43,72 @@ static GtkTextTag *current_tag;
 
 static void style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk);
 
+/* Internal functions to convert from human-readable names in the config file
+to enums and back. Later: replace with plugin functions. */
+static ChimaraIFFormat
+parse_format(const char *format)
+{
+	if(strcmp(format, "z5") == 0)
+		return CHIMARA_IF_FORMAT_Z5;
+	if(strcmp(format, "z6") == 0)
+		return CHIMARA_IF_FORMAT_Z6;
+	if(strcmp(format, "z8") == 0)
+		return CHIMARA_IF_FORMAT_Z8;
+	if(strcmp(format, "zblorb") == 0)
+		return CHIMARA_IF_FORMAT_Z_BLORB;
+	if(strcmp(format, "glulx") == 0)
+		return CHIMARA_IF_FORMAT_GLULX;
+	if(strcmp(format, "gblorb") == 0)
+		return CHIMARA_IF_FORMAT_GLULX_BLORB;
+	return CHIMARA_IF_FORMAT_NONE;
+}
+
+static const char *format_display_strings[CHIMARA_IF_NUM_FORMATS] = {
+	N_("Z-machine version 5"),
+	N_("Z-machine version 6"),
+	N_("Z-machine version 8"),
+	N_("Z-machine Blorb file"),
+	N_("Glulx"),
+	N_("Glulx Blorb file")
+};
+
+static const char *
+format_to_display_string(ChimaraIFFormat format)
+{
+	if(format < CHIMARA_IF_NUM_FORMATS)
+		return gettext(format_display_strings[format]);
+	return _("Unknown");
+}
+
+static ChimaraIFInterpreter
+parse_interpreter(const char *interp)
+{
+	if(strcmp(interp, "frotz") == 0)
+		return CHIMARA_IF_INTERPRETER_FROTZ;
+	if(strcmp(interp, "nitfol") == 0)
+		return CHIMARA_IF_INTERPRETER_NITFOL;
+	if(strcmp(interp, "glulxe") == 0)
+		return CHIMARA_IF_INTERPRETER_GLULXE;
+	if(strcmp(interp, "git") == 0)
+		return CHIMARA_IF_INTERPRETER_GIT;
+	return CHIMARA_IF_INTERPRETER_NONE;
+}
+
+static const char *interpreter_display_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
+	N_("Frotz"),
+	N_("Nitfol"),
+	N_("Glulxe"),
+	N_("Git")
+};
+
+static const char *
+interpreter_to_display_string(ChimaraIFInterpreter interp)
+{
+	if(interp < CHIMARA_IF_NUM_INTERPRETERS)
+		return gettext(interpreter_display_strings[interp]);
+	return _("Unknown");
+}
+
 /* Create the preferences dialog. */
 void
 preferences_create(ChimaraGlk *glk)
@@ -105,9 +171,18 @@ preferences_create(ChimaraGlk *glk)
 	char *format, *plugin;
 	g_settings_get(prefs_settings, "preferred-interpreters", "a{ss}", &iter);
 	while(g_variant_iter_loop(iter, "{ss}", &format, &plugin)) {
+		ChimaraIFFormat format_num = parse_format(format);
+		if(format_num == CHIMARA_IF_FORMAT_NONE)
+			continue;
+		ChimaraIFInterpreter interp_num = parse_interpreter(plugin);
+		if(interp_num == CHIMARA_IF_INTERPRETER_NONE)
+			continue;
 		GtkTreeIter tree_iter;
 		gtk_list_store_append(interp_list, &tree_iter);
-		gtk_list_store_set(interp_list, &tree_iter, 0, format, 1, plugin, -1);
+		gtk_list_store_set(interp_list, &tree_iter,
+			0, format_to_display_string(format_num),
+			1, interpreter_to_display_string(interp_num),
+			-1);
 	}
 	g_variant_iter_free(iter);
 }
