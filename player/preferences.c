@@ -167,17 +167,26 @@ preferences_create(ChimaraGlk *glk)
 
 	/* Populate the list of available interpreters */
 	GtkListStore *interp_list = GTK_LIST_STORE( load_object("available_interpreters") );
-	unsigned int interp;
+	unsigned int count;
 	GtkTreeIter tree_iter;
-	for(interp = 0; interp < CHIMARA_IF_NUM_INTERPRETERS; interp++) {
+	for(count = 0; count < CHIMARA_IF_NUM_INTERPRETERS; count++) {
 		gtk_list_store_append(interp_list, &tree_iter);
 		gtk_list_store_set(interp_list, &tree_iter,
-			0, interpreter_to_display_string(interp),
+			0, interpreter_to_display_string(count),
 			-1);
 	}
 
 	/* Initialize the list of preferred interpreters */
 	GtkListStore *preferred_list = GTK_LIST_STORE( load_object("interpreters") );
+	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
+		gtk_list_store_append(preferred_list, &tree_iter);
+		gtk_list_store_set(preferred_list, &tree_iter,
+			0, format_to_display_string(count),
+			1, _("Unknown"),
+			-1);
+	}
+
+	/* Get the list of preferred interpreters from the preferences */
 	GVariantIter *iter;
 	char *format, *plugin;
 	g_settings_get(prefs_settings, "preferred-interpreters", "a{ss}", &iter);
@@ -188,9 +197,10 @@ preferences_create(ChimaraGlk *glk)
 		ChimaraIFInterpreter interp_num = parse_interpreter(plugin);
 		if(interp_num == CHIMARA_IF_INTERPRETER_NONE)
 			continue;
-		gtk_list_store_append(preferred_list, &tree_iter);
+		GtkTreePath *path = gtk_tree_path_new_from_indices(format_num, -1);
+		gtk_tree_model_get_iter(GTK_TREE_MODEL(preferred_list), &tree_iter, path);
+		gtk_tree_path_free(path);
 		gtk_list_store_set(preferred_list, &tree_iter,
-			0, format_to_display_string(format_num),
 			1, interpreter_to_display_string(interp_num),
 			-1);
 	}
