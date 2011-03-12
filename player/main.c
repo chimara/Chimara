@@ -170,24 +170,6 @@ create_window(void)
 		}
 #endif /* DEBUG */
 	}
-	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk),
-	    CHIMARA_IF_FORMAT_Z5,
-	    CHIMARA_IF_INTERPRETER_FROTZ);
-	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk),
-	    CHIMARA_IF_FORMAT_Z6,
-	    CHIMARA_IF_INTERPRETER_NITFOL);
-	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk),
-	    CHIMARA_IF_FORMAT_Z8,
-	    CHIMARA_IF_INTERPRETER_FROTZ);
-	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk),
-	    CHIMARA_IF_FORMAT_Z_BLORB,
-	    CHIMARA_IF_INTERPRETER_FROTZ);
-	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk),
-	    CHIMARA_IF_FORMAT_GLULX,
-	    CHIMARA_IF_INTERPRETER_GLULXE);
-	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk),
-	    CHIMARA_IF_FORMAT_GLULX_BLORB,
-	    CHIMARA_IF_INTERPRETER_GLULXE);
 	
 	/* DON'T UNCOMMENT THIS your eyes will burn
 	 but it is a good test of programmatically altering just one style

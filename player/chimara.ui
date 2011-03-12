@@ -822,6 +822,7 @@ Philip Chimento</property>
                                         <property name="has_entry">False</property>
                                         <property name="text_column">0</property>
                                         <property name="editable">True</property>
+                                        <signal name="changed" handler="on_interpreter_cell_changed" swapped="no"/>
                                       </object>
                                       <attributes>
                                         <attribute name="text">1</attribute>

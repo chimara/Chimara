@@ -30,6 +30,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdlib.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
@@ -40,6 +41,7 @@
 
 GObject *load_object(const gchar *name);
 static GtkTextTag *current_tag;
+static GtkListStore *preferred_list;
 
 static void style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk);
 
@@ -63,6 +65,17 @@ parse_format(const char *format)
 	return CHIMARA_IF_FORMAT_NONE;
 }
 
+static const char *format_strings[CHIMARA_IF_NUM_FORMATS] = {
+	"z5", "z6", "z8", "zblorb", "glulx", "gblorb"
+};
+
+static const char *format_to_string(ChimaraIFFormat format)
+{
+	if(format >= 0 && format < CHIMARA_IF_NUM_FORMATS)
+		return format_strings[format];
+	return "unknown";
+}
+
 static const char *format_display_strings[CHIMARA_IF_NUM_FORMATS] = {
 	N_("Z-machine version 5"),
 	N_("Z-machine version 6"),
@@ -75,7 +88,7 @@ static const char *format_display_strings[CHIMARA_IF_NUM_FORMATS] = {
 static const char *
 format_to_display_string(ChimaraIFFormat format)
 {
-	if(format < CHIMARA_IF_NUM_FORMATS)
+	if(format >= 0 && format < CHIMARA_IF_NUM_FORMATS)
 		return gettext(format_display_strings[format]);
 	return _("Unknown");
 }
@@ -94,6 +107,18 @@ parse_interpreter(const char *interp)
 	return CHIMARA_IF_INTERPRETER_NONE;
 }
 
+static const char *interpreter_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
+	"frotz", "nitfol", "glulxe", "git"
+};
+
+static const char *
+interpreter_to_string(ChimaraIFInterpreter interp)
+{
+	if(interp >= 0 && interp < CHIMARA_IF_NUM_INTERPRETERS)
+		return interpreter_strings[interp];
+	return "unknown";
+}
+
 static const char *interpreter_display_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
 	N_("Frotz"),
 	N_("Nitfol"),
@@ -104,7 +129,7 @@ static const char *interpreter_display_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
 static const char *
 interpreter_to_display_string(ChimaraIFInterpreter interp)
 {
-	if(interp < CHIMARA_IF_NUM_INTERPRETERS)
+	if(interp >= 0 && interp < CHIMARA_IF_NUM_INTERPRETERS)
 		return gettext(interpreter_display_strings[interp]);
 	return _("Unknown");
 }
@@ -176,16 +201,6 @@ preferences_create(ChimaraGlk *glk)
 			-1);
 	}
 
-	/* Initialize the list of preferred interpreters */
-	GtkListStore *preferred_list = GTK_LIST_STORE( load_object("interpreters") );
-	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
-		gtk_list_store_append(preferred_list, &tree_iter);
-		gtk_list_store_set(preferred_list, &tree_iter,
-			0, format_to_display_string(count),
-			1, _("Unknown"),
-			-1);
-	}
-
 	/* Get the list of preferred interpreters from the preferences */
 	GVariantIter *iter;
 	char *format, *plugin;
@@ -197,14 +212,19 @@ preferences_create(ChimaraGlk *glk)
 		ChimaraIFInterpreter interp_num = parse_interpreter(plugin);
 		if(interp_num == CHIMARA_IF_INTERPRETER_NONE)
 			continue;
-		GtkTreePath *path = gtk_tree_path_new_from_indices(format_num, -1);
-		gtk_tree_model_get_iter(GTK_TREE_MODEL(preferred_list), &tree_iter, path);
-		gtk_tree_path_free(path);
-		gtk_list_store_set(preferred_list, &tree_iter,
-			1, interpreter_to_display_string(interp_num),
-			-1);
+		chimara_if_set_preferred_interpreter(CHIMARA_IF(glk), format_num, interp_num);
 	}
 	g_variant_iter_free(iter);
+
+	/* Display it all in the list */
+	preferred_list = GTK_LIST_STORE( load_object("interpreters") );
+	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
+		gtk_list_store_append(preferred_list, &tree_iter);
+		gtk_list_store_set(preferred_list, &tree_iter,
+			0, format_to_display_string(count),
+			1, interpreter_to_display_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)),
+			-1);
+	}
 }
 
 static void
@@ -362,4 +382,39 @@ on_resource_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)
 	char *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(button) );
 	g_settings_set(prefs_settings, "resource-path", "ms", filename);
 	g_free(filename);
+}
+
+void
+on_interpreter_cell_changed(GtkCellRendererCombo *combo, char *path_string, GtkTreeIter *new_iter, ChimaraGlk *glk)
+{
+	unsigned int format, interpreter;
+	format = (unsigned int)strtol(path_string, NULL, 10);
+	GtkTreeModel *combo_model;
+	g_object_get(combo, "model", &combo_model, NULL);
+	char *combo_string = gtk_tree_model_get_string_from_iter(combo_model, new_iter);
+	interpreter = (unsigned int)strtol(combo_string, NULL, 10);
+	g_free(combo_string);
+
+	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk), format, interpreter);
+
+	/* Display the new setting in the list */
+	GtkTreeIter iter;
+	GtkTreePath *path = gtk_tree_path_new_from_string(path_string);
+	gtk_tree_model_get_iter(GTK_TREE_MODEL(preferred_list), &iter, path);
+	gtk_tree_path_free(path);
+	gtk_list_store_set(preferred_list, &iter,
+		1, interpreter_to_display_string(interpreter),
+		-1);
+
+	/* Save the new settings in the preferences file */
+	extern GSettings *prefs_settings;
+	GVariantBuilder *builder = g_variant_builder_new( G_VARIANT_TYPE("a{ss}") );
+	unsigned int count;
+	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
+		g_variant_builder_add(builder, "{ss}",
+			format_to_string(count),
+			interpreter_to_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)));
+	}
+	g_settings_set(prefs_settings, "preferred-interpreters", "a{ss}", builder);
+	g_variant_builder_unref(builder);
 }

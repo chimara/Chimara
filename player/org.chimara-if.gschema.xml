@@ -29,7 +29,12 @@
     </key>
 
     <key name="preferred-interpreters" type="a{ss}">
-      <default>{'z5': 'frotz', 'z6': 'nitfol'}</default>
+      <default>{'z5': 'frotz',
+                'z6': 'nitfol',
+                'z8': 'frotz',
+                'zblorb': 'frotz',
+                'glulx': 'glulxe',
+                'gblorb': 'glulxe'}</default>
       <summary>Preferred interpreters</summary>
       <description>
         Preferred interpreters for opening each format of story file.
