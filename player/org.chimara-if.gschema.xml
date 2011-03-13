@@ -18,6 +18,14 @@
       </description>
     </key>
 
+    <key name="css-file" type="ms">
+      <default>nothing</default>
+      <summary>CSS style file</summary>
+      <description>
+        The CSS file containing the current theme for the text in the games.
+      </description>
+    </key>
+
     <key name="resource-path" type="ms">
       <default>nothing</default>
       <summary>Resource path</summary>

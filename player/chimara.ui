@@ -394,6 +394,7 @@ Philip Chimento</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="title" translatable="yes">Select A CSS File</property>
+                        <signal name="file-set" handler="on_css_filechooser_file_set" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
