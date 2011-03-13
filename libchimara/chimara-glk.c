@@ -1063,8 +1063,9 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 
 	int fd = open(filename, O_RDONLY);
 	if(fd == -1) {
-		*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno), 
-		    _("Error opening file \"%s\": %s"), filename, g_strerror(errno));
+		if(error)
+			*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno), 
+				_("Error opening file \"%s\": %s"), filename, g_strerror(errno));
 		return FALSE;
 	}
 
@@ -1074,8 +1075,9 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 	scan_css_file(scanner, glk);
 
 	if(close(fd) == -1) {
-		*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno),
-		    _("Error closing file \"%s\": %s"), filename, g_strerror(errno));
+		if(error)
+			*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno),
+				_("Error closing file \"%s\": %s"), filename, g_strerror(errno));
 		return FALSE;
 	}
 	return TRUE;
