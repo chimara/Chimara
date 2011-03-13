@@ -225,6 +225,12 @@ Philip Chimento</property>
       </object>
     </child>
   </object>
+  <object class="GtkListStore" id="available_interpreters">
+    <columns>
+      <!-- column-name Interpreter -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="chimara">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Chimara</property>
@@ -245,12 +251,6 @@ Philip Chimento</property>
     <columns>
       <!-- column-name Format -->
       <column type="gchararray"/>
-      <!-- column-name Interpreter -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
-  <object class="GtkListStore" id="available_interpreters">
-    <columns>
       <!-- column-name Interpreter -->
       <column type="gchararray"/>
     </columns>
@@ -441,6 +441,7 @@ Philip Chimento</property>
                       <object class="GtkHBox" id="hbox1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="spacing">12</property>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindow1">
                             <property name="width_request">163</property>
@@ -452,8 +453,21 @@ Philip Chimento</property>
                               <object class="GtkTreeView" id="style-treeview">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="model">style-list</property>
                                 <property name="headers_visible">False</property>
                                 <property name="headers_clickable">False</property>
+                                <child>
+                                  <object class="GtkTreeViewColumn" id="style-name-column">
+                                    <property name="title" translatable="yes">Style Name</property>
+                                    <property name="expand">True</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="style-name-renderer"/>
+                                      <attributes>
+                                        <attribute name="text">0</attribute>
+                                      </attributes>
+                                    </child>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -467,21 +481,24 @@ Philip Chimento</property>
                           <object class="GtkVBox" id="vbox4">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="spacing">6</property>
                             <child>
-                              <object class="GtkHBox" id="hbox2">
+                              <object class="GtkTable" id="table2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="n_rows">3</property>
+                                <property name="n_columns">2</property>
+                                <property name="column_spacing">6</property>
+                                <property name="row_spacing">6</property>
                                 <child>
                                   <object class="GtkLabel" id="label6">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
                                     <property name="label" translatable="yes">Font:</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
+                                    <property name="x_options">GTK_FILL</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -493,23 +510,24 @@ Philip Chimento</property>
                                     <signal name="font-set" handler="on_font_set" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
                                   </packing>
                                 </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkFixed" id="fixed2">
-                                <property name="height_request">130</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel" id="label7">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Foreground color:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                  </packing>
+                                </child>
                                 <child>
                                   <object class="GtkColorButton" id="colorbutton1">
                                     <property name="width_request">40</property>
@@ -522,31 +540,24 @@ Philip Chimento</property>
                                     <signal name="color-set" handler="on_foreground_color_set" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="x">125</property>
-                                    <property name="y">10</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label7">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="xpad">5</property>
-                                    <property name="label" translatable="yes">Foreground color:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="x">4</property>
-                                    <property name="y">17</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label8">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
                                     <property name="label" translatable="yes">Background color:</property>
                                   </object>
                                   <packing>
-                                    <property name="x">6</property>
-                                    <property name="y">52</property>
+                                    <property name="top_attach">2</property>
+                                    <property name="bottom_attach">3</property>
+                                    <property name="x_options">GTK_FILL</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -561,135 +572,100 @@ Philip Chimento</property>
                                     <signal name="color-set" handler="on_background_color_set" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="x">125</property>
-                                    <property name="y">45</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">2</property>
+                                    <property name="bottom_attach">3</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkHButtonBox" id="hbuttonbox1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="spacing">6</property>
+                                <property name="layout_style">start</property>
+                                <child>
+                                  <object class="GtkRadioButton" id="left">
+                                    <property name="label">gtk-justify-left</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">False</property>
+                                    <signal name="toggled" handler="on_toggle_left" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkToolbar" id="style-toolbar">
-                                    <property name="width_request">283</property>
-                                    <property name="height_request">50</property>
+                                  <object class="GtkRadioButton" id="center">
+                                    <property name="label">gtk-justify-center</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="toolbar_style">icons</property>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-left">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">Align _left</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-justify-left</property>
-                                        <signal name="toggled" handler="on_toggle_left" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-center">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">Align _center</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-justify-center</property>
-                                        <signal name="toggled" handler="on_toggle_center" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-right">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">Align _right</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-justify-right</property>
-                                        <signal name="toggled" handler="on_toggle_right" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-justify">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">Align _justify</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-justify-fill</property>
-                                        <signal name="toggled" handler="on_toggle_justify" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSeparatorToolItem" id="toolbutton4">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-bold">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">_Bold</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-bold</property>
-                                        <signal name="toggled" handler="on_toggle_bold" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-italic">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">_Italic</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-italic</property>
-                                        <signal name="toggled" handler="on_toggle_italic" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleToolButton" id="toolbutton-underline">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="label" translatable="yes">_Underline</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-underline</property>
-                                        <signal name="toggled" handler="on_toggle_underline" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="draw_indicator">False</property>
+                                    <property name="group">left</property>
+                                    <signal name="toggled" handler="on_toggle_center" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="y">86</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkRadioButton" id="right">
+                                    <property name="label">gtk-justify-right</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="draw_indicator">False</property>
+                                    <property name="group">left</property>
+                                    <signal name="toggled" handler="on_toggle_right" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkRadioButton" id="justify">
+                                    <property name="label">gtk-justify-fill</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="draw_indicator">False</property>
+                                    <property name="group">left</property>
+                                    <signal name="toggled" handler="on_toggle_justify" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -697,6 +673,73 @@ Philip Chimento</property>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkHButtonBox" id="hbuttonbox2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="spacing">6</property>
+                                <property name="layout_style">start</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton1">
+                                    <property name="label">gtk-bold</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="draw_indicator">False</property>
+                                    <signal name="toggled" handler="on_toggle_bold" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton2">
+                                    <property name="label">gtk-italic</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="draw_indicator">False</property>
+                                    <signal name="toggled" handler="on_toggle_italic" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="underline">
+                                    <property name="label">gtk-underline</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="image_position">top</property>
+                                    <property name="draw_indicator">False</property>
+                                    <signal name="toggled" handler="on_toggle_underline" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                           </object>
@@ -799,7 +842,6 @@ Philip Chimento</property>
                                 <property name="can_focus">True</property>
                                 <property name="tooltip_text" translatable="yes">Which interpreter to use by default for each story format</property>
                                 <property name="model">interpreters</property>
-                                <property name="headers_visible">True</property>
                                 <property name="headers_clickable">False</property>
                                 <property name="rules_hint">True</property>
                                 <child>
@@ -818,10 +860,10 @@ Philip Chimento</property>
                                     <property name="title">Interpreter</property>
                                     <child>
                                       <object class="GtkCellRendererCombo" id="interpreter_renderer">
-                                        <property name="model">available_interpreters</property>
-                                        <property name="has_entry">False</property>
-                                        <property name="text_column">0</property>
                                         <property name="editable">True</property>
+                                        <property name="has_entry">False</property>
+                                        <property name="model">available_interpreters</property>
+                                        <property name="text_column">0</property>
                                         <signal name="changed" handler="on_interpreter_cell_changed" swapped="no"/>
                                       </object>
                                       <attributes>
@@ -919,5 +961,11 @@ Philip Chimento</property>
     <action-widgets>
       <action-widget response="0">button-close</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkTreeStore" id="style-list">
+    <columns>
+      <!-- column-name Text -->
+      <column type="gchararray"/>
+    </columns>
   </object>
 </interface>

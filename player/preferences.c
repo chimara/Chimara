@@ -139,7 +139,7 @@ void
 preferences_create(ChimaraGlk *glk)
 {
 	/* Initialize the tree of style names */
-	GtkTreeStore *style_list = gtk_tree_store_new(1, G_TYPE_STRING);
+	GtkTreeStore *style_list = GTK_TREE_STORE( load_object("style-list") );
 	GtkTreeIter buffer, grid, buffer_child, grid_child;
 
 	gtk_tree_store_append(style_list, &buffer, NULL);
@@ -157,25 +157,10 @@ preferences_create(ChimaraGlk *glk)
 		gtk_tree_store_set(style_list, &grid_child, 0, tag_names[i], -1);
 	}
 
-	/* Attach the model to the treeview */
-	GtkTreeView *view = GTK_TREE_VIEW( load_object("style-treeview") );
-	gtk_tree_view_set_model(view, GTK_TREE_MODEL(style_list));
-	g_object_unref(style_list);
-
-	/* Set the columns */
-	GtkTreeViewColumn *column = gtk_tree_view_column_new();
-	gtk_tree_view_column_set_title(column, "Style Name");
-	gtk_tree_view_append_column(view, column);
-
-	/* Set the renderers */
-	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-	gtk_tree_view_column_pack_start(column, renderer, TRUE);
-	gtk_tree_view_column_add_attribute(column, renderer, "text", 0);
-
 	/* Set selection mode to single select */
+	GtkTreeView *view = GTK_TREE_VIEW( load_object("style-treeview") );
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(view);
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-
 	g_signal_connect(selection, "changed", G_CALLBACK(style_tree_select_callback), glk);
 
 	/* Bind the preferences to the entries in the preferences file */
@@ -250,77 +235,41 @@ style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk)
 }
 
 void
-on_toggle_left(GtkToggleToolButton *button, ChimaraGlk *glk) {
+on_toggle_left(GtkToggleButton *button, ChimaraGlk *glk) {
 	/* No nothing if the button is deactivated */
-	if( !gtk_toggle_tool_button_get_active(button) )
+	if( !gtk_toggle_button_get_active(button) )
 		return;
-
-	/* Untoggle other alignment options */
-	GtkToggleToolButton *center = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-center"));
-	GtkToggleToolButton *right = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-right"));
-	GtkToggleToolButton *justify = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-justify"));
-	gtk_toggle_tool_button_set_active(center, FALSE);
-	gtk_toggle_tool_button_set_active(right, FALSE);
-	gtk_toggle_tool_button_set_active(justify, FALSE);
-
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_LEFT, "justification-set", TRUE, NULL);
 	chimara_glk_update_style(glk);
 }
 
 void
-on_toggle_center(GtkToggleToolButton *button, ChimaraGlk *glk) {
-	if( !gtk_toggle_tool_button_get_active(button) )
+on_toggle_center(GtkToggleButton *button, ChimaraGlk *glk) {
+	if( !gtk_toggle_button_get_active(button) )
 		return;
-
-	/* Untoggle other alignment options */
-	GtkToggleToolButton *left = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-left"));
-	GtkToggleToolButton *right = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-right"));
-	GtkToggleToolButton *justify = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-justify"));
-	gtk_toggle_tool_button_set_active(left, FALSE);
-	gtk_toggle_tool_button_set_active(right, FALSE);
-	gtk_toggle_tool_button_set_active(justify, FALSE);
-
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_CENTER, "justification-set", TRUE, NULL);
 	chimara_glk_update_style(glk);
 }
 
 void
-on_toggle_right(GtkToggleToolButton *button, ChimaraGlk *glk) {
-	if( !gtk_toggle_tool_button_get_active(button) )
+on_toggle_right(GtkToggleButton *button, ChimaraGlk *glk) {
+	if( !gtk_toggle_button_get_active(button) )
 		return;
-
-	/* Untoggle other alignment options */
-	GtkToggleToolButton *left = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-left"));
-	GtkToggleToolButton *center = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-center"));
-	GtkToggleToolButton *justify = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-justify"));
-	gtk_toggle_tool_button_set_active(left, FALSE);
-	gtk_toggle_tool_button_set_active(center, FALSE);
-	gtk_toggle_tool_button_set_active(justify, FALSE);
-
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_RIGHT, "justification-set", TRUE, NULL);
 	chimara_glk_update_style(glk);
 }
 
 void
-on_toggle_justify(GtkToggleToolButton *button, ChimaraGlk *glk) {
-	if( !gtk_toggle_tool_button_get_active(button) )
+on_toggle_justify(GtkToggleButton *button, ChimaraGlk *glk) {
+	if( !gtk_toggle_button_get_active(button) )
 		return;
-
-	/* Untoggle other alignment options */
-	GtkToggleToolButton *left = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-left"));
-	GtkToggleToolButton *center = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-center"));
-	GtkToggleToolButton *right = GTK_TOGGLE_TOOL_BUTTON(load_object("toolbutton-right"));
-	gtk_toggle_tool_button_set_active(left, FALSE);
-	gtk_toggle_tool_button_set_active(center, FALSE);
-	gtk_toggle_tool_button_set_active(right, FALSE);
-
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_FILL, "justification-set", TRUE, NULL);
 	chimara_glk_update_style(glk);
 }
 
 void
-on_toggle_bold(GtkToggleToolButton *button, ChimaraGlk *glk) {
-	if( gtk_toggle_tool_button_get_active(button) )
+on_toggle_bold(GtkToggleButton *button, ChimaraGlk *glk) {
+	if( gtk_toggle_button_get_active(button) )
 		g_object_set(current_tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
@@ -329,8 +278,8 @@ on_toggle_bold(GtkToggleToolButton *button, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_italic(GtkToggleToolButton *button, ChimaraGlk *glk) {
-	if( gtk_toggle_tool_button_get_active(button) )
+on_toggle_italic(GtkToggleButton *button, ChimaraGlk *glk) {
+	if( gtk_toggle_button_get_active(button) )
 		g_object_set(current_tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "style", PANGO_STYLE_NORMAL, "style-set", TRUE, NULL);
@@ -339,8 +288,8 @@ on_toggle_italic(GtkToggleToolButton *button, ChimaraGlk *glk) {
 }
 
 void
-on_toggle_underline(GtkToggleToolButton *button, ChimaraGlk *glk) {
-	if( gtk_toggle_tool_button_get_active(button) )
+on_toggle_underline(GtkToggleButton *button, ChimaraGlk *glk) {
+	if( gtk_toggle_button_get_active(button) )
 		g_object_set(current_tag, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "underline", PANGO_UNDERLINE_NONE, "underline-set", TRUE, NULL);
