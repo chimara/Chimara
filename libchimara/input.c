@@ -273,11 +273,28 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
  * <type>glui32</type> values instead of an array of characters, and the values
  * may be any valid Unicode code points.
  *
- * The result will be in Unicode Normalization Form C. This basically means that
- * composite characters will be single characters where possible, instead of
- * sequences of base and combining marks. See
- * <ulink url="http://www.unicode.org/reports/tr15/">Unicode Standard Annex
- * #15</ulink> for the details.
+ * If possible, the library should return fully composed Unicode characters,
+ * rather than strings of base and composition characters.
+ *
+ * <note><para>
+ *   Fully-composed characters are the norm for Unicode text, so an
+ *   implementation that ignores this issue will probably produce the right
+ *   result. However, the game may not want to rely on that. Another factor is
+ *   that case-folding can (occasionally) produce non-normalized text.
+ *   Therefore, to cover all its bases, a game should call
+ *   glk_buffer_to_lower_case_uni(), followed by
+ *   glk_buffer_canon_normalize_uni(), before parsing.
+ * </para></note>
+ *
+ * <note><para>
+ *   Earlier versions of this spec said that line input must always be in
+ *   Unicode Normalization Form C. However, this has not been universally
+ *   implemented. It is also somewhat redundant, for the results noted above.
+ *   Therefore, we now merely recommend that line input be fully composed. The
+ *   game is ultimately responsible for all case-folding and normalization. See
+ *   <link linkend="chimara-Unicode-String-Normalization">Unicode String
+ *   Normalization</link>.
+ * </para></note>
  */
 void
 glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initlen)
@@ -952,4 +969,78 @@ cancel_old_input_request(winid_t win)
 	default:
 		WARNING("Could not cancel pending input request: unknown input request");
 	}
+}
+
+/**
+ * glk_set_echo_line_event:
+ * @win: The window in which to change the echoing behavior.
+ * @val: Zero to turn off echoing, nonzero for normal echoing.
+ *
+ * Normally, after line input is completed or cancelled in a buffer window, the
+ * library ensures that the complete input line (or its latest state, after
+ * cancelling) is displayed at the end of the buffer, followed by a newline.
+ * This call allows you to suppress this behavior. If the @val argument is zero,
+ * all <emphasis>subsequent</emphasis> line input requests in the given window
+ * will leave the buffer unchanged after the input is completed or cancelled;
+ * the player's input will not be printed. If @val is nonzero, subsequent input
+ * requests will have the normal printing behavior.
+ *
+ * <note><para>
+ *   Note that this feature is unrelated to the window's echo stream.
+ * </para></note>
+ *
+ * If you turn off line input echoing, you can reproduce the standard input
+ * behavior by following each line input event (or line input cancellation) by
+ * printing the input line, in the Input style, followed by a newline in the
+ * original style.
+ *
+ * The glk_set_echo_line_event() does not affect a pending line input request.
+ * It also has no effect in non-buffer windows.
+ * <note><para>
+ *   In a grid window, the game can overwrite the input area at will, so there
+ *   is no need for this distinction.
+ * </para></note>
+ *
+ * Not all libraries support this feature. You can test for it with
+ * %gestalt_LineInputEcho.
+ */
+void
+glk_set_echo_line_event(winid_t win, glui32 val)
+{
+	VALID_WINDOW(win, return);
+}
+
+/**
+ * glk_set_terminators_line_event:
+ * @win: The window for which to set the line input terminator keys.
+ * @keycodes: An array of <code>keycode_</code> constants, of length @count.
+ * @count: The array length of @keycodes.
+ *
+ * It is possible to request that other keystrokes complete line input as well.
+ * (This allows a game to intercept function keys or other special keys during
+ * line input.) To do this, call glk_set_terminators_line_event(), and pass an
+ * array of @count keycodes. These must all be special keycodes (see <link
+ * linkend="chimara-Character-Input">Character Input</link>). Do not include
+ * regular printable characters in the array, nor %keycode_Return (which
+ * represents the default <keycap>enter</keycap> key and will always be
+ * recognized). To return to the default behavior, pass a %NULL or empty array.
+ *
+ * The glk_set_terminators_line_event() affects <emphasis>subsequent</emphasis>
+ * line input requests in the given window. It does not affect a pending line
+ * input request.
+ *
+ * <note><para>
+ *   This distinction makes life easier for interpreters that set up UI
+ *   callbacks only at the start of input.
+ * </para></note>
+ *
+ * A library may not support this feature; if it does, it may not support all
+ * special keys as terminators. (Some keystrokes are reserved for OS or
+ * interpreter control.) You can test for this with %gestalt_LineTerminators and
+ * %gestalt_LineTerminatorKey.
+ */
+void
+glk_set_terminators_line_event(winid_t win, glui32 *keycodes, glui32 count)
+{
+	VALID_WINDOW(win, return);
 }

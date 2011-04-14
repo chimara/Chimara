@@ -79,7 +79,7 @@ glk_char_to_upper(unsigned char ch)
  * <note><para>
  *   Unicode has some strange case cases. For example, a combined character
  *   that looks like <quote>ss</quote> might properly be upper-cased into 
- *   <emphasis>two</emphasis> characters <quote>S</quote>. Title-casing is even
+ *   <emphasis>two</emphasis> <quote>S</quote> characters. Title-casing is even
  *   stranger; <quote>ss</quote> (at the beginning of a word) might be 
  *   title-cased into a different combined character that looks like 
  *   <quote>Ss</quote>. The glk_buffer_to_title_case_uni() function is actually
@@ -140,10 +140,10 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
  * otherwise.
  *
  * See glk_buffer_to_lower_case_uni(). The <code>title_case</code> function has
- * an additional (boolean) flag. Its basic function is to change the first
- * character of the buffer to upper-case, and leave the rest of the buffer
- * unchanged. If @lowerrest is true, it changes all the non-first characters to
- * lower-case (instead of leaving them alone.) 
+ * an additional (boolean) flag. If the flag is zero, the function changes the
+ * first character of the buffer to upper-case, and leaves the rest of the
+ * buffer unchanged. If the flag is nonzero, it changes the first character to
+ * upper-case and the rest to lower-case.
  *
  * <note><para>
  *   Earlier drafts of this spec had a separate function which title-cased the
@@ -170,3 +170,91 @@ glk_buffer_to_title_case_uni(glui32 *buf, glui32 len, glui32 numchars, glui32 lo
 	return numchars;
 }
 
+/**
+ * glk_buffer_canon_decompose_uni:
+ * @buf: A character array in UCS-4.
+ * @len: Available length of @buf.
+ * @numchars: Number of characters in @buf.
+ *
+ * This transforms a string into its canonical decomposition
+ * (<quote>Normalization Form D</quote>). Effectively, this takes apart
+ * multipart characters into their individual parts. For example, it would
+ * convert <quote>&egrave;</quote> (character 0xE8, an accented
+ * <quote>e</quote>) into the two-character string containing <quote>e</quote>
+ * followed by Unicode character 0x0300 (COMBINING GRAVE ACCENT). If a single
+ * character has multiple accent marks, they are also rearranged into a standard
+ * order.
+ *
+ * Returns: The number of characters in @buf after decomposition.
+ */
+glui32
+glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len, glui32 numchars)
+{
+	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
+	g_return_val_if_fail(numchars <= len, 0);
+
+	/* TODO: Implement this */
+	return numchars;
+}
+
+/**
+ * glk_buffer_canon_normalize_uni:
+ * @buf: A character array in UCS-4.
+ * @len: Available length of @buf.
+ * @numchars: Number of characters in @buf.
+ *
+ * This transforms a string into its canonical decomposition and recomposition
+ * (<quote>Normalization Form C</quote>). Effectively, this takes apart
+ * multipart characters, and then puts them back together in a standard way. For
+ * example, this would convert the two-character string containing
+ * <quote>e</quote> followed by Unicode character 0x0300 (COMBINING GRAVE
+ * ACCENT) into the one-character string <quote>&egrave;</quote> (character
+ * 0xE8, an accented <quote>e</quote>).
+ *
+ * The <code>canon_normalize</code> function includes decomposition as part of
+ * its implementation. You never have to call both functions on the same string.
+ *
+ * Both of these functions are idempotent.
+ *
+ * These functions provide two length arguments because a string of Unicode
+ * characters may expand when it is transformed. The @len argument is the
+ * available length of the buffer; @numchars is the number of characters in the
+ * buffer initially. (So @numchars must be less than or equal to @len. The
+ * contents of the buffer after @numchars do not affect the operation.)
+ *
+ * The functions return the number of characters after transformation. If this
+ * is greater than @len, the characters in the array will be safely truncated at
+ * @len, but the true count will be returned. (The contents of the buffer after
+ * the returned count are undefined.)
+ *
+ * <note><para>
+ *   The Unicode spec also defines stronger forms of these functions, called
+ *   <quote>compatibility decomposition and recomposition</quote>
+ *   (<quote>Normalization Form KD</quote> and <quote>Normalization Form
+ *   KC</quote>.) These do all of the accent-mangling described above, but they
+ *   also transform many other obscure Unicode characters into more familiar
+ *   forms. For example, they split ligatures apart into separate letters. They
+ *   also convert Unicode display variations such as script letters, circled
+ *   letters, and half-width letters into their common forms.
+ * </para></note>
+ *
+ * <note><para>
+ *   The Glk spec does not currently provide these stronger transformations.
+ *   Glk's expected use of Unicode normalization is for line input, and an OS
+ *   facility for line input will generally not produce these alternate
+ *   character forms (unless the user goes out of his way to type them).
+ *   Therefore, the need for these transformations does not seem to be worth the
+ *   extra data table space.
+ * </para></note>
+ *
+ * Returns: the number of characters in @buf after normalization.
+ */
+glui32
+glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len, glui32 numchars)
+{
+	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
+	g_return_val_if_fail(numchars <= len, 0);
+
+	/* TODO: Implement this */
+	return numchars;
+}

@@ -35,7 +35,7 @@ extern GPrivate *glk_data_key;
  *  This prevents the user from being locked out by overly enthusiastic timer 
  *  events. Unfortunately, it also means that your timer can be locked out on 
  *  slower machines, if the player pounds too enthusiastically on the keyboard. 
- *  Sorry. If you want a real-time operating system, talk to Wind River.
+ *  Sorry.
  * </para></note>
  *
  * <note><para>

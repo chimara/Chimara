@@ -28,7 +28,12 @@ There is no way to use these selectors directly in the Glk API.
 <note><para>
 An earlier version of Glk had gestalt selectors <code>gestalt_FunctionNameToID</code> and <code>gestalt_FunctionIDToName</code>, but these have been withdrawn.
 </para></note>
-They are defined and used only in the dispatch layer.
+They are defined and used only by the dispatch layer.
+</para>
+<para>
+Call selectors 0x1200 to 0x12FF are reserved for extension projects by Carlos Sanchez.
+The same is true of gestalt selector 0x1200.
+These are not documented here.
 </para>
 </refsect1>
 </refentry>

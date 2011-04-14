@@ -1,8 +1,10 @@
+#include <config.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n-lib.h>
 #include "fileref.h"
 #include "magic.h"
 #include "chimara-glk-private.h"
@@ -196,10 +198,10 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * open the file.
  *
  * <note><para>
- *   It is possible that the prompt or file tool will have a 
- *   <quote>cancel</quote> option. If the player chooses this,
- *   glk_fileref_create_by_prompt() will return %NULL. This is a major reason
- *   why you should make sure the return value is valid before you use it.
+ *   It is likely that the prompt or file tool will have a <quote>cancel</quote>
+ *   option. If the player chooses this, glk_fileref_create_by_prompt() will
+ *   return %NULL. This is a major reason why you should make sure the return
+ *   value is valid before you use it.
  * </para></note>
  *
  * Returns: A new fileref, or #NULL if the fileref creation failed or the
@@ -411,14 +413,23 @@ glk_fileref_destroy(frefid_t fref)
  * @fref: A refrence to the file to delete.
  *
  * Deletes the file referred to by @fref. It does not destroy @fref itself.
+ *
+ * You should only call this with a fileref that refers to an existing file.
  */
 void
 glk_fileref_delete_file(frefid_t fref)
 {
 	VALID_FILEREF(fref, return);
 	if( glk_fileref_does_file_exist(fref) )
+	{
 		if(g_unlink(fref->filename) == -1)
 			IO_WARNING( "Error deleting file", fref->filename, g_strerror(errno) );
+	}
+	else
+	{
+		ILLEGAL(_("Tried to delete a fileref that does not refer to an existing file."));
+	}
+
 }
 
 /**

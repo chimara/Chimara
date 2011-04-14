@@ -7,6 +7,7 @@ CHIMARA_ERROR
 chimara_error_quark
 ChimaraResourceLoadFunc
 ChimaraResourceType
+ChimaraGlkWindowType
 chimara_glk_new
 chimara_glk_set_interactive
 chimara_glk_get_interactive
@@ -25,6 +26,10 @@ chimara_glk_feed_char_input
 chimara_glk_feed_line_input
 chimara_glk_is_char_input_pending
 chimara_glk_is_line_input_pending
+chimara_glk_get_num_tag_names
+chimara_glk_get_tag
+chimara_glk_get_tag_names
+chimara_glk_update_style
 chimara_glk_set_resource_load_callback
 <SUBSECTION Standard>
 CHIMARA_GLK
@@ -104,11 +109,18 @@ glk_gestalt
 gestalt_Version
 gestalt_Unicode
 GLK_MODULE_UNICODE
+gestalt_UnicodeNorm
+GLK_MODULE_UNICODE_NORM
 gestalt_CharOutput
 gestalt_CharOutput_CannotPrint
 gestalt_CharOutput_ApproxPrint
 gestalt_CharOutput_ExactPrint
 gestalt_LineInput
+gestalt_LineInputEcho
+GLK_MODULE_LINE_ECHO
+gestalt_LineTerminators
+GLK_MODULE_LINE_TERMINATORS
+gestalt_LineTerminatorKey
 gestalt_CharInput
 gestalt_MouseInput
 gestalt_Timer
@@ -166,6 +178,13 @@ glk_buffer_to_title_case_uni
 </SECTION>
 
 <SECTION>
+<FILE>glk-normalize</FILE>
+<TITLE>Unicode String Normalization</TITLE>
+glk_buffer_canon_decompose_uni
+glk_buffer_canon_normalize_uni
+</SECTION>
+
+<SECTION>
 <FILE>glk-window-opening</FILE>
 <TITLE>Window Opening, Closing, and Constraints</TITLE>
 glk_window_open
@@ -175,10 +194,13 @@ winmethod_Above
 winmethod_Below
 winmethod_Fixed
 winmethod_Proportional
+winmethod_Border
+winmethod_NoBorder
 glk_window_close
 <SUBSECTION Private>
 winmethod_DirMask
 winmethod_DivisionMask
+winmethod_BorderMask
 </SECTION>
 
 <SECTION>
@@ -254,6 +276,8 @@ glk_cancel_char_event
 glk_request_line_event
 glk_request_line_event_uni
 glk_cancel_line_event
+glk_set_echo_line_event
+glk_set_terminators_line_event
 </SECTION>
 
 <SECTION>
@@ -512,9 +536,39 @@ GLK_MODULE_HYPERLINKS
 </SECTION>
 
 <SECTION>
+<FILE>glk-clock</FILE>
+<TITLE>The System Clock</TITLE>
+glktimeval_t
+glk_current_time
+glk_current_simple_time
+</SECTION>
+
+<SECTION>
+<FILE>glk-clock-conversions</FILE>
+<TITLE>Time and Date Conversions</TITLE>
+glkdate_t
+glk_time_to_date_utc
+glk_time_to_date_local
+glk_simple_time_to_date_utc
+glk_simple_time_to_date_local
+glk_date_to_time_utc
+glk_date_to_time_local
+glk_date_to_simple_time_utc
+glk_date_to_simple_time_local
+</SECTION>
+
+<SECTION>
+<FILE>glk-clock-testing</FILE>
+<TITLE>Testing for Clock Capabilities</TITLE>
+gestalt_DateTime
+GLK_MODULE_DATETIME
+</SECTION>
+
+<SECTION>
 <FILE>dispatch-interrogating</FILE>
 <TITLE>Interrogating the Interface</TITLE>
 gidispatch_count_classes
+gidispatch_get_class
 gidispatch_count_intconst
 gidispatch_get_intconst
 gidispatch_intconst_t
@@ -634,22 +688,17 @@ garglk_set_line_terminators
 garglk_unput_string
 garglk_unput_string_uni
 garglk_set_zcolors
+garglk_set_zcolors_stream
 garglk_set_reversevideo
+garglk_set_reversevideo_stream
 <SUBSECTION Constants>
 zcolor_Current
 zcolor_Default
-zcolor_Black
-zcolor_Red
-zcolor_Green
-zcolor_Yellow
-zcolor_Blue
-zcolor_Magenta
-zcolor_Cyan
-zcolor_White
-zcolor_LightGrey
-zcolor_MediumGrey
-zcolor_DarkGrey
+zcolor_Cursor
+zcolor_Transparent
 keycode_Erase
+keycode_MouseWheelUp
+keycode_MouseWheelDown
 <SUBSECTION Private>
 zcolor_NUMCOLORS
 </SECTION>

@@ -86,6 +86,7 @@ content_files = version.xml \
 	glk-main-function.sgml \
 	glk-api-conventions.sgml \
 	glk-character-encoding.sgml \
+	glk-normalization.sgml \
 	glk-output.sgml \
 	glk-line-input.sgml \
 	glk-windows.sgml \
@@ -103,6 +104,7 @@ content_files = version.xml \
 expand_content_files = \
 	glk-main-function.sgml \
 	glk-api-conventions.sgml \
+	glk-normalization.sgml \
 	glk-output.sgml \
 	glk-line-input.sgml \
 	glk-window-arrangement.sgml \

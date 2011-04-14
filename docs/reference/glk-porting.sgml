@@ -84,7 +84,7 @@ By the way, the next person I see who <code>#define</code>s <function>memmove()<
 This is the real nuisance, because Glk provides a limited set of stream and file functions. And yet there are all these beautiful ANSI stdio calls, which have all these clever tricks &mdash; <function>ungetc()</function>, fast macro <function>fgetc()</function>, formatted <function>fprintf()</function>, not to mention the joys of direct pathname manipulation. Why bother with the Glk calls?
 </para>
 <para>
-The problem is, the stdio library really isn't always the best choice. PalmOS and Newton simply don't use stdio. The Mac has a stdio library built on top of its native file API, but it's a large extra library which porters may not wish to link in.
+The problem is, the stdio library really isn't always the best choice, particularly on mobile OSes.
 </para>
 <para>
 There's also the problem of hooking into the Glk API. Window output goes through Glk streams.

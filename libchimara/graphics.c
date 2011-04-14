@@ -229,11 +229,11 @@ image_cache_find(struct image_info* to_find)
  * @height: Pointer to a location at which to store the image's height.
  *
  * This gets information about the image resource with the given identifier. It
- * returns %TRUE if there is such an image, and %FALSE if not. You can also pass
- * pointers to width and height variables; if the image exists, the variables
- * will be filled in with the width and height of the image, in pixels. (You can
- * pass %NULL for either width or height if you don't care about that 
- * information.)
+ * returns %TRUE (1) if there is such an image, and %FALSE (0) if not. You can
+ * also pass pointers to width and height variables; if the image exists, the
+ * variables will be filled in with the width and height of the image, in
+ * pixels. (You can pass %NULL for either width or height if you don't care
+ * about that information.)
  * 
  * <note><para>
  *   You should always use this function to measure the size of images when you 

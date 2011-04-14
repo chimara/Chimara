@@ -714,8 +714,8 @@ glk_get_char_stream(strid_t str)
  * glk_get_char_stream_uni:
  * @str: An input stream.
  *
- * Reads one character from the stream @str. The result will be between 0 and 
- * 0x7FFFFFFF. If the end of the stream has been reached, the result will be -1.
+ * Reads one character from the stream @str. If the end of the stream has been
+ * reached, the result will be -1.
  *
  * Returns: A value between 0 and 0x7FFFFFFF, or -1 on end of stream.
  */
@@ -1236,6 +1236,14 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
  *   good for much anyhow.
  * </para></note>
  *
+ * glk_stream_get_position() on a window stream will always return zero.
+ *
+ * <note><para>
+ *   It might make more sense to return the number of characters written to the
+ *   window, but existing libraries do not support this and it's not really
+ *   worth adding the feature.
+ * </para></note>
+ *
  * Returns: position of the read/write mark in @str.
  */
 glui32
@@ -1249,6 +1257,8 @@ glk_stream_get_position(strid_t str)
 			return str->mark;
 		case STREAM_TYPE_FILE:
 			return ftell(str->file_pointer);
+		case STREAM_TYPE_WINDOW:
+			return 0;
 		default:
 			ILLEGAL_PARAM("Seeking illegal on stream type: %u", str->type);
 			return 0;
@@ -1280,6 +1290,9 @@ glk_stream_get_position(strid_t str)
  *
  * Again, in Latin-1 streams, characters are bytes. In Unicode streams,
  * characters are 32-bit words, or four bytes each.
+ *
+ * A window stream doesn't have a movable mark, so calling
+ * glk_stream_set_position() has no effect.
  */
 void
 glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
@@ -1317,6 +1330,8 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 				WARNING("Seek failed on file stream");
 			break;
 		}
+		case STREAM_TYPE_WINDOW:
+			break; /* Quietly do nothing */
 		default:
 			ILLEGAL_PARAM("Seeking illegal on stream type: %u", str->type);
 			return;

@@ -223,7 +223,8 @@ glk_window_get_root()
  * @method: Position of the new window and method of size computation. One of
  * %winmethod_Above, %winmethod_Below, %winmethod_Left, or %winmethod_Right
  * OR'ed with %winmethod_Fixed or %winmethod_Proportional. If @wintype is
- * %wintype_Blank, then %winmethod_Fixed is not allowed.
+ * %wintype_Blank, then %winmethod_Fixed is not allowed. May also be OR'ed with
+ * %winmethod_Border or %winmethod_NoBorder.
  * @size: Size of the new window, in percentage points if @method is
  * %winmethod_Proportional, otherwise in characters if @wintype is 
  * %wintype_TextBuffer or %wintype_TextGrid, or pixels if @wintype is
@@ -239,9 +240,13 @@ glk_window_get_root()
  *
  * If any windows exist, new windows must be created by splitting existing
  * ones. @split is the window you want to split; this <emphasis>must 
- * not</emphasis> be zero. @method is a mask of constants to specify the
- * direction and the split method (see below). @size is the size of the split.
- * @wintype is the type of window you're creating, and @rock is the rock.
+ * not</emphasis> be zero. @method specifies the direction and the split method
+ * (see below). @size is the size of the split. @wintype is the type of window
+ * you're creating, and @rock is the rock.
+ *
+ * The method argument must be the logical-or of a direction constant
+ * (%winmethod_Above, %winmethod_Below, %winmethod_Left, %winmethod_Right) and a
+ * split-method constant (%winmethod_Fixed, %winmethod_Proportional).
  *
  * Remember that it is possible that the library will be unable to create a new
  * window, in which case glk_window_open() will return %NULL.
@@ -890,8 +895,9 @@ glk_window_close(winid_t win, stream_result_t *result)
  * <varlistentry>
  *  <term>Text grid</term>
  *  <listitem><para>
- *   This will clear the window, filling all positions with blanks. The window
- *   cursor is moved to the top left corner (position 0,0).
+ *   This will clear the window, filling all positions with blanks (in the
+ *   normal style). The window cursor is moved to the top left corner (position
+ *   0,0).
  *  </para></listitem>
  * </varlistentry>
  * <varlistentry>
@@ -1014,15 +1020,12 @@ glk_window_clear(winid_t win)
  * glk_set_window:
  * @win: A window, or %NULL.
  *
- * Sets the current stream to @win's window stream. It is exactly equivalent to
- * |[ glk_stream_set_current(glk_window_get_stream(win)) ]| 
+ * Sets the current stream to @win's window stream. If @win is %NULL, it is
+ * equivalent to
+ * |[ glk_stream_set_current(NULL); ]|
+ * If @win is not %NULL, it is equivalent to
+ * |[ glk_stream_set_current(glk_window_get_stream(win)); ]|
  * See <link linkend="chimara-Streams">Streams</link>.
- *
- * <note><title>Chimara</title>
- * <para>
- *   Although this is not mentioned in the specification, @win may also be 
- *   %NULL, in which case the current stream is also set to %NULL.
- * </para></note>
  */
 void
 glk_set_window(winid_t win)
@@ -1247,9 +1250,9 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * Whatever constraint you set, glk_window_get_size() will tell you the actual 
  * window size you got.
  * 
- * Note that you can resize windows, but you can't flip or rotate them. You 
- * can't move A above D, or change O2 to a vertical split where A is left or 
- * right of D. 
+ * Note that you can resize windows, and alter the Border/NoBorder flag. But you
+ * can't flip or rotate them. You can't move A above D, or change O2 to a
+ * vertical split where A is left or right of D.
  * <note><para>
  *   To get this effect you could close one of the windows, and re-split the 
  *   other one with glk_window_open().

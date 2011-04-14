@@ -17,6 +17,7 @@ libchimara_la_SOURCES = \
 	chimara-glk.c chimara-glk.h chimara-glk-private.h \
 	chimara-if.c chimara-if.h \
 	chimara-marshallers.c chimara-marshallers.h \
+	datetime.c \
 	dispatch.c \
 	event.c event.h \
 	fileref.c fileref.h \

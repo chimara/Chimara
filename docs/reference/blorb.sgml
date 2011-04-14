@@ -21,6 +21,13 @@ The material described in this section is not part of the Glk API per se. It is 
 The Glk spec does not require that resources be stored in a Blorb file. It says only that the library knows how to load them and use them, when you so request. However, Blorb is the recommended way to supply portable resources. Most Glk libraries will support Blorb, using the interface defined in this section.
 </para>
 <para>
+The quick summary: resources are identified by type (image, sound, etc) and by an index number.
+<note><para>
+But not by name.
+This is for historical reasons; Infocom's Z-machine architecture used this scheme.
+</para></note>
+</para>
+<para>
 For the complete Blorb specification and tools for Blorb file manipulation, see:
 <ulink role="online-location" url="http://www.eblong.com/zarf/blorb/">http://www.eblong.com/zarf/blorb/</ulink>
 </para>

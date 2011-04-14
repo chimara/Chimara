@@ -103,7 +103,8 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
  * @str: A stream.
  * 
  * Retrieves the stream @str's rock value. See <link 
- * linkend="chimara-Rocks">Rocks</link>.
+ * linkend="chimara-Rocks">Rocks</link>. Window streams always have rock 0; all
+ * other streams return whatever rock you created them with.
  *
  * Returns: A rock value.
  */
@@ -421,9 +422,22 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
  * Opens a stream which reads to or writes from a disk file. If @fmode is
  * %filemode_Read, the file must already exist; for the other modes, an empty
  * file is created if none exists. If @fmode is %filemode_Write, and the file
- * already exists, it is truncated down to zero length (an empty file). If
- * @fmode is %filemode_WriteAppend, the file mark is set to the end of the 
- * file.
+ * already exists, it is truncated down to zero length (an empty file); the
+ * other modes do not truncate. If @fmode is %filemode_WriteAppend, the file
+ * mark is set to the end of the file.
+ *
+ * <note><para>
+ *   Note, again, that this doesn't match stdio's fopen() call very well. See
+ *   <link linkend="filemode-WriteAppend">the file mode constants</link>.
+ * </para></note>
+ *
+ * If the filemode requires the file to exist, but the file does not exist,
+ * glk_stream_open_file() returns %NULL.
+ *
+ * The file may be read or written in text or binary mode; this is determined
+ * by the @fileref argument. Similarly, platform-dependent attributes such as
+ * file type are determined by @fileref. See <link
+ * linkend="chimara-File-References">File References</link>.
  *
  * When writing in binary mode, Unicode values (characters greater than 255)
  * cannot be written to the file. If you try, they will be stored as 0x3F

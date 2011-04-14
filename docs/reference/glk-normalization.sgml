@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+]>
+<refentry id="chimara-A-Note-on-Unicode-Case-Folding-and-Normalization">
+<refmeta>
+<refentrytitle>A Note on Unicode Case-Folding and Normalization</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CHIMARA Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>A Note on Unicode Case-Folding and Normalization</refname>
+<refpurpose>How to handle line input</refpurpose>
+</refnamediv>
+<refsect1>
+<title>Description</title>
+<para>
+With all of these Unicode transformations hovering about, an author might reasonably ask about the right way to handle line input.
+Our recommendation is: call glk_buffer_to_lower_case_uni(), followed by glk_buffer_canon_normalize_uni(), and then parse the result.
+The parsing process should of course match against strings that have been put through the same process.
+</para>
+<para>
+The Unicode spec (chapter 3.13) gives a different, three-step process: decomposition, case-folding, and decomposition again.
+Our recommendation comes through a series of practical compromises:
+</para>
+<itemizedlist>
+  <listitem><para>
+    The initial decomposition is only necessary because of a historical error in the Unicode spec: character 0x0345 (COMBINING GREEK YPOGEGRAMMENI) behaves inconsistently.
+	We ignore this case, and skip this step.
+  </para></listitem>
+  <listitem><para>
+    Case-folding is a slightly different operation from lower-casing.
+	(Case-folding splits some combined characters, so that, for example, <quote>&szlig;</quote> can match both <quote>ss</quote> and <quote>SS</quote>.)
+	However, Glk does not currently offer a case-folding function.
+	We substitute glk_buffer_to_lower_case_uni().
+  </para></listitem>
+  <listitem><para>
+    I'm not sure why the spec recommends decomposition (glk_buffer_canon_decompose_uni()) rather than glk_buffer_canon_normalize_uni().
+	However, composed characters are the norm in source code, and therefore in compiled Inform game files.
+	If we specified decomposition, the compiler would have to do extra work; also, the standard Inform dictionary table (with its fixed word length) would store fewer useful characters.
+	Therefore, we substitute glk_buffer_canon_normalize_uni().
+  </para></listitem>
+</itemizedlist>
+<note><para>
+  We may revisit these recommendations in future versions of the spec.
+</para></note>
+</refsect1>
+</refentry>

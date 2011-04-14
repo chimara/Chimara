@@ -18,19 +18,16 @@
 The <filename class="headerfile">glk.h</filename> header file is the same on all platforms, with the sole exception of the typedef of #glui32 and #glsi32. These will always be defined as 32-bit unsigned and signed integer types, which may be <quote><type>long</type></quote> or <quote><type>int</type></quote> or some other C definition.
 </para>
 <para>
-Note that all constants are &num;defines, and all functions are actual function declarations (as opposed to macros.)
-</para>
-<note><para>
-There are a few places where macros would be more efficient &mdash; glk_gestalt() and glk_gestalt_ext(), for example &mdash; but they are not likely to be CPU bottlenecks, and clarity seems more important.
-</para></note>
-<para>
-%FALSE is 0; %TRUE is 1. %NULL is also 0.
+Note that all constants are &num;defines. All functions are currently actual function declarations (as opposed to macros), but this may change in future Glk revisions. As in the standard C library, if Glk function is defined by a macro, an actual function of the same name will also be available.
 </para>
 <para>
-As stated above, it is illegal to pass %NULL to a function which is expecting a valid object reference, unless the function definition says otherwise.
+Functions that return or generate boolean values will produce only 0 (%FALSE) or 1 (%TRUE). Functions that accept boolean arguments will accept any value, with zero indicating %FALSE and nonzero indicating %TRUE.
 </para>
 <para>
-Some functions have pointer arguments, acting as <quote>variable</quote> or <quote>reference</quote> arguments; the function's intent is to return some value in the space pointed to by the argument. Unless the function says otherwise, it is legal to pass a %NULL pointer to indicate that you do not care about that value.
+%NULL (when used in this document) refers to the C null pointer. As stated above, it is illegal to pass %NULL to a function which is expecting a valid object reference, unless the function definition says otherwise.
+</para>
+<para>
+Some functions have pointer arguments, acting as <quote>variable</quote> or <quote>reference</quote> arguments; the function's intent is to return some value in the space pointed to by the argument. Unless the function says otherwise, it is legal to pass %NULL to indicate that you do not care about that value.
 </para>
 </refsect1>
 </refentry>

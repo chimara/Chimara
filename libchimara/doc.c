@@ -138,7 +138,7 @@
  * 
  * When you create one of these objects, it is always possible that the creation
  * will fail (due to lack of memory, or some other OS error.) When this happens,
- * the allocation function will return %NULL (0) instead of a valid pointer. You
+ * the allocation function will return %NULL instead of a valid pointer. You
  * should always test for this possibility.
  * 
  * %NULL is never the identifier of any object (window, stream, file reference,
@@ -373,6 +373,25 @@
  * One Latin-1 lowercase character corresponds to one uppercase character, and
  * vice versa, so the Latin-1 functions act on single characters. The Unicode
  * functions act on whole strings, since the length of the string may change.
+ */
+
+/**
+ * SECTION:glk-normalize
+ * @short_description: Combining characters
+ * @include: libchimara/glk.h
+ *
+ * Comparing Unicode strings is difficult, because there can be several ways to
+ * represent a piece of text as a Unicode string. For example, the one-character
+ * string <quote>&egrave;</quote> (an accented <quote>e</quote>) will be
+ * displayed the same as the two-character string containing <quote>e</quote>
+ * followed by Unicode character 0x0300 (COMBINING GRAVE ACCENT). These strings
+ * should be considered equal.
+ *
+ * Therefore, a Glk program that accepts line input should convert its text to a
+ * normalized form before parsing it. These functions offer those conversions.
+ * The algorithms are defined by the Unicode spec (chapter 3.7) and <ulink
+ * url="http://www.unicode.org/reports/tr15/">Unicode Standard Annex
+ * &num;15</ulink>.
  */
 
 /**
@@ -793,7 +812,7 @@
  * <para>
  * Every window has an output stream associated with it. This is created
  * automatically, with %filemode_Write, when you open the window. You get it
- * with glk_window_get_stream().
+ * with glk_window_get_stream(). Window streams always have rock value 0.
  * 
  * A window stream cannot be closed with glk_stream_close(). It is closed
  * automatically when you close its window with glk_window_close().
@@ -883,10 +902,11 @@
  * create a fileref for a nonexistent file, and then open it in write mode to
  * create a new file.
  * 
- * You always provide a usage argument when you create a fileref. The usage is a
- * mask of constants (see below) to indicate the file type and the mode (text or
- * binary.) These values are used when you create a new file, and also to filter
- * file lists when the player is selecting a file to load. 
+ * You always provide a usage argument when you create a fileref. The usage
+ * indicates the file type and the mode (text or binary.) It must be the
+ * logical-or of a file-type constant and a mode constant. These values are used
+ * when you create a new file, and also to filter file lists when the player is
+ * selecting a file to load.
  * 
  * In general, you should use text mode if the player expects to read the file
  * with a platform-native text editor; you should use binary mode if the file is
@@ -1100,6 +1120,36 @@
  * Before calling Glk hyperlink functions, you should use the gestalt selectors
  * %gestalt_Hyperlinks and %gestalt_HyperlinkInput.
  */
+
+/**
+ * SECTION:glk-clock
+ * @short_description: Getting the current time from the system clock
+ * @include: libchimara/glk.h
+ *
+ * You can get the current time, either as a Unix timestamp (seconds since 1970)
+ * or as a broken-out structure of time elements (year, month, day, hour,
+ * minute, second).
+ *
+ * The system clock is not guaranteed to line up with timer events (see <link 
+ * linkend="chimara-Timer-Events">Timer Events</link>). Timer events may be
+ * delivered late according to the system clock.
+ */
+
+/**
+ * SECTION:glk-clock-conversions
+ * @short_description: Converting from timestamps to date structures and back
+ * @include: libchimara/glk.h
+ *
+ */
+
+/**
+ * SECTION:glk-clock-testing
+ * @short_description: Checking whether the library supports the clock functions
+ * @include: libchimara/glk.h
+ *
+ * Before calling Glk date and time functions, you should use the following
+ * gestalt selector.
+ */
  
 /**
  * SECTION:dispatch-interrogating
@@ -1278,7 +1328,7 @@
 /**
  * GLK_MODULE_UNICODE:
  *
- * If this preprocessor symbol is defined, so are all the Unicode functions and
+ * If this preprocessor symbol is defined, so are the core Unicode functions and
  * constants (see %gestalt_Unicode). If not, not.
  */
 
@@ -1335,6 +1385,21 @@
  */
 
 /**
+ * GLK_MODULE_UNICODE_NORM:
+ *
+ * If this preprocessor symbol is defined, so are the Unicode normalization
+ * functions (see %gestalt_UnicodeNorm). If not, not.
+ */
+
+/**
+ * GLK_MODULE_DATETIME:
+ *
+ * If you are writing a C program, you can perform a preprocessor test for the
+ * existence of %GLK_MODULE_DATETIME. If this is defined, so are all the
+ * functions and data types described in this section.
+ */
+
+/**
  * winid_t:
  *
  * Opaque structure representing a Glk window. It has no user-accessible 
@@ -1380,8 +1445,8 @@
  *   So the version number 78.2.11 would be encoded as 0x004E020B.
  * </para></note>
  *
- * The current Glk specification version is 0.7.0, so this selector will return
- * 0x00000700.
+ * The current Glk specification version is 0.7.2, so this selector will return
+ * 0x00000702.
  *
  * |[
  * glui32 res;
@@ -1452,11 +1517,13 @@
  *
  * <note><para>
  *   Make sure you do not get confused by signed byte values. If you set a
- *   <quote><type>char</type></quote> variable <code>ch</code> to 0xFE, the 
- *   small-thorn character (&thorn;), and then call
+ *   <quote><type>signed char</type></quote> variable <code>ch</code> to 0xFE,
+ *   the small-thorn character (&thorn;), it will wind up as -2. (The same is
+ *   true of a <quote><type>char</type></quote> variable, if your compiler
+ *   treats <quote><type>char</type></quote> as signed!) If you then call
  *   |[ res = glk_gestalt(gestalt_CharOutput, ch); ]|
  *   then (by the definition of C/C++) <code>ch</code> will be sign-extended to
- *   0xFFFFFFFE, which is not a legitimate character, even in Unicode. You 
+ *   0xFFFFFFFE, which is not a legitimate character, even in Unicode. You
  *   should write
  *   |[ res = glk_gestalt(gestalt_CharOutput, (unsigned char)ch); ]|
  *   instead.
@@ -1517,7 +1584,8 @@
  *
  * You can test whether the library supports timer events:
  * |[ res = glk_gestalt(gestalt_Timer, 0); ]|
- * This returns 1 if timer events are supported, and 0 if they are not.
+ * This returns %TRUE (1) if timer events are supported, and %FALSE (0) if they 
+ * are not.
  */
 
 /**
@@ -1544,7 +1612,7 @@
  * gestalt_DrawImage:
  * 
  * This selector returns 1 if images can be drawn in windows of the given type. 
- * If it returns 0, glk_image_draw() will fail and return %FALSE. You should 
+ * If it returns 0, glk_image_draw() will fail and return %FALSE (0). You should 
  * test %wintype_Graphics and %wintype_TextBuffer separately, since libraries 
  * may implement both, neither, or only one.  
  */
@@ -1653,14 +1721,14 @@
  *
  * The basic text functions will be available in every Glk library. The Unicode
  * functions may or may not be available. Before calling them, you should use
- * the following gestalt selector:
+ * the %gestalt_Unicode and %gestalt_UnicodeNorm gestalt selectors.
+ *
  * |[
  * glui32 res;
  * res = glk_gestalt(gestalt_Unicode, 0);
  * ]|
- * 
- * This returns 1 if the Unicode functions are available. If it returns 0, you
- * should not try to call them. They may print nothing, print gibberish, or
+ * This returns 1 if the core Unicode functions are available. If it returns 0,
+ * you should not try to call them. They may print nothing, print gibberish, or
  * cause a run-time error. The Unicode functions include
  * glk_buffer_to_lower_case_uni(), glk_buffer_to_upper_case_uni(),  
  * glk_buffer_to_title_case_uni(), glk_put_char_uni(), glk_put_string_uni(),
@@ -1679,9 +1747,81 @@
  * errors.
  * 
  * To avoid this, you can perform a preprocessor test for the existence of
- * #GLK_MODULE_UNICODE. 
+ * %GLK_MODULE_UNICODE.
  */
- 
+
+/**
+ * gestalt_UnicodeNorm:
+ *
+ * |[
+ * glui32 res;
+ * res = glk_gestalt(gestalt_UnicodeNorm, 0);
+ * ]|
+ * This code returns 1 if the Unicode normalization functions are available. If
+ * it returns 0, you should not try to call them. The Unicode normalization
+ * functions include glk_buffer_canon_decompose_uni() and
+ * glk_buffer_canon_normalize_uni().
+ *
+ * The equivalent preprocessor test for these functions is
+ * %GLK_MODULE_UNICODE_NORM.
+ */
+
+/**
+ * gestalt_LineInputEcho:
+ *
+ * |[
+ * res = glk_gestalt(gestalt_LineInputEcho, 0);
+ * ]|
+ *
+ * This returns 1 if glk_set_echo_line_event() is supported, and 0 if it is not.
+ * <note><para>
+ *   Remember that if it is not supported, the behavior is always the default,
+ *   which is line echoing <emphasis>enabled</emphasis>.
+ * </para></note>
+ */
+
+/**
+ * gestalt_LineTerminators:
+ *
+ * |[
+ * res = glk_gestalt(gestalt_LineTerminators, 0);
+ * ]|
+ *
+ * This returns 1 if glk_set_terminators_line_event() is supported, and 0 if it
+ * is not.
+ */
+
+/**
+ * gestalt_LineTerminatorKey:
+ *
+ * |[
+ * res = glk_gestalt(gestalt_LineTerminatorKey, ch);
+ * ]|
+ *
+ * This returns 1 if the keycode @ch can be passed to
+ * glk_set_terminators_line_event(). If it returns 0, that keycode will be
+ * ignored as a line terminator. Printable characters and %keycode_Return will
+ * always return 0.
+ */
+
+/**
+ * gestalt_DateTime:
+ *
+ * |[
+ * res = glk_gestalt(gestalt_DateTime, 0);
+ * ]|
+ *
+ * This returns 1 if the overall suite of system clock functions, as described
+ * in this chapter, is available.
+ *
+ * If this selector returns 0, you should not try to call these functions. They
+ * may have no effect, or they may cause a run-time error.
+ *
+ * <note><para>
+ *   Glk timer events are covered by a different selector. See %gestalt_Timer.
+ * </para></note>
+ */
+
 /**
  * evtype_None:
  *
@@ -1720,19 +1860,26 @@
  * A full line of input completed in a window. See <link 
  * linkend="chimara-Line-Input-Events">Line Input Events</link>.
  *
- * If a window has a pending request for line input, and the player hits
- * <keycap>enter</keycap> in that window (or whatever action is appropriate to
- * enter his input), glk_select() will return an event whose type is
- * %evtype_LineInput. Once this happens, the request is complete; it is no 
- * longer pending. You must call glk_request_line_event() if you want another 
- * line of text from that window.
- * 
- * In the event structure, @win tells what window the event came from. @val1 
- * tells how many characters were entered. @val2 will be 0. The characters
- * themselves are stored in the buffer specified in the original
- * glk_request_line_event() or glk_request_line_event_uni() call. 
+ * If a window has a pending request for line input, the player can generally
+ * hit the <keycap>enter</keycap> key (in that window) to complete line input.
+ * The details will depend on the platform's native user interface.
  *
- * <note><para>There is no null terminator stored in the buffer.</para></note>
+ * When line input is completed, glk_select() will return an event whose type is
+ * %evtype_LineInput. Once this happens, the request is complete; it is no
+ * longer pending. You must call glk_request_line_event() if you want another
+ * line of text from that window.
+ *
+ * In the event structure, @win tells what window the event came from. @val1
+ * tells how many characters were entered. @val2 will be 0 unless input was
+ * ended by a special terminator key, in which case @val2 will be the keycode
+ * (one of the values passed to glk_set_terminators_line_event()).
+ *
+ * The characters themselves are stored in the buffer specified in the original
+ * glk_request_line_event() or glk_request_line_event_uni() call.
+ *
+ * <note><para>
+ *   There is no null terminator or newline stored in the buffer.
+ * </para></note>
  * 
  * It is illegal to print anything to a window which has line input pending. 
  *
@@ -2224,14 +2371,22 @@
  *   result.
  * </para></note>
  * 
- * When the player finishes his line of input, the library will display the
- * input text at the end of the buffer text (if it wasn't there already.) It
- * will be followed by a newline, so that the next text you print will start a
- * new line (paragraph) after the input.
+ * By default, when the player finishes his line of input, the library will
+ * display the input text at the end of the buffer text (if it wasn't there
+ * already.) It will be followed by a newline, so that the next text you print
+ * will start a new line (paragraph) after the input.
  * 
  * If you call glk_cancel_line_event(), the same thing happens; whatever text
  * the user was composing is visible at the end of the buffer text, followed by
  * a newline.
+ *
+ * However, this default behavior can be changed with the
+ * glk_set_echo_line_event() call. If the default echoing is disabled, the
+ * library will <emphasis>not</emphasis> display the input text (plus newline)
+ * after input is either completed or cancelled. The buffer will end with
+ * whatever prompt you displayed before requesting input. If you want the
+ * traditional input behavior, it is then your responsibility to print the text,
+ * using the Input text style, followed by a newline (in the original style).
  */
  
 /**
@@ -2248,8 +2403,10 @@
  * 
  * When you print, the characters of the output are laid into the array in
  * order, left to right and top to bottom. When the cursor reaches the end of a
- * line, it goes to the beginning of the next line. The library makes no attempt
- * to wrap lines at word breaks.
+ * line, or if a newline (0x0A) is printed, the cursor goes to the beginning of
+ * the next line. The library makes <emphasis>no</emphasis> attempt to wrap
+ * lines at word breaks. If the cursor reaches the end of the last line, further
+ * printing has no effect on the window until the cursor is moved.
  * 
  * <note><para>
  *   Note that printing fancy characters may cause the cursor to advance more
@@ -2301,7 +2458,8 @@
  * When the player finishes his line of input, it will remain visible in the
  * window, and the output cursor will be positioned at the beginning of the 
  * <emphasis>next</emphasis> row. Again, if you glk_cancel_line_event(), the
- * same thing happens.
+ * same thing happens. The glk_set_echo_line_event() call has no effect in grid
+ * windows.
  */
  
 /**
@@ -2315,7 +2473,7 @@
  * linkend="chimara-Graphics-in-Graphics-Windows">Graphics in Graphics 
  * Windows</link>.
  * 
- * When a text grid window is resized smaller, the bottom or right area is
+ * When a graphics window is resized smaller, the bottom or right area is
  * thrown away, but the remaining area stays unchanged. When it is resized
  * larger, the new bottom or right area is filled with the background color.
  * 
@@ -2406,7 +2564,24 @@
  * When calling glk_window_open() with this @method, the new window will be 
  * a given proportion of the old window's size. (See glk_window_open()).
  */
- 
+
+/**
+ * winmethod_Border:
+ *
+ * When calling glk_window_open() with this @method, it specifies that there
+ * should be a visible window border between the new window and its sibling.
+ * (This is a hint to the library.)
+ */
+
+/**
+ * winmethod_NoBorder:
+ *
+ * When calling glk_window_open() with this @method, it specifies that there
+ * should not be a visible window border between the new window and its sibling.
+ * (This is a hint to the library; you might specify NoBorder between two
+ * graphics windows that should form a single image.)
+ */
+
 /** 
  * fileusage_Data: 
  *
@@ -2507,7 +2682,15 @@
  * existed in the destination, instead of replacing it. 
  *
  * <note><para>
- *   Corresponds to mode <code>"a"</code> in the stdio library, using fopen().
+ *   Confusingly, %filemode_WriteAppend cannot be mode <code>"a"</code>, because
+ *   the stdio spec says that when you open a file with mode <code>"a"</code>,
+ *   then fseek() doesn't work. So we have to use mode <code>"r+"</code> for
+ *   appending. Then we run into the <emphasis>other</emphasis> stdio problem,
+ *   which is that <code>"r+"</code> never creates a new file. So
+ *   %filemode_WriteAppend has to <emphasis>first</emphasis> open the file with
+ *   <code>"a"</code>, close it, reopen with <code>"r+"</code>, and then fseek()
+ *   to the end of the file. For %filemode_ReadWrite, the process is the same,
+ *   except without the fseek() &mdash; we begin at the beginning of the file.
  * </para></note>
  */
  
@@ -2688,6 +2871,11 @@
  *
  * <warning><para>Margin images are not implemented yet.</para></warning>
  */
+
+/**
+ * glktimeval_t:
+ *
+ */
  
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_DISPA.H ------------------*/
 
@@ -2735,6 +2923,13 @@
  * This structure simply contains a string and a value. The string is a
  * symbolic name of the value, and can be re-exported to anyone interested in
  * using Glk constants.
+ *
+ * <note><para>
+ *   In the current <filename>gi_dispa.c</filename> library, these structures
+ *   are static and immutable, and will never be deallocated. However, it is
+ *   safer to assume that the structure may be reused in future
+ *   gidispatch_get_intconst() calls.
+ * </para></note>
  */
  
 /**
@@ -2753,6 +2948,11 @@
  * <inlineequation><mathphrase>N - 1</mathphrase><alt>N - 
  * 1</alt></inlineequation>, where N is the value returned by 
  * gidispatch_count_functions().
+ *
+ * <note><para>
+ *   Again, it is safest to assume that the structure is only valid until the
+ *   next gidispatch_get_function() or gidispatch_get_function_by_id() call.
+ * </para></note>
  *
  * Returns: A #gidispatch_function_t structure describing the function.
  */
@@ -2787,6 +2987,11 @@
  * Returns a structure describing the Glk function with selector @id. If there 
  * is no such function in the library, this returns %NULL.
  *
+ * <note><para>
+ *   Again, it is safest to assume that the structure is only valid until the
+ *   next gidispatch_get_function() or gidispatch_get_function_by_id() call.
+ * </para></note>
+ *
  * Returns: a #gidispatch_function_t structure, or %NULL.
  */
  
@@ -2801,7 +3006,8 @@
  * the list of arguments, and @numargs is the length of the list.
  * 
  * The arguments are all stored as #gluniversal_t objects. 
- * </para><refsect3 id="chimara-Basic-Types"><title>Basic Types</title><para>
+ * </para><refsect3 id="chimara-Basic-Dispatch-Types"><title>Basic Dispatch
+ * Types</title><para>
  * Numeric arguments are passed in the obvious way &mdash; one argument per
  * #gluniversal_t, with the @uint or @sint field set to the numeric value.
  * Characters and strings are also passed in this way &mdash; #char<!---->s in
@@ -2818,10 +3024,11 @@
  * <code>#glui32*</code>, <code>#winid_t*</code>, and so on &mdash; takes
  * <emphasis>one or two</emphasis> #gluniversal_t objects. The first is a flag
  * indicating whether the reference argument is %NULL or not. The @ptrflag field
- * of this #gluniversal_t should be %FALSE if the reference is %NULL, and %TRUE
- * otherwise. If %FALSE, that is the end of the argument; you should not use a
- * #gluniversal_t to explicitly store the %NULL reference. If the flag is %TRUE,
- * you must then put a #gluniversal_t storing the base type of the reference.
+ * of this #gluniversal_t should be %FALSE (0) if the reference is %NULL, and
+ * %TRUE (1) otherwise. If %FALSE, that is the end of the argument; you should
+ * not use a #gluniversal_t to explicitly store the %NULL reference. If the flag
+ * is %TRUE, you must then put a #gluniversal_t storing the base type of the
+ * reference.
  *
  * For example, consider a hypothetical function, with selector 
  * <code>0xABCD</code>:
@@ -3073,8 +3280,7 @@
  *   </para></note></listitem>
  * </varlistentry>
  * </variablelist>
- * Any type code can be prefixed with one or more of the following characters
- * (order does not matter):
+ * Any type code can be prefixed with one or more of the following characters:
  * <variablelist>
  * <varlistentry>
  *   <term><code>&amp;</code></term>
@@ -3159,6 +3365,61 @@
  *   </para></note></listitem>
  * </varlistentry>
  * </variablelist>
+ *
+ * The order of these characters and prefixes is not completely arbitrary. Here
+ * is a formal grammar for the prototype strings.
+ *
+ * <note><para>Thanks to Neil Cerutti for working this out.</para></note>
+ *
+ * <productionset>
+ * <production id="prototype">
+ *   <lhs>prototype</lhs>
+ *   <rhs>ArgCount [ <nonterminal def="&num;arg_list">arg_list</nonterminal> ]
+ *     ':' [ <nonterminal def="&num;arg">arg</nonterminal> ] EOL</rhs>
+ * </production>
+ * <production id="arg_list">
+ *   <lhs>arg_list</lhs>
+ *   <rhs><nonterminal def="&num;arg">arg</nonterminal> { <nonterminal
+ *     def="&num;arg">arg</nonterminal> }</rhs>
+ * </production>
+ * <production id="arg">
+ *   <lhs>arg</lhs>
+ *   <rhs>TypeName | <nonterminal def="&num;ref_type">ref_type</nonterminal>
+ *   </rhs>
+ * </production>
+ * <production id="ref_type">
+ *   <lhs>ref_type</lhs>
+ *   <rhs>RefType [ '+' ] <nonterminal
+ *     def="&num;target_type">target_type</nonterminal></rhs>
+ * </production>
+ * <production id="target_type">
+ *   <lhs>target_type</lhs>
+ *   <rhs>TypeName | <nonterminal def="&num;array">array</nonterminal> |
+ *     <nonterminal def="&num;struct">struct</nonterminal></rhs>
+ * </production>
+ * <production id="array">
+ *   <lhs>array</lhs>
+ *   <rhs>'&num;' [ '!' ] TypeName</rhs>
+ * </production>
+ * <production id="struct">
+ *   <lhs>struct</lhs>
+ *   <rhs>'[' ArgCount [ <nonterminal def="&num;arg_list">arg_list</nonterminal>
+ *     ] ']'</rhs>
+ * </production>
+ * </productionset>
+ * <constraintdef id="TypeName">
+ *   <para>TypeName is <code>I[us]<!---->|C[nus]<!---->|S|U|F|Q[a-z]</code>
+ *   </para>
+ * </constraintdef>
+ * <constraintdef id="ArgCount">
+ *   <para>ArgCount is <code>\d+</code></para>
+ * </constraintdef>
+ * <constraintdef id="RefType">
+ *   <para>RefType is <code>&amp;|&lt;|&gt;</code></para>
+ * </constraintdef>
+ * <constraintdef id="EOL">
+ *   <para>EOL is end of input</para>
+ * </constraintdef>
  *
  * Returns: A string which encodes the prototype of the specified Glk function.
  */
@@ -3327,14 +3588,13 @@
 /**
  * giblorb_result_t:
  * @chunknum: The chunk number (for use in giblorb_unload_chunk(), etc.)
- * @data: A union containing a pointer to the data @ptr (if you used 
- * %giblorb_method_Memory) and the position in the file @startpos (if you used 
- * %giblorb_method_FilePos)
  * @length: The length of the data
  * @chunktype: The type of the chunk.
  *
  * Holds information about a chunk loaded from a Blorb file, and the method of
- * accessing the chunk data. See giblorb_load_chunk_by_type() and
+ * accessing the chunk data. @data is a union of @ptr, a pointer to the data (if
+ * you used %giblorb_method_Memory) and @startpos, the position in the file (if
+ * you used %giblorb_method_FilePos). See giblorb_load_chunk_by_type() and
  * giblorb_load_chunk_by_number(). 
  */
  

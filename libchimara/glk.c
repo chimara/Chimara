@@ -100,8 +100,10 @@ glk_exit(void)
  * all. So you can call it often.
  *
  * <note><para>
- *   In a virtual machine interpreter, once per opcode is appropriate. In a
- *   program with lots of computation, pick a comparable rate.
+ *   In a virtual machine interpreter, once per opcode is appropriate. A more
+ *   parsimonious approach would be once per branch and function call opcode;
+ *   this guarantees it will be called inside loops. In a program with lots of
+ *   computation, pick a comparable rate.
  * </para></note>
  * 
  * glk_tick() does not try to update the screen, or check for player input, or
