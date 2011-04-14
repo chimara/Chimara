@@ -1417,16 +1417,16 @@ chimara_glk_is_line_input_pending(ChimaraGlk *glk)
 
 /**
  * chimara_glk_get_tag:
- * @glk: a #ChimarGlk widget
+ * @glk: a #ChimaraGlk widget
  * @window: The type of window to retrieve the tag for
  * @name: The name of the tag to retrieve
  *
  * Use this function to get a #GtkTextTag so style properties can be changed.
- * See also #chimara_glk_set_css_from_string.
+ * See also chimara_glk_set_css_from_string().
  *
  * The layout of the text in Chimara is controlled by two sets of tags: one set
  * describing the style in text buffers and one for text grids. See also the
- * GLK specification for the difference between the two. The main narrative of
+ * Glk specification for the difference between the two. The main narrative of
  * a game is usually rendered in text buffers, whereas text grids are mostly
  * used for status bars and in game menus.
  *
@@ -1445,9 +1445,9 @@ chimara_glk_is_line_input_pending(ChimaraGlk *glk)
  *	<listitem><para>user2</para></listitem>
  *	<listitem><para>hyperlink</para></listitem>
  *	<listitem><para>pager</para></listitem>
- * </itenizedlist>
+ * </itemizedlist>
  */
-GtkTextTag*
+GtkTextTag *
 chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name)
 {
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
@@ -1466,12 +1466,12 @@ chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *n
 }
 
 /**
- * chimara_glk_get_tag:
- * @glk: a #ChimarGlk widget
+ * chimara_glk_get_tag_names:
+ * @glk: a #ChimaraGlk widget
  *
- * Retrieves the possible tag names to use in #chimara_glk_get_tag.
+ * Retrieves the possible tag names to use in chimara_glk_get_tag().
  */
-const gchar**
+const gchar **
 chimara_glk_get_tag_names(ChimaraGlk *glk)
 {
 	return style_get_tag_names();
@@ -1481,7 +1481,7 @@ chimara_glk_get_tag_names(ChimaraGlk *glk)
  * chimara_glk_get_num_tag_names:
  * @glk: a #ChimaraGlk widget
  *
- * Retrieves the number of style tags returned by #chimara_glk_get_tag_names.
+ * Retrieves the number of style tags returned by chimara_glk_get_tag_names().
  */
 gint
 chimara_glk_get_num_tag_names(ChimaraGlk *glk)
@@ -1495,7 +1495,7 @@ chimara_glk_get_num_tag_names(ChimaraGlk *glk)
  *
  * Processes style updates and updates the widget to reflect the new style.
  * Call this every time you change a property of a #GtkTextTag retrieved by
- * #chimara_glk_get_tag.
+ * chimara_glk_get_tag().
  */
 void
 chimara_glk_update_style(ChimaraGlk *glk)

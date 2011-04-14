@@ -39,6 +39,14 @@ typedef struct _ChimaraGlkClass {
 	void(* iliad_screen_update) (ChimaraGlk *self, gboolean typing);
 } ChimaraGlkClass;
 
+/**
+ * ChimaraGlkWindowType:
+ * @CHIMARA_GLK_TEXT_BUFFER: The styles for text buffer windows.
+ * @CHIMARA_GLK_TEXT_GRID: The styles for text grid windows.
+ *
+ * Specifies the type of windows for which to retrieve the style tag with
+ * chimara_glk_get_tag().
+ */
 typedef enum {
 	CHIMARA_GLK_TEXT_BUFFER,
 	CHIMARA_GLK_TEXT_GRID
@@ -81,6 +89,9 @@ typedef enum _ChimaraResourceType {
 
 /**
  * ChimaraResourceLoadFunc:
+ * @usage: A #ChimaraResourceType constant.
+ * @resnum: The resource number to look for.
+ * @user_data: A pointer to provide to the callback.
  *
  * The type of function passed to chimara_glk_set_resource_load_callback(). It
  * takes a #ChimaraResourceType constant, @usage, to indicate what sort of 
