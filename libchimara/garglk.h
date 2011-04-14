@@ -9,8 +9,11 @@
  * macro is defined, then so are all the Gargoyle extensions. If not, not.
  *
  * <note><title>Chimara</title><para>
- *   Currently, in Chimara, the functions are defined, but most of them are
- *   not implemented. That is, you can call them, but they do nothing.
+ *   Currently, in Chimara, the functions are defined, but a few of them
+ *   (garglk_set_line_terminators(),
+ *   garglk_unput_string(), and garglk_unput_string_uni()) are not implemented.
+ *   You can call them, but they will have no effect except to print a warning
+ *   to the console.
  * </para></note>
  */
 #define GARGLK 1

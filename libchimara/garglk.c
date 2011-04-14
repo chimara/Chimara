@@ -162,7 +162,16 @@ garglk_unput_string_uni(glui32 *str)
 	WARNING(_("Not implemented"));
 }
 
-/* TODO document */
+/**
+ * garglk_set_zcolors_stream:
+ * @str: a stream.
+ * @fg: a 24-bit foreground color.
+ * @bg: a 24-bit background color.
+ *
+ * This function changes the foreground color of @str to @fg and the background
+ * color to @bg. @fg and @bg are encoded the same way as described in
+ * %stylehint_TextColor. See garglk_set_zcolors() for more information.
+ */
 void
 garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 {
@@ -292,16 +301,15 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 
 /**
  * garglk_set_zcolors:
- * @fg: one of the <code>zcolor_</code> constants.
- * @bg: one of the <code>zcolor_</code> constants.
+ * @fg: a 24-bit foreground color.
+ * @bg: a 24-bit background color.
  *
  * Glk works with styles, not specific colors. This is not quite compatible with
  * the Z-machine, so this Glk extension implements Z-machine style colors.
  *
  * This function changes the foreground color of the current stream to @fg and 
- * the background color to @bg.
- *
- * <warning><para>This function is not currently implemented.</para></warning>
+ * the background color to @bg. @fg and @bg are encoded the same way as
+ * described in %stylehint_TextColor.
  */
 void 
 garglk_set_zcolors(glui32 fg, glui32 bg)
@@ -312,7 +320,15 @@ garglk_set_zcolors(glui32 fg, glui32 bg)
 	garglk_set_zcolors_stream(glk_data->current_stream, fg, bg);
 }
 
-/* TODO document */
+/**
+ * garglk_set_reversevideo_stream:
+ * @str: a stream.
+ * @reverse: nonzero for reverse colors, zero for normal colors.
+ *
+ * If @reverse is not zero, uses the foreground color of @str as its background
+ * and vice versa. If @reverse is zero, changes the colors of @str back to
+ * normal.
+ */
 void
 garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 {
