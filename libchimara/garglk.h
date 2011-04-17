@@ -23,25 +23,36 @@ extern char* garglk_fileref_get_name(frefid_t fref);
 extern void garglk_set_program_name(const char *name);
 extern void garglk_set_program_info(const char *info);
 extern void garglk_set_story_name(const char *name);
-
+extern void garglk_set_story_title(const char *title);
 /*
  This function is not implemented even in Gargoyle. Looks like it was planned, 
  but never added.
 extern void garglk_set_config(const char *name);
 */
 
-/* JM: functions added to support Z-machine features that aren't in the Glk standard */
-
-extern void garglk_set_line_terminators(winid_t win, const glui32 *keycodes, glui32 numkeycodes);
-
 /* garglk_unput_string - removes the specified string from the end of the output buffer, if
  * indeed it is there. */
 extern void garglk_unput_string(char *str);
 extern void garglk_unput_string_uni(glui32 *str);
 
-/* TODO document */
+/**
+ * zcolor_Transparent:
+ *
+ * Z-machine color constant representing no color, i.e. transparency.
+ *
+ * <warning><para>Passing this constant to garglk_set_zcolors() or
+ * garglk_set_zcolors_stream() is not currently implemented.</para></warning>
+ */
 #define zcolor_Transparent   (-4)
-/* TODO document */
+/**
+ * zcolor_Cursor:
+ *
+ * Z-machine color constant representing the color at the current position of
+ * the cursor.
+ *
+ * <warning><para>Passing this constant to garglk_set_zcolors() or
+ * garglk_set_zcolors_stream() is not currently implemented.</para></warning>
+ */
 #define zcolor_Cursor        (-3)
 /**
  * zcolor_Current:
@@ -70,12 +81,22 @@ extern void garglk_set_reversevideo_stream(strid_t str, glui32 reverse);
  * %keycode_Erase to represent <emphasis>only</emphasis> the 
  * <keycap>Delete</keycap> key. In character input, <keycap>Delete</keycap> is
  * still reported as %keycode_Delete, but the two are distinguished in 
- * garglk_set_line_terminators().
+ * glk_set_terminators_line_event().
  */
 #define keycode_Erase    (0xffffef7f)
-/* TODO document */
+/**
+ * keycode_MouseWheelUp:
+ *
+ * This key code represents the mouse wheel scrolling up in a window. It is
+ * never used in Chimara.
+ */
 #define keycode_MouseWheelUp        (0xffffeffe)
-/* TODO document */
+/**
+ * keycode_MouseWheelDown:
+ *
+ * This key code represents the mouse wheel scrolling down in a window. It is
+ * never used in Chimara.
+ */
 #define keycode_MouseWheelDown      (0xffffefff)
 
 #endif /* __GARGLK_H__ */

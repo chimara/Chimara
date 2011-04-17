@@ -684,7 +684,7 @@ garglk_fileref_get_name
 garglk_set_program_name
 garglk_set_program_info
 garglk_set_story_name
-garglk_set_line_terminators
+garglk_set_story_title
 garglk_unput_string
 garglk_unput_string_uni
 garglk_set_zcolors
@@ -699,6 +699,4 @@ zcolor_Transparent
 keycode_Erase
 keycode_MouseWheelUp
 keycode_MouseWheelDown
-<SUBSECTION Private>
-zcolor_NUMCOLORS
 </SECTION>

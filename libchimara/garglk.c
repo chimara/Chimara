@@ -89,40 +89,19 @@ garglk_set_story_name(const char *name)
 }
 
 /**
- * garglk_set_line_terminators:
- * @win: A window.
- * @keycodes: An array of <code>keycode_</code> constants.
- * @numkeycodes: The length of @keycodes.
+ * garglk_set_story_title:
+ * @title: Title bar text for the currently running story.
  *
- * Amends the current line input request of @win to include terminating key
- * codes. Any of the specified key codes will terminate the line input request 
- * (without printing a newline). 
- *
- * Usually, in the event structure returned from a line input request, @val2 is
- * zero, but if garglk_set_line_terminators() has been called during that input
- * request, @val2 will be filled in with the key code that terminated the input
- * request.
- *
- * This function only applies to one input request; any subsequent line input
- * requests on that window are treated normally.
- *
- * If @numkeycodes is zero, then any previous call to 
- * garglk_set_line_terminators() is cancelled and the input request is treated
- * normally.
+ * This function is a hint to the library to put @title in the title bar of the
+ * window that the Glk program is running in. It overrides
+ * garglk_set_program_name() and garglk_set_story_name(), if they were displayed
+ * in the title bar, although they may still be displayed somewhere else.
  *
  * <warning><para>This function is not currently implemented.</para></warning>
  */
-void 
-garglk_set_line_terminators(winid_t win, const glui32 *keycodes, glui32 numkeycodes)
+void
+garglk_set_story_title(const char *title)
 {
-	VALID_WINDOW(win, return);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
-	
-	if(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE) {
-		ILLEGAL(_("Tried to set the line terminators on a window without a line input request."));
-		return;
-	}
-
 	WARNING(_("Not implemented"));
 }
 
