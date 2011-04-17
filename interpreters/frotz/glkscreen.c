@@ -263,8 +263,6 @@ void smartstatusline (void)
 	int roomlen, scorelen, scoreofs;
 	int len, tmp;
 
-	statusline[curx - 1] = 0; /* terminate! */
-
 	packspaces(statusline, packed);
 	//strcpy(packed, statusline);
 	len = os_string_length(packed);
@@ -351,22 +349,38 @@ void screen_char (zchar c)
 		else {
 			if (cury == 1)
 			{
-				if (curx < sizeof statusline)
+				if (curx <= ((sizeof statusline / sizeof(zchar)) - 1))
+				{
 					statusline[curx - 1] = c;
-				curx++;
-				if (curx <= h_screen_cols)
+					statusline[curx] = 0;
+				}
+				if (curx < h_screen_cols)
+				{
 					glk_put_char_uni(c);
+				}
+				else if (curx == h_screen_cols)
+				{
+					glk_put_char_uni(c);
+					glk_window_move_cursor(gos_curwin, curx-1, cury-1);
+				}
 				else
+				{
 					smartstatusline();
+				}
+				curx ++;
 			}
 			else
 			{
-				glk_put_char_uni(c);
-				curx++;
-				if (curx > h_screen_cols) {
-					curx = 1;
-					cury++;
+				if (curx < h_screen_cols)
+				{
+					glk_put_char_uni(c);
 				}
+				else if (curx == (h_screen_cols))
+				{
+					glk_put_char_uni(c);
+					glk_window_move_cursor(gos_curwin, curx-1, cury-1);
+				}
+				curx++;
 			}
 		}
 	}
