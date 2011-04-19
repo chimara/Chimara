@@ -32,7 +32,6 @@
  * SECTION:chimara-glk
  * @short_description: Widget which executes a Glk program
  * @stability: Unstable
- * @include: libchimara/chimara-glk.h
  * 
  * The #ChimaraGlk widget opens and runs a Glk program. The program must be
  * compiled as a plugin module, with a function <function>glk_main()</function>

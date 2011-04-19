@@ -7,7 +7,6 @@
 /**
  * SECTION:glk-exiting
  * @short_description: How to terminate a Glk program cleanly
- * @include: libchimara/glk.h
  *
  * A Glk program usually ends when the end of the glk_main() function is 
  * reached. You can also terminate it earlier.
@@ -17,7 +16,6 @@
  * SECTION:glk-interrupt
  * @short_description: Specifying an interrupt handler for cleaning up critical
  * resources
- * @include: libchimara/glk.h
  *
  * Most platforms have some provision for interrupting a program &mdash;
  * <keycombo action="simul"><keycap function="command">command</keycap>
@@ -34,7 +32,6 @@
 /**
  * SECTION:glk-tick
  * @short_description: Yielding time to the operating system
- * @include: libchimara/glk.h
  *
  * Many platforms have some annoying thing that has to be done every so often,
  * or the gnurrs come from the voodvork out and eat your computer.
@@ -48,7 +45,6 @@
 /**
  * SECTION:glk-types
  * @short_description: Basic types used in Glk
- * @include: libchimara/glk.h
  *
  * For simplicity, all the arguments used in Glk calls are of a very few types.
  * <variablelist>
@@ -96,7 +92,6 @@
 /**
  * SECTION:glk-opaque-objects
  * @short_description: Complex objects in Glk
- * @include: libchimara/glk.h
  *
  * Glk keeps track of a few classes of special objects. These are opaque to your
  * program; you always refer to them using pointers to opaque C structures.
@@ -231,7 +226,6 @@
 /**
  * SECTION:glk-gestalt
  * @short_description: Testing Glk's capabilities
- * @include: libchimara/glk.h
  *
  * The <quote>gestalt</quote> mechanism (cheerfully stolen from the Mac OS) is a
  * system by which the Glk API can be upgraded without making your life
@@ -248,7 +242,6 @@
 /**
  * SECTION:glk-character-input
  * @short_description: Waiting for a single keystroke
- * @include: libchimara/glk.h
  *
  * You can request that the player hit a single key. See <link 
  * linkend="chimara-Character-Input-Events">Character Input Events</link>.
@@ -367,7 +360,6 @@
 /**
  * SECTION:glk-case
  * @short_description: Changing the case of strings
- * @include: libchimara/glk.h
  *
  * Glk has functions to manipulate the case of both Latin-1 and Unicode strings.
  * One Latin-1 lowercase character corresponds to one uppercase character, and
@@ -378,7 +370,6 @@
 /**
  * SECTION:glk-normalize
  * @short_description: Combining characters
- * @include: libchimara/glk.h
  *
  * Comparing Unicode strings is difficult, because there can be several ways to
  * represent a piece of text as a Unicode string. For example, the one-character
@@ -397,7 +388,6 @@
 /**
  * SECTION:glk-window-opening
  * @short_description: Creating new windows and closing them
- * @include: libchimara/glk.h
  *
  * You can open a new window using glk_window_open() and close it again using
  * glk_window_close().
@@ -406,7 +396,6 @@
 /**
  * SECTION:glk-window-constraints
  * @short_description: Manipulating the size of a window
- * @include: libchimara/glk.h
  *
  * There are library functions to change and to measure the size of a window.
  */
@@ -414,7 +403,6 @@
 /**
  * SECTION:glk-window-types
  * @short_description: Blank, pair, text grid, text buffer, and graphics windows
- * @include: libchimara/glk.h
  * 
  * A technical description of all the window types, and exactly how they behave.
  */
@@ -422,7 +410,6 @@
 /**
  * SECTION:glk-echo-streams
  * @short_description: Creating a copy of a window's output
- * @include: libchimara/glk.h
  *
  * Every window has an associated window stream; you print to the window by
  * printing to this stream. However, it is possible to attach a second stream to
@@ -466,7 +453,6 @@
 /**
  * SECTION:glk-window-other
  * @short_description: Miscellaneous functions for windows
- * @include: libchimara/glk.h
  *
  * This section contains functions for windows that don't fit anywhere else.
  */
@@ -474,7 +460,6 @@
 /**
  * SECTION:glk-events
  * @short_description: Waiting for events
- * @include: libchimara/glk.h
  *
  * As described in <link linkend="chimara-Your-Programs-Main-Function">Your
  * Program's Main Function</link>, all player input is handed to your program by
@@ -485,7 +470,6 @@
 /**
  * SECTION:glk-character-input-events
  * @short_description: Events representing a single keystroke
- * @include: libchimara/glk.h
  *
  * You can request character input from text buffer and text grid windows. See 
  * %evtype_CharInput. There are separate functions for requesting Latin-1 input
@@ -495,7 +479,6 @@
 /**
  * SECTION:glk-line-input-events
  * @short_description: Events representing a line of user input
- * @include: libchimara/glk.h
  *
  * You can request line input from text buffer and text grid windows. See
  * %evtype_LineInput. There are separate functions for requesting Latin-1 input
@@ -505,7 +488,6 @@
 /**
  * SECTION:glk-mouse-events
  * @short_description: Events representing a mouse click
- * @include: libchimara/glk.h
  *
  * On some platforms, Glk can recognize when the mouse (or other pointer) is 
  * used to select a spot in a window. You can request mouse input only in text 
@@ -556,7 +538,6 @@
 /**
  * SECTION:glk-timer-events
  * @short_description: Events sent at fixed intervals
- * @include: libchimara/glk.h
  *
  * You can request that an event be sent at fixed intervals, regardless of what
  * the player does. Unlike input events, timer events can be tested for with
@@ -569,7 +550,6 @@
 /**
  * SECTION:glk-streams
  * @short_description: Input and output abstractions
- * @include: libchimara/glk.h
  *
  * All character output in Glk is done through streams. Every window has an
  * output stream associated with it. You can also write to files on disk; every
@@ -638,7 +618,6 @@
 /**
  * SECTION:glk-print
  * @short_description: Printing to streams
- * @include: libchimara/glk.h
  *
  * You can print Latin-1 and Unicode characters, null-terminated strings, or
  * buffers to any stream. The characters will be converted into the appropriate
@@ -648,7 +627,6 @@
 /**
  * SECTION:glk-read
  * @short_description: Reading from streams
- * @include: libchimara/glk.h
  *
  * You can read Latin-1 or Unicode characters, buffers, or whole lines from any
  * stream. The characters will be converted into the form in which you request
@@ -658,7 +636,6 @@
 /**
  * SECTION:glk-closing-streams
  * @short_description: Closing streams and retrieving their character counts
- * @include: libchimara/glk.h
  *
  * When you close a Glk stream, you have the opportunity to examine the
  * character counts &mdash; the number of characters written to or read from the
@@ -668,7 +645,6 @@
 /**
  * SECTION:glk-stream-positions
  * @short_description: Moving the read/write mark
- * @include: libchimara/glk.h
  *
  * You can set the position of the read/write mark in a stream.
  *
@@ -681,7 +657,6 @@
 /**
  * SECTION:glk-styles
  * @short_description: Changing the appearance of printed text
- * @include: libchimara/glk.h
  *
  * You can send style-changing commands to an output stream. After a style
  * change, new text which is printed to that stream will be given the new style,
@@ -740,7 +715,6 @@
 /**
  * SECTION:glk-stylehints
  * @short_description: Setting style hints
- * @include: libchimara/glk.h
  *
  * There are no guarantees of how styles will look, but you can make 
  * suggestions.
@@ -783,7 +757,6 @@
 /**
  * SECTION:glk-style-measure
  * @short_description: Finding out how the library displays your style hints
- * @include: libchimara/glk.h
  *
  * You can suggest the appearance of a window's style before the window is
  * created; after the window is created, you can test the style's actual
@@ -806,7 +779,6 @@
 /**
  * SECTION:glk-stream-types
  * @short_description: Window, memory, and file streams
- * @include: libchimara/glk.h
  *
  * <refsect2 id="chimara-Window-Streams"><title>Window Streams</title>
  * <para>
@@ -874,7 +846,6 @@
 /**
  * SECTION:glk-stream-other
  * @short_description: Miscellaneous functions for streams
- * @include: libchimara/glk.h
  *
  * This section includes functions for streams that don't fit anywhere else.
  */
@@ -882,7 +853,6 @@
 /**
  * SECTION:glk-fileref
  * @short_description: A platform-independent way to refer to disk files
- * @include: libchimara/glk.h
  *
  * You deal with disk files using file references. Each fileref is an opaque C
  * structure pointer; see <link linkend="chimara-Opaque-Objects">Opaque 
@@ -919,7 +889,6 @@
 /**
  * SECTION:glk-fileref-types
  * @short_description: Four different ways to create a file reference
- * @include: libchimara/glk.h
  *
  * There are four different functions for creating a fileref, depending on how
  * you wish to specify it. Remember that it is always possible that a fileref
@@ -929,7 +898,6 @@
 /**
  * SECTION:glk-fileref-other
  * @short_description: Miscellaneous functions for file references
- * @include: libchimara/glk.h
  *
  * This section includes functions for file references that don't fit anywhere
  * else.
@@ -938,7 +906,6 @@
 /**
  * SECTION:glk-image-resources
  * @short_description: Graphics in Glk
- * @include: libchimara/glk.h
  *
  * In accordance with this modern age, Glk provides for a modicum of graphical
  * flair. It does not attempt to be a complete graphical toolkit. Those already
@@ -979,7 +946,6 @@
 /**
  * SECTION:glk-graphics-windows
  * @short_description: Drawing graphics in graphics windows
- * @include: libchimara/glk.h
  *
  * A graphics window is a rectangular canvas of pixels, upon which you can draw
  * images. The contents are entirely under your control. You can draw as many
@@ -1014,7 +980,6 @@
 /**
  * SECTION:glk-graphics-text
  * @short_description: Drawing graphics inside or beside text
- * @include: libchimara/glk.h
  *
  * A text buffer is a linear text stream. You can draw images in-line with this
  * text. If you are familiar with HTML, you already understand this model. You
@@ -1047,7 +1012,6 @@
 /**
  * SECTION:glk-graphics-testing
  * @short_description: Checking whether the library supports graphics
- * @include: libchimara/glk.h
  *
  * Before calling Glk graphics functions, you should use the gestalt selector
  * %gestalt_Graphics. To test for additional capabilities, you can also use the
@@ -1057,7 +1021,6 @@
 /**
  * SECTION:glk-sound-channels
  * @short_description: Creating new sound channels and closing them
- * @include: libchimara/glk.h
  *
  * Sounds in Glk are played through sound channels. Sound channels are another
  * type of opaque object, like windows, streams, and file references.
@@ -1066,7 +1029,6 @@
 /**
  * SECTION:glk-playing-sounds
  * @short_description: Producing noise
- * @include: libchimara/glk.h
  *
  * These functions play the actual sounds through the sound channels.
  */
@@ -1074,7 +1036,6 @@
 /**
  * SECTION:glk-sound-other
  * @short_description: Miscellaneous functions for sound channels
- * @include: libchimara/glk.h
  *
  * This section includes functions for sound channels that don't fit anywhere
  * else.
@@ -1083,7 +1044,6 @@
 /**
  * SECTION:glk-sound-testing
  * @short_description: Checking whether the library supports sound
- * @include: libchimara/glk.h
  *
  * Before calling Glk sound functions, you should use the %gestalt_Sound
  * selector. To test for additional capabilities, you can use the 
@@ -1094,7 +1054,6 @@
 /**
  * SECTION:glk-creating-hyperlinks
  * @short_description: Printing text as a hyperlink
- * @include: libchimara/glk.h
  *
  * Some games may wish to mark up text in their windows with hyperlinks, which
  * can be selected by the player &mdash; most likely by mouse click. Glk allows
@@ -1106,7 +1065,6 @@
 /**
  * SECTION:glk-accepting-hyperlinks
  * @short_description: Generating and catching hyperlink navigation events
- * @include: libchimara/glk.h
  *
  * When you request a hyperlink event in a window, you will receive a hyperlink
  * event when the player clicks on a hyperlink.
@@ -1115,7 +1073,6 @@
 /**
  * SECTION:glk-hyperlinks-testing
  * @short_description: Checking whether the library supports hyperlinks
- * @include: libchimara/glk.h
  *
  * Before calling Glk hyperlink functions, you should use the gestalt selectors
  * %gestalt_Hyperlinks and %gestalt_HyperlinkInput.
@@ -1124,7 +1081,6 @@
 /**
  * SECTION:glk-clock
  * @short_description: Getting the current time from the system clock
- * @include: libchimara/glk.h
  *
  * You can get the current time, either as a Unix timestamp (seconds since 1970)
  * or as a broken-out structure of time elements (year, month, day, hour,
@@ -1138,7 +1094,6 @@
 /**
  * SECTION:glk-clock-conversions
  * @short_description: Converting from timestamps to date structures and back
- * @include: libchimara/glk.h
  *
  * This section describes functions for converting timestamps to more
  * human-readable date structures and back.
@@ -1147,7 +1102,6 @@
 /**
  * SECTION:glk-clock-testing
  * @short_description: Checking whether the library supports the clock functions
- * @include: libchimara/glk.h
  *
  * Before calling Glk date and time functions, you should use the following
  * gestalt selector.
@@ -1156,7 +1110,6 @@
 /**
  * SECTION:dispatch-interrogating
  * @short_description: Finding out what functions the Glk library exports
- * @include: libchimara/glk.h, libchimara/gi_dispa.h
  *
  * These are the ancilliary functions that let you enumerate.
  */
@@ -1164,7 +1117,6 @@
 /**
  * SECTION:dispatch-dispatching
  * @short_description: Dispatching the call to the Glk library
- * @include: libchimara/glk.h, libchimara/gi_dispa.h
  *
  * The function gidispatch_call() invokes a function from the Glk library.
  */
@@ -1172,7 +1124,6 @@
 /**
  * SECTION:dispatch-prototypes
  * @short_description: Querying Glk function prototypes
- * @include: libchimara/glk.h, libchimara/gi_dispa.h
  *
  * There are many possible ways to set up a #gluniversal_t array, and it's
  * illegal to call gidispatch_call() with an array which doesn't match the
@@ -1189,7 +1140,6 @@
 /**
  * SECTION:dispatch-library-functions
  * @short_description: Platform-dependent dispatch layer functions
- * @include: libchimara/glk.h, libchimara/gi_dispa.h
  *
  * Ideally, the three layers &mdash; program, dispatch layer, Glk library
  * &mdash; would be completely modular; each would refer only to the layers
@@ -1221,7 +1171,6 @@
 /** 
  * SECTION:blorb-program
  * @short_description: How to use the Blorb layer in your program
- * @include: libchimara/glk.h, libchimara/gi_blorb.h
  *
  * If you wish your program to load its resources from a Blorb file, you need to
  * find and open that file in your startup code. (See <link 
@@ -1242,7 +1191,6 @@
 /**
  * SECTION:blorb-layer
  * @short_description: The platform-independent functions in the Blorb layer
- * @include: libchimara/glk.h, libchimara/gi_blorb.h
  *
  * These are the functions which are implemented in 
  * <filename>gi_blorb.c</filename>. They will be compiled into the library, but
@@ -1254,7 +1202,6 @@
 /** 
  * SECTION:blorb-errors
  * @short_description: Error codes returned by the Blorb layer functions
- * @include: libchimara/glk.h, libchimara/gi_blorb.h
  *
  * All Blorb layer functions, including giblorb_set_resource_map(), return the
  * following error codes.
@@ -1263,7 +1210,6 @@
 /**
  * SECTION:glkext-startup
  * @short_description: Parsing startup options
- * @include: libchimara/glk.h, libchimara/glkstart.h
  *
  * This section describes an extension to Glk for parsing command-line startup
  * options. It was written by Andrew Plotkin for the Glk libraries CheapGlk and
@@ -1286,7 +1232,6 @@
 /**
  * SECTION:glkext-unix
  * @short_description: Unix-specific functions
- * @include: libchimara/glk.h, libchimara/glkstart.h
  *
  * This section describes an extension to Glk for various Unix functions. It was
  * written by Andrew Plotkin for the Glk libraries CheapGlk and GlkTerm.
@@ -1299,7 +1244,6 @@
 /**
  * SECTION:glkext-garglk
  * @short_description: Gargoyle extensions to Glk
- * @include: libchimara/glk.h, libchimara/garglk.h
  *
  * This section describes various extensions to Glk that were written for the
  * popular interpreter <ulink 

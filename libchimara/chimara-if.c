@@ -14,7 +14,6 @@
  * SECTION:chimara-if
  * @short_description: Widget which plays an interactive fiction game
  * @stability: Unstable
- * @include: libchimara/chimara-if.h
  *
  * The #ChimaraIF widget, given an interactive fiction game file to run, selects
  * an appropriate interpreter plugin and runs it. Interpreter options are set by

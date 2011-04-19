@@ -1,5 +1,6 @@
 <SECTION>
 <FILE>chimara-glk</FILE>
+<INCLUDE>libchimara/chimara-glk.h</INCLUDE>
 <TITLE>ChimaraGlk</TITLE>
 ChimaraGlk
 ChimaraError
@@ -43,6 +44,7 @@ CHIMARA_GLK_GET_CLASS
 
 <SECTION>
 <FILE>chimara-if</FILE>
+<INCLUDE>libchimara/chimara-if.h</INCLUDE>
 ChimaraIFFormat
 ChimaraIFInterpreter
 ChimaraIFZmachineVersion
@@ -63,6 +65,8 @@ CHIMARA_IF_CLASS
 CHIMARA_IS_IF_CLASS
 CHIMARA_IF_GET_CLASS
 </SECTION>
+
+<INCLUDE>libchimara/glk.h</INCLUDE>
 
 <SECTION>
 <FILE>glk-exiting</FILE>
@@ -564,6 +568,8 @@ gestalt_DateTime
 GLK_MODULE_DATETIME
 </SECTION>
 
+<INCLUDE>libchimara/glk.h, libchimara/gi-dispa.h</INCLUDE>
+
 <SECTION>
 <FILE>dispatch-interrogating</FILE>
 <TITLE>Interrogating the Interface</TITLE>
@@ -604,6 +610,8 @@ gidispatch_rock_t
 gidispatch_get_objrock
 gidispatch_set_retained_registry
 </SECTION>
+
+<INCLUDE>libchimara/glk.h, libchimara/gi-blorb.h</INCLUDE>
 
 <SECTION>
 <FILE>blorb-program</FILE>
@@ -652,6 +660,8 @@ giblorb_err_Format
 giblorb_err_NotFound
 </SECTION>
 
+<INCLUDE>libchimara/glk.h, libchimara/glkstart.h</INCLUDE>
+
 <SECTION>
 <FILE>glkext-startup</FILE>
 <TITLE>Startup Code</TITLE>
@@ -678,6 +688,7 @@ glkunix_set_base_file
 <SECTION>
 <FILE>glkext-garglk</FILE>
 <TITLE>Gargoyle Extensions</TITLE>
+<INCLUDE>libchimara/glk.h, libchimara/garglk.h</INCLUDE>
 GARGLK
 <SUBSECTION Functions>
 garglk_fileref_get_name
