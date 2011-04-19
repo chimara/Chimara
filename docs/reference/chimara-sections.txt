@@ -137,6 +137,7 @@ gestalt_Hyperlinks
 gestalt_HyperlinkInput
 gestalt_SoundMusic
 gestalt_GraphicsTransparency
+gestalt_DateTime
 </SECTION>
 
 <SECTION>
@@ -564,7 +565,6 @@ glk_date_to_simple_time_local
 <SECTION>
 <FILE>glk-clock-testing</FILE>
 <TITLE>Testing for Clock Capabilities</TITLE>
-gestalt_DateTime
 GLK_MODULE_DATETIME
 </SECTION>
 

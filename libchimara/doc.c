@@ -1103,8 +1103,8 @@
  * SECTION:glk-clock-testing
  * @short_description: Checking whether the library supports the clock functions
  *
- * Before calling Glk date and time functions, you should use the following
- * gestalt selector.
+ * Before calling Glk date and time functions, you should use the
+ * %gestalt_DateTime selector.
  */
  
 /**
@@ -1772,7 +1772,8 @@
  * ]|
  *
  * This returns 1 if the overall suite of system clock functions, as described
- * in this chapter, is available.
+ * in <link linkend="chimara-The-System-Clock">this chapter</link>, is
+ * available.
  *
  * If this selector returns 0, you should not try to call these functions. They
  * may have no effect, or they may cause a run-time error.
