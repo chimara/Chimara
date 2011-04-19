@@ -33,13 +33,12 @@ You define a function called glk_main(), which the library calls to begin runnin
 <para>
 Glk does all its user-interface work in a function called glk_select(). This function waits for an event &mdash; typically the player's input &mdash; and returns an structure representing that event. This means that your program must have an event loop. In the very simplest case, you could write
 </para>
-<informalexample>
-<programlisting>
+|[
 void glk_main()
 {
-    #event_t ev;
+    event_t ev;
     while (1) {
-        #glk_select(&amp;ev);
+        glk_select(&amp;ev);
         switch (ev.type) {
             default:
                 /* do nothing */
@@ -47,8 +46,7 @@ void glk_main()
         }
     }
 }
-</programlisting>
-</informalexample>
+]|
 <para>
 This is a legal Glk-compatible program. As you might expect, it doesn't do anything. The player will see an empty window, which he can only stare at, or destroy in a platform-defined standard manner.
 </para>
