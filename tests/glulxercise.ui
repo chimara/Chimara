@@ -157,13 +157,25 @@
         <col id="0" translatable="yes">ArrayLimitTest</col>
         <col id="1">arraylimittest.ulx</col>
       </row>
+	  <row>
+        <col id="0" translatable="yes">DateTimeTest</col>
+        <col id="1">datetimetest.ulx</col>
+      </row>
       <row>
         <col id="0" translatable="yes">ExternalFile</col>
         <col id="1">externalfile.ulx</col>
       </row>
+	  <row>
+        <col id="0" translatable="yes">FloatConstTest</col>
+        <col id="1">floatconsttest.ulx</col>
+      </row>
       <row>
         <col id="0" translatable="yes">InputEventText</col>
         <col id="1">inputeventtext.ulx</col>
+      </row>
+	  <row>
+        <col id="0" translatable="yes">InputFeatureTest</col>
+        <col id="1">inputfeaturetest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">MemCopyTest</col>
