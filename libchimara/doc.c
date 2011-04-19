@@ -1140,6 +1140,8 @@
  * @short_description: Converting from timestamps to date structures and back
  * @include: libchimara/glk.h
  *
+ * This section describes functions for converting timestamps to more
+ * human-readable date structures and back.
  */
 
 /**
@@ -1397,6 +1399,20 @@
  * If you are writing a C program, you can perform a preprocessor test for the
  * existence of %GLK_MODULE_DATETIME. If this is defined, so are all the
  * functions and data types described in this section.
+ */
+
+/**
+ * GLK_MODULE_LINE_ECHO:
+ *
+ * If this preprocessor symbol is defined, so is glk_set_echo_line_event(). If
+ * not, not.
+ */
+
+/**
+ * GLK_MODULE_LINE_TERMINATORS:
+ *
+ * If this preprocessor symbol is defined, so is
+ * glk_set_terminators_line_event(). If not, not.
  */
 
 /**
@@ -2873,8 +2889,29 @@
  */
 
 /**
- * glktimeval_t:
+ * glkdate_t:
+ * @year: The full (four-digit) year
+ * @month: The month number, ranging from 1-12, 1 is January
+ * @day: The day of the month, ranging from 1-31
+ * @weekday: The day of the week, ranging from 0-6, 0 is Sunday
+ * @hour: The hour of the day, ranging from 0-23
+ * @minute: The minute of the hour, ranging from 0-59
+ * @second: The second of the minute, ranging from 0-59; may be 60 during a leap
+ * second
+ * @microsec: The fraction of the second in microseconds, ranging from 0-999999
  *
+ * This structure represents a human-readable date in a specific timezone.
+ */
+
+/**
+ * glktimeval_t:
+ * @high_sec: The most significant 32 bits of the timestamp in seconds.
+ * @low_sec: The least significant 32 bits of the timestamp in seconds.
+ * @microsec: The fraction of the timestamp, in microseconds, ranging from
+ * 0-999999.
+ *
+ * This structure represents the Unix timestamp, i.e. the number of seconds
+ * since January 1, 1970.
  */
  
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_DISPA.H ------------------*/
@@ -2892,7 +2929,19 @@
  *
  * Returns: Number of opaque object classes used by the library.
  */
- 
+
+/**
+ * gidispatch_get_class:
+ * @index: Unique integer index of the class.
+ *
+ * Returns a structure describing an opaque class that the library exports.
+ * @index can range from 0 to <inlineequation><mathphrase>N -
+ * 1</mathphrase><alt>N - 1</alt></inlineequation>, where N is the value
+ * returned by gidispatch_count_classes().
+ *
+ * Returns: A #gidispatch_intconst_t structure describing the class.
+ */
+
 /**
  * gidispatch_count_intconst:
  *

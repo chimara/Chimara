@@ -813,7 +813,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		_chimara_marshal_VOID__UINT_STRING,
 		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
 	/**
-	 * ChimaraGlk::iliad-update-screen:
+	 * ChimaraGlk::iliad-screen-update:
 	 * @self: The widget that received the signal
 	 * @typing: Whether to perform a typing or full screen update
 	 *
