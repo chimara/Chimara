@@ -34,6 +34,7 @@ window_new_common(glui32 rock)
 	win->line_input_buffer_unicode = NULL;
 	win->history = NULL;
 	win->echo_line_input = TRUE;
+	win->echo_current_line_input = TRUE;
 
 	/* Initialise the buffer */
 	win->buffer = g_string_sized_new(1024);

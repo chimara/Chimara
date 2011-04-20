@@ -243,6 +243,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	win->input_request_type = INPUT_REQUEST_LINE;
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
+	win->echo_current_line_input = win->echo_line_input;
 
 	gchar *inserttext = (initlen > 0)? g_strndup(buf, initlen) : g_strdup("");
 	switch(win->type)
@@ -634,7 +635,7 @@ finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 	gchar *inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
 
 	/* If echoing is turned off, remove the text from the window */
-	if(!win->echo_line_input)
+	if(!win->echo_current_line_input)
 		gtk_text_buffer_delete(window_buffer, &start_iter, &end_iter);
 
 	/* Don't include the newline in the input */
@@ -929,7 +930,7 @@ force_line_input_from_queue(winid_t win, event_t *event)
 		gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
 
 		/* Insert the forced input into the window */
-		if(win->echo_line_input)
+		if(win->echo_current_line_input)
 		{
 			gtk_text_buffer_get_end_iter(buffer, &end);
 			gchar *text_to_insert = g_strconcat(text, "\n", NULL);
