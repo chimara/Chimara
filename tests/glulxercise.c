@@ -95,6 +95,8 @@ main(int argc, char *argv[])
 	w->interp = chimara_if_new();
 	gtk_widget_set_size_request(w->interp, 500, 600);
 	gtk_box_pack_end_defaults(GTK_BOX(vbox), w->interp);
+	chimara_glk_set_css_from_string(CHIMARA_GLK(w->interp),
+		"buffer { font-size: 12; } buffer.input { color: #00a; font-style: italic; }");
 	gtk_builder_connect_signals(builder, w);
 	g_signal_connect(w->interp, "started", G_CALLBACK(on_interp_started), w);
 	g_signal_connect(w->interp, "stopped", G_CALLBACK(on_interp_stopped), w);
