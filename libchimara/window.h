@@ -64,6 +64,7 @@ struct glk_window_struct
 	gboolean mouse_input_requested;
 	GList *history;
 	GList *history_pos;
+	gboolean echo_line_input;
 	/* Line input field (text grids only) */
 	glui32 input_length;
 	GtkTextChildAnchor *input_anchor;

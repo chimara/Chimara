@@ -624,21 +624,23 @@ finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 	VALID_WINDOW(win, return 0);
 	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
 
-	GtkTextIter start_iter, end_iter, last_character;
+	GtkTextIter start_iter, end_iter;
 
 	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
 	gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
 	gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-	gtk_text_buffer_get_end_iter(window_buffer, &last_character);
-	gtk_text_iter_backward_cursor_position(&last_character);
 
-	gchar* last_char = gtk_text_buffer_get_text(window_buffer, &last_character, &end_iter, FALSE);
+	gchar *inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
 
-	if( strchr(last_char, '\n') != NULL )
-		gtk_text_iter_backward_cursor_position(&end_iter);
+	/* If echoing is turned off, remove the text from the window */
+	if(!win->echo_line_input)
+		gtk_text_buffer_delete(window_buffer, &start_iter, &end_iter);
 
-	gchar* inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
+	/* Don't include the newline in the input */
+	char *last_char = inserted_text + strlen(inserted_text) - 1;
+	if(*last_char == '\n')
+		*last_char = '\0';
 
 	int chars_written = write_to_window_buffer(win, inserted_text);
 	if(emit_signal)
@@ -927,9 +929,13 @@ force_line_input_from_queue(winid_t win, event_t *event)
 		gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
 
 		/* Insert the forced input into the window */
-		gtk_text_buffer_get_end_iter(buffer, &end);
-		gchar *text_to_insert = g_strconcat(text, "\n", NULL);
-		gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", NULL);
+		if(win->echo_line_input)
+		{
+			gtk_text_buffer_get_end_iter(buffer, &end);
+			gchar *text_to_insert = g_strconcat(text, "\n", NULL);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", NULL);
+		}
+
 		chars_written = finish_text_buffer_line_input(win, TRUE);
 	}
 	else if(win->type == wintype_TextGrid)
@@ -1008,6 +1014,11 @@ void
 glk_set_echo_line_event(winid_t win, glui32 val)
 {
 	VALID_WINDOW(win, return);
+
+	if(win->type != wintype_TextBuffer)
+		return; /* Quietly do nothing */
+
+	win->echo_line_input = val? TRUE : FALSE;
 }
 
 /**
