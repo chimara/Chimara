@@ -126,6 +126,9 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_GraphicsTransparency:
 			return 1;
 
+		case gestalt_DateTime:
+			return 1;
+
 		/* Capabilities supported if compiled with GStreamer */
 		case gestalt_Sound:
 		case gestalt_SoundVolume:
@@ -138,7 +141,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		case gestalt_DateTime:
 		case gestalt_LineInputEcho:
 		case gestalt_LineTerminatorKey:
 		case gestalt_LineTerminators:

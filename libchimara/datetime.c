@@ -1,5 +1,99 @@
+#include <time.h>
+#include <sys/time.h>
+#include <strings.h> /* for bzero() */
 #include <glib.h>
 #include "glk.h"
+
+/* FIXME: GDateTime was introduced in GLib 2.26, which is not standard on all
+ platforms yet. Therefore, we adapt Andrew Plotkin's implementation for now, and
+ will replace it with the (presumably) more portable GLib facilities later. */
+
+/* Copy a POSIX tm structure to a glkdate. */
+static void
+gli_date_from_tm(glkdate_t *date, struct tm *tm)
+{
+    date->year = 1900 + tm->tm_year;
+    date->month = 1 + tm->tm_mon;
+    date->day = tm->tm_mday;
+    date->weekday = tm->tm_wday;
+    date->hour = tm->tm_hour;
+    date->minute = tm->tm_min;
+    date->second = tm->tm_sec;
+}
+
+/* Copy a glkdate to a POSIX tm structure.
+ This is used in the "glk_date_to_..." functions, which are supposed
+ to normalize the glkdate. We're going to rely on the mktime() /
+ timegm() functions to do that -- except they don't handle microseconds.
+ So we'll have to do that normalization here, adjust the tm_sec value,
+ and return the normalized number of microseconds.
+ */
+static glsi32
+gli_date_to_tm(glkdate_t *date, struct tm *tm)
+{
+    glsi32 microsec;
+
+    bzero(tm, sizeof(tm));
+    tm->tm_year = date->year - 1900;
+    tm->tm_mon = date->month - 1;
+    tm->tm_mday = date->day;
+    tm->tm_wday = date->weekday;
+    tm->tm_hour = date->hour;
+    tm->tm_min = date->minute;
+    tm->tm_sec = date->second;
+    microsec = date->microsec;
+
+    if (microsec >= G_USEC_PER_SEC) {
+        tm->tm_sec += (microsec / G_USEC_PER_SEC);
+        microsec = microsec % G_USEC_PER_SEC;
+    }
+    else if (microsec < 0) {
+        microsec = -1 - microsec;
+        tm->tm_sec -= (1 + microsec / G_USEC_PER_SEC);
+        microsec = (G_USEC_PER_SEC - 1) - (microsec % G_USEC_PER_SEC);
+    }
+
+    return microsec;
+}
+
+/* Convert a GTimeVal, along with a microseconds value, to a glktimeval. */
+static void
+gli_timestamp_to_time(long sec, long microsec, glktimeval_t *time)
+{
+    if (sizeof(sec) <= 4) {
+        /* This platform has 32-bit time, but we can't do anything
+		 about that. Hope it's not 2038 yet. */
+        if (sec >= 0)
+            time->high_sec = 0;
+        else
+            time->high_sec = -1;
+        time->low_sec = sec;
+    }
+    else {
+        /* The cast to gint64 shouldn't be necessary, but it
+		 suppresses a pointless warning in the 32-bit case.
+		 (Remember that we won't be executing this line in the
+		 32-bit case.) */
+        time->high_sec = (((gint64)sec) >> 32) & 0xFFFFFFFF;
+        time->low_sec = sec & 0xFFFFFFFF;
+    }
+
+    time->microsec = microsec;
+}
+
+/* Divide a Unix timestamp by a (positive) value. */
+static glsi32
+gli_simplify_time(long timestamp, glui32 factor)
+{
+    /* We want to round towards negative infinity, which takes a little
+	 bit of fussing. */
+    if (timestamp >= 0) {
+        return timestamp / (time_t)factor;
+    }
+    else {
+        return -1 - (((long)-1 - timestamp) / (long)factor);
+    }
+}
 
 /**
  * glk_current_time:
@@ -24,6 +118,10 @@ void
 glk_current_time(glktimeval_t *time)
 {
 	g_return_if_fail(time != NULL);
+
+	GTimeVal tv;
+	g_get_current_time(&tv);
+	gli_timestamp_to_time(tv.tv_sec, tv.tv_usec, time);
 }
 
 /**
@@ -42,9 +140,11 @@ glk_current_time(glktimeval_t *time)
 glsi32
 glk_current_simple_time(glui32 factor)
 {
-	g_return_val_if_fail(factor != 0, -1);
+	g_return_val_if_fail(factor != 0, 0);
 	
-	return -1;
+	GTimeVal tv;
+	g_get_current_time(&tv);
+    return gli_simplify_time(tv.tv_sec, factor);
 }
 
 /**
@@ -65,6 +165,19 @@ glk_time_to_date_utc(glktimeval_t *time, glkdate_t *date)
 {
 	g_return_if_fail(time != NULL);
 	g_return_if_fail(date != NULL);
+
+	time_t timestamp;
+    struct tm tm;
+
+    timestamp = time->low_sec;
+    if (sizeof(timestamp) > 4) {
+        timestamp += ((gint64)time->high_sec << 32);
+    }
+
+    gmtime_r(&timestamp, &tm);
+
+    gli_date_from_tm(date, &tm);
+    date->microsec = time->microsec;
 }
 
 /**
@@ -80,6 +193,19 @@ glk_time_to_date_local(glktimeval_t *time, glkdate_t *date)
 {
 	g_return_if_fail(time != NULL);
 	g_return_if_fail(date != NULL);
+
+	time_t timestamp;
+    struct tm tm;
+
+    timestamp = time->low_sec;
+    if (sizeof(timestamp) > 4) {
+        timestamp += ((int64_t)time->high_sec << 32);
+    }
+
+    localtime_r(&timestamp, &tm);
+
+    gli_date_from_tm(date, &tm);
+    date->microsec = time->microsec;
 }
 
 /**
@@ -101,6 +227,14 @@ glk_simple_time_to_date_utc(glsi32 time, glui32 factor, glkdate_t *date)
 {
 	g_return_if_fail(factor != 0);
 	g_return_if_fail(date != NULL);
+
+	time_t timestamp = (time_t)time * factor;
+    struct tm tm;
+
+    gmtime_r(&timestamp, &tm);
+
+    gli_date_from_tm(date, &tm);
+    date->microsec = 0;
 }
 
 /**
@@ -117,6 +251,14 @@ glk_simple_time_to_date_local(glsi32 time, glui32 factor, glkdate_t *date)
 {
 	g_return_if_fail(factor != 0);
 	g_return_if_fail(date != NULL);
+
+	time_t timestamp = (time_t)time * factor;
+    struct tm tm;
+
+    localtime_r(&timestamp, &tm);
+
+    gli_date_from_tm(date, &tm);
+    date->microsec = 0;
 }
 
 /**
@@ -137,6 +279,19 @@ glk_date_to_time_utc(glkdate_t *date, glktimeval_t *time)
 {
 	g_return_if_fail(date != NULL);
 	g_return_if_fail(time != NULL);
+
+	time_t timestamp;
+    struct tm tm;
+    glsi32 microsec;
+
+    microsec = gli_date_to_tm(date, &tm);
+    /* The timegm function is not standard POSIX. If it's not available
+	 on your platform, try setting the env var "TZ" to "", calling
+	 mktime(), and then resetting "TZ". */
+    tm.tm_isdst = 0;
+    timestamp = timegm(&tm);
+
+    gli_timestamp_to_time(timestamp, microsec, time);
 }
 
 /**
@@ -160,6 +315,16 @@ glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
 {
 	g_return_if_fail(date != NULL);
 	g_return_if_fail(time != NULL);
+
+	time_t timestamp;
+    struct tm tm;
+    glsi32 microsec;
+
+    microsec = gli_date_to_tm(date, &tm);
+    tm.tm_isdst = -1;
+    timestamp = mktime(&tm);
+
+    gli_timestamp_to_time(timestamp, microsec, time);
 }
 
 /**
@@ -180,10 +345,20 @@ glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
 glsi32
 glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
 {
-	g_return_val_if_fail(date != NULL, -1);
-	g_return_val_if_fail(factor != 0, -1);
-	
-	return -1;
+	g_return_val_if_fail(date != NULL, 0);
+	g_return_val_if_fail(factor != 0, 0);
+
+	time_t timestamp;
+    struct tm tm;
+
+    gli_date_to_tm(date, &tm);
+    /* The timegm function is not standard POSIX. If it's not available
+	 on your platform, try setting the env var "TZ" to "", calling
+	 mktime(), and then resetting "TZ". */
+    tm.tm_isdst = 0;
+    timestamp = timegm(&tm);
+
+    return gli_simplify_time(timestamp, factor);
 }
 
 /**
@@ -200,8 +375,15 @@ glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
 glsi32
 glk_date_to_simple_time_local(glkdate_t *date, glui32 factor)
 {
-	g_return_val_if_fail(date != NULL, -1);
-	g_return_val_if_fail(factor != 0, -1);
-	
-	return -1;
+	g_return_val_if_fail(date != NULL, 0);
+	g_return_val_if_fail(factor != 0, 0);
+
+	time_t timestamp;
+    struct tm tm;
+
+    gli_date_to_tm(date, &tm);
+    tm.tm_isdst = -1;
+    timestamp = mktime(&tm);
+
+    return gli_simplify_time(timestamp, factor);
 }
