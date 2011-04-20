@@ -96,18 +96,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 				return gestalt_CharOutput_CannotPrint;
 			/* Can print all other characters */
 			return gestalt_CharOutput_ExactPrint;
-		
-		/* Unicode capabilities present */
-		case gestalt_Unicode:
-			return 1;
-
-		/* Timer capabilities present */
-		case gestalt_Timer:
-			return 1;
-
-		/* Hyperlink capabilities present */
-		case gestalt_Hyperlinks:
-			return 1;
 
 		/* Hyperlinks supported on textbuffers and textgrids */
 		case gestalt_HyperlinkInput:
@@ -117,15 +105,15 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_MouseInput:
 			return val == wintype_TextGrid;
 
-		case gestalt_Graphics:
-			return 1;
-
 		case gestalt_DrawImage:
 			return val == wintype_Graphics || val == wintype_TextBuffer;
 
+		/* Capabilities that are simply supported */
+		case gestalt_Unicode:
+		case gestalt_Timer:
+		case gestalt_Hyperlinks:
+		case gestalt_Graphics:
 		case gestalt_GraphicsTransparency:
-			return 1;
-
 		case gestalt_DateTime:
 			return 1;
 
