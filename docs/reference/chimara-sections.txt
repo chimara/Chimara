@@ -681,6 +681,7 @@ NULL
 <SECTION>
 <FILE>glkext-unix</FILE>
 <TITLE>Unix Extensions</TITLE>
+glkunix_stream_open_pathname_gen
 glkunix_stream_open_pathname
 glkunix_set_base_file
 </SECTION>

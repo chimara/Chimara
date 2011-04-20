@@ -10,15 +10,48 @@
 extern GPrivate *glk_data_key;
 
 /**
- * glkunix_stream_open_pathname:
- * @pathname: A path to a file, in the system filename encoding. 
- * @textmode: Bitfield with one or more of the <code>fileusage_</code> constants.
+ * glkunix_stream_open_pathname_gen:
+ * @pathname: A path to a file, in the system filename encoding.
+ * @writemode: 0 for read-only mode, 1 for write mode.
+ * @textmode: 0 for binary mode, 1 for text mode.
  * @rock: The new stream's rock value.
  *
- * Opens an arbitrary file, in read-only mode. Note that this function is
+ * Opens an arbitrary file for reading or writing. (You cannot open a file for
+ * appending using this call.) Note that this function is
  * <emphasis>only</emphasis> available during glkunix_startup_code(). It is 
  * inherently non-portable; it should not and cannot be called from inside 
  * glk_main().
+ *
+ * Returns: A new stream, or %NULL if the file operation failed.
+ */
+strid_t
+glkunix_stream_open_pathname_gen(char *pathname, glui32 writemode, glui32 textmode, glui32 rock)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	if(!glk_data->in_startup)
+		ILLEGAL("glkunix_stream_open_pathname_gen() may only be called from "
+				"glkunix_startup_code().");
+
+	g_return_val_if_fail(pathname, NULL);
+	g_return_val_if_fail(strlen(pathname) > 0, NULL);
+
+	frefid_t fileref = fileref_new(pathname, rock,
+		textmode? fileusage_TextMode : fileusage_BinaryMode,
+		writemode? filemode_Write : filemode_Read);
+	return file_stream_new(fileref, writemode? filemode_Write : filemode_Read, rock, FALSE);
+}
+
+/**
+ * glkunix_stream_open_pathname:
+ * @pathname: A path to a file, in the system filename encoding. 
+ * @textmode: 0 for binary mode, 1 for text mode.
+ * @rock: The new stream's rock value.
+ *
+ * This opens a file for reading. It is a less-general form of
+ * glkunix_stream_open_pathname_gen(), preserved for backwards compatibility.
+ *
+ * This should be used only by glkunix_startup_code().
  * 
  * Returns: A new stream, or %NULL if the file operation failed.
  */
@@ -26,15 +59,15 @@ strid_t
 glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+
 	if(!glk_data->in_startup)
 		ILLEGAL("glkunix_stream_open_pathname() may only be called from "
 				"glkunix_startup_code().");
-	
+
 	g_return_val_if_fail(pathname, NULL);
 	g_return_val_if_fail(strlen(pathname) > 0, NULL);
-	
-	frefid_t fileref = fileref_new(pathname, rock, textmode, filemode_Read);
+
+	frefid_t fileref = fileref_new(pathname, rock, textmode? fileusage_TextMode : fileusage_BinaryMode, filemode_Read);
 	return file_stream_new(fileref, filemode_Read, rock, FALSE);
 }
 
