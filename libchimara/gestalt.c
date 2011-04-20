@@ -115,6 +115,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_Graphics:
 		case gestalt_GraphicsTransparency:
 		case gestalt_DateTime:
+		case gestalt_UnicodeNorm:
 			return 1;
 
 		/* Capabilities supported if compiled with GStreamer */
@@ -132,7 +133,6 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_LineInputEcho:
 		case gestalt_LineTerminatorKey:
 		case gestalt_LineTerminators:
-		case gestalt_UnicodeNorm:
 		/* Selector not supported */	
 		default:
 			return 0;

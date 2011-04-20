@@ -1,5 +1,7 @@
-#include <gtk/gtk.h>
+#include <string.h>
+#include <glib.h>
 #include "glk.h"
+#include "charset.h"
 
 /**
  * glk_char_to_lower:
@@ -193,8 +195,24 @@ glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len, glui32 numchars)
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
 
-	/* TODO: Implement this */
-	return numchars;
+	long outchars;
+
+	/* Normalize the string */
+	char *utf8 = convert_ucs4_to_utf8(buf, numchars);
+	if(!utf8)
+		return numchars;
+	char *decomposed = g_utf8_normalize(utf8, -1, G_NORMALIZE_NFD);
+	g_free(utf8);
+	gunichar *outbuf = convert_utf8_to_ucs4(decomposed, &outchars);
+	g_free(decomposed);
+	if(!outbuf)
+		return numchars;
+
+	/* Copy the output buffer to the original buffer */
+	memcpy(buf, outbuf, MIN(outchars, len) * 4);
+	g_free(outbuf);
+
+	return outchars;
 }
 
 /**
@@ -255,6 +273,22 @@ glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len, glui32 numchars)
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
 
-	/* TODO: Implement this */
-	return numchars;
+	long outchars;
+
+	/* Normalize the string */
+	char *utf8 = convert_ucs4_to_utf8(buf, numchars);
+	if(!utf8)
+		return numchars;
+	char *decomposed = g_utf8_normalize(utf8, -1, G_NORMALIZE_NFC);
+	g_free(utf8);
+	gunichar *outbuf = convert_utf8_to_ucs4(decomposed, &outchars);
+	g_free(decomposed);
+	if(!outbuf)
+		return numchars;
+
+	/* Copy the output buffer to the original buffer */
+	memcpy(buf, outbuf, MIN(outchars, len) * 4);
+	g_free(outbuf);
+
+	return outchars;
 }
