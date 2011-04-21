@@ -177,7 +177,7 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->ignore_next_arrange_event = FALSE;
 	priv->char_input_queue = g_async_queue_new();
 	priv->line_input_queue = g_async_queue_new();
-	/* Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
+	/* FIXME Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
 	priv->resource_map = NULL;
 	priv->resource_lock = g_mutex_new();
 	priv->resource_loaded = g_cond_new();
@@ -328,7 +328,8 @@ request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
 
 		glui32 division = win->split_method & winmethod_DivisionMask;
 		glui32 direction = win->split_method & winmethod_DirMask;
-		
+		unsigned border = ((win->split_method & winmethod_BorderMask) == winmethod_NoBorder)? 0 : spacing;
+
 		/* If the split is fixed, get the size of the fixed child */
 		if(division == winmethod_Fixed)
 		{
@@ -362,13 +363,13 @@ request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
 		{
 			case winmethod_Left:
 			case winmethod_Right:
-				requisition->width = child1.width + child2.width + spacing;
+				requisition->width = child1.width + child2.width + border;
 				requisition->height = MAX(child1.height, child2.height);
 				break;
 			case winmethod_Above:
 			case winmethod_Below:
 				requisition->width = MAX(child1.width, child2.width);
-				requisition->height = child1.height + child2.height + spacing;
+				requisition->height = child1.height + child2.height + border;
 				break;
 		}
 	}
@@ -412,12 +413,13 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 	{
 		glui32 division = win->split_method & winmethod_DivisionMask;
 		glui32 direction = win->split_method & winmethod_DirMask;
+		unsigned border = ((win->split_method & winmethod_BorderMask) == winmethod_NoBorder)? 0 : spacing;
 
 		/* If the space gets too small to honor the spacing property, then just 
 		 ignore spacing in this window and below. */
-		if( (spacing > allocation->width && (direction == winmethod_Left || direction == winmethod_Right))
-		   || (spacing > allocation->height && (direction == winmethod_Above || direction == winmethod_Below)) )
-			spacing = 0;
+		if( (border > allocation->width && (direction == winmethod_Left || direction == winmethod_Right))
+		   || (border > allocation->height && (direction == winmethod_Above || direction == winmethod_Below)) )
+			border = 0;
 		
 		GtkAllocation child1, child2;
 		child1.x = allocation->x;
@@ -431,22 +433,22 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 			{
 				case winmethod_Left:
 					child1.width = win->key_window? 
-						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing) 
+						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - border) 
 						: 0;
 					break;
 				case winmethod_Right:
 					child2.width = win->key_window? 
-						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - spacing)
+						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - border)
 						: 0;
 					break;
 				case winmethod_Above:
 					child1.height = win->key_window? 
-						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing)
+						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - border)
 						: 0;
 					break;
 				case winmethod_Below:
 					child2.height = win->key_window?
-						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - spacing)
+						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - border)
 						: 0;
 					break;
 			}
@@ -457,16 +459,16 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 			switch(direction)
 			{
 				case winmethod_Left:
-					child1.width = MAX(0, (gint)ceil(fraction * (allocation->width - spacing)) );
+					child1.width = MAX(0, (gint)ceil(fraction * (allocation->width - border)) );
 					break;
 				case winmethod_Right:
-					child2.width = MAX(0, (gint)ceil(fraction * (allocation->width - spacing)) );
+					child2.width = MAX(0, (gint)ceil(fraction * (allocation->width - border)) );
 					break;
 				case winmethod_Above:
-					child1.height = MAX(0, (gint)ceil(fraction * (allocation->height - spacing)) );
+					child1.height = MAX(0, (gint)ceil(fraction * (allocation->height - border)) );
 					break;
 				case winmethod_Below:
-					child2.height = MAX(0, (gint)ceil(fraction * (allocation->height - spacing)) );
+					child2.height = MAX(0, (gint)ceil(fraction * (allocation->height - border)) );
 					break;
 			}
 		}
@@ -475,27 +477,27 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		switch(direction)
 		{
 			case winmethod_Left:
-				child2.width = MAX(0, allocation->width - spacing - child1.width);
-				child2.x = child1.x + child1.width + spacing;
+				child2.width = MAX(0, allocation->width - border - child1.width);
+				child2.x = child1.x + child1.width + border;
 				child2.y = child1.y;
 				child1.height = child2.height = allocation->height;
 				break;
 			case winmethod_Right:
-				child1.width = MAX(0, allocation->width - spacing - child2.width);
-				child2.x = child1.x + child1.width + spacing;
+				child1.width = MAX(0, allocation->width - border - child2.width);
+				child2.x = child1.x + child1.width + border;
 				child2.y = child1.y;
 				child1.height = child2.height = allocation->height;
 				break;
 			case winmethod_Above:
-				child2.height = MAX(0, allocation->height - spacing - child1.height);
+				child2.height = MAX(0, allocation->height - border - child1.height);
 				child2.x = child1.x;
-				child2.y = child1.y + child1.height + spacing;
+				child2.y = child1.y + child1.height + border;
 				child1.width = child2.width = allocation->width;
 				break;
 			case winmethod_Below:
-				child1.height = MAX(0, allocation->height - spacing - child2.height);
+				child1.height = MAX(0, allocation->height - border - child2.height);
 				child2.x = child1.x;
-				child2.y = child1.y + child1.height + spacing;
+				child2.y = child1.y + child1.height + border;
 				child1.width = child2.width = allocation->width;
 				break;
 		}
