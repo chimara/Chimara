@@ -458,8 +458,9 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
                 glui32 rock)
 {
 	VALID_WINDOW_OR_NULL(split, return NULL);
-	g_return_val_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)), NULL);
-	g_return_val_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100), NULL);	
+	g_return_val_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100), NULL);
+	if(method != (method & (winmethod_DirMask | winmethod_DivisionMask | winmethod_BorderMask)))
+		WARNING("Unrecognized bits in method constant");
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
