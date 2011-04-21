@@ -861,7 +861,10 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	/**
 	 * ChimaraGlk:spacing:
 	 *
-	 * The amount of space between the Glk windows.
+	 * The amount of space between the Glk windows. This space forms a visible
+	 * border between windows; however, if you open a window using the
+	 * %winmethod_NoBorder flag, there will be no spacing between it and its
+	 * sibling window, no matter what the value of this property is.
 	 */
 	g_object_class_install_property(object_class, PROP_SPACING,
 		g_param_spec_uint("spacing", _("Spacing"),

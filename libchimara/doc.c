@@ -2532,6 +2532,12 @@
  * When calling glk_window_open() with this @method, it specifies that there
  * should be a visible window border between the new window and its sibling.
  * (This is a hint to the library.)
+ *
+ * <note><title>Chimara</title><para>
+ *   There will only be a visible border if the #ChimaraGlk:spacing property
+ *   is nonzero. Setting #ChimaraGlk:spacing to zero disables all borders on Glk
+ *   windows.
+ * </para></note>
  */
 
 /**
