@@ -35,6 +35,8 @@ window_new_common(glui32 rock)
 	win->history = NULL;
 	win->echo_line_input = TRUE;
 	win->echo_current_line_input = TRUE;
+	win->extra_line_terminators = NULL;
+	win->current_extra_line_terminators = NULL;
 
 	/* Initialise the buffer */
 	win->buffer = g_string_sized_new(1024);
@@ -65,6 +67,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 	
 	g_list_foreach(win->history, (GFunc)g_free, NULL);
 	g_list_free(win->history);
+	g_slist_free(win->extra_line_terminators);
+	g_slist_free(win->current_extra_line_terminators);
 	
 	g_string_free(win->buffer, TRUE);
 	g_hash_table_destroy(win->hyperlinks);

@@ -1,6 +1,7 @@
 #include <stddef.h> /* Surprisingly, the only symbol needed is NULL */
 #include <config.h>
 #include "glk.h"
+#include "input.h"
 
 /* Version of the Glk specification implemented by this library */
 #define MAJOR_VERSION 0
@@ -108,6 +109,10 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_DrawImage:
 			return val == wintype_Graphics || val == wintype_TextBuffer;
 
+		/* Which keycodes can be used as line terminators */
+		case gestalt_LineTerminatorKey:
+			return is_valid_line_terminator(val)? 1 : 0;
+
 		/* Capabilities that are simply supported */
 		case gestalt_Unicode:
 		case gestalt_Timer:
@@ -117,6 +122,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_DateTime:
 		case gestalt_UnicodeNorm:
 		case gestalt_LineInputEcho:
+		case gestalt_LineTerminators:
 			return 1;
 
 		/* Capabilities supported if compiled with GStreamer */
@@ -131,8 +137,8 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		case gestalt_LineTerminatorKey:
-		case gestalt_LineTerminators:
+		/* none! */
+
 		/* Selector not supported */	
 		default:
 			return 0;

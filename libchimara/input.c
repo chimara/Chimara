@@ -3,6 +3,7 @@
 #include "input.h"
 #include "pager.h"
 #include "chimara-glk-private.h"
+#include "garglk.h"
 
 extern GPrivate *glk_data_key;
 
@@ -244,6 +245,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
 	win->echo_current_line_input = win->echo_line_input;
+	win->current_extra_line_terminators = g_slist_copy(win->extra_line_terminators);
 
 	gchar *inserttext = (initlen > 0)? g_strndup(buf, initlen) : g_strdup("");
 	switch(win->type)
@@ -312,11 +314,10 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	if(glk_data->register_arr)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
 
-
-
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
 	win->line_input_buffer_unicode = buf;
 	win->line_input_buffer_max_len = maxlen;
+	win->current_extra_line_terminators = g_slist_copy(win->extra_line_terminators);
 
 	gchar *utf8;
 	if(initlen > 0) {
@@ -1022,6 +1023,79 @@ glk_set_echo_line_event(winid_t win, glui32 val)
 	win->echo_line_input = val? TRUE : FALSE;
 }
 
+/* Internal function to convert from a Glk keycode to a GDK keyval. */
+static unsigned
+keycode_to_gdk_keyval(glui32 keycode)
+{
+	switch (keycode)
+	{
+		case keycode_Left:
+			return GDK_Left;
+		case keycode_Right:
+			return GDK_Right;
+		case keycode_Up:
+			return GDK_Up;
+		case keycode_Down:
+			return GDK_Down;
+		case keycode_Return:
+			return GDK_Return;
+		case keycode_Delete:
+			return GDK_Delete;
+		case keycode_Escape:
+			return GDK_Escape;
+		case keycode_Tab:
+			return GDK_Tab;
+		case keycode_PageUp:
+			return GDK_Page_Up;
+		case keycode_PageDown:
+			return GDK_Page_Down;
+		case keycode_Home:
+			return GDK_Home;
+		case keycode_End:
+			return GDK_End;
+		case keycode_Func1:
+			return GDK_F1;
+		case keycode_Func2:
+			return GDK_F2;
+		case keycode_Func3:
+			return GDK_F3;
+		case keycode_Func4:
+			return GDK_F4;
+		case keycode_Func5:
+			return GDK_F5;
+		case keycode_Func6:
+			return GDK_F6;
+		case keycode_Func7:
+			return GDK_F7;
+		case keycode_Func8:
+			return GDK_F8;
+		case keycode_Func9:
+			return GDK_F9;
+		case keycode_Func10:
+			return GDK_F10;
+		case keycode_Func11:
+			return GDK_F11;
+		case keycode_Func12:
+			return GDK_F12;
+		case keycode_Erase:
+			return GDK_BackSpace;
+	}
+	unsigned keyval = gdk_unicode_to_keyval(keycode);
+	if(keyval < 0x01000000) /* magic number meaning illegal unicode point */
+		return keyval;
+	return 0;
+}
+
+/* Internal function to decide whether @keycode is a valid line terminator. */
+gboolean
+is_valid_line_terminator(glui32 keycode)
+{
+	switch(keycode) {
+		default:
+			return FALSE;
+	}
+}
+
 /**
  * glk_set_terminators_line_event:
  * @win: The window for which to set the line input terminator keys.
@@ -1055,4 +1129,20 @@ void
 glk_set_terminators_line_event(winid_t win, glui32 *keycodes, glui32 count)
 {
 	VALID_WINDOW(win, return);
+
+	g_slist_free(win->extra_line_terminators);
+	win->extra_line_terminators = NULL;
+
+	if(keycodes == NULL || count == 0)
+		return;
+
+	int i;
+	for(i = 0; i < count; i++)
+	{
+		unsigned key = keycode_to_gdk_keyval(keycodes[i]);
+		if(is_valid_line_terminator(keycodes[i]))
+			win->extra_line_terminators = g_slist_prepend(win->extra_line_terminators, GUINT_TO_POINTER(key));
+		else
+		   WARNING_S("Ignoring invalid line terminator", gdk_keyval_name(key));
+	}
 }
