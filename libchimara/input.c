@@ -317,6 +317,7 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
 	win->line_input_buffer_unicode = buf;
 	win->line_input_buffer_max_len = maxlen;
+	win->echo_current_line_input = win->echo_line_input;
 	win->current_extra_line_terminators = g_slist_copy(win->extra_line_terminators);
 
 	gchar *utf8;
