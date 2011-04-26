@@ -469,8 +469,11 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	switch(win->type)
 	{
 		case wintype_TextBuffer:
+		{
 			/* All text up to the input position is now regarded as being read by the user */
 			pager_update(win);
+
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 
 			/* History up/down */
 			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
@@ -486,7 +489,6 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 					&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
 					return TRUE;
 
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 				GtkTextIter start, end;
 				/* Erase any text that was already typed */
 				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
@@ -522,7 +524,6 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 			/* Move to beginning/end of input field */
 			else if(event->keyval == GDK_Home) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 				GtkTextIter input_iter;
 				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
 				gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
@@ -530,22 +531,34 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				return TRUE;
 			}
 			else if(event->keyval == GDK_End) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 				GtkTextIter end_iter;
 				gtk_text_buffer_get_end_iter(buffer, &end_iter);
 				gtk_text_buffer_place_cursor(buffer, &end_iter);
 				return TRUE;
 			}
 
-			/* Handle the enter key, which could occur in the middle of the sentence. */
-			else if(event->keyval == GDK_Return || event->keyval == GDK_KP_Enter) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-				GtkTextIter end_iter;
-				gtk_text_buffer_get_end_iter(buffer, &end_iter);
-				gtk_text_buffer_place_cursor(buffer, &end_iter);
-				return FALSE; 
-			}
+			/* Handle the line terminators */
+			else if(event->keyval == GDK_Return || event->keyval == GDK_KP_Enter
+			   || g_slist_find(win->current_extra_line_terminators, GUINT_TO_POINTER(event->keyval)))
+			{
+				/* Remove signal handlers */
+				g_signal_handler_block(buffer, win->insert_text_handler);
+				g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 
+				/* Insert a newline (even if line input was terminated with a different key */
+				GtkTextIter end;
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_insert(buffer, &end, "\n", 1);
+
+				/* Make the window uneditable again and retrieve the text that was input */
+				gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
+
+				int chars_written = finish_text_buffer_line_input(win, TRUE);
+				ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+				event_throw(glk, evtype_LineInput, win, chars_written, 0);
+				return TRUE;
+			}
+		}
 			return FALSE;
 
 		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
@@ -723,10 +736,7 @@ finish_text_grid_line_input(winid_t win, gboolean emit_signal)
 }
 
 /* Internal function: Callback for signal insert-text on a text buffer window.
-Runs after the default handler has already inserted the text.
-FIXME: This function assumes that newline was the last character typed into the
-window. That assumption is wrong if, for example, text containing a newline was
-pasted into the window. */
+Runs after the default handler has already inserted the text. */
 void
 after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win)
 {
@@ -738,19 +748,6 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 		g_free(win->history->data);
 		win->history = g_list_delete_link(win->history, win->history);
 		win->history_pos = NULL;
-	}
-	if( strchr(text, '\n') != NULL )
-	{
-		/* Remove signal handlers */
-		g_signal_handler_block(window_buffer, win->insert_text_handler);
-		g_signal_handler_block(win->widget, win->line_input_keypress_handler);
-
-		/* Make the window uneditable again and retrieve the text that was input */
-        gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-
-        int chars_written = finish_text_buffer_line_input(win, TRUE);
-        ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-		event_throw(glk, evtype_LineInput, win, chars_written, 0);
 	}
 
 	/* Apply the 'input' style to the text that was entered */
@@ -1092,9 +1089,22 @@ gboolean
 is_valid_line_terminator(glui32 keycode)
 {
 	switch(keycode) {
-		default:
-			return FALSE;
+		case keycode_Escape:
+		case keycode_Func1:
+		case keycode_Func2:
+		case keycode_Func3:
+		case keycode_Func4:
+		case keycode_Func5:
+		case keycode_Func6:
+		case keycode_Func7:
+		case keycode_Func8:
+		case keycode_Func9:
+		case keycode_Func10:
+		case keycode_Func11:
+		case keycode_Func12:
+			return TRUE;
 	}
+	return FALSE;
 }
 
 /**
