@@ -549,6 +549,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				GtkTextIter end;
 				gtk_text_buffer_get_end_iter(buffer, &end);
 				gtk_text_buffer_insert(buffer, &end, "\n", 1);
+				gtk_text_buffer_place_cursor(buffer, &end);
 
 				/* Make the window uneditable again and retrieve the text that was input */
 				gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
