@@ -64,6 +64,8 @@ struct glk_window_struct
 	gboolean mouse_input_requested;
 	GList *history;
 	GList *history_pos;
+	GSList *extra_line_terminators;
+	GSList *current_extra_line_terminators;
 	/* Line input echoing (text buffers only) */
 	gboolean echo_line_input;
 	gboolean echo_current_line_input;

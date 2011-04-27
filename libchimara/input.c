@@ -3,6 +3,7 @@
 #include "input.h"
 #include "pager.h"
 #include "chimara-glk-private.h"
+#include "garglk.h"
 
 extern GPrivate *glk_data_key;
 
@@ -244,6 +245,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
 	win->echo_current_line_input = win->echo_line_input;
+	win->current_extra_line_terminators = g_slist_copy(win->extra_line_terminators);
 
 	gchar *inserttext = (initlen > 0)? g_strndup(buf, initlen) : g_strdup("");
 	switch(win->type)
@@ -312,11 +314,11 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	if(glk_data->register_arr)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
 
-
-
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
 	win->line_input_buffer_unicode = buf;
 	win->line_input_buffer_max_len = maxlen;
+	win->echo_current_line_input = win->echo_line_input;
+	win->current_extra_line_terminators = g_slist_copy(win->extra_line_terminators);
 
 	gchar *utf8;
 	if(initlen > 0) {
@@ -467,8 +469,11 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	switch(win->type)
 	{
 		case wintype_TextBuffer:
+		{
 			/* All text up to the input position is now regarded as being read by the user */
 			pager_update(win);
+
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 
 			/* History up/down */
 			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
@@ -484,7 +489,6 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 					&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
 					return TRUE;
 
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 				GtkTextIter start, end;
 				/* Erase any text that was already typed */
 				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
@@ -520,7 +524,6 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 			/* Move to beginning/end of input field */
 			else if(event->keyval == GDK_Home) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 				GtkTextIter input_iter;
 				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
 				gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
@@ -528,22 +531,35 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				return TRUE;
 			}
 			else if(event->keyval == GDK_End) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 				GtkTextIter end_iter;
 				gtk_text_buffer_get_end_iter(buffer, &end_iter);
 				gtk_text_buffer_place_cursor(buffer, &end_iter);
 				return TRUE;
 			}
 
-			/* Handle the enter key, which could occur in the middle of the sentence. */
-			else if(event->keyval == GDK_Return || event->keyval == GDK_KP_Enter) {
-				GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-				GtkTextIter end_iter;
-				gtk_text_buffer_get_end_iter(buffer, &end_iter);
-				gtk_text_buffer_place_cursor(buffer, &end_iter);
-				return FALSE; 
-			}
+			/* Handle the line terminators */
+			else if(event->keyval == GDK_Return || event->keyval == GDK_KP_Enter
+			   || g_slist_find(win->current_extra_line_terminators, GUINT_TO_POINTER(event->keyval)))
+			{
+				/* Remove signal handlers */
+				g_signal_handler_block(buffer, win->insert_text_handler);
+				g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 
+				/* Insert a newline (even if line input was terminated with a different key */
+				GtkTextIter end;
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_insert(buffer, &end, "\n", 1);
+				gtk_text_buffer_place_cursor(buffer, &end);
+
+				/* Make the window uneditable again and retrieve the text that was input */
+				gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
+
+				int chars_written = finish_text_buffer_line_input(win, TRUE);
+				ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
+				event_throw(glk, evtype_LineInput, win, chars_written, 0);
+				return TRUE;
+			}
+		}
 			return FALSE;
 
 		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
@@ -721,10 +737,7 @@ finish_text_grid_line_input(winid_t win, gboolean emit_signal)
 }
 
 /* Internal function: Callback for signal insert-text on a text buffer window.
-Runs after the default handler has already inserted the text.
-FIXME: This function assumes that newline was the last character typed into the
-window. That assumption is wrong if, for example, text containing a newline was
-pasted into the window. */
+Runs after the default handler has already inserted the text. */
 void
 after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win)
 {
@@ -736,19 +749,6 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 		g_free(win->history->data);
 		win->history = g_list_delete_link(win->history, win->history);
 		win->history_pos = NULL;
-	}
-	if( strchr(text, '\n') != NULL )
-	{
-		/* Remove signal handlers */
-		g_signal_handler_block(window_buffer, win->insert_text_handler);
-		g_signal_handler_block(win->widget, win->line_input_keypress_handler);
-
-		/* Make the window uneditable again and retrieve the text that was input */
-        gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-
-        int chars_written = finish_text_buffer_line_input(win, TRUE);
-        ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-		event_throw(glk, evtype_LineInput, win, chars_written, 0);
 	}
 
 	/* Apply the 'input' style to the text that was entered */
@@ -1022,6 +1022,92 @@ glk_set_echo_line_event(winid_t win, glui32 val)
 	win->echo_line_input = val? TRUE : FALSE;
 }
 
+/* Internal function to convert from a Glk keycode to a GDK keyval. */
+static unsigned
+keycode_to_gdk_keyval(glui32 keycode)
+{
+	switch (keycode)
+	{
+		case keycode_Left:
+			return GDK_Left;
+		case keycode_Right:
+			return GDK_Right;
+		case keycode_Up:
+			return GDK_Up;
+		case keycode_Down:
+			return GDK_Down;
+		case keycode_Return:
+			return GDK_Return;
+		case keycode_Delete:
+			return GDK_Delete;
+		case keycode_Escape:
+			return GDK_Escape;
+		case keycode_Tab:
+			return GDK_Tab;
+		case keycode_PageUp:
+			return GDK_Page_Up;
+		case keycode_PageDown:
+			return GDK_Page_Down;
+		case keycode_Home:
+			return GDK_Home;
+		case keycode_End:
+			return GDK_End;
+		case keycode_Func1:
+			return GDK_F1;
+		case keycode_Func2:
+			return GDK_F2;
+		case keycode_Func3:
+			return GDK_F3;
+		case keycode_Func4:
+			return GDK_F4;
+		case keycode_Func5:
+			return GDK_F5;
+		case keycode_Func6:
+			return GDK_F6;
+		case keycode_Func7:
+			return GDK_F7;
+		case keycode_Func8:
+			return GDK_F8;
+		case keycode_Func9:
+			return GDK_F9;
+		case keycode_Func10:
+			return GDK_F10;
+		case keycode_Func11:
+			return GDK_F11;
+		case keycode_Func12:
+			return GDK_F12;
+		case keycode_Erase:
+			return GDK_BackSpace;
+	}
+	unsigned keyval = gdk_unicode_to_keyval(keycode);
+	if(keyval < 0x01000000) /* magic number meaning illegal unicode point */
+		return keyval;
+	return 0;
+}
+
+/* Internal function to decide whether @keycode is a valid line terminator. */
+gboolean
+is_valid_line_terminator(glui32 keycode)
+{
+	switch(keycode) {
+		case keycode_Escape:
+		case keycode_Func1:
+		case keycode_Func2:
+		case keycode_Func3:
+		case keycode_Func4:
+		case keycode_Func5:
+		case keycode_Func6:
+		case keycode_Func7:
+		case keycode_Func8:
+		case keycode_Func9:
+		case keycode_Func10:
+		case keycode_Func11:
+		case keycode_Func12:
+			return TRUE;
+	}
+	return FALSE;
+}
+
 /**
  * glk_set_terminators_line_event:
  * @win: The window for which to set the line input terminator keys.
@@ -1055,4 +1141,20 @@ void
 glk_set_terminators_line_event(winid_t win, glui32 *keycodes, glui32 count)
 {
 	VALID_WINDOW(win, return);
+
+	g_slist_free(win->extra_line_terminators);
+	win->extra_line_terminators = NULL;
+
+	if(keycodes == NULL || count == 0)
+		return;
+
+	int i;
+	for(i = 0; i < count; i++)
+	{
+		unsigned key = keycode_to_gdk_keyval(keycodes[i]);
+		if(is_valid_line_terminator(keycodes[i]))
+			win->extra_line_terminators = g_slist_prepend(win->extra_line_terminators, GUINT_TO_POINTER(key));
+		else
+		   WARNING_S("Ignoring invalid line terminator", gdk_keyval_name(key));
+	}
 }
