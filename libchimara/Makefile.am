@@ -65,9 +65,9 @@ libchimara_include_HEADERS = \
 
 BUILT_SOURCES = chimara-marshallers.c chimara-marshallers.h
 chimara-marshallers.c: chimara-marshallers.txt
-	glib-genmarshal --body --prefix=_chimara_marshal $< > $@
+	$(AM_V_GEN)glib-genmarshal --body --prefix=_chimara_marshal $< > $@
 
 chimara-marshallers.h: chimara-marshallers.txt
-	glib-genmarshal --header --prefix=_chimara_marshal $< > $@
+	$(AM_V_GEN)glib-genmarshal --header --prefix=_chimara_marshal $< > $@
 
 EXTRA_DIST = doc.c glkstart.c chimara-marshallers.txt

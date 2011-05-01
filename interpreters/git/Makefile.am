@@ -3,10 +3,10 @@ MAJOR = 1
 MINOR = 2
 PATCH = 8
 version.h: Makefile.am
-	echo "// Automatically generated file -- do not edit!" > version.h
-	echo "#define GIT_MAJOR" $(MAJOR) >> version.h
-	echo "#define GIT_MINOR" $(MINOR) >> version.h
-	echo "#define GIT_PATCH" $(PATCH) >> version.h
+	$(AM_V_GEN)echo "// Automatically generated file -- do not edit!" > version.h
+	$(AM_V_at)echo "#define GIT_MAJOR" $(MAJOR) >> version.h
+	$(AM_V_at)echo "#define GIT_MINOR" $(MINOR) >> version.h
+	$(AM_V_at)echo "#define GIT_PATCH" $(PATCH) >> version.h
 
 pkglib_LTLIBRARIES = git.la
 BUILT_SOURCES = version.h

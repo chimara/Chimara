@@ -32,22 +32,22 @@ BUILT_SOURCES = copying.c dbg_help.h startunix.c dbg_help.texi options.texi
 CLEANFILES = $(BUILT_SOURCES) nitfol.6 
 
 dbg_help.h: inform.y y2help.pl
-	$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y
+	$(AM_V_GEN)$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y
 
 dbg_help.texi: inform.y y2help.pl
-	$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y
+	$(AM_V_GEN)$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y
 
 copying.c: COPYING copying.awk
-	$(AWK) -f $(srcdir)/copying.awk <$(srcdir)/COPYING >copying.c
+	$(AM_V_GEN)$(AWK) -f $(srcdir)/copying.awk <$(srcdir)/COPYING >copying.c
 
 # nitfol.6: nitfol.opt opt2glkc.pl
-# 	$(PERL) $(srcdir)/opt2glkc.pl -man $(srcdir)/nitfol.opt
+# 	$(AM_V_GEN)$(PERL) $(srcdir)/opt2glkc.pl -man $(srcdir)/nitfol.opt
 
 options.texi: nitfol.opt opt2glkc.pl
-	$(PERL) $(srcdir)/opt2glkc.pl -info $(srcdir)/nitfol.opt
+	$(AM_V_GEN)$(PERL) $(srcdir)/opt2glkc.pl -info $(srcdir)/nitfol.opt
 
 startunix.c: nitfol.opt opt2glkc.pl
-	$(PERL) $(srcdir)/opt2glkc.pl -unix $(srcdir)/nitfol.opt
+	$(AM_V_GEN)$(PERL) $(srcdir)/opt2glkc.pl -unix $(srcdir)/nitfol.opt
 
 EXTRA_DIST = nitfol.opt crashme.inf test.inf 
 
