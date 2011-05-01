@@ -91,6 +91,10 @@ glk_cancel_char_event(winid_t win)
 static void
 text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
 {
+	/* All outstanding printing _must_ be finished before putting an input entry
+	 into the buffer */
+	flush_window_buffer(win);
+
 	gdk_threads_enter();
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
