@@ -815,6 +815,11 @@ on_input_entry_key_press_event(GtkEntry *input_entry, GdkEventKey *event, winid_
 		g_signal_handler_unblock(input_entry, win->line_input_entry_changed);
 		return TRUE;
 	}
+	else if(g_slist_find(win->current_extra_line_terminators, GUINT_TO_POINTER(event->keyval)))
+	{
+		/* If this key was a line terminator, pretend we pressed enter */
+		on_input_entry_activate(input_entry, win);
+	}
 	return FALSE;
 }
 
