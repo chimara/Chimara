@@ -95,15 +95,25 @@ glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len, glui32 numchars)
 {
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
+
+	long outchars;
+
+	/* Lowercase the string */
+	char *utf8 = convert_ucs4_to_utf8(buf, numchars);
+	if(!utf8)
+		return numchars;
+	char *lowered = g_utf8_strdown(utf8, -1);
+	g_free(utf8);
+	gunichar *outbuf = convert_utf8_to_ucs4(lowered, &outchars);
+	g_free(lowered);
+	if(!outbuf)
+		return numchars;
 	
-	/* GLib has a function that converts _one_ UCS-4 character to _one_
-	lowercase UCS-4 character; so apparently we don't have to worry about the
-	string length changing... */
-	glui32 *ptr;
-	for(ptr = buf; ptr < buf + numchars; ptr++)
-		*ptr = g_unichar_tolower(*ptr);
+	/* Copy the output buffer to the original buffer */
+	memcpy(buf, outbuf, MIN(outchars, len) * 4);
+	g_free(outbuf);
 	
-	return numchars;
+	return outchars;
 }
 
 /**
@@ -123,14 +133,24 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
 	
-	/* GLib has a function that converts _one_ UCS-4 character to _one_
-	uppercase UCS-4 character; so apparently we don't have to worry about the
-	string length changing... */
-	glui32 *ptr;
-	for(ptr = buf; ptr < buf + numchars; ptr++)
-		*ptr = g_unichar_toupper(*ptr);
+	long outchars;
 	
-	return numchars;
+	/* Uppercase the string */
+	char *utf8 = convert_ucs4_to_utf8(buf, numchars);
+	if(!utf8)
+		return numchars;
+	char *uppered = g_utf8_strup(utf8, -1);
+	g_free(utf8);
+	gunichar *outbuf = convert_utf8_to_ucs4(uppered, &outchars);
+	g_free(uppered);
+	if(!outbuf)
+		return numchars;
+
+	/* Copy the output buffer to the original buffer */
+	memcpy(buf, outbuf, MIN(outchars, len) * 4);
+	g_free(outbuf);
+
+	return outchars;
 }
 
 /**
@@ -162,9 +182,14 @@ glk_buffer_to_title_case_uni(glui32 *buf, glui32 len, glui32 numchars, glui32 lo
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
 	
-	/* GLib has a function that converts _one_ UCS-4 character to _one_
-	titlecase UCS-4 character; so apparently we don't have to worry about the
-	string length changing... */
+	/* FIXME: This is wrong. g_unichar_totitle() which returns the titlecase of
+	 one Unicode code point, but that only returns the correct result if the
+	 titlecase character is also one code point.
+	 For example, the one-character 'ffi' ligature should be title-cased to the
+	 three-character string 'Ffi'. This code leaves it as the 'ffi' ligature,
+	 which is incorrect.
+	 However, nothing much can be done about it unless GLib gets a
+	 g_utf8_strtitle() function, or we roll our own. */
 	*buf = g_unichar_totitle(*buf);
 	/* Call lowercase on the rest of the string */
 	if(lowerrest)
