@@ -239,6 +239,9 @@ glk_select_poll(event_t *event)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	event->type = evtype_None;
+	event->win = NULL;
+	event->val1 = 0;
+	event->val2 = 0;
 	
 	g_mutex_lock(glk_data->event_lock);
 	
