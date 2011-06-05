@@ -194,7 +194,9 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
 	/* Apply the correct style to the input prompt */
 	GtkTextIter input_iter;
     gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
+    gtk_text_buffer_apply_tag_by_name(buffer, "default", &input_iter, &end_iter);
     gtk_text_buffer_apply_tag_by_name(buffer, "input", &input_iter, &end_iter);
+    gtk_text_buffer_apply_tag_by_name(buffer, "glk-input", &input_iter, &end_iter);
 
     gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
 
@@ -521,7 +523,8 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				gtk_text_buffer_get_end_iter(buffer, &end);
 
 				g_signal_handler_block(buffer, win->insert_text_handler);
-				gtk_text_buffer_insert_with_tags_by_name(buffer, &end, win->history_pos->data, -1, "default", "input", NULL);
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &end, win->history_pos->data, -1, "default", "input", "glk-input", NULL);
+
 				g_signal_handler_unblock(buffer, win->insert_text_handler);
 				return TRUE;
 			}
