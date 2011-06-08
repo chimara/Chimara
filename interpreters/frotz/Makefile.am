@@ -16,3 +16,5 @@ frotz_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 frotzdocdir = $(datadir)/doc/$(PACKAGE)/frotz
 dist_frotzdoc_DATA = AUTHORS COPYING README TODO
+
+-include $(top_srcdir)/git.mk

@@ -1,8 +1,0 @@
-.deps
-.libs
-Makefile
-Makefile.in
-frotz.la
-*.o
-*.lo
-

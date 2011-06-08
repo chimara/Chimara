@@ -71,3 +71,5 @@ chimara-marshallers.h: chimara-marshallers.txt
 	$(AM_V_GEN)glib-genmarshal --header --prefix=_chimara_marshal $< > $@
 
 EXTRA_DIST = doc.c glkstart.c chimara-marshallers.txt
+
+-include $(top_srcdir)/git.mk

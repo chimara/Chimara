@@ -44,3 +44,5 @@ CLEANFILES = version.h test/*.tmp
 # Mac OS X (PowerPC) settings.
 #CC = gcc2 -Wall -O3 -no-cpp-precomp
 #OPTIONS = -DUSE_DIRECT_THREADING -DUSE_BIG_ENDIAN_UNALIGNED -DUSE_MMAP -DUSE_INLINE
+
+-include $(top_srcdir)/git.mk

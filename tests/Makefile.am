@@ -56,3 +56,5 @@ test_userstyle_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 soundtest_la_SOURCES = soundtest.c
 soundtest_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 
+
+-include $(top_srcdir)/git.mk

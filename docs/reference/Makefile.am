@@ -141,3 +141,5 @@ dist_noinst_SCRIPTS = build-selector-table.pl
 selectors.xml: $(srcdir)/../../libchimara/gi_dispa.c
 	$(PERL) build-selector-table.pl $< > $@
 
+
+-include $(top_srcdir)/git.mk

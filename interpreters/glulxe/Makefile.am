@@ -16,3 +16,5 @@ dist_pkglibexec_SCRIPTS = profile-analyze.py
 
 glulxedocdir = $(datadir)/doc/$(PACKAGE)/glulxe
 dist_glulxedoc_DATA = README
+
+-include $(top_srcdir)/git.mk

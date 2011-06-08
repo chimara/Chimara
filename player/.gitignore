@@ -1,8 +1,0 @@
-.deps
-.libs
-Makefile
-Makefile.in
-*.o
-chimara
-chimara.menus
-*.gschema.valid

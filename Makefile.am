@@ -22,6 +22,11 @@ EXTRA_DIST = chimara.pc.in chimara-plugin.pc.in chimara.spec.in
 
 DISTCLEANFILES = chimara.pc chimara-plugin.pc chimara.spec
 
+MAINTAINERCLEANFILES = ABOUT-NLS INSTALL aclocal.m4 compile config.guess \
+	config.h.in config.rpath config.sub depcomp gtk-doc.make install-sh \
+	intltool-extract.in 	intltool-merge.in intltool-update.in ltmain.sh missing \
+	ylwrap m4 autom4te.cache
+
 ACLOCAL_AMFLAGS = -I m4
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
@@ -37,3 +42,5 @@ rpm:
 	"To build an RPM package, you must run configure with --enable-rpm."; \
 	exit 1
 endif
+
+-include $(top_srcdir)/git.mk

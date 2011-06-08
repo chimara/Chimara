@@ -1,9 +1,0 @@
-.deps
-.libs
-Makefile
-Makefile.in
-chimara-marshallers.[ch]
-libchimara.la
-*.o
-*.lo
-

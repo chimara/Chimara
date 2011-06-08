@@ -30,3 +30,4 @@ gsettings_SCHEMAS = org.chimara-if.gschema.xml
 endif
 
 EXTRA_DIST = $(gsettings_SCHEMAS)
+-include $(top_srcdir)/git.mk

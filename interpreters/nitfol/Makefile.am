@@ -29,7 +29,9 @@ nitfol_TEXINFOS = dbg_help.texi options.texi
 # man_MANS = nitfol.6
 
 BUILT_SOURCES = copying.c dbg_help.h startunix.c dbg_help.texi options.texi
-CLEANFILES = $(BUILT_SOURCES) nitfol.6 
+CLEANFILES = $(BUILT_SOURCES) nitfol.6
+DISTCLEANFILES = inform.c nitfol.info
+MAINTAINERCLEANFILES = texinfo.tex
 
 dbg_help.h: inform.y y2help.pl
 	$(AM_V_GEN)$(PERL) $(srcdir)/y2help.pl $(srcdir)/inform.y
@@ -53,3 +55,5 @@ EXTRA_DIST = nitfol.opt crashme.inf test.inf
 
 nitfoldocdir = $(datadir)/doc/$(PACKAGE)/nitfol
 dist_nitfoldoc_DATA = ChangeLog COPYING INSTALL README
+
+-include $(top_srcdir)/git.mk
