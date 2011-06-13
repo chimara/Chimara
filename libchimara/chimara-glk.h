@@ -130,8 +130,7 @@ void chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text);
 gboolean chimara_glk_is_char_input_pending(ChimaraGlk *glk);
 gboolean chimara_glk_is_line_input_pending(ChimaraGlk *glk);
 GtkTextTag *chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name);
-const gchar **chimara_glk_get_tag_names(ChimaraGlk *glk);
-gint chimara_glk_get_num_tag_names(ChimaraGlk *glk);
+const gchar **chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags);
 void chimara_glk_update_style(ChimaraGlk *glk);
 void chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data);
 

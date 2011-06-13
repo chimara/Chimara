@@ -148,8 +148,8 @@ preferences_create(ChimaraGlk *glk)
 	gtk_tree_store_set(style_list, &grid, 0, "Text grid", -1);
 
 	int i;
-    gint num_tags = chimara_glk_get_num_tag_names(glk);
-	const gchar **tag_names = chimara_glk_get_tag_names(glk);
+	unsigned int num_tags;
+	const gchar **tag_names = chimara_glk_get_tag_names(glk, &num_tags);
 	for(i=0; i<num_tags; i++) {
 		gtk_tree_store_append(style_list, &buffer_child, &buffer);
 		gtk_tree_store_append(style_list, &grid_child, &grid);

@@ -1450,6 +1450,9 @@ chimara_glk_is_line_input_pending(ChimaraGlk *glk)
  *	<listitem><para>hyperlink</para></listitem>
  *	<listitem><para>pager</para></listitem>
  * </itemizedlist>
+ *
+ * Returns: (transfer none): The #GtkTextTag corresponding to @name in the
+ * styles of @window.
  */
 GtkTextTag *
 chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name)
@@ -1472,25 +1475,21 @@ chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *n
 /**
  * chimara_glk_get_tag_names:
  * @glk: a #ChimaraGlk widget
+ * @num_tags: Return location for the number of tag names retrieved.
  *
  * Retrieves the possible tag names to use in chimara_glk_get_tag().
+ *
+ * Returns: (transfer none) (array length=num_tags) (element-type utf8):
+ * Array of strings containing the tag names. This array is owned by Chimara,
+ * do not free it.
  */
 const gchar **
-chimara_glk_get_tag_names(ChimaraGlk *glk)
+chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags)
 {
-	return style_get_tag_names();
-}
+	g_return_val_if_fail(num_tags != NULL, NULL);
 
-/**
- * chimara_glk_get_num_tag_names:
- * @glk: a #ChimaraGlk widget
- *
- * Retrieves the number of style tags returned by chimara_glk_get_tag_names().
- */
-gint
-chimara_glk_get_num_tag_names(ChimaraGlk *glk)
-{
-	return CHIMARA_NUM_STYLES;
+	*num_tags = CHIMARA_NUM_STYLES;
+	return style_get_tag_names();
 }
 
 /**
