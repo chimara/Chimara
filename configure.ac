@@ -45,12 +45,8 @@ AC_PROG_YACC                 # Building nitfol requires yacc
 ### DECLARE PROGRAMS ##########################################################
 
 AC_PROG_INSTALL              # Install
-m4_defun([_LT_AC_LANG_CXX_CONFIG], [:]) # Disable unnecessary Libtool checks
-m4_defun([_LT_AC_LANG_F77_CONFIG], [:]) # to save time (1.5 only)
-LT_INIT                      # Libtool 2.2.6 and up
-#LT_INIT([dlopen])           # Should call it this way, but
-#LT_PREREQ([2.2.6])          # ...goddamn Debian still has 1.5
-AC_PROG_LIBTOOL              # Old way of declaring Libtool
+LT_INIT([dlopen])                      # Libtool 2.2.6 and up
+LT_PREREQ([2.2.6])
 AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
 IT_PROG_INTLTOOL([0.40.0])   # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
