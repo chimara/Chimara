@@ -88,7 +88,11 @@ Chimara_1_0_gir_INCLUDES = GObject-2.0 GLib-2.0 Gtk-2.0
 Chimara_1_0_gir_CFLAGS = @CHIMARA_CFLAGS@ -I$(top_srcdir)
 Chimara_1_0_gir_LIBS = libchimara.la
 Chimara_1_0_gir_FILES = $(introspection_sources)
-Chimara_1_0_gir_SCANNERFLAGS = --warn-all
+Chimara_1_0_gir_SCANNERFLAGS = \
+	--warn-all \
+	--c-include='libchimara/chimara-glk.h' \
+	--c-include='libchimara/chimara-if.h'
+Chimara_1_0_gir_EXPORT_PACKAGES = chimara
 INTROSPECTION_GIRS += Chimara-1.0.gir
 
 girdir = $(datadir)/gir-1.0
@@ -99,5 +103,10 @@ typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
 endif
+
+# Currently, install the Vala VAPI file statically - generation is broken?
+
+vapidir = $(datadir)/vala/vapi
+dist_vapi_DATA = chimara.vapi
 
 -include $(top_srcdir)/git.mk
