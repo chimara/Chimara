@@ -2,16 +2,17 @@
 
 ### INITIALIZATION ############################################################
 
-# Initialize Autoconf 
+AC_PREREQ([2.62]) # Oldest version of Autoconf that works with introspection
+# Initialize Autoconf
 # Args: (human-readable package name, package version, bug report address, 
 # tarballname)
 AC_INIT([chimara], [0.9])
 # Sanity check to make sure we are running Autoconf from the right directory
 AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
 # Put m4 macros in their own directory
-AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_MACRO_DIR([m4])
 # Initialize Automake
-AM_INIT_AUTOMAKE([-Wall])
+AM_INIT_AUTOMAKE([-Wall -Wno-portability])
 # Configure with --enable-silent-rules to cut down on clutter
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
@@ -45,7 +46,7 @@ AC_PROG_YACC                 # Building nitfol requires yacc
 ### DECLARE PROGRAMS ##########################################################
 
 AC_PROG_INSTALL              # Install
-LT_INIT([dlopen])                      # Libtool 2.2.6 and up
+LT_INIT([dlopen])            # Libtool 2.2.6 and up
 LT_PREREQ([2.2.6])
 AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
 IT_PROG_INTLTOOL([0.40.0])   # Intltool
@@ -71,6 +72,10 @@ AM_GNU_GETTEXT_VERSION([0.17])
 GETTEXT_PACKAGE=chimara
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
+
+### INTROSPECTION ##############################################################
+
+GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
 ### ILIAD #####################################################################
 AC_ARG_ENABLE([iliad],

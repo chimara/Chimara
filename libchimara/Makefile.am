@@ -71,5 +71,33 @@ chimara-marshallers.h: chimara-marshallers.txt
 	$(AM_V_GEN)glib-genmarshal --header --prefix=_chimara_marshal $< > $@
 
 EXTRA_DIST = doc.c glkstart.c chimara-marshallers.txt
+CLEANFILES =
+
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+
+if HAVE_INTROSPECTION
+introspection_sources = \
+	chimara-glk.c chimara-glk.h \
+	chimara-if.c chimara-if.h
+
+Chimara-1.0.gir: libchimara.la
+Chimara_1_0_gir_INCLUDES = GObject-2.0 GLib-2.0 Gtk-2.0
+Chimara_1_0_gir_CFLAGS = @CHIMARA_CFLAGS@ -I$(top_srcdir)
+Chimara_1_0_gir_LIBS = libchimara.la
+Chimara_1_0_gir_FILES = $(introspection_sources)
+Chimara_1_0_gir_SCANNERFLAGS = --warn-all
+INTROSPECTION_GIRS += Chimara-1.0.gir
+
+girdir = $(datadir)/gir-1.0
+gir_DATA = $(INTROSPECTION_GIRS)
+
+typelibdir = $(libdir)/girepository-1.0
+typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+
+CLEANFILES += $(gir_DATA) $(typelib_DATA)
+endif
 
 -include $(top_srcdir)/git.mk
