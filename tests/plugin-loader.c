@@ -100,7 +100,7 @@ main(int argc, char *argv[])
 	if(argc < 2)
 		g_error("Must provide a plugin\n");
 
-	chimara_glk_set_resource_load_callback(CHIMARA_GLK(glk), (ChimaraResourceLoadFunc)resource_load, NULL);
+	chimara_glk_set_resource_load_callback(CHIMARA_GLK(glk), (ChimaraResourceLoadFunc)resource_load, NULL, NULL);
 	
     if( !chimara_glk_run(CHIMARA_GLK(glk), argv[1], argc - 1, argv + 1, &error) )
    		g_error("Error starting Glk library: %s\n", error->message);

@@ -302,6 +302,9 @@ chimara_glk_finalize(GObject *object)
 	/* Unref input queues (this should destroy them since any Glk thread has stopped by now */
 	g_async_queue_unref(priv->char_input_queue);
 	g_async_queue_unref(priv->line_input_queue);
+	/* Destroy callback data if ownership retained */
+	if(priv->resource_load_callback_destroy_data)
+		priv->resource_load_callback_destroy_data(priv->resource_load_callback_data);
 	
 	/* Free other stuff */
 	g_free(priv->current_dir);
@@ -1519,6 +1522,7 @@ chimara_glk_update_style(ChimaraGlk *glk)
  * @glk: a #ChimaraGlk widget
  * @func: a function to call for loading resources, or %NULL
  * @user_data: user data to pass to @func, or %NULL
+ * @destroy_user_data: a function to call for freeing @user_data, or %NULL
  *
  * Sometimes it is preferable to load image and sound resources from somewhere
  * else than a Blorb file, for example while developing a game. Section 14 of
@@ -1531,12 +1535,27 @@ chimara_glk_update_style(ChimaraGlk *glk)
  * Note that @func is only called if no Blorb resource map has been set; having
  * a resource map in place overrides this function.
  *
+ * If you pass non-%NULL for @destroy_user_data, then @glk takes ownership of
+ * @user_data. When it is not needed anymore, it will be freed by calling
+ * @destroy_user_data on it. If you wish to retain ownership of @user_data, pass
+ * %NULL for @destroy_user_data.
+ *
  * To deactivate the callback, call this function with @func set to %NULL.
  */
 void
-chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data)
+chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data, GDestroyNotify destroy_user_data)
 {
 	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
+	if(priv->resource_load_callback == func
+		&& priv->resource_load_callback_data == user_data
+		&& priv->resource_load_callback_destroy_data == destroy_user_data)
+		return;
+
+	if(priv->resource_load_callback_destroy_data)
+		priv->resource_load_callback_destroy_data(priv->resource_load_callback_data);
+
 	priv->resource_load_callback = func;
 	priv->resource_load_callback_data = user_data;
+	priv->resource_load_callback_destroy_data = destroy_user_data;
 }

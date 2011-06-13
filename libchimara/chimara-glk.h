@@ -132,7 +132,7 @@ gboolean chimara_glk_is_line_input_pending(ChimaraGlk *glk);
 GtkTextTag *chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name);
 const gchar **chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags);
 void chimara_glk_update_style(ChimaraGlk *glk);
-void chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data);
+void chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data, GDestroyNotify destroy_user_data);
 
 G_END_DECLS
 
