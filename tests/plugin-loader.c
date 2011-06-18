@@ -61,7 +61,6 @@ create_window(void)
     g_signal_connect(window, "delete-event", G_CALLBACK(quit), NULL);
 	glk = chimara_glk_new();
 	g_object_ref(glk);
-	g_signal_connect(glk, "stopped", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_container_add(GTK_CONTAINER(window), glk);
 }
 
