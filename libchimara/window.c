@@ -127,6 +127,8 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 	if(retval && rockptr)
 		*rockptr = glk_window_get_rock(retval);
 		
+	if(retval)
+		printf("Returning window of type %d and rock %d\n", retval->type, retval->rock);
 	return retval;
 }
 
@@ -202,8 +204,8 @@ glk_window_get_sibling(winid_t win)
 	if(G_NODE_IS_ROOT(win->window_node))
 		return NULL;
 	if(win->window_node->next)
-		return (winid_t)win->window_node->next;
-	return (winid_t)win->window_node->prev;
+		return (winid_t)win->window_node->next->data;
+	return (winid_t)win->window_node->prev->data;
 }
 
 /**
