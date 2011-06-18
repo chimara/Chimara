@@ -192,6 +192,10 @@ create_window(void)
 	else
 		gtk_widget_hide(toolbar);
 
+	/* Connect the accelerators */
+	GtkAccelGroup *accels = gtk_ui_manager_get_accel_group(uimanager);
+	gtk_window_add_accel_group(GTK_WINDOW(window), accels);
+
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
 	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
 	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
