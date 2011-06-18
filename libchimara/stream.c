@@ -284,6 +284,7 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 	str->file_mode = fmode;
 	str->type = STREAM_TYPE_MEMORY;
 	str->mark = 0;
+	str->endmark = 0;
 	str->unicode = FALSE;
 
 	if(buf && buflen) 
@@ -322,6 +323,7 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 	str->file_mode = fmode;
 	str->type = STREAM_TYPE_MEMORY;
 	str->mark = 0;
+	str->endmark = 0;
 	str->unicode = TRUE;
 
 	if(buf && buflen) 

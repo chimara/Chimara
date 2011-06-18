@@ -42,6 +42,7 @@ struct glk_stream_struct
 	gchar *buffer;
 	glui32 *ubuffer;
 	glui32 mark;
+	glui32 endmark;
 	glui32 buflen;
 	gidispatch_rock_t buffer_rock;
 	/* Specific to file streams */

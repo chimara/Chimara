@@ -310,6 +310,10 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 				str->mark += copycount;
 			}
 
+			/* Move the EOF marker if we wrote past it */
+			if(str->mark > str->endmark)
+				str->endmark = str->mark;
+
 			str->write_count += len;
 			break;
 			
@@ -401,6 +405,10 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				g_free(latin1);
 				str->mark += copycount;
 			}
+
+			/* Move the EOF marker if we wrote past it */
+			if(str->mark > str->endmark)
+				str->endmark = str->mark;
 
 			str->write_count += len;
 			break;
@@ -1343,7 +1351,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 			{
 				case seekmode_Start:   str->mark = pos;  break;
 				case seekmode_Current: str->mark += pos; break;
-				case seekmode_End:     str->mark = str->buflen + pos; break;
+				case seekmode_End:     str->mark = str->endmark + pos; break;
 				default:
 					g_return_if_reached();
 					return;
