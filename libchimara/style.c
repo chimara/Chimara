@@ -389,8 +389,6 @@ create_css_file_scanner(void)
 void
 scan_css_file(GScanner *scanner, ChimaraGlk *glk)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
 	while( g_scanner_peek_next_token(scanner) != G_TOKEN_EOF) {
 		if( !style_accept_style_selector(scanner, glk) )
 			break;
@@ -399,8 +397,7 @@ scan_css_file(GScanner *scanner, ChimaraGlk *glk)
 	g_scanner_destroy(scanner);
 
 	/* Update the pager prompt to the new style */
-	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
+	style_update(glk);
 }
 
 /* Internal function: parses a token */
