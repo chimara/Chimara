@@ -485,10 +485,28 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	{
 		case wintype_TextBuffer:
 		{
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
+			GtkTextMark *input_position_mark = gtk_text_buffer_get_mark(buffer, "input_position");
+			GtkTextIter input_position_iter;
+			gtk_text_buffer_get_iter_at_mark(buffer, &input_position_iter, input_position_mark);
+			GtkTextIter end_iter;
+			gtk_text_buffer_get_end_iter(buffer, &end_iter);
+
+			/* Check whether the cursor is at the prompt or somewhere else in the text */
+			GtkTextIter selection_start, selection_end;
+			gtk_text_buffer_get_selection_bounds(buffer, &selection_start, &selection_end);
+			if(gtk_text_iter_compare(&selection_start, &input_position_iter) < 0) {
+				// Cursor is somewhere else in the text, place it at the end if the user starts typing
+				if(event->keyval >= GDK_space && event->keyval <= GDK_asciitilde) {
+					gtk_text_buffer_place_cursor(buffer, &end_iter);
+				} else {
+					// User is walking around, let him be.
+					return FALSE;
+				}
+			}
+
 			/* All text up to the input position is now regarded as being read by the user */
 			pager_update(win);
-
-			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 
 			/* History up/down */
 			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
@@ -504,19 +522,14 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 					&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
 					return TRUE;
 
-				GtkTextIter start, end;
 				/* Erase any text that was already typed */
-				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
-				gtk_text_buffer_get_iter_at_mark(buffer, &start, input_position);
-				gtk_text_buffer_get_end_iter(buffer, &end);
-
 				if(win->history_pos == NULL) {
-					gchar *current_input = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+					gchar *current_input = gtk_text_buffer_get_text(buffer, &input_position_iter, &end_iter, FALSE);
 					win->history = g_list_prepend(win->history, current_input);
 					win->history_pos = win->history;
 				}
 
-				gtk_text_buffer_delete(buffer, &start, &end);
+				gtk_text_buffer_delete(buffer, &input_position_iter, &end_iter);
 
 				if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
 				{
@@ -529,12 +542,12 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 					win->history_pos = g_list_previous(win->history_pos);
 
 				/* Insert the history item into the window */
-				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_get_end_iter(buffer, &end_iter);
 
 				g_signal_handler_block(buffer, win->insert_text_handler);
-				gtk_text_buffer_insert_with_tags_by_name(buffer, &end, win->history_pos->data, -1, "default", "input", "glk-input", NULL);
-
+				gtk_text_buffer_insert_with_tags_by_name(buffer, &end_iter, win->history_pos->data, -1, "default", "input", "glk-input", NULL);
 				g_signal_handler_unblock(buffer, win->insert_text_handler);
+
 				return TRUE;
 			}
 
@@ -547,8 +560,6 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				return TRUE;
 			}
 			else if(event->keyval == GDK_End) {
-				GtkTextIter end_iter;
-				gtk_text_buffer_get_end_iter(buffer, &end_iter);
 				gtk_text_buffer_place_cursor(buffer, &end_iter);
 				return TRUE;
 			}
@@ -562,10 +573,9 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 
 				/* Insert a newline (even if line input was terminated with a different key */
-				GtkTextIter end;
-				gtk_text_buffer_get_end_iter(buffer, &end);
-				gtk_text_buffer_insert(buffer, &end, "\n", 1);
-				gtk_text_buffer_place_cursor(buffer, &end);
+				gtk_text_buffer_get_end_iter(buffer, &end_iter);
+				gtk_text_buffer_insert(buffer, &end_iter, "\n", 1);
+				gtk_text_buffer_place_cursor(buffer, &end_iter);
 
 				/* Make the window uneditable again and retrieve the text that was input */
 				gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
