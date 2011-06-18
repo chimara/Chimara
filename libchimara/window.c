@@ -127,8 +127,6 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 	if(retval && rockptr)
 		*rockptr = glk_window_get_rock(retval);
 		
-	if(retval)
-		printf("Returning window of type %d and rock %d\n", retval->type, retval->rock);
 	return retval;
 }
 
