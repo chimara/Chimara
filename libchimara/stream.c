@@ -358,14 +358,17 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 			modestr = g_strdup(binary? "wb" : "w");
 			break;
 		case filemode_WriteAppend:
-			modestr = g_strdup(binary? "ab" : "a");
-			break;
 		case filemode_ReadWrite:
-			if( g_file_test(fileref->filename, G_FILE_TEST_EXISTS) ) {
-				modestr = g_strdup(binary? "r+b" : "r+");
-			} else {
-				modestr = g_strdup(binary? "w+b" : "w+");
+		{
+			/* We have to open the file first and then close it, in order to
+			 both make sure it exists and be able to seek in it later */
+			FILE *fp = g_fopen(fileref->filename, binary? "ab" : "a");
+			if(fclose(fp) != 0) {
+				IO_WARNING( "Error opening file", fileref->filename, g_strerror(errno) );
+				return NULL;
 			}
+			modestr = g_strdup(binary? "r+b" : "r+");
+		}
 			break;
 		default:
 			ILLEGAL_PARAM("Invalid file mode: %u", fmode);
@@ -379,6 +382,12 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 		return NULL;
 	}
 	
+	/* Fast-forward to the end if we are appending */
+	if(fmode == filemode_WriteAppend && fseek(fp, 0, SEEK_END) != 0) {
+		IO_WARNING("Error fast-forwarding file to end", fileref->filename, g_strerror(errno));
+		return NULL;
+	}
+
 	/* If they opened a file in write mode but didn't specifically get
 	permission to do so, complain if the file already exists */
 	if(fileref->orig_filemode == filemode_Read && fmode != filemode_Read) {
