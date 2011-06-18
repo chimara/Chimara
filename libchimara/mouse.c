@@ -51,5 +51,7 @@ on_window_button_press(GtkWidget *widget, GdkEventButton *event, winid_t win)
             ILLEGAL_PARAM("Unknown window type: %u", win->type);
 	}
 
+	g_signal_handler_block(win->widget, win->button_press_event_handler);
+
 	return TRUE;
 }
