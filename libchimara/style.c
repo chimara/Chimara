@@ -146,6 +146,9 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 
 	/* Copy the override text tags to the textbuffers's tag table */
 	g_hash_table_foreach(glk_data->glk_styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+
+	/* Assign the 'default' tag the lowest priority */
+	gtk_text_tag_set_priority( gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(buffer), "default"), 0 );
 }
 
 
@@ -162,6 +165,9 @@ style_init_textgrid(GtkTextBuffer *buffer)
 
 	/* Copy the current text tags to the textbuffers's tag table */
 	g_hash_table_foreach(glk_data->glk_styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+
+	/* Assign the 'default' tag the lowest priority */
+	gtk_text_tag_set_priority( gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(buffer), "default"), 0 );
 }
 
 /* Internal function used to iterate over a style table, copying it */
@@ -238,125 +244,103 @@ style_init(ChimaraGlk *glk)
 	
 	/* Initialise the default styles for a text grid */
 	tag = gtk_text_tag_new("default");
-	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	g_object_set(tag, "family", "Monospace", "family-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "default", tag);
 
 	tag = gtk_text_tag_new("normal");
-	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
-	//g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
-	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	//g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	//g_object_set(tag, "font-desc", monospace_font_desc, "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
-	//g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aa0000", "foreground-set", TRUE, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "alert", tag);
 
 	tag = gtk_text_tag_new("note");
-	//g_object_set(tag, "font-desc", monospace_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aaaa00", "foreground-set", TRUE, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	//g_object_set(tag, "font-desc", monospace_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "block-quote", tag);
 
 	tag = gtk_text_tag_new("input");
-	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "input", tag);
 
 	tag = gtk_text_tag_new("user1");
-	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "user1", tag);
 
 	tag = gtk_text_tag_new("user2");
-	//g_object_set(tag, "font-desc", monospace_font_desc, NULL);
 	g_hash_table_insert(default_text_grid_styles, "user2", tag);
 
 	tag = gtk_text_tag_new("hyperlink");
-	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	g_object_set(tag, "foreground", "#0000ff", "foreground-set", TRUE, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_grid_styles, "hyperlink", tag);
 
 	/* Initialise the default styles for a text buffer */
 	tag = gtk_text_tag_new("default");
-	g_object_set(tag, "font-desc", default_font_desc, NULL);
+	g_object_set(tag, "family", "Serif", "family-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "default", tag);
 
 	tag = gtk_text_tag_new("normal");
-	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "normal", tag);
 
 	tag = gtk_text_tag_new("emphasized");
-	//g_object_set(tag, "font-desc", default_font_desc, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_object_set(tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "emphasized", tag);
 
 	tag = gtk_text_tag_new("preformatted");
-	g_object_set(tag, "font-desc", monospace_font_desc, NULL);
+	g_object_set(tag, "family", "Monospace", "family-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "preformatted", tag);
 
 	tag = gtk_text_tag_new("header");
-	//g_object_set(tag, "font-desc", default_font_desc, "size-points", 18.0, "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "header", tag);
 
 	tag = gtk_text_tag_new("subheader");
-	//g_object_set(tag, "font-desc", default_font_desc, "size-points", 14.0, "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "subheader", tag);
 
 	tag = gtk_text_tag_new("alert");
-	//g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "foreground", "#aa0000", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aa0000", "foreground-set", TRUE, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "alert", tag);
 
 	tag = gtk_text_tag_new("note");
-	//g_object_set(tag, "font-desc", default_font_desc, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
-	g_object_set(tag, "foreground", "#aaaa00", "weight", PANGO_WEIGHT_BOLD, NULL);
+	g_object_set(tag, "foreground", "#aaaa00", "foreground-set", TRUE, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "note", tag);
 
 	tag = gtk_text_tag_new("block-quote");
-	//g_object_set(tag, "font-desc", default_font_desc, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
-	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
+	g_object_set(tag, "justification", GTK_JUSTIFY_CENTER, "justification-set", TRUE, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "block-quote", tag);
 
 	tag = gtk_text_tag_new("input");
-	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "input", tag);
 
 	tag = gtk_text_tag_new("user1");
-	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "user1", tag);
 
 	tag = gtk_text_tag_new("user2");
-	//g_object_set(tag, "font-desc", default_font_desc, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "user2", tag);
 
 	tag = gtk_text_tag_new("hyperlink");
-	//g_object_set(tag, "font-desc", default_font_desc, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
-	g_object_set(tag, "foreground", "#0000ff", "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
+	g_object_set(tag, "foreground", "#0000ff", "foreground-set", TRUE, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
 	GtkTextTag *pager_tag = gtk_text_tag_new("pager");
-	g_object_set(pager_tag, "font-desc", default_font_desc, "foreground", "#ffffff", "background", "#000000", NULL);
+	g_object_set(pager_tag, "family", "Monospace", "family-set", TRUE, "foreground", "#ffffff", "foreground-set", TRUE, "background", "#000000", "background-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
 	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 
@@ -746,11 +730,18 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 	case stylehint_Proportional:
 	{
 		gchar *font_family;
-		GtkTextTag *font_tag = g_hash_table_lookup(
-		    wintype == wintype_TextBuffer? glk_data->styles->text_buffer : glk_data->styles->text_grid,
-		    val? "default" : "preformatted");
-		g_object_get(font_tag, "family", &font_family, NULL);
-		g_object_set(tag_object, "family", font_family, "family-set", TRUE, NULL);
+		gboolean family_set;
+
+		if(wintype != wintype_TextBuffer) {
+		   	if(val)
+				WARNING("Style hint 'propotional' only supported on text buffers.");
+
+			break;
+		}
+
+		GtkTextTag *font_tag = g_hash_table_lookup(glk_data->styles->text_buffer, val? "default" : "preformatted");
+		g_object_get(font_tag, "family", &font_family, "family-set", &family_set, NULL);
+		g_object_set(tag_object, "family", font_family, "family-set", family_set, NULL);
 		g_free(font_family);
 	}
 		break;
@@ -1192,7 +1183,7 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 	}
 }
 
-/* Update pager and reverse video tags */
+/* Update pager tag */
 void
 style_update(ChimaraGlk *glk)
 {

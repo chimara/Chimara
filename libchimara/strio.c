@@ -61,14 +61,14 @@ flush_window_buffer(winid_t win)
 		gtk_text_buffer_insert(buffer, &end, win->buffer->str, -1);
 		gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
 
-		// Default style
-		gtk_text_buffer_apply_tag(buffer, default_tag, &start, &end);
-
 		// Player's style overrides
 		gtk_text_buffer_apply_tag(buffer, style_tag, &start, &end);
 
 		// GLK Program's style overrides
 		gtk_text_buffer_apply_tag(buffer, glk_style_tag, &start, &end);
+
+		// Default style
+		gtk_text_buffer_apply_tag(buffer, default_tag, &start, &end);
 
 		// Link style overrides
 		if(win->window_stream->hyperlink_mode) {
@@ -111,6 +111,7 @@ flush_window_buffer(winid_t win)
 		gint available_space = win->width - gtk_text_iter_get_line_offset(&insert);
 		
 		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+
 		GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
 		GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
 		GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
