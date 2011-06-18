@@ -48,6 +48,7 @@ struct glk_stream_struct
 	FILE *file_pointer;
 	gboolean binary;
 	gchar *filename; /* Displayable filename in UTF-8 for error handling */
+	glui32 lastop; /* 0, filemode_Write, or filemode_Read */
 
 	gchar *style; /* Name of the current style */
 	gchar *glk_style; /* Name of the current glk style override */

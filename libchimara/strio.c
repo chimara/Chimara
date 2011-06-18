@@ -7,6 +7,23 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
+/* Internal function: ensure that an fseek() is called on a file pointer in
+ between reading and writing operations, and vice versa. This will only come up
+ for ReadWrite or WriteAppend files. */
+static void
+ensure_file_operation(strid_t str, glui32 op)
+{
+	if(str->lastop != 0 && str->lastop != op)
+	{
+		long pos = ftell(str->file_pointer);
+		if(pos == -1)
+			WARNING_S("ftell() failed", g_strerror(errno));
+		if(fseek(str->file_pointer, pos, SEEK_SET) != 0)
+			WARNING_S("fseek() failed", g_strerror(errno));
+	}
+	str->lastop = op; /* Not 0, because we are about to do the operation anyway */
+}
+
 /*
  *
  **************** WRITING FUNCTIONS ********************************************
@@ -302,11 +319,13 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 				if(str->unicode) 
 				{
 					gchar *writebuffer = convert_latin1_to_ucs4be_string(buf, len);
+					ensure_file_operation(str, filemode_Write);
 					fwrite(writebuffer, sizeof(gchar), len * 4, str->file_pointer);
 					g_free(writebuffer);
 				} 
 				else /* Regular file */
 				{
+					ensure_file_operation(str, filemode_Write);
 					fwrite(buf, sizeof(gchar), len, str->file_pointer);
 				}
 			}
@@ -315,6 +334,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 				gchar *utf8 = convert_latin1_to_utf8(buf, len);
 				if(utf8 != NULL)
 				{
+					ensure_file_operation(str, filemode_Write);
 					g_fprintf(str->file_pointer, "%s", utf8);
 					g_free(utf8);
 				}
@@ -391,12 +411,14 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				if(str->unicode) 
 				{
 					gchar *writebuffer = convert_ucs4_to_ucs4be_string(buf, len);
+					ensure_file_operation(str, filemode_Write);
 					fwrite(writebuffer, sizeof(gchar), len * 4, str->file_pointer);
 					g_free(writebuffer);
 				} 
 				else /* Regular file */
 				{
 					gchar *latin1 = convert_ucs4_to_latin1_binary(buf, len);
+					ensure_file_operation(str, filemode_Write);
 					fwrite(latin1, sizeof(gchar), len, str->file_pointer);
 					g_free(latin1);
 				}
@@ -406,6 +428,7 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				gchar *utf8 = convert_ucs4_to_utf8(buf, len);
 				if(utf8 != NULL) 
 				{
+					ensure_file_operation(str, filemode_Write);
 					g_fprintf(str->file_pointer, "%s", utf8);
 					g_free(utf8);
 				}
@@ -554,10 +577,11 @@ glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 /* Internal function: Read one big-endian four-byte character from file fp and
 return it as a Unicode code point, or -1 on EOF */
 static glsi32
-read_ucs4be_char_from_file(FILE *fp)
+read_ucs4be_char_from_file(strid_t str)
 {
 	unsigned char readbuffer[4];
-	if(fread(readbuffer, sizeof(unsigned char), 4, fp) < 4)
+	ensure_file_operation(str, filemode_Read);
+	if(fread(readbuffer, sizeof(unsigned char), 4, str->file_pointer) < 4)
 		return -1; /* EOF */
 	return
 		readbuffer[0] << 24 | 
@@ -569,14 +593,15 @@ read_ucs4be_char_from_file(FILE *fp)
 /* Internal function: Read one UTF-8 character, which may be more than one byte,
 from file fp and return it as a Unicode code point, or -1 on EOF */
 static glsi32
-read_utf8_char_from_file(FILE *fp)
+read_utf8_char_from_file(strid_t str)
 {
 	gchar readbuffer[4] = {0, 0, 0, 0}; /* Max UTF-8 width */
 	int foo;
 	gunichar charresult = (gunichar)-2;
+	ensure_file_operation(str, filemode_Read);
 	for(foo = 0; foo < 4 && charresult == (gunichar)-2; foo++) 
 	{
-		int ch = fgetc(fp);
+		int ch = fgetc(str->file_pointer);
 		if(ch == EOF)
 			return -1;
 		readbuffer[foo] = (gchar)ch;
@@ -595,16 +620,18 @@ file pointer and eight-bit flag are included in case the newline is a CR
 (U+000D). If the next character is LF (U+000A) then it also belongs to the
 newline. */
 static gboolean
-is_unicode_newline(glsi32 ch, FILE *fp, gboolean utf8)
+is_unicode_newline(glsi32 ch, strid_t str, gboolean utf8)
 {
 	if(ch == 0x0A || ch == 0x85 || ch == 0x0C || ch == 0x2028 || ch == 0x2029)
 		return TRUE;
 	if(ch == 0x0D) {
-		glsi32 ch2 = utf8? read_utf8_char_from_file(fp) : 
-			read_ucs4be_char_from_file(fp);
-		if(ch2 != 0x0A)
-			if(fseek(fp, utf8? -1 : -4, SEEK_CUR) == -1);
+		glsi32 ch2 = utf8? read_utf8_char_from_file(str) :
+			read_ucs4be_char_from_file(str);
+		if(ch2 != 0x0A) {
+			if(fseek(str->file_pointer, utf8? -1 : -4, SEEK_CUR) == -1);
 				WARNING_S("Seek failed on stream", g_strerror(errno) );
+			str->lastop = 0; /* can read or write after a seek */
+		}
 		return TRUE;
 	}
 	return FALSE;
@@ -642,7 +669,7 @@ get_char_stream_common(strid_t str)
 			{
 				if(str->unicode) 
 				{
-					glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
+					glsi32 ch = read_ucs4be_char_from_file(str);
 					if(ch == -1)
 						return -1;
 					str->read_count++;
@@ -650,6 +677,7 @@ get_char_stream_common(strid_t str)
 				}
 				else /* Regular file */
 				{
+					ensure_file_operation(str, filemode_Read);
 					int ch = fgetc(str->file_pointer);
 					if(ch == EOF)
 						return -1;
@@ -660,7 +688,7 @@ get_char_stream_common(strid_t str)
 			}
 			else /* Text mode is the same for Unicode and regular files */
 			{
-				glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+				glsi32 ch = read_utf8_char_from_file(str);
 				if(ch == -1)
 					return -1;
 					
@@ -778,6 +806,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				{
 					/* Read len characters of 4 bytes each */
 					unsigned char *readbuffer = g_new0(unsigned char, 4 * len);
+					ensure_file_operation(str, filemode_Read);
 					size_t count = fread(readbuffer, sizeof(unsigned char), 4 * len, str->file_pointer);
 					/* If there was an incomplete character */
 					if(count % 4 != 0) 
@@ -801,6 +830,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				}
 				else /* Regular binary file */
 				{
+					ensure_file_operation(str, filemode_Read);
 					size_t count = fread(buf, sizeof(char), len, str->file_pointer);
 					str->read_count += count;
 					return count;
@@ -812,7 +842,7 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 				int foo;
 				for(foo = 0; foo < len; foo++)
 				{
-					glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+					glsi32 ch = read_utf8_char_from_file(str);
 					if(ch == -1)
 						break;
 					str->read_count++;
@@ -875,6 +905,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				{
 					/* Read len characters of 4 bytes each */
 					unsigned char *readbuffer = g_new0(unsigned char, 4 * len);
+					ensure_file_operation(str, filemode_Read);
 					size_t count = fread(readbuffer, sizeof(unsigned char), 4 * len, str->file_pointer);
 					/* If there was an incomplete character */
 					if(count % 4 != 0) 
@@ -896,6 +927,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				else /* Regular binary file */
 				{
 					unsigned char *readbuffer = g_new0(unsigned char, len);
+					ensure_file_operation(str, filemode_Read);
 					size_t count = fread(readbuffer, sizeof(unsigned char), len, str->file_pointer);
 					int foo;
 					for(foo = 0; foo < count; foo++)
@@ -911,7 +943,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				int foo;
 				for(foo = 0; foo < len; foo++)
 				{
-					glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+					glsi32 ch = read_utf8_char_from_file(str);
 					if(ch == -1)
 						break;
 					str->read_count++;
@@ -1002,14 +1034,14 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 					int copycount;
 					for(copycount = 0; copycount < len - 1; copycount++)
 					{
-						glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
+						glsi32 ch = read_ucs4be_char_from_file(str);
 						if(ch == -1) 
 						{
 							buf[copycount] = '\0';
 							return copycount;
 						}
 						str->read_count++;
-						if(is_unicode_newline(ch, str->file_pointer, FALSE))
+						if(is_unicode_newline(ch, str, FALSE))
 						{
 							buf[copycount++] = '\n';
 							buf[copycount] = '\0';
@@ -1022,6 +1054,7 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 				}
 				else /* Regular binary file */
 				{
+					ensure_file_operation(str, filemode_Read);
 					if( !fgets(buf, len, str->file_pointer) ) {
 						*buf = 0;
 						return 0;
@@ -1038,14 +1071,14 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 				int foo;
 				for(foo = 0; foo < len - 1; foo++)
 				{
-					glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+					glsi32 ch = read_utf8_char_from_file(str);
 					if(ch == -1)
 					{
 						buf[foo] = '\0';
 						return foo - 1;
 					}
 					str->read_count++;
-					if(is_unicode_newline(ch, str->file_pointer, TRUE))
+					if(is_unicode_newline(ch, str, TRUE))
 					{
 						buf[foo] = '\n';
 						buf[foo + 1] = '\0';
@@ -1144,14 +1177,14 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 					int copycount;
 					for(copycount = 0; copycount < len - 1; copycount++)
 					{
-						glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
+						glsi32 ch = read_ucs4be_char_from_file(str);
 						if(ch == -1) 
 						{
 							buf[copycount] = 0;
 							return copycount;
 						}
 						str->read_count++;
-						if(is_unicode_newline(ch, str->file_pointer, FALSE))
+						if(is_unicode_newline(ch, str, FALSE))
 						{
 							buf[copycount++] = ch; /* Preserve newline types??? */
 							buf[copycount] = 0;
@@ -1165,6 +1198,7 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				else /* Regular binary file */
 				{
 					gchar *readbuffer = g_new0(gchar, len);
+					ensure_file_operation(str, filemode_Read);
 					if( !fgets(readbuffer, len, str->file_pointer) ) {
 						*buf = 0;
 						return 0;
@@ -1184,14 +1218,14 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				int foo;
 				for(foo = 0; foo < len - 1; foo++)
 				{
-					glsi32 ch = read_utf8_char_from_file(str->file_pointer);
+					glsi32 ch = read_utf8_char_from_file(str);
 					if(ch == -1)
 					{
 						buf[foo] = 0;
 						return foo - 1;
 					}
 					str->read_count++;
-					if(is_unicode_newline(ch, str->file_pointer, TRUE))
+					if(is_unicode_newline(ch, str, TRUE))
 					{
 						buf[foo] = ch; /* Preserve newline types??? */
 						buf[foo + 1] = 0;
@@ -1329,6 +1363,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 			}
 			if(fseek(str->file_pointer, pos, whence) == -1)
 				WARNING("Seek failed on file stream");
+			str->lastop = 0; /* Either reading or writing is legal after fseek() */
 			break;
 		}
 		case STREAM_TYPE_WINDOW:
