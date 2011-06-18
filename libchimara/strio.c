@@ -937,7 +937,7 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
  *   <mathphrase>@len - 1</mathphrase>
  * </inlineequation>
  * characters have been read or a newline has been read. It then puts a
- * terminal null (<code>'\0'</code>) aracter on
+ * terminal null (<code>'\0'</code>) character on
  * the end. It returns the number of characters actually read, including the
  * newline (if there is one) but not including the terminal null.
  *
