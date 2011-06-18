@@ -999,26 +999,26 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 				if(str->unicode) /* Binary file with 4-byte characters */
 				{
 					/* Do it character-by-character */
-					int foo;
-					for(foo = 0; foo < len - 1; foo++)
+					int copycount;
+					for(copycount = 0; copycount < len - 1; copycount++)
 					{
 						glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
 						if(ch == -1) 
 						{
-							buf[foo] = '\0';
-							return foo - 1;
+							buf[copycount] = '\0';
+							return copycount;
 						}
 						str->read_count++;
 						if(is_unicode_newline(ch, str->file_pointer, FALSE))
 						{
-							buf[foo] = '\n';
-							buf[foo + 1] = '\0';
-							return foo;
+							buf[copycount++] = '\n';
+							buf[copycount] = '\0';
+							return copycount;
 						}
-						buf[foo] = (ch > 0xFF)? '?' : (char)ch;
+						buf[copycount] = (ch > 0xFF)? '?' : (char)ch;
 					}
 					buf[len] = '\0';
-					return foo;
+					return copycount;
 				}
 				else /* Regular binary file */
 				{
@@ -1141,26 +1141,26 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				if(str->unicode) /* Binary file with 4-byte characters */
 				{
 					/* Do it character-by-character */
-					int foo;
-					for(foo = 0; foo < len - 1; foo++)
+					int copycount;
+					for(copycount = 0; copycount < len - 1; copycount++)
 					{
 						glsi32 ch = read_ucs4be_char_from_file(str->file_pointer);
 						if(ch == -1) 
 						{
-							buf[foo] = 0;
-							return foo - 1;
+							buf[copycount] = 0;
+							return copycount;
 						}
 						str->read_count++;
 						if(is_unicode_newline(ch, str->file_pointer, FALSE))
 						{
-							buf[foo] = ch; /* Preserve newline types??? */
-							buf[foo + 1] = 0;
-							return foo;
+							buf[copycount++] = ch; /* Preserve newline types??? */
+							buf[copycount] = 0;
+							return copycount;
 						}
-						buf[foo] = ch;
+						buf[copycount] = ch;
 					}
 					buf[len] = 0;
-					return foo;
+					return copycount;
 				}
 				else /* Regular binary file */
 				{

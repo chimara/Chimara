@@ -30,7 +30,7 @@ test_close_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_close_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la \
-	styletest.la soundtest.la test-userstyle.la
+	styletest.la soundtest.la test-userstyle.la fileio.la
 
 first_la_SOURCES = first.c
 first_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
@@ -55,6 +55,10 @@ test_userstyle_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 
 soundtest_la_SOURCES = soundtest.c
 soundtest_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
+
+fileio_la_SOURCES = fileio.c
+fileio_la_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
+fileio_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 
 
 -include $(top_srcdir)/git.mk
