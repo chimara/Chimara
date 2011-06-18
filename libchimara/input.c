@@ -23,7 +23,15 @@ request_char_event_common(winid_t win, gboolean unicode)
 
 	flush_window_buffer(win);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	if(win->type == wintype_TextBuffer) {
+		/* Move the input_position mark to the end of the window_buffer */
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+		GtkTextIter end_iter;
+		gtk_text_buffer_get_end_iter(buffer, &end_iter);
+		gtk_text_buffer_move_mark(buffer, input_position, &end_iter);
+	}
+
 
 	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
 	g_signal_handler_unblock( win->widget, win->char_input_keypress_handler );
@@ -33,6 +41,7 @@ request_char_event_common(winid_t win, gboolean unicode)
 	gdk_threads_leave();
 
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	g_signal_emit_by_name(glk_data->self, "waiting");
 }
 
