@@ -342,7 +342,7 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 {
 	VALID_FILEREF(fileref, return NULL);
 	
-	gchar *modestr;
+	const gchar *modestr;
 	/* Binary mode is 0x000, text mode 0x100 */
 	gboolean binary = !(fileref->usage & fileusage_TextMode);
 	switch(fmode) 
@@ -352,10 +352,10 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 				ILLEGAL_PARAM("Tried to open a nonexistent file, '%s', in read mode", fileref->filename);
 				return NULL;
 			}
-			modestr = g_strdup(binary? "rb" : "r");
+			modestr = binary? "rb" : "r";
 			break;
 		case filemode_Write:
-			modestr = g_strdup(binary? "wb" : "w");
+			modestr = binary? "wb" : "w";
 			break;
 		case filemode_WriteAppend:
 		case filemode_ReadWrite:
@@ -367,7 +367,7 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 				IO_WARNING( "Error opening file", fileref->filename, g_strerror(errno) );
 				return NULL;
 			}
-			modestr = g_strdup(binary? "r+b" : "r+");
+			modestr = binary? "r+b" : "r+";
 		}
 			break;
 		default:
@@ -376,7 +376,6 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	}
 	
 	FILE *fp = g_fopen(fileref->filename, modestr);
-	g_free(modestr);
 	if(fp == NULL) {
 		IO_WARNING( "Error opening file", fileref->filename, g_strerror(errno) );
 		return NULL;
