@@ -46,22 +46,26 @@ void text(
 	gchar *stripped_text;
 
 	if( !strcmp(md->element_name, "ifid") ) {
-		stripped_text = g_strstrip( g_strndup(text, text_len) );
+		//stripped_text = g_strstrip( g_strndup(text, text_len) );
+		stripped_text = g_strndup(text, text_len);
 		md->ifid = g_strconcat(md->ifid, stripped_text, NULL);
 		g_free(stripped_text);
 	}
 	else if( !strcmp(md->element_name, "title") ) {
-		stripped_text = g_strstrip( g_strndup(text, text_len) );
+		//stripped_text = g_strstrip( g_strndup(text, text_len) );
+		stripped_text = g_strndup(text, text_len);
 		md->title = g_strconcat(md->title, stripped_text, NULL);
 		g_free(stripped_text);
 	}
 	else if( !strcmp(md->element_name, "author") ) {
-		stripped_text = g_strstrip( g_strndup(text, text_len) );
+		//stripped_text = g_strstrip( g_strndup(text, text_len) );
+		stripped_text = g_strndup(text, text_len);
 		md->author = g_strconcat(md->author, stripped_text, NULL);
 		g_free(stripped_text);
 	}
 	else if( !strcmp(md->element_name, "firstpublished") ) {
-		stripped_text = g_strstrip( g_strndup(text, text_len) );
+		//stripped_text = g_strstrip( g_strndup(text, text_len) );
+		stripped_text = g_strndup(text, text_len);
 		md->year = g_strconcat(md->year, stripped_text, NULL);
 		g_free(stripped_text);
 	}
@@ -152,8 +156,8 @@ int main(int argc, char **argv) {
 	g_object_set_data_full(G_OBJECT(cnc), "parser", sql_parser, g_object_unref);
 	
 	// Create stories table
-	run_sql_non_select(cnc, "DROP TABLE IF EXISTS stories");
-	run_sql_non_select(cnc, "CREATE TABLE stories (ifid text not null primary key, title text, author text, year integer)");
+	//run_sql_non_select(cnc, "DROP TABLE IF EXISTS stories");
+	run_sql_non_select(cnc, "CREATE TABLE IF NOT EXISTS stories (ifid text not null primary key, title text, author text, year integer)");
 
 	// Populate the table
 	GValue *v1, *v2, *v3, *v4;
@@ -163,14 +167,25 @@ int main(int argc, char **argv) {
 	v4 = gda_value_new_from_string(data.year, G_TYPE_UINT);
 
 	if( !gda_insert_row_into_table(cnc, "stories", &err, "ifid", v1, "title", v2, "author", v3, "year", v4, NULL) ) {
-		g_error("Could not INSERT data into the 'stories' table: %s\n", err && err->message ? err->message : "No details");
-		return 1;
+		g_warning("Could not INSERT data into the 'stories' table: %s\n", err && err->message ? err->message : "No details");
 	}
 
 	gda_value_free(v1);
 	gda_value_free(v2);
 	gda_value_free(v3);
 	gda_value_free(v4);
+
+	// Dump the table contents
+	GdaDataModel *data_model;
+	GdaStatement *stmt = gda_sql_parser_parse_string(sql_parser, "SELECT * FROM stories", NULL, NULL);
+	data_model = gda_connection_statement_execute_select(cnc, stmt, NULL, &err);
+	if(!data_model)
+		g_error("Could not get the contents of the 'stories' table: %s\n", err && err->message ? err->message : "No details");
+	printf("Dumping library table:\n");
+	gda_data_model_dump(data_model, stdout);
+
+	g_object_unref(stmt);
+	g_object_unref(data_model);
 
 	gda_connection_close(cnc);
 	return 0;
