@@ -17,7 +17,6 @@ dist_pkgdata_DATA = chimara.ui chimara.menus style.css
 bin_PROGRAMS = chimara
 
 chimara_SOURCES = main.c \
-	callbacks.c \
 	preferences.c preferences.h \
 	error.c error.h \
 	player.c player.h \

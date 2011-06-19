@@ -201,3 +201,110 @@ chimara_player_new(void)
 		"type", GTK_WINDOW_TOPLEVEL,
 		NULL));
 }
+
+/* GLADE CALLBACKS */
+
+#if 0
+/* If a game is running in @glk, warn the user that they will quit the currently
+running game if they open a new one. Returns TRUE if no game was running.
+Returns FALSE if the user cancelled. Returns TRUE and shuts down the running
+game if the user wishes to continue. */
+static gboolean
+confirm_open_new_game(ChimaraGlk *glk)
+{
+	g_return_val_if_fail(glk && CHIMARA_IS_GLK(glk), FALSE);
+	
+	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
+	
+	if(chimara_glk_get_running(glk)) {
+		GtkWidget *dialog = gtk_message_dialog_new(window,
+		    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+		    GTK_MESSAGE_WARNING,
+		    GTK_BUTTONS_CANCEL,
+		    _("Are you sure you want to open a new game?"));
+		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
+		    _("If you open a new game, you will quit the one you are currently playing."));
+		gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_OPEN, GTK_RESPONSE_OK);
+		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		
+		if(response != GTK_RESPONSE_OK)
+			return FALSE;
+
+		chimara_glk_stop(glk);
+		chimara_glk_wait(glk);
+	}
+	return TRUE;
+}
+#endif
+
+void
+on_stop_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	chimara_glk_stop(CHIMARA_GLK(player->glk));
+}
+
+void
+on_copy_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	GtkWidget *focus = gtk_window_get_focus(GTK_WINDOW(player));
+	/* Call "copy clipboard" on any widget that defines it */
+	if(GTK_IS_LABEL(focus) || GTK_IS_ENTRY(focus) || GTK_IS_TEXT_VIEW(focus))
+		g_signal_emit_by_name(focus, "copy-clipboard");
+}
+
+void
+on_paste_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	GtkWidget *focus = gtk_window_get_focus(GTK_WINDOW(player));
+	/* Call "paste clipboard" on any widget that defines it */
+	if(GTK_IS_ENTRY(focus) || GTK_IS_TEXT_VIEW(focus))
+		g_signal_emit_by_name(focus, "paste-clipboard");
+}
+
+void
+on_toolbar_toggled(GtkToggleAction *action, ChimaraPlayer *player)
+{
+	if(gtk_toggle_action_get_active(action))
+		gtk_widget_show(player->toolbar);
+	else
+		gtk_widget_hide(player->toolbar);
+}
+
+void
+on_undo_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	chimara_glk_feed_line_input(CHIMARA_GLK(player->glk), "undo");
+}
+
+void 
+on_save_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	chimara_glk_feed_line_input(CHIMARA_GLK(player->glk), "save");
+}
+
+void 
+on_restore_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	chimara_glk_feed_line_input(CHIMARA_GLK(player->glk), "restore");
+}
+
+void 
+on_restart_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	chimara_glk_feed_line_input(CHIMARA_GLK(player->glk), "restart");
+}
+
+void 
+on_quit_activate(GtkAction *action, ChimaraPlayer *player)
+{
+	chimara_glk_feed_line_input(CHIMARA_GLK(player->glk), "quit");
+}
+
+gboolean 
+on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraPlayer *player) 
+{
+	gtk_main_quit();
+	return TRUE;
+}
+
