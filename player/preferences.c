@@ -38,12 +38,23 @@
 #include <libchimara/chimara-if.h>
 #include <config.h>
 #include "error.h"
+#include "app.h"
 
-GObject *load_object(const gchar *name);
 static GtkTextTag *current_tag;
 static GtkListStore *preferred_list;
 
 static void style_tree_select_callback(GtkTreeSelection *selection);
+
+static GObject *
+load_object(GtkBuilder *builder, const gchar *name)
+{
+	GObject *retval;
+	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
+		error_dialog(NULL, NULL, "Error while getting object '%s'", name);
+		g_error("Error while getting object '%s'", name);
+	}
+	return retval;
+}
 
 /* Internal functions to convert from human-readable names in the config file
 to enums and back. Later: replace with plugin functions. */
@@ -136,11 +147,10 @@ interpreter_to_display_string(ChimaraIFInterpreter interp)
 
 /* Create the preferences dialog. */
 void
-preferences_create(void)
+preferences_create(ChimaraApp *theapp, GtkBuilder *builder)
 {
-#if 0
 	/* Initialize the tree of style names */
-	GtkTreeStore *style_list = GTK_TREE_STORE( load_object("style-list") );
+	GtkTreeStore *style_list = GTK_TREE_STORE( load_object(builder, "style-list") );
 	GtkTreeIter buffer, grid, buffer_child, grid_child;
 
 	gtk_tree_store_append(style_list, &buffer, NULL);
@@ -148,48 +158,47 @@ preferences_create(void)
 	gtk_tree_store_set(style_list, &buffer, 0, "Text buffer", -1);
 	gtk_tree_store_set(style_list, &grid, 0, "Text grid", -1);
 
-	int i;
-	unsigned int num_tags;
-	const gchar **tag_names = chimara_glk_get_tag_names(glk, &num_tags);
-	for(i=0; i<num_tags; i++) {
-		gtk_tree_store_append(style_list, &buffer_child, &buffer);
-		gtk_tree_store_append(style_list, &grid_child, &grid);
-		gtk_tree_store_set(style_list, &buffer_child, 0, tag_names[i], -1);
-		gtk_tree_store_set(style_list, &grid_child, 0, tag_names[i], -1);
-	}
+	//int i;
+	//unsigned int num_tags;
+	//const gchar **tag_names = chimara_glk_get_tag_names(glk, &num_tags);
+	//for(i=0; i<num_tags; i++) {
+	//	gtk_tree_store_append(style_list, &buffer_child, &buffer);
+	//	gtk_tree_store_append(style_list, &grid_child, &grid);
+	//	gtk_tree_store_set(style_list, &buffer_child, 0, tag_names[i], -1);
+	//	gtk_tree_store_set(style_list, &grid_child, 0, tag_names[i], -1);
+	//}
 
 	/* Set selection mode to single select */
-	GtkTreeView *view = GTK_TREE_VIEW( load_object("style-treeview") );
+	GtkTreeView *view = GTK_TREE_VIEW( load_object(builder, "style-treeview") );
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(view);
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	g_signal_connect(selection, "changed", G_CALLBACK(style_tree_select_callback), NULL);
 
 	/* Bind the preferences to the entries in the preferences file */
-	extern GSettings *prefs_settings;
-	GObject *flep = G_OBJECT( load_object("flep") );
-	g_settings_bind(prefs_settings, "flep", flep, "active", G_SETTINGS_BIND_DEFAULT);
-	GtkFileChooser *blorb_chooser = GTK_FILE_CHOOSER( load_object("blorb_file_chooser") );
-	GtkFileChooser *css_chooser = GTK_FILE_CHOOSER( load_object("css-filechooser") );
+	GObject *flep = G_OBJECT( load_object(builder, "flep") );
+	g_settings_bind(theapp->prefs_settings, "flep", flep, "active", G_SETTINGS_BIND_DEFAULT);
+	GtkFileChooser *blorb_chooser = GTK_FILE_CHOOSER( load_object(builder, "blorb_file_chooser") );
+	GtkFileChooser *css_chooser = GTK_FILE_CHOOSER( load_object(builder, "css-filechooser") );
 	char *filename;
-	g_settings_get(prefs_settings, "resource-path", "ms", &filename);
+	g_settings_get(theapp->prefs_settings, "resource-path", "ms", &filename);
 	if(filename) {
 		gtk_file_chooser_set_filename(blorb_chooser, filename);
 		g_free(filename);
 	}
-	g_settings_get(prefs_settings, "css-file", "ms", &filename);
-	if(filename) {
-		if(!chimara_glk_set_css_from_file(glk, filename, NULL)) {
-			/* If the setting didn't point to a CSS file, fail silently and
-			 null the setting */
-			g_settings_set(prefs_settings, "css-file", "ms", NULL);
-		} else {
-			gtk_file_chooser_set_filename(css_chooser, filename);
-		}
-		g_free(filename);
-	}
+	g_settings_get(theapp->prefs_settings, "css-file", "ms", &filename);
+	//if(filename) {
+	//	if(!chimara_glk_set_css_from_file(glk, filename, NULL)) {
+	//		/* If the setting didn't point to a CSS file, fail silently and
+	//		 null the setting */
+	//		g_settings_set(theapp->prefs_settings, "css-file", "ms", NULL);
+	//	} else {
+	//		gtk_file_chooser_set_filename(css_chooser, filename);
+	//	}
+	//	g_free(filename);
+	//}
 
 	/* Populate the list of available interpreters */
-	GtkListStore *interp_list = GTK_LIST_STORE( load_object("available_interpreters") );
+	GtkListStore *interp_list = GTK_LIST_STORE( load_object(builder, "available_interpreters") );
 	unsigned int count;
 	GtkTreeIter tree_iter;
 	for(count = 0; count < CHIMARA_IF_NUM_INTERPRETERS; count++) {
@@ -200,30 +209,29 @@ preferences_create(void)
 	}
 
 	/* Get the list of preferred interpreters from the preferences */
-	GVariantIter *iter;
-	char *format, *plugin;
-	g_settings_get(prefs_settings, "preferred-interpreters", "a{ss}", &iter);
-	while(g_variant_iter_loop(iter, "{ss}", &format, &plugin)) {
-		ChimaraIFFormat format_num = parse_format(format);
-		if(format_num == CHIMARA_IF_FORMAT_NONE)
-			continue;
-		ChimaraIFInterpreter interp_num = parse_interpreter(plugin);
-		if(interp_num == CHIMARA_IF_INTERPRETER_NONE)
-			continue;
-		chimara_if_set_preferred_interpreter(CHIMARA_IF(glk), format_num, interp_num);
-	}
-	g_variant_iter_free(iter);
+	//GVariantIter *iter;
+	//char *format, *plugin;
+	//g_settings_get(prefs_settings, "preferred-interpreters", "a{ss}", &iter);
+	//while(g_variant_iter_loop(iter, "{ss}", &format, &plugin)) {
+	//	ChimaraIFFormat format_num = parse_format(format);
+	//	if(format_num == CHIMARA_IF_FORMAT_NONE)
+	//		continue;
+	//	ChimaraIFInterpreter interp_num = parse_interpreter(plugin);
+	//	if(interp_num == CHIMARA_IF_INTERPRETER_NONE)
+	//		continue;
+	//	chimara_if_set_preferred_interpreter(CHIMARA_IF(glk), format_num, interp_num);
+	//}
+	//g_variant_iter_free(iter);
 
 	/* Display it all in the list */
-	preferred_list = GTK_LIST_STORE( load_object("interpreters") );
-	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
-		gtk_list_store_append(preferred_list, &tree_iter);
-		gtk_list_store_set(preferred_list, &tree_iter,
-			0, format_to_display_string(count),
-			1, interpreter_to_display_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)),
-			-1);
-	}
-#endif
+	//preferred_list = GTK_LIST_STORE( load_object(builder, "interpreters") );
+	//for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
+	//	gtk_list_store_append(preferred_list, &tree_iter);
+	//	gtk_list_store_set(preferred_list, &tree_iter,
+	//		0, format_to_display_string(count),
+	//		1, interpreter_to_display_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)),
+	//		-1);
+	//}
 }
 
 static void
@@ -342,13 +350,13 @@ void
 on_css_filechooser_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)
 {
 	GError *error = NULL;
-	extern GSettings *prefs_settings;
+	ChimaraApp *theapp = chimara_app_get();
 	char *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(button) );
 	if(!chimara_glk_set_css_from_file(glk, filename, &error)) {
 		error_dialog(NULL, error, "There was a problem reading the CSS file: ");
-		g_settings_set(prefs_settings, "css-file", "ms", NULL);
+		g_settings_set(theapp->prefs_settings, "css-file", "ms", NULL);
 	} else {
-		g_settings_set(prefs_settings, "css-file", "ms", filename);
+		g_settings_set(theapp->prefs_settings, "css-file", "ms", filename);
 	}
 	g_free(filename);
 }
@@ -356,9 +364,9 @@ on_css_filechooser_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)
 void
 on_resource_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)
 {
-	extern GSettings *prefs_settings;
+	ChimaraApp *theapp = chimara_app_get();
 	char *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(button) );
-	g_settings_set(prefs_settings, "resource-path", "ms", filename);
+	g_settings_set(theapp->prefs_settings, "resource-path", "ms", filename);
 	g_free(filename);
 }
 
@@ -385,7 +393,7 @@ on_interpreter_cell_changed(GtkCellRendererCombo *combo, char *path_string, GtkT
 		-1);
 
 	/* Save the new settings in the preferences file */
-	extern GSettings *prefs_settings;
+	ChimaraApp *theapp = chimara_app_get();
 	GVariantBuilder *builder = g_variant_builder_new( G_VARIANT_TYPE("a{ss}") );
 	unsigned int count;
 	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
@@ -393,6 +401,6 @@ on_interpreter_cell_changed(GtkCellRendererCombo *combo, char *path_string, GtkT
 			format_to_string(count),
 			interpreter_to_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)));
 	}
-	g_settings_set(prefs_settings, "preferred-interpreters", "a{ss}", builder);
+	g_settings_set(theapp->prefs_settings, "preferred-interpreters", "a{ss}", builder);
 	g_variant_builder_unref(builder);
 }

@@ -2,7 +2,7 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkActionGroup" id="actiongroup">
+  <object class="GtkActionGroup" id="app_group">
     <child>
       <object class="GtkAction" id="game">
         <property name="label">_Game</property>
@@ -19,6 +19,56 @@
       </object>
       <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
     </child>
+    <child>
+      <object class="GtkAction" id="quit_chimara">
+        <property name="label">_Quit Chimara</property>
+        <property name="short_label" translatable="yes">_Quit Chimara</property>
+        <property name="tooltip">Leave the program</property>
+        <property name="stock_id">gtk-quit</property>
+        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="edit">
+        <property name="label">_Edit</property>
+        <property name="short_label" translatable="yes">_Edit</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRecentAction" id="recent">
+        <property name="label">Open _Recent</property>
+        <property name="short_label" translatable="yes">Open _Recent</property>
+        <property name="limit">10</property>
+        <property name="sort_type">mru</property>
+        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="preferences">
+        <property name="label">P_references</property>
+        <property name="short_label" translatable="yes">P_references</property>
+        <property name="tooltip">Configure the application</property>
+        <property name="stock_id">gtk-preferences</property>
+        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="help">
+        <property name="label">_Help</property>
+        <property name="short_label" translatable="yes">_Help</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="about">
+        <property name="label">_About...</property>
+        <property name="short_label">_About</property>
+        <property name="tooltip">About this application</property>
+        <property name="stock_id">gtk-about</property>
+        <signal name="activate" handler="on_about_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkActionGroup" id="actiongroup">
     <child>
       <object class="GtkAction" id="restore">
         <property name="label">_Restore...</property>
@@ -39,24 +89,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="quit_chimara">
-        <property name="label">_Quit Chimara</property>
-        <property name="short_label" translatable="yes">_Quit Chimara</property>
-        <property name="tooltip">Leave the program</property>
-        <property name="stock_id">gtk-quit</property>
-        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
       <object class="GtkAction" id="command">
         <property name="label">_Command</property>
         <property name="short_label" translatable="yes">_Command</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="edit">
-        <property name="label">_Edit</property>
-        <property name="short_label" translatable="yes">_Edit</property>
       </object>
     </child>
     <child>
@@ -66,15 +101,6 @@
         <property name="tooltip">Immediately stop the running game</property>
         <property name="stock_id">gtk-stop</property>
         <signal name="activate" handler="on_stop_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRecentAction" id="recent">
-        <property name="label">Open _Recent</property>
-        <property name="short_label" translatable="yes">Open _Recent</property>
-        <property name="limit">10</property>
-        <property name="sort_type">mru</property>
-        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
       </object>
     </child>
     <child>
@@ -121,30 +147,6 @@
         <property name="tooltip">Paste the clipboard</property>
         <property name="stock_id">gtk-paste</property>
         <signal name="activate" handler="on_paste_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="preferences">
-        <property name="label">P_references</property>
-        <property name="short_label" translatable="yes">P_references</property>
-        <property name="tooltip">Configure the application</property>
-        <property name="stock_id">gtk-preferences</property>
-        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="help">
-        <property name="label">_Help</property>
-        <property name="short_label" translatable="yes">_Help</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="about">
-        <property name="label">_About...</property>
-        <property name="short_label">_About</property>
-        <property name="tooltip">About this application</property>
-        <property name="stock_id">gtk-about</property>
-        <signal name="activate" handler="on_about_activate" swapped="no"/>
       </object>
     </child>
     <child>

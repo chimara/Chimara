@@ -3,6 +3,7 @@
 #include <libchimara/chimara-if.h>
 #include "player.h"
 #include "error.h"
+#include "app.h"
 
 typedef struct _ChimaraPlayerPrivate {
 	int dummy;
@@ -159,10 +160,13 @@ chimara_player_init(ChimaraPlayer *self)
 	 "buffer.normal { font-family: 'Comic Sans MS'; }");*/
 	
 	GtkBox *vbox = GTK_BOX(load_object(builder, "vbox"));			
-	
+
+	ChimaraApp *theapp = chimara_app_get();
+
 	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
-	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/menubar");
-	self->toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
+	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 1);
+	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/player_menu");
+	self->toolbar = gtk_ui_manager_get_widget(uimanager, "/player_toolbar");
 	gtk_widget_set_no_show_all(self->toolbar, TRUE);
 	if(gtk_toggle_action_get_active(toolbar_action))
 		gtk_widget_show(self->toolbar);

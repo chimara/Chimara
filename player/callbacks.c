@@ -38,7 +38,9 @@
 #include <config.h>
 #include "error.h"
 #include "player.h"
+#include "app.h"
 
+#if 0
 /* If a game is running in @glk, warn the user that they will quit the currently
 running game if they open a new one. Returns TRUE if no game was running.
 Returns FALSE if the user cancelled. Returns TRUE and shuts down the running
@@ -70,13 +72,14 @@ confirm_open_new_game(ChimaraGlk *glk)
 	}
 	return TRUE;
 }
+#endif
 
-/* Internal function: See if there is a corresponding graphics file */
-static void
-search_for_graphics_file(const char *filename, ChimaraIF *glk)
+/* Internal function: See if there is a corresponding graphics file. If so,
+return its path. If not, return NULL. */
+static char *
+search_for_graphics_file(const char *filename)
 {
-
-	extern GSettings *prefs_settings;
+	ChimaraApp *theapp = chimara_app_get();
 
 	/* First get the name of the story file */
 	char *scratch = g_path_get_basename(filename);
@@ -84,49 +87,58 @@ search_for_graphics_file(const char *filename, ChimaraIF *glk)
 
 	/* Check in the stored resource path, if set */
 	char *resource_path;
-	g_settings_get(prefs_settings, "resource-path", "ms", &resource_path);
+	g_settings_get(theapp->prefs_settings, "resource-path", "ms", &resource_path);
 
 	/* Otherwise check in the current directory */
 	if(!resource_path)
 		resource_path = g_path_get_dirname(filename);
 
 	char *blorbfile = g_strconcat(resource_path, "/", scratch, ".blb", NULL);
-	if(g_file_test(blorbfile, G_FILE_TEST_EXISTS))
-		g_object_set(glk, "graphics-file", blorbfile, NULL);
-
-	g_free(blorbfile);
 	g_free(scratch);
 	g_free(resource_path);
+
+	if(g_file_test(blorbfile, G_FILE_TEST_EXISTS))
+		return blorbfile;
+
+	g_free(blorbfile);
+	return NULL;
 }
 
 void
-on_open_activate(GtkAction *action, ChimaraPlayer *player)
+on_open_activate(GtkAction *action, ChimaraApp *theapp)
 {
-	if(!confirm_open_new_game(CHIMARA_GLK(player->glk)))
-		return;
+	//if(!confirm_open_new_game(CHIMARA_GLK(player->glk)))
+	//	return;
 
 	GtkWidget *dialog = gtk_file_chooser_dialog_new(_("Open Game"),
-	    GTK_WINDOW(player),
+	    NULL, // FIXME
 	    GTK_FILE_CHOOSER_ACTION_OPEN,
 	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 	    NULL);
 
 	/* Get last opened path */
-	//extern GSettings *state_settings;
-	//gchar *path;
-	//g_settings_get(state_settings, "last-open-path", "ms", &path);
-	//if(path) {
-	//	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), path);
-	//	g_free(path);
-	//}
+	gchar *path;
+	g_settings_get(theapp->state_settings, "last-open-path", "ms", &path);
+	if(path) {
+		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), path);
+		g_free(path);
+	}
 
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		GError *error = NULL;
-		extern GSettings *prefs_settings;
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 
-		search_for_graphics_file(filename, CHIMARA_IF(player->glk));
+		/* Open a new player window */
+		ChimaraPlayer *player = CHIMARA_PLAYER(chimara_player_new());
+		gtk_widget_show_all(GTK_WIDGET(player));
+		gtk_window_present(GTK_WINDOW(player));
+
+		gchar *blorbfile = search_for_graphics_file(filename);
+		if(blorbfile) {
+			g_object_set(player->glk, "graphics-file", blorbfile, NULL);
+			g_free(blorbfile);
+		}
 		if(!chimara_if_run_game(CHIMARA_IF(player->glk), filename, &error)) {
 			error_dialog(GTK_WINDOW(player), error, _("Could not open game file '%s': "), filename);
 			g_free(filename);
@@ -134,11 +146,11 @@ on_open_activate(GtkAction *action, ChimaraPlayer *player)
 			return;
 		}
 		
-		//path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
-		//if(path) {
-		//	g_settings_set(state_settings, "last-open-path", "ms", path);
-		//	g_free(path);
-		//}
+		path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
+		if(path) {
+			g_settings_set(theapp->state_settings, "last-open-path", "ms", path);
+			g_free(path);
+		}
 
 		/* Add file to recent files list */
 		GtkRecentManager *manager = gtk_recent_manager_get_default();
@@ -157,20 +169,29 @@ on_open_activate(GtkAction *action, ChimaraPlayer *player)
 }
 
 void
-on_recent_item_activated(GtkRecentChooser *chooser, ChimaraPlayer *player)
+on_recent_item_activated(GtkRecentChooser *chooser, ChimaraApp *theapp)
 {
 	GError *error = NULL;
 	gchar *uri = gtk_recent_chooser_get_current_uri(chooser);
 	gchar *filename;
 	if(!(filename = g_filename_from_uri(uri, NULL, &error))) {
-		error_dialog(GTK_WINDOW(player), error, _("Could not open game file '%s': "), uri);
+		error_dialog(NULL /* FIXME */, error, _("Could not open game file '%s': "), uri);
 		goto finally;
 	}
 	
-	if(!confirm_open_new_game(CHIMARA_GLK(player->glk)))
-		goto finally2;
+	//if(!confirm_open_new_game(CHIMARA_GLK(player->glk)))
+	//	goto finally2;
+
+	/* Open a new player window */
+	ChimaraPlayer *player = CHIMARA_PLAYER(chimara_player_new());
+	gtk_widget_show_all(GTK_WIDGET(player));
+	gtk_window_present(GTK_WINDOW(player));
 	
-	search_for_graphics_file(filename, CHIMARA_IF(player->glk));
+	char *blorbfile = search_for_graphics_file(filename);
+	if(blorbfile) {
+		g_object_set(player->glk, "graphics-file", blorbfile, NULL);
+		g_free(blorbfile);
+	}
 	if(!chimara_if_run_game(CHIMARA_IF(player->glk), filename, &error)) {
 		error_dialog(GTK_WINDOW(player), error, _("Could not open game file '%s': "), filename);
 		goto finally2;
@@ -194,7 +215,7 @@ on_stop_activate(GtkAction *action, ChimaraPlayer *player)
 }
 
 void 
-on_quit_chimara_activate(GtkAction *action, ChimaraPlayer *player)
+on_quit_chimara_activate(GtkAction *action, ChimaraApp *theapp)
 {
 	gtk_main_quit();
 }
@@ -218,10 +239,9 @@ on_paste_activate(GtkAction *action, ChimaraPlayer *player)
 }
 
 void
-on_preferences_activate(GtkAction *action, ChimaraPlayer *player)
+on_preferences_activate(GtkAction *action, ChimaraApp *theapp)
 {
-	//extern GtkWidget *prefswindow;
-	//gtk_window_present(GTK_WINDOW(prefswindow));
+	gtk_window_present(GTK_WINDOW(theapp->prefswindow));
 }
 
 void
@@ -264,11 +284,10 @@ on_quit_activate(GtkAction *action, ChimaraPlayer *player)
 }
 
 void
-on_about_activate(GtkAction *action, ChimaraPlayer *player)
+on_about_activate(GtkAction *action, ChimaraApp *theapp)
 {
-	extern GtkWidget *aboutwindow;
-	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(aboutwindow), PACKAGE_VERSION);
-	gtk_window_present(GTK_WINDOW(aboutwindow));
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(theapp->aboutwindow), PACKAGE_VERSION);
+	gtk_window_present(GTK_WINDOW(theapp->aboutwindow));
 }
 
 gboolean 

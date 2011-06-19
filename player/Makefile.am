@@ -20,7 +20,8 @@ chimara_SOURCES = main.c \
 	callbacks.c \
 	preferences.c preferences.h \
 	error.c error.h \
-	player.c player.h
+	player.c player.h \
+	app.c app.h
 chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
