@@ -42,12 +42,14 @@ struct glk_stream_struct
 	gchar *buffer;
 	glui32 *ubuffer;
 	glui32 mark;
+	glui32 endmark;
 	glui32 buflen;
 	gidispatch_rock_t buffer_rock;
 	/* Specific to file streams */
 	FILE *file_pointer;
 	gboolean binary;
 	gchar *filename; /* Displayable filename in UTF-8 for error handling */
+	glui32 lastop; /* 0, filemode_Write, or filemode_Read */
 
 	gchar *style; /* Name of the current style */
 	gchar *glk_style; /* Name of the current glk style override */

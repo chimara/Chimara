@@ -202,8 +202,8 @@ glk_window_get_sibling(winid_t win)
 	if(G_NODE_IS_ROOT(win->window_node))
 		return NULL;
 	if(win->window_node->next)
-		return (winid_t)win->window_node->next;
-	return (winid_t)win->window_node->prev;
+		return (winid_t)win->window_node->next->data;
+	return (winid_t)win->window_node->prev->data;
 }
 
 /**

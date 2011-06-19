@@ -10,7 +10,7 @@ TEST_PLUGIN_LIBTOOL_FLAGS = \
 	-export-symbols-regex "^glk_main$$" \
 	-rpath $(abs_builddir)
 
-noinst_PROGRAMS = test-multisession glulxercise plugin-loader test-close
+noinst_PROGRAMS = test-multisession glulxercise plugin-loader test-close babeltest
 
 test_multisession_SOURCES = test-multisession.c
 test_multisession_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
@@ -29,8 +29,12 @@ test_close_SOURCES = test-close.c
 test_close_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_close_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
+babeltest_SOURCES = babeltest.c
+babeltest_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
+babeltest_LDADD = @TEST_LIBS@ $(top_builddir)/babel/libbabel_functions.la  $(top_builddir)/babel/libbabel.la $(top_builddir)/babel/libifiction.la
+
 noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la \
-	styletest.la soundtest.la test-userstyle.la
+	styletest.la soundtest.la test-userstyle.la fileio.la
 
 first_la_SOURCES = first.c
 first_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
@@ -55,6 +59,10 @@ test_userstyle_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 
 soundtest_la_SOURCES = soundtest.c
 soundtest_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
+
+fileio_la_SOURCES = fileio.c
+fileio_la_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
+fileio_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 
 
 -include $(top_srcdir)/git.mk

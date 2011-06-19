@@ -137,6 +137,7 @@ AC_SUBST(CHIMARA_LIBS)
 PKG_CHECK_MODULES([TEST], [
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0 >= $GLIB_REQUIRED_VERSION
+	libgda-4.0
 ])
 
 # GStreamer plugins needed to run library
@@ -188,6 +189,7 @@ docs/reference/Makefile
 docs/reference/version.xml
 docs/reference/build-selector-table.pl
 po/Makefile.in
+babel/Makefile
 ])
 
 # Do it

@@ -109,6 +109,7 @@ gidispatch_rock_t
 gidispatch_get_objrock(void *obj, glui32 objclass)
 {
 	g_return_val_if_fail(obj, (gidispatch_rock_t)NULL);
+
 	
 	switch(objclass) 
 	{
