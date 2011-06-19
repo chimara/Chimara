@@ -4,7 +4,7 @@
 if TARGET_ILIAD
 SUBDIRS = libchimara interpreters player po
 else
-SUBDIRS = libchimara interpreters player tests docs po
+SUBDIRS = libchimara interpreters player tests docs po babel
 endif
 
 chimaradocdir = $(datadir)/doc/chimara
