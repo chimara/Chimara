@@ -43,7 +43,7 @@ GObject *load_object(const gchar *name);
 static GtkTextTag *current_tag;
 static GtkListStore *preferred_list;
 
-static void style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk);
+static void style_tree_select_callback(GtkTreeSelection *selection);
 
 /* Internal functions to convert from human-readable names in the config file
 to enums and back. Later: replace with plugin functions. */
@@ -136,8 +136,9 @@ interpreter_to_display_string(ChimaraIFInterpreter interp)
 
 /* Create the preferences dialog. */
 void
-preferences_create(ChimaraGlk *glk)
+preferences_create(void)
 {
+#if 0
 	/* Initialize the tree of style names */
 	GtkTreeStore *style_list = GTK_TREE_STORE( load_object("style-list") );
 	GtkTreeIter buffer, grid, buffer_child, grid_child;
@@ -161,7 +162,7 @@ preferences_create(ChimaraGlk *glk)
 	GtkTreeView *view = GTK_TREE_VIEW( load_object("style-treeview") );
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(view);
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	g_signal_connect(selection, "changed", G_CALLBACK(style_tree_select_callback), glk);
+	g_signal_connect(selection, "changed", G_CALLBACK(style_tree_select_callback), NULL);
 
 	/* Bind the preferences to the entries in the preferences file */
 	extern GSettings *prefs_settings;
@@ -222,10 +223,11 @@ preferences_create(ChimaraGlk *glk)
 			1, interpreter_to_display_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)),
 			-1);
 	}
+#endif
 }
 
 static void
-style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk)
+style_tree_select_callback(GtkTreeSelection *selection)
 {
 	GtkTreeIter child, parent;
 	gchar *child_name, *parent_name;
@@ -240,10 +242,10 @@ style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk)
 		return;
 
 	gtk_tree_model_get(model, &parent, 0, &parent_name, -1);
-	if( !strcmp(parent_name, "Text buffer") ) 
-		current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_BUFFER, child_name);
-	else
-		current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_GRID, child_name);
+	//if( !strcmp(parent_name, "Text buffer") )
+	//	current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_BUFFER, child_name);
+	//else
+	//	current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_GRID, child_name);
 }
 
 void

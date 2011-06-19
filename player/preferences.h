@@ -1,9 +1,8 @@
 #ifndef PREFERENCES_H
 #define PREFERENCES_H
 
-#include <gtk/gtk.h>
-#include <libchimara/chimara-glk.h>
+#include <glib.h>
 
-G_GNUC_INTERNAL void preferences_create(ChimaraGlk *glk);
+G_GNUC_INTERNAL void preferences_create(void);
 
 #endif
