@@ -3,7 +3,7 @@
 #include <gtk/gtk.h>
 #include "browser.h"
 #include "app.h"
-#include "error.h"
+#include "util.h"
 
 typedef struct _ChimaraBrowserPrivate {
 	int dummy;
@@ -49,19 +49,7 @@ chimara_browser_init(ChimaraBrowser *self)
 		"title", _("Chimara"),
 		NULL);
 
-	GtkUIManager *uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/browser.menus", &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/browser.menus", &error) ) {
-#endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
-	}
+	GtkUIManager *uimanager = new_ui_manager("browser.menus");
 
 	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 0);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/browser_menu");

@@ -41,6 +41,7 @@
 #include "error.h"
 #include "app.h"
 #include "preferences.h"
+#include "util.h"
 
 typedef struct _ChimaraPrefsPrivate {
 	int dummy;
@@ -81,17 +82,6 @@ chimara_prefs_class_init(ChimaraPrefsClass *klass)
 
 	/* Private data */
 	g_type_class_add_private(klass, sizeof(ChimaraPrefsPrivate));
-}
-
-static GObject *
-load_object(GtkBuilder *builder, const gchar *name)
-{
-	GObject *retval;
-	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
-		error_dialog(NULL, NULL, "Error while getting object '%s'", name);
-		g_error("Error while getting object '%s'", name);
-	}
-	return retval;
 }
 
 /* Internal functions to convert from human-readable names in the config file
@@ -202,7 +192,6 @@ chimara_prefs_init(ChimaraPrefs *self)
 		NULL);
 	
 	/* Build user interface */
-	GtkBuilder *builder = gtk_builder_new();
 	char *object_ids[] = {
 		"prefs-notebook",
 		"available_interpreters",
@@ -210,19 +199,7 @@ chimara_prefs_init(ChimaraPrefs *self)
 		"style-list",
 		NULL
 	};
-	
-	if( !gtk_builder_add_objects_from_file(builder, PACKAGE_DATA_DIR "/chimara.ui", object_ids, &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_builder_add_objects_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", object_ids, &error) ) {
-#endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");	
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
-	}
+	GtkBuilder *builder = new_builder_with_objects(object_ids);
 
 	GtkWidget *notebook = GTK_WIDGET( load_object(builder, "prefs-notebook") );
 	GtkWidget *content_area = gtk_dialog_get_content_area( GTK_DIALOG(self) );

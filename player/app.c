@@ -15,6 +15,7 @@
 #include "error.h"
 #include "preferences.h"
 #include "player.h"
+#include "util.h"
 
 typedef struct _ChimaraAppPrivate {
 	GtkActionGroup *action_group;
@@ -52,17 +53,6 @@ chimara_app_class_init(ChimaraAppClass *klass)
 	g_type_class_add_private(klass, sizeof(ChimaraAppPrivate));
 }
 
-static GObject *
-load_object(GtkBuilder *builder, const gchar *name)
-{
-	GObject *retval;
-	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
-		error_dialog(NULL, NULL, "Error while getting object '%s'", name);
-		g_error("Error while getting object '%s'", name);
-	}
-	return retval;
-}
-
 static void
 chimara_app_init(ChimaraApp *self)
 {
@@ -89,25 +79,12 @@ chimara_app_init(ChimaraApp *self)
 	g_free(keyfile);
 
 	/* Build user interface */
-	GtkBuilder *builder = gtk_builder_new();
 	char *object_ids[] = {
 		"app_group",
 		"aboutwindow",
 		NULL
 	};
-	
-	if( !gtk_builder_add_objects_from_file(builder, PACKAGE_DATA_DIR "/chimara.ui", object_ids, &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_builder_add_objects_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", object_ids, &error) ) {
-#endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");	
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
-	}
+	GtkBuilder *builder = new_builder_with_objects(object_ids);
 
 	self->aboutwindow = GTK_WIDGET(load_object(builder, "aboutwindow"));
 	priv->action_group = GTK_ACTION_GROUP(load_object(builder, "app_group"));

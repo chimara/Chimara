@@ -5,6 +5,7 @@
 #include "player.h"
 #include "error.h"
 #include "app.h"
+#include "util.h"
 
 typedef struct _ChimaraPlayerPrivate {
 	int dummy;
@@ -14,17 +15,6 @@ typedef struct _ChimaraPlayerPrivate {
 #define CHIMARA_PLAYER_USE_PRIVATE ChimaraPlayerPrivate *priv = CHIMARA_PLAYER_PRIVATE(self)
 
 G_DEFINE_TYPE(ChimaraPlayer, chimara_player, GTK_TYPE_WINDOW);
-
-static GObject *
-load_object(GtkBuilder *builder, const gchar *name)
-{
-	GObject *retval;
-	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
-		error_dialog(NULL, NULL, "Error while getting object '%s'", name);
-		g_error("Error while getting object '%s'", name);
-	}
-	return retval;
-}
 
 static void
 change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkWindow *window)
@@ -93,6 +83,7 @@ static void
 chimara_player_init(ChimaraPlayer *self)
 {	
 	GError *error = NULL;
+	ChimaraApp *theapp = chimara_app_get();
 
 	/* Set parent properties */
 	g_object_set(self,
@@ -102,76 +93,38 @@ chimara_player_init(ChimaraPlayer *self)
 		NULL);
 
 	/* Construct user interface */
-	GtkBuilder *builder = gtk_builder_new();
 	char *object_ids[] = {
 		"actiongroup",
 		"player-vbox",
 		NULL
 	};
-	
-	if( !gtk_builder_add_objects_from_file(builder, PACKAGE_DATA_DIR "/chimara.ui", object_ids, &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_builder_add_objects_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", object_ids, &error) ) {
-#endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");	
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
-	}
-	
+	GtkBuilder *builder = new_builder_with_objects(object_ids);
+
 	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object(builder, "actiongroup"));
-	
+
 	/* Set the default value of the "View/Toolbar" menu item upon creation of a
 	 new window to the "show-toolbar-default" setting, but bind the setting
 	 one-way only - we don't want toolbars to disappear suddenly */
 	GtkToggleAction *toolbar_action = GTK_TOGGLE_ACTION(load_object(builder, "toolbar"));
 	//gtk_toggle_action_set_active(toolbar_action, g_settings_get_boolean(state_settings, "show-toolbar-default"));
 	//g_settings_bind(state_settings, "show-toolbar-default", toolbar_action, "active", G_SETTINGS_BIND_SET);
-		
-	GtkUIManager *uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/player.menus", &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/player.menus", &error) ) {
-#endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
-	}
-	
+
 	self->glk = chimara_if_new();
 	g_object_set(self->glk,
 				 "ignore-errors", TRUE,
 				 /*"interpreter-number", CHIMARA_IF_ZMACHINE_TANDY_COLOR,*/
 				 NULL);
-	if( !chimara_glk_set_css_from_file(CHIMARA_GLK(self->glk), PACKAGE_DATA_DIR "/style.css", &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(self->glk), PACKAGE_SRC_DIR "/style.css", &error) ) {
-#endif /* DEBUG */
-			error_dialog(NULL, error, "Couldn't open CSS file: ");
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
+	char *default_css = get_data_file_path("style.css");
+	if( !chimara_glk_set_css_from_file(CHIMARA_GLK(self->glk), default_css, &error) ) {
+		error_dialog(self, error, "Couldn't open default CSS file: ");
 	}
 	
 	/* DON'T UNCOMMENT THIS your eyes will burn
 	 but it is a good test of programmatically altering just one style
 	 chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
 	 "buffer.normal { font-family: 'Comic Sans MS'; }");*/
-	
-	GtkBox *vbox = GTK_BOX(load_object(builder, "player-vbox"));	
 
-	ChimaraApp *theapp = chimara_app_get();
-
+	GtkUIManager *uimanager = new_ui_manager("player.menus");
 	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
 	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 1);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/player_menu");
@@ -185,7 +138,8 @@ chimara_player_init(ChimaraPlayer *self)
 	/* Connect the accelerators */
 	GtkAccelGroup *accels = gtk_ui_manager_get_accel_group(uimanager);
 	gtk_window_add_accel_group(GTK_WINDOW(self), accels);
-	
+
+	GtkBox *vbox = GTK_BOX(load_object(builder, "player-vbox"));
 	gtk_box_pack_end(vbox, self->glk, TRUE, TRUE, 0);
 	g_object_ref(self->glk); /* add an extra reference to keep it alive while
 							  the Glk program shuts down */
@@ -197,8 +151,8 @@ chimara_player_init(ChimaraPlayer *self)
 	g_signal_connect(self->glk, "notify::program-name", G_CALLBACK(change_window_title), self);
 	g_signal_connect(self->glk, "notify::story-name", G_CALLBACK(change_window_title), self);
 
-	g_object_unref( G_OBJECT(builder) );
-	g_object_unref( G_OBJECT(uimanager) );
+	g_object_unref(builder);
+	g_object_unref(uimanager);
 }
 
 /* PUBLIC FUNCTIONS */
