@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ui>
+  <menubar name="browser_menu">
+    <menu action="game">
+      <menuitem action="open"/>
+	  <menuitem action="recent"/>
+      <separator/>
+      <menuitem action="quit_chimara"/>
+    </menu>
+    <menu action="edit">
+      <menuitem action="preferences"/>
+    </menu>
+    <menu action="help">
+      <menuitem action="about"/>
+    </menu>
+  </menubar>
+</ui>

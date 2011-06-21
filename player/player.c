@@ -132,11 +132,11 @@ chimara_player_init(ChimaraPlayer *self)
 	//g_settings_bind(state_settings, "show-toolbar-default", toolbar_action, "active", G_SETTINGS_BIND_SET);
 		
 	GtkUIManager *uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/chimara.menus", &error) ) {
+	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/player.menus", &error) ) {
 #ifdef DEBUG
 		g_error_free(error);
 		error = NULL;
-		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
+		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/player.menus", &error) ) {
 #endif /* DEBUG */
 			error_dialog(NULL, error, "Error while building interface: ");
 			return;

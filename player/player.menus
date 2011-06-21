@@ -1,19 +1,5 @@
 <?xml version="1.0"?>
 <ui>
-  <menubar name="browser_menu">
-    <menu action="game">
-      <menuitem action="open"/>
-	  @OPEN_RECENT_MENU_ITEM@
-      <separator/>
-      <menuitem action="quit_chimara"/>
-    </menu>
-    <menu action="edit">
-      <menuitem action="preferences"/>
-    </menu>
-    <menu action="help">
-      <menuitem action="about"/>
-    </menu>
-  </menubar>
   <menubar name="player_menu">
     <menu action="game">
       <menuitem action="stop"/>

@@ -50,11 +50,11 @@ chimara_browser_init(ChimaraBrowser *self)
 		NULL);
 
 	GtkUIManager *uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/chimara.menus", &error) ) {
+	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/browser.menus", &error) ) {
 #ifdef DEBUG
 		g_error_free(error);
 		error = NULL;
-		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
+		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/browser.menus", &error) ) {
 #endif /* DEBUG */
 			error_dialog(NULL, error, "Error while building interface: ");
 			return;
