@@ -11,6 +11,7 @@
 #include <config.h>
 #include <libchimara/chimara-if.h>
 #include "app.h"
+#include "browser.h"
 #include "error.h"
 #include "preferences.h"
 #include "player.h"
@@ -140,8 +141,9 @@ chimara_app_get(void)
     if(G_UNLIKELY(theapp == NULL)) {
     		theapp = CHIMARA_APP(g_object_new(CHIMARA_TYPE_APP, NULL));
 
-		/* Create preferences window */
+		/* Create one-per-application windows */
 		theapp->prefswindow = chimara_prefs_new();
+		theapp->browser_window = chimara_browser_new();
 	}
 
     	return theapp;

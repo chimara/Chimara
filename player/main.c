@@ -62,9 +62,6 @@ main(int argc, char *argv[])
 
 	ChimaraApp *theapp = chimara_app_get();
 
-	GtkWidget *window = chimara_player_new();
-	gtk_widget_show_all(window);
-
 	//if(argc == 3) {
 	//	g_object_set(glk, "graphics-file", argv[2], NULL);
 	//}
@@ -74,6 +71,8 @@ main(int argc, char *argv[])
 	//		return 1;
 	//	}
 	//}
+
+	gtk_widget_show_all(theapp->browser_window);
 
     gdk_threads_enter();
 	gtk_main();

@@ -17,7 +17,7 @@ typedef struct _ChimaraApp {
 	GObject parent_instance;
 	
 	/* Public pointers */
-	// library browser window?
+	GtkWidget *browser_window;
 	GtkWidget *aboutwindow;
 	GtkWidget *prefswindow;
 	/* Public settings */

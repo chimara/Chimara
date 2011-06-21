@@ -24,7 +24,7 @@ typedef struct _ChimaraBrowserClass {
 } ChimaraBrowserClass;
 
 GType chimara_browser_get_type(void) G_GNUC_CONST;
-ChimaraBrowser *chimara_browser_new(void);
+GtkWidget *chimara_browser_new(void);
 
 G_END_DECLS
 
