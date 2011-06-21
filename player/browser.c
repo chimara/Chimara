@@ -45,6 +45,17 @@ typedef struct _ChimaraBrowserPrivate {
 
 G_DEFINE_TYPE(ChimaraBrowser, chimara_browser, GTK_TYPE_WINDOW);
 
+/* CALLBACKS */
+
+static gboolean
+on_browser_delete_event(GtkWidget *browser, GdkEvent *event)
+{
+	gtk_main_quit();
+	return TRUE;
+}
+
+/* TYPE SYSTEM */
+
 static void
 chimara_browser_finalize(GObject *self)
 {
@@ -78,6 +89,8 @@ chimara_browser_init(ChimaraBrowser *self)
 	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 0);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/browser_menu");
 	gtk_container_add(GTK_CONTAINER(self), menubar);
+
+	g_signal_connect(self, "delete-event", G_CALLBACK(on_browser_delete_event), NULL);
 }
 
 /* PUBLIC FUNCTIONS */
