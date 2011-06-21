@@ -49,7 +49,7 @@ typedef struct _ChimaraPrefsPrivate {
 #define CHIMARA_PREFS_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_PREFS, ChimaraPrefsPrivate))
 #define CHIMARA_PREFS_USE_PRIVATE ChimaraPrefsPrivate *priv = CHIMARA_PREFS_PRIVATE(self)
 
-G_DEFINE_TYPE(ChimaraPrefs, chimara_prefs, GTK_TYPE_WINDOW);
+G_DEFINE_TYPE(ChimaraPrefs, chimara_prefs, GTK_TYPE_DIALOG);
 
 static GtkTextTag *current_tag;
 static GtkListStore *preferred_list;
@@ -189,11 +189,22 @@ chimara_prefs_init(ChimaraPrefs *self)
 {
 	GError *error = NULL;
 	ChimaraApp *theapp = chimara_app_get();
+
+	/* Set parent properties */
+	g_object_set(self,
+		"title", _("Chimara Preferences"),
+		"window-position", GTK_WIN_POS_CENTER,
+		"type-hint", GDK_WINDOW_TYPE_HINT_DIALOG,
+		"border-width", 6,
+		NULL);
+	gtk_dialog_add_buttons(GTK_DIALOG(self),
+		GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+		NULL);
 	
 	/* Build user interface */
 	GtkBuilder *builder = gtk_builder_new();
 	char *object_ids[] = {
-		"prefswindow",
+		"prefs-notebook",
 		"available_interpreters",
 		"interpreters",
 		"style-list",
@@ -212,6 +223,10 @@ chimara_prefs_init(ChimaraPrefs *self)
 		}
 #endif /* DEBUG */
 	}
+
+	GtkWidget *notebook = GTK_WIDGET( load_object(builder, "prefs-notebook") );
+	GtkWidget *content_area = gtk_dialog_get_content_area( GTK_DIALOG(self) );
+	gtk_container_add( GTK_CONTAINER(content_area), notebook );
 	
 	/* Initialize the tree of style names */
 	GtkTreeStore *style_list = GTK_TREE_STORE( load_object(builder, "style-list") );
@@ -296,6 +311,13 @@ chimara_prefs_init(ChimaraPrefs *self)
 	//		1, interpreter_to_display_string(chimara_if_get_preferred_interpreter(CHIMARA_IF(glk), count)),
 	//		-1);
 	//}
+
+	gtk_builder_connect_signals(builder, self);
+	g_object_unref(builder);
+
+	/* Connect own signals */
+	g_signal_connect(self, "response", G_CALLBACK(gtk_widget_hide), NULL);
+	g_signal_connect(self, "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
 }
 
 /* PUBLIC FUNCTIONS */
@@ -331,7 +353,6 @@ style_tree_select_callback(GtkTreeSelection *selection)
 	//	current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_GRID, child_name);
 }
 
-#if 0
 void
 on_toggle_left(GtkToggleButton *button, ChimaraGlk *glk) {
 	/* No nothing if the button is deactivated */
@@ -421,7 +442,6 @@ on_font_set(GtkFontButton *button, ChimaraGlk *glk)
 	g_object_set(current_tag, "font-desc", font_description, NULL);
 	chimara_glk_update_style(glk);
 }
-#endif
 
 void
 on_css_filechooser_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)

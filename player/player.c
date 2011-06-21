@@ -1,4 +1,5 @@
 #include <glib-object.h>
+#include <glib/gi18n.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
 #include "player.h"
@@ -92,11 +93,19 @@ static void
 chimara_player_init(ChimaraPlayer *self)
 {	
 	GError *error = NULL;
-	
+
+	/* Set parent properties */
+	g_object_set(self,
+		"title", _("Chimara"),
+		"default-width", 600,
+		"default-height", 800,
+		NULL);
+
+	/* Construct user interface */
 	GtkBuilder *builder = gtk_builder_new();
 	char *object_ids[] = {
 		"actiongroup",
-		"vbox",
+		"player-vbox",
 		NULL
 	};
 	
@@ -159,7 +168,7 @@ chimara_player_init(ChimaraPlayer *self)
 	 chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
 	 "buffer.normal { font-family: 'Comic Sans MS'; }");*/
 	
-	GtkBox *vbox = GTK_BOX(load_object(builder, "vbox"));			
+	GtkBox *vbox = GTK_BOX(load_object(builder, "player-vbox"));	
 
 	ChimaraApp *theapp = chimara_app_get();
 
@@ -299,12 +308,5 @@ void
 on_quit_activate(GtkAction *action, ChimaraPlayer *player)
 {
 	chimara_glk_feed_line_input(CHIMARA_GLK(player->glk), "quit");
-}
-
-gboolean 
-on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraPlayer *player) 
-{
-	gtk_main_quit();
-	return TRUE;
 }
 

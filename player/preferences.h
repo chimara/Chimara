@@ -15,13 +15,13 @@ G_BEGIN_DECLS
 #define CHIMARA_PREFS_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), CHIMARA_TYPE_PREFS, ChimaraPrefsClass))
 
 typedef struct _ChimaraPrefs {
-	GtkWindow parent_instance;
+	GtkDialog parent_instance;
 	
 	/* Public pointers */
 } ChimaraPrefs;
 
 typedef struct _ChimaraPrefsClass {
-	GtkWindowClass parent_class;
+	GtkDialogClass parent_class;
 } ChimaraPrefsClass;
 
 GType chimara_prefs_get_type(void) G_GNUC_CONST;
