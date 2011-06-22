@@ -75,9 +75,7 @@ chimara_player_dispose(GObject *object)
 	ChimaraPlayer *self = CHIMARA_PLAYER(object);
 	if(chimara_glk_get_running(CHIMARA_GLK(self->glk))) {
 		chimara_glk_stop(CHIMARA_GLK(self->glk));
-		g_printerr("Stopping...\n");
 		chimara_glk_wait(CHIMARA_GLK(self->glk));
-		g_printerr("Done Waiting\n");
 	}
 	
 	/* Chain up */
@@ -87,7 +85,6 @@ chimara_player_dispose(GObject *object)
 static void
 chimara_player_finalize(GObject *object)
 {
-	g_printerr("Unreffing\n");
 	g_object_unref(CHIMARA_PLAYER(object)->glk);
 	
 	/* Chain up */
@@ -99,14 +96,8 @@ chimara_player_class_init(ChimaraPlayerClass *klass)
 {
 	/* Override methods of parent classes */
 	GObjectClass *object_class = G_OBJECT_CLASS(klass);
-	//object_class->set_property = chimara_if_set_property;
-	//object_class->get_property = chimara_if_get_property;
 	object_class->dispose = chimara_player_dispose;
 	object_class->finalize = chimara_player_finalize;
-	
-	/* Signals */
-
-	/* Properties */
 
 	/* Private data */
 	g_type_class_add_private(klass, sizeof(ChimaraPlayerPrivate));

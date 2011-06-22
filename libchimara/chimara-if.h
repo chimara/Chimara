@@ -116,7 +116,7 @@ GType chimara_if_get_type(void) G_GNUC_CONST;
 GtkWidget *chimara_if_new(void);
 void chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, ChimaraIFInterpreter interpreter);
 ChimaraIFInterpreter chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format);
-gboolean chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error);
+gboolean chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error);
 ChimaraIFFormat chimara_if_get_format(ChimaraIF *self);
 ChimaraIFInterpreter chimara_if_get_interpreter(ChimaraIF *self);
 

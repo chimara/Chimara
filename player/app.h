@@ -35,6 +35,7 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 #include <gtk/gtk.h>
+#include "player.h"
 
 G_BEGIN_DECLS
 
@@ -64,6 +65,7 @@ typedef struct _ChimaraAppClass {
 GType chimara_app_get_type(void) G_GNUC_CONST;
 ChimaraApp *chimara_app_get(void);
 GtkActionGroup *chimara_app_get_action_group(ChimaraApp *self);
+ChimaraPlayer *chimara_app_open_game(ChimaraApp *self, const char *path);
 
 G_END_DECLS
 

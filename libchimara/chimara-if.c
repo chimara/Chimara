@@ -570,7 +570,7 @@ chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
  * case @error is set.
  */
 gboolean
-chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
+chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), FALSE);
 	g_return_val_if_fail(gamefile, FALSE);

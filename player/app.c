@@ -49,7 +49,10 @@
 #include "util.h"
 
 typedef struct _ChimaraAppPrivate {
+	/* Action group containing "application actions" */
 	GtkActionGroup *action_group;
+	/* List of currently opened player windows */
+	GSList *window_list;
 } ChimaraAppPrivate;
 
 #define CHIMARA_APP_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_APP, ChimaraAppPrivate))
@@ -62,6 +65,7 @@ chimara_app_finalize(GObject *self)
 {
 	CHIMARA_APP_USE_PRIVATE;
 	g_object_unref(priv->action_group);
+	g_slist_free(priv->window_list);
 	
 	/* Chain up */
 	G_OBJECT_CLASS(chimara_app_parent_class)->finalize(self);
@@ -157,17 +161,15 @@ chimara_app_get_action_group(ChimaraApp *self)
 	return priv->action_group;
 }
 
-/* GLADE CALLBACKS */
-
 /* Internal function: See if there is a corresponding graphics file. If so,
 return its path. If not, return NULL. */
 static char *
-search_for_graphics_file(const char *filename)
+search_for_graphics_file(const char *path)
 {
 	ChimaraApp *theapp = chimara_app_get();
 
 	/* First get the name of the story file */
-	char *scratch = g_path_get_basename(filename);
+	char *scratch = g_path_get_basename(path);
 	*(strrchr(scratch, '.')) = '\0';
 
 	/* Check in the stored resource path, if set */
@@ -176,7 +178,7 @@ search_for_graphics_file(const char *filename)
 
 	/* Otherwise check in the current directory */
 	if(!resource_path)
-		resource_path = g_path_get_dirname(filename);
+		resource_path = g_path_get_dirname(path);
 
 	char *blorbfile = g_strconcat(resource_path, "/", scratch, ".blb", NULL);
 	g_free(scratch);
@@ -189,6 +191,46 @@ search_for_graphics_file(const char *filename)
 	return NULL;
 }
 
+/* Remove a deleted player window from the list of currently opened windows */
+static gboolean
+on_player_delete_event(GtkWidget *player, GdkEvent *event, ChimaraApp *self)
+{
+	CHIMARA_APP_USE_PRIVATE;
+	priv->window_list = g_slist_remove(priv->window_list, player);
+	return FALSE; /* don't block event */
+}
+
+ChimaraPlayer *
+chimara_app_open_game(ChimaraApp *self, const char *path)
+{
+	CHIMARA_APP_USE_PRIVATE;
+	GError *error = NULL;
+
+	/* Open a new player window */
+	ChimaraPlayer *player = CHIMARA_PLAYER(chimara_player_new());
+	gtk_widget_show_all(GTK_WIDGET(player));
+	gtk_window_present(GTK_WINDOW(player));
+
+	gchar *blorbfile = search_for_graphics_file(path);
+	if(blorbfile) {
+		g_object_set(player->glk, "graphics-file", blorbfile, NULL);
+		g_free(blorbfile);
+	}
+	if(!chimara_if_run_game(CHIMARA_IF(player->glk), path, &error)) {
+		error_dialog(GTK_WINDOW(player), error, _("Could not open game file '%s': "), path);
+		gtk_widget_destroy(GTK_WIDGET(player));
+		return NULL;
+	}
+
+	/* Add the opened game to the list of currently opened windows */
+	priv->window_list = g_slist_prepend(priv->window_list, player);
+	g_signal_connect_after(player, "delete-event", G_CALLBACK(on_player_delete_event), self);
+
+	return player;
+}
+
+/* GLADE CALLBACKS */
+
 void
 on_open_activate(GtkAction *action, ChimaraApp *theapp)
 {
@@ -196,7 +238,7 @@ on_open_activate(GtkAction *action, ChimaraApp *theapp)
 	//	return;
 
 	GtkWidget *dialog = gtk_file_chooser_dialog_new(_("Open Game"),
-	    NULL, // FIXME
+	    GTK_WINDOW(theapp->browser_window),
 	    GTK_FILE_CHOOSER_ACTION_OPEN,
 	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
@@ -210,46 +252,36 @@ on_open_activate(GtkAction *action, ChimaraApp *theapp)
 		g_free(path);
 	}
 
-	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-		GError *error = NULL;
-		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+	if(gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_ACCEPT)
+		goto finally;
 
-		/* Open a new player window */
-		ChimaraPlayer *player = CHIMARA_PLAYER(chimara_player_new());
-		gtk_widget_show_all(GTK_WIDGET(player));
-		gtk_window_present(GTK_WINDOW(player));
+	GError *error = NULL;
+	char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 
-		gchar *blorbfile = search_for_graphics_file(filename);
-		if(blorbfile) {
-			g_object_set(player->glk, "graphics-file", blorbfile, NULL);
-			g_free(blorbfile);
-		}
-		if(!chimara_if_run_game(CHIMARA_IF(player->glk), filename, &error)) {
-			error_dialog(GTK_WINDOW(player), error, _("Could not open game file '%s': "), filename);
-			g_free(filename);
-			gtk_widget_destroy(dialog);
-			return;
-		}
-		
-		path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
-		if(path) {
-			g_settings_set(theapp->state_settings, "last-open-path", "ms", path);
-			g_free(path);
-		}
+	if(!chimara_app_open_game(theapp, filename))
+		goto finally2;
 
-		/* Add file to recent files list */
-		GtkRecentManager *manager = gtk_recent_manager_get_default();
-		gchar *uri;
-		
-		if(!(uri = g_filename_to_uri(filename, NULL, &error)))
-			g_warning(_("Could not convert filename '%s' to URI: %s"), filename, error->message);
-		else {
-			if(!gtk_recent_manager_add_item(manager, uri))
-				g_warning(_("Could not add URI '%s' to recent files list."), uri);
-			g_free(uri);
-		}
-		g_free(filename);
+	path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
+	if(path) {
+		g_settings_set(theapp->state_settings, "last-open-path", "ms", path);
+		g_free(path);
 	}
+
+	/* Add file to recent files list */
+	GtkRecentManager *manager = gtk_recent_manager_get_default();
+	gchar *uri;
+
+	if(!(uri = g_filename_to_uri(filename, NULL, &error)))
+		g_warning(_("Could not convert filename '%s' to URI: %s"), filename, error->message);
+	else {
+		if(!gtk_recent_manager_add_item(manager, uri))
+			g_warning(_("Could not add URI '%s' to recent files list."), uri);
+		g_free(uri);
+	}
+
+finally2:
+	g_free(filename);
+finally:
 	gtk_widget_destroy(dialog);
 }
 
@@ -260,27 +292,15 @@ on_recent_item_activated(GtkRecentChooser *chooser, ChimaraApp *theapp)
 	gchar *uri = gtk_recent_chooser_get_current_uri(chooser);
 	gchar *filename;
 	if(!(filename = g_filename_from_uri(uri, NULL, &error))) {
-		error_dialog(NULL /* FIXME */, error, _("Could not open game file '%s': "), uri);
+		error_dialog(GTK_WINDOW(theapp->browser_window), error, _("Could not open game file '%s': "), uri);
 		goto finally;
 	}
 	
 	//if(!confirm_open_new_game(CHIMARA_GLK(player->glk)))
 	//	goto finally2;
 
-	/* Open a new player window */
-	ChimaraPlayer *player = CHIMARA_PLAYER(chimara_player_new());
-	gtk_widget_show_all(GTK_WIDGET(player));
-	gtk_window_present(GTK_WINDOW(player));
-	
-	char *blorbfile = search_for_graphics_file(filename);
-	if(blorbfile) {
-		g_object_set(player->glk, "graphics-file", blorbfile, NULL);
-		g_free(blorbfile);
-	}
-	if(!chimara_if_run_game(CHIMARA_IF(player->glk), filename, &error)) {
-		error_dialog(GTK_WINDOW(player), error, _("Could not open game file '%s': "), filename);
+	if(!chimara_app_open_game(theapp, filename))
 		goto finally2;
-	}
 	
 	/* Add file to recent files list again, this updates it to most recently used */
 	GtkRecentManager *manager = gtk_recent_manager_get_default();
