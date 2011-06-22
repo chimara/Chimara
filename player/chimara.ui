@@ -107,7 +107,7 @@
         <property name="label">_Open...</property>
         <property name="short_label">_Open</property>
         <property name="tooltip">Quit the current game and load a new one</property>
-        <property name="stock_id">gtk-media-play</property>
+        <property name="stock_id">gtk-open</property>
         <signal name="activate" handler="on_open_activate" swapped="no"/>
       </object>
       <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
@@ -158,6 +158,58 @@
         <property name="tooltip">About this application</property>
         <property name="stock_id">gtk-about</property>
         <signal name="activate" handler="on_about_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkActionGroup" id="browser_group">
+    <child>
+      <object class="GtkAction" id="add_file">
+        <property name="label" translatable="yes">_Add file to library...</property>
+        <property name="short_label" translatable="yes">Add</property>
+        <property name="tooltip" translatable="yes">Add a single game file to your library</property>
+        <property name="stock_id">gtk-add</property>
+        <signal name="activate" handler="action_add_file" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="add_watched_folder">
+        <property name="label" translatable="yes">Add watched _folder to library...</property>
+        <property name="short_label" translatable="yes">Add folder</property>
+        <property name="tooltip" translatable="yes">Add all the game files in a folder to your library, and keep monitoring the folder to see if any game files are added to it in the future</property>
+        <property name="stock_id">gtk-directory</property>
+        <signal name="activate" handler="action_add_watched_folder" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="play">
+        <property name="label" translatable="yes">_Play</property>
+        <property name="short_label" translatable="yes">Play</property>
+        <property name="tooltip" translatable="yes">Play the game</property>
+        <property name="stock_id">gtk-media-play</property>
+        <signal name="activate" handler="action_play" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="more_info">
+        <property name="label" translatable="yes">More _information...</property>
+        <property name="short_label" translatable="yes">Info</property>
+        <property name="tooltip" translatable="yes">View information about this game</property>
+        <property name="stock_id">gtk-info</property>
+        <signal name="activate" handler="action_more_info" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="remove_file">
+        <property name="label" translatable="yes">_Remove file</property>
+        <property name="short_label" translatable="yes">Remove</property>
+        <property name="tooltip" translatable="yes">Remove this game file from your library</property>
+        <property name="stock_id">gtk-remove</property>
+        <signal name="activate" handler="action_remove_file" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="library">
+        <property name="label" translatable="yes">_Library</property>
       </object>
     </child>
   </object>

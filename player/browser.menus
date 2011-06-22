@@ -2,6 +2,9 @@
 <ui>
   <menubar name="browser_menu">
     <menu action="game">
+      <menuitem action="play"/>
+      <menuitem action="more_info"/>
+      <separator/>
       <menuitem action="open"/>
 	  <menuitem action="recent"/>
       <separator/>
@@ -10,8 +13,20 @@
     <menu action="edit">
       <menuitem action="preferences"/>
     </menu>
+    <menu action="library">
+      <menuitem action="add_file"/>
+      <menuitem action="add_watched_folder"/>
+      <menuitem action="remove_file"/>
+    </menu>
     <menu action="help">
       <menuitem action="about"/>
     </menu>
   </menubar>
+  <toolbar name="browser_toolbar">
+    <toolitem action="add_file"/>
+    <toolitem action="remove_file"/>
+    <separator/>
+    <toolitem action="play"/>
+    <toolitem action="more_info"/>
+  </toolbar>
 </ui>

@@ -37,7 +37,7 @@
 #include "util.h"
 
 typedef struct _ChimaraBrowserPrivate {
-	int dummy;
+	GtkActionGroup *action_group;
 } ChimaraBrowserPrivate;
 
 #define CHIMARA_BROWSER_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_BROWSER, ChimaraBrowserPrivate))
@@ -59,6 +59,9 @@ on_browser_delete_event(GtkWidget *browser, GdkEvent *event)
 static void
 chimara_browser_finalize(GObject *self)
 {
+	CHIMARA_BROWSER_USE_PRIVATE;
+	g_object_unref(priv->action_group);
+
 	/* Chain up */
 	G_OBJECT_CLASS(chimara_browser_parent_class)->finalize(self);
 }
@@ -77,6 +80,7 @@ chimara_browser_class_init(ChimaraBrowserClass *klass)
 static void
 chimara_browser_init(ChimaraBrowser *self)
 {
+	CHIMARA_BROWSER_USE_PRIVATE;
 	ChimaraApp *theapp = chimara_app_get();
 
 	/* Set own properties */
@@ -84,16 +88,35 @@ chimara_browser_init(ChimaraBrowser *self)
 		"title", _("Chimara"),
 		NULL);
 
+	/* Build user interface */
+	char *object_ids[] = {
+		"browser_group",
+		NULL
+	};
+	GtkBuilder *builder = new_builder_with_objects(object_ids);
+
+	priv->action_group = GTK_ACTION_GROUP(load_object(builder, "browser_group"));
+	g_object_ref(priv->action_group);
+
 	GtkUIManager *uimanager = new_ui_manager("browser.menus");
 
-	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 0);
+	gtk_ui_manager_insert_action_group(uimanager, priv->action_group, 0);
+	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 1);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/browser_menu");
-	gtk_container_add(GTK_CONTAINER(self), menubar);
+	GtkWidget *toolbar = gtk_ui_manager_get_widget(uimanager, "/browser_toolbar");
+	GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(self), vbox);
+	gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 
 	g_signal_connect(self, "delete-event", G_CALLBACK(on_browser_delete_event), NULL);
+
+	g_object_unref(uimanager);
+	g_object_unref(builder);
 }
 
 /* PUBLIC FUNCTIONS */
+
 GtkWidget *
 chimara_browser_new(void)
 {
@@ -102,3 +125,29 @@ chimara_browser_new(void)
 		NULL));
 }
 
+/* GLADE CALLBACKS */
+
+void
+action_add_file(GtkAction *action, ChimaraBrowser *browser)
+{
+}
+
+void
+action_add_watched_folder(GtkAction *action, ChimaraBrowser *browser)
+{
+}
+
+void
+action_remove_file(GtkAction *action, ChimaraBrowser *browser)
+{
+}
+
+void
+action_play(GtkAction *action, ChimaraBrowser *browser)
+{
+}
+
+void
+action_more_info(GtkAction *action, ChimaraBrowser *browser)
+{
+}
