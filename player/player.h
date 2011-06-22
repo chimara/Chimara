@@ -57,6 +57,7 @@ typedef struct _ChimaraPlayerClass {
 
 GType chimara_player_get_type(void) G_GNUC_CONST;
 GtkWidget *chimara_player_new(void);
+void chimara_player_set_user_css_file(ChimaraPlayer *player, const char *filename);
 
 G_END_DECLS
 

@@ -229,17 +229,12 @@ chimara_prefs_init(ChimaraPrefs *self)
 		gtk_file_chooser_set_filename(blorb_chooser, filename);
 		g_free(filename);
 	}
+
 	g_settings_get(theapp->prefs_settings, "css-file", "ms", &filename);
-	//if(filename) {
-	//	if(!chimara_glk_set_css_from_file(glk, filename, NULL)) {
-	//		/* If the setting didn't point to a CSS file, fail silently and
-	//		 null the setting */
-	//		g_settings_set(theapp->prefs_settings, "css-file", "ms", NULL);
-	//	} else {
-	//		gtk_file_chooser_set_filename(css_chooser, filename);
-	//	}
-	//	g_free(filename);
-	//}
+	if(filename) {
+		gtk_file_chooser_set_filename(css_chooser, filename);
+		g_free(filename);
+	}
 
 	/* Populate the list of available interpreters */
 	GtkListStore *interp_list = GTK_LIST_STORE( load_object(builder, "available_interpreters") );
@@ -411,16 +406,10 @@ on_font_set(GtkFontButton *button, ChimaraGlk *glk)
 void
 on_css_filechooser_file_set(GtkFileChooserButton *button, ChimaraGlk *glk)
 {
-	//GError *error = NULL;
-	//ChimaraApp *theapp = chimara_app_get();
-	//char *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(button) );
-	//if(!chimara_glk_set_css_from_file(glk, filename, &error)) {
-	//	error_dialog(NULL, error, "There was a problem reading the CSS file: ");
-	//	g_settings_set(theapp->prefs_settings, "css-file", "ms", NULL);
-	//} else {
-	//	g_settings_set(theapp->prefs_settings, "css-file", "ms", filename);
-	//}
-	//g_free(filename);
+	ChimaraApp *theapp = chimara_app_get();
+	char *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(button) );
+	g_settings_set(theapp->prefs_settings, "css-file", "ms", filename);
+	g_free(filename);
 }
 
 void

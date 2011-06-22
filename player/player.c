@@ -70,6 +70,21 @@ change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkWindow *window)
 }
 
 static void
+on_css_changed(GSettings *prefs_settings, char *key, ChimaraPlayer *self)
+{
+	char *user_css;
+	g_settings_get(prefs_settings, "css-file", "ms", &user_css);
+	if(user_css) {
+		if(!chimara_glk_set_css_from_file(CHIMARA_GLK(self->glk), user_css, NULL)) {
+			/* If the setting didn't point to a CSS file, fail silently and
+			 null the setting */
+			g_settings_set(prefs_settings, "css-file", "ms", NULL);
+		}
+		g_free(user_css);
+	}
+}
+
+static void
 chimara_player_dispose(GObject *object)
 {
 	ChimaraPlayer *self = CHIMARA_PLAYER(object);
@@ -138,10 +153,14 @@ chimara_player_init(ChimaraPlayer *self)
 				 "ignore-errors", TRUE,
 				 /*"interpreter-number", CHIMARA_IF_ZMACHINE_TANDY_COLOR,*/
 				 NULL);
+
+	/* Set the CSS styles for the interpreter */
 	char *default_css = get_data_file_path("style.css");
 	if( !chimara_glk_set_css_from_file(CHIMARA_GLK(self->glk), default_css, &error) ) {
 		error_dialog(GTK_WINDOW(self), error, "Couldn't open default CSS file: ");
 	}
+	g_free(default_css);
+	on_css_changed(theapp->prefs_settings, "css-file", self);
 	
 	/* DON'T UNCOMMENT THIS your eyes will burn
 	 but it is a good test of programmatically altering just one style
@@ -174,6 +193,7 @@ chimara_player_init(ChimaraPlayer *self)
 	gtk_builder_connect_signals(builder, self);
 	g_signal_connect(self->glk, "notify::program-name", G_CALLBACK(change_window_title), self);
 	g_signal_connect(self->glk, "notify::story-name", G_CALLBACK(change_window_title), self);
+	g_signal_connect(theapp->prefs_settings, "changed::css-file", G_CALLBACK(on_css_changed), self);
 
 	g_object_unref(builder);
 	g_object_unref(uimanager);
@@ -187,6 +207,13 @@ chimara_player_new(void)
     return GTK_WIDGET(g_object_new(CHIMARA_TYPE_PLAYER,
 		"type", GTK_WINDOW_TOPLEVEL,
 		NULL));
+}
+
+void
+chimara_player_set_user_css_file(ChimaraPlayer *self, const char *filename)
+{
+	chimara_glk_set_css_to_default(CHIMARA_GLK(self->glk));
+	chimara_glk_set_css_from_file(CHIMARA_GLK(self->glk), filename, NULL);
 }
 
 /* GLADE CALLBACKS */
