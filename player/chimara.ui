@@ -1,73 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
-  <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkActionGroup" id="app_group">
-    <child>
-      <object class="GtkAction" id="game">
-        <property name="label">_Game</property>
-        <property name="short_label" translatable="yes">_Game</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="open">
-        <property name="label">_Open...</property>
-        <property name="short_label">_Open</property>
-        <property name="tooltip">Quit the current game and load a new one</property>
-        <property name="stock_id">gtk-media-play</property>
-        <signal name="activate" handler="on_open_activate" swapped="no"/>
-      </object>
-      <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
-    </child>
-    <child>
-      <object class="GtkAction" id="quit_chimara">
-        <property name="label">_Quit Chimara</property>
-        <property name="short_label" translatable="yes">_Quit Chimara</property>
-        <property name="tooltip">Leave the program</property>
-        <property name="stock_id">gtk-quit</property>
-        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="edit">
-        <property name="label">_Edit</property>
-        <property name="short_label" translatable="yes">_Edit</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRecentAction" id="recent">
-        <property name="label">Open _Recent</property>
-        <property name="short_label" translatable="yes">Open _Recent</property>
-        <property name="limit">10</property>
-        <property name="sort_type">mru</property>
-        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="preferences">
-        <property name="label">P_references</property>
-        <property name="short_label" translatable="yes">P_references</property>
-        <property name="tooltip">Configure the application</property>
-        <property name="stock_id">gtk-preferences</property>
-        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="help">
-        <property name="label">_Help</property>
-        <property name="short_label" translatable="yes">_Help</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="about">
-        <property name="label">_About...</property>
-        <property name="short_label">_About</property>
-        <property name="tooltip">About this application</property>
-        <property name="stock_id">gtk-about</property>
-        <signal name="activate" handler="on_about_activate" swapped="no"/>
-      </object>
-    </child>
-  </object>
+  <requires lib="gtk+" version="2.20"/>
   <object class="GtkActionGroup" id="actiongroup">
     <child>
       <object class="GtkAction" id="restore">
@@ -162,6 +95,72 @@
       </object>
     </child>
   </object>
+  <object class="GtkActionGroup" id="app_group">
+    <child>
+      <object class="GtkAction" id="game">
+        <property name="label">_Game</property>
+        <property name="short_label" translatable="yes">_Game</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="open">
+        <property name="label">_Open...</property>
+        <property name="short_label">_Open</property>
+        <property name="tooltip">Quit the current game and load a new one</property>
+        <property name="stock_id">gtk-media-play</property>
+        <signal name="activate" handler="on_open_activate" swapped="no"/>
+      </object>
+      <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="quit_chimara">
+        <property name="label">_Quit Chimara</property>
+        <property name="short_label" translatable="yes">_Quit Chimara</property>
+        <property name="tooltip">Leave the program</property>
+        <property name="stock_id">gtk-quit</property>
+        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="edit">
+        <property name="label">_Edit</property>
+        <property name="short_label" translatable="yes">_Edit</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRecentAction" id="recent">
+        <property name="label">Open _Recent</property>
+        <property name="short_label" translatable="yes">Open _Recent</property>
+        <property name="limit">10</property>
+        <property name="sort_type">mru</property>
+        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="preferences">
+        <property name="label">P_references</property>
+        <property name="short_label" translatable="yes">P_references</property>
+        <property name="tooltip">Configure the application</property>
+        <property name="stock_id">gtk-preferences</property>
+        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="help">
+        <property name="label">_Help</property>
+        <property name="short_label" translatable="yes">_Help</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="about">
+        <property name="label">_About...</property>
+        <property name="short_label">_About</property>
+        <property name="tooltip">About this application</property>
+        <property name="stock_id">gtk-about</property>
+        <signal name="activate" handler="on_about_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkAboutDialog" id="aboutwindow">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -201,15 +200,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </property>
     <property name="authors">Marijn van Vliet
 Philip Chimento</property>
-    <signal name="response" handler="gtk_widget_hide" swapped="no"/>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="response" handler="gtk_widget_hide" swapped="no"/>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox1">
+      <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
-          <object class="GtkHButtonBox" id="dialog-action_area1">
+          <object class="GtkButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
@@ -233,13 +233,6 @@ Philip Chimento</property>
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkVBox" id="player-vbox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <placeholder/>
-    </child>
-  </object>
   <object class="GtkListStore" id="interpreters">
     <columns>
       <!-- column-name Format -->
@@ -247,6 +240,13 @@ Philip Chimento</property>
       <!-- column-name Interpreter -->
       <column type="gchararray"/>
     </columns>
+  </object>
+  <object class="GtkVBox" id="player-vbox">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <placeholder/>
+    </child>
   </object>
   <object class="GtkNotebook" id="prefs-notebook">
     <property name="visible">True</property>
@@ -399,7 +399,6 @@ Philip Chimento</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <object class="GtkTreeView" id="style-treeview">
                         <property name="visible">True</property>
@@ -408,6 +407,9 @@ Philip Chimento</property>
                         <property name="model">style-list</property>
                         <property name="headers_visible">False</property>
                         <property name="headers_clickable">False</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="treeview-selection1"/>
+                        </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="style-name-column">
                             <property name="title" translatable="yes">Style Name</property>
@@ -794,8 +796,6 @@ Philip Chimento</property>
                   <object class="GtkScrolledWindow" id="scrolledwindow2">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">automatic</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <object class="GtkTreeView" id="interpreters_view">
                         <property name="visible">True</property>
@@ -804,6 +804,9 @@ Philip Chimento</property>
                         <property name="model">interpreters</property>
                         <property name="headers_clickable">False</property>
                         <property name="rules_hint">True</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="treeview-selection2"/>
+                        </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="format_column">
                             <property name="title">Format</property>
