@@ -229,6 +229,13 @@ chimara_app_open_game(ChimaraApp *self, const char *path)
 	return player;
 }
 
+void
+chimara_app_foreach_game_window(ChimaraApp *self, GFunc func, gpointer data)
+{
+	CHIMARA_APP_USE_PRIVATE;
+	g_slist_foreach(priv->window_list, func, data);
+}
+
 /* GLADE CALLBACKS */
 
 void

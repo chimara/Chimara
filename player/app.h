@@ -66,6 +66,7 @@ GType chimara_app_get_type(void) G_GNUC_CONST;
 ChimaraApp *chimara_app_get(void);
 GtkActionGroup *chimara_app_get_action_group(ChimaraApp *self);
 ChimaraPlayer *chimara_app_open_game(ChimaraApp *self, const char *path);
+void chimara_app_foreach_game_window(ChimaraApp *self, GFunc func, gpointer data);
 
 G_END_DECLS
 
