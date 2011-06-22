@@ -1477,17 +1477,17 @@ chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *n
 
 /**
  * chimara_glk_get_tag_names:
- * @glk: a #ChimaraGlk widget
  * @num_tags: Return location for the number of tag names retrieved.
  *
- * Retrieves the possible tag names to use in chimara_glk_get_tag().
+ * Class method. Retrieves the possible tag names to use in
+ * chimara_glk_get_tag().
  *
  * Returns: (transfer none) (array length=num_tags) (element-type utf8):
  * Array of strings containing the tag names. This array is owned by Chimara,
  * do not free it.
  */
 const gchar **
-chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags)
+chimara_glk_get_tag_names(unsigned int *num_tags)
 {
 	g_return_val_if_fail(num_tags != NULL, NULL);
 

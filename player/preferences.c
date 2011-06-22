@@ -202,15 +202,15 @@ chimara_prefs_init(ChimaraPrefs *self)
 	gtk_tree_store_set(style_list, &buffer, 0, "Text buffer", -1);
 	gtk_tree_store_set(style_list, &grid, 0, "Text grid", -1);
 
-	//int i;
-	//unsigned int num_tags;
-	//const gchar **tag_names = chimara_glk_get_tag_names(glk, &num_tags);
-	//for(i=0; i<num_tags; i++) {
-	//	gtk_tree_store_append(style_list, &buffer_child, &buffer);
-	//	gtk_tree_store_append(style_list, &grid_child, &grid);
-	//	gtk_tree_store_set(style_list, &buffer_child, 0, tag_names[i], -1);
-	//	gtk_tree_store_set(style_list, &grid_child, 0, tag_names[i], -1);
-	//}
+	int i;
+	unsigned int num_tags;
+	const gchar **tag_names = chimara_glk_get_tag_names(&num_tags);
+	for(i=0; i<num_tags; i++) {
+		gtk_tree_store_append(style_list, &buffer_child, &buffer);
+		gtk_tree_store_append(style_list, &grid_child, &grid);
+		gtk_tree_store_set(style_list, &buffer_child, 0, tag_names[i], -1);
+		gtk_tree_store_set(style_list, &grid_child, 0, tag_names[i], -1);
+	}
 
 	/* Set selection mode to single select */
 	GtkTreeView *view = GTK_TREE_VIEW( load_object(builder, "style-treeview") );
