@@ -675,7 +675,7 @@ chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
 	}
 
 	/* Game file and external blorb file */
-	args = g_slist_prepend(args, gamefile);
+	args = g_slist_prepend(args, (gpointer)gamefile);
 	if(priv->graphics_file
 		&& (interpreter == CHIMARA_IF_INTERPRETER_FROTZ || interpreter == CHIMARA_IF_INTERPRETER_NITFOL)
 	    && g_file_test(priv->graphics_file, G_FILE_TEST_EXISTS)) {
