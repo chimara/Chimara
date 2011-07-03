@@ -7,13 +7,17 @@
 #include <glib/gprintf.h>
 #include <libgda/libgda.h>
 #include <sql-parser/gda-sql-parser.h>
+#include <ghttp.h>
 
 typedef struct _metadata {
 	const gchar *element_name;
 	gchar *ifid;
 	gchar *title;
 	gchar *author;
-	gchar *year;
+	gchar *firstpublished;
+	gboolean error;
+	gchar *error_message;
+	gchar *error_code;
 } metadata;
 
 void start_element(
@@ -27,11 +31,17 @@ void start_element(
 	metadata *md = (metadata*) data;
 	md->element_name = element_name;
 
+	if( !strcmp(element_name, "errorCode") ) {
+		md->error = 1;
+		md->error_message = "";
+		md->error_code = "";
+	}
+
 	if( !strcmp(element_name, "ifindex") ) {
-		md->ifid = g_strdup("");
-		md->title = g_strdup("");
-		md->author = g_strdup("");
-		md->year = g_strdup("");
+		md->ifid = "";
+		md->title = "";
+		md->author = "";
+		md->firstpublished = "";
 	}
 }
 
@@ -43,31 +53,28 @@ void text(
 	GError **error)
 {
 	metadata *md = (metadata*) data;
-	gchar *stripped_text;
 
-	if( !strcmp(md->element_name, "ifid") ) {
-		//stripped_text = g_strstrip( g_strndup(text, text_len) );
-		stripped_text = g_strndup(text, text_len);
-		md->ifid = g_strconcat(md->ifid, stripped_text, NULL);
-		g_free(stripped_text);
+	if( !strcmp(md->element_name, "errorCode") ) {
+		md->error_code = g_strndup(text, text_len);
+	}
+	else if( !strcmp(md->element_name, "errorMessage") ) {
+		md->error_message = g_strndup(text, text_len);
+	}
+	else if( !strcmp(md->element_name, "ifid") ) {
+		if( strlen(md->ifid) < text_len )
+			md->ifid = g_strndup(text, text_len);
 	}
 	else if( !strcmp(md->element_name, "title") ) {
-		//stripped_text = g_strstrip( g_strndup(text, text_len) );
-		stripped_text = g_strndup(text, text_len);
-		md->title = g_strconcat(md->title, stripped_text, NULL);
-		g_free(stripped_text);
+		if( strlen(md->title) < text_len )
+			md->title = g_strndup(text, text_len);
 	}
 	else if( !strcmp(md->element_name, "author") ) {
-		//stripped_text = g_strstrip( g_strndup(text, text_len) );
-		stripped_text = g_strndup(text, text_len);
-		md->author = g_strconcat(md->author, stripped_text, NULL);
-		g_free(stripped_text);
+		if( strlen(md->author) < text_len )
+			md->author = g_strndup(text, text_len);
 	}
 	else if( !strcmp(md->element_name, "firstpublished") ) {
-		//stripped_text = g_strstrip( g_strndup(text, text_len) );
-		stripped_text = g_strndup(text, text_len);
-		md->year = g_strconcat(md->year, stripped_text, NULL);
-		g_free(stripped_text);
+		if( strlen(md->firstpublished) < text_len )
+			md->firstpublished = g_strndup(text, text_len);
 	}
 }
 
@@ -79,7 +86,7 @@ void end_element(
 {
 	if( !strcmp(element_name, "ifindex") ) {
 		metadata *md = (metadata*) data;
-		printf("IFID: %s\nTitle: %s\nAuthor: %s\nYear: %s\n", md->ifid, md->title, md->author, md->year);
+		printf("IFID: %s\nTitle: %s\nAuthor: %s\nFirst published: %s\n", md->ifid, md->title, md->author, md->firstpublished);
 	}
 }
 
@@ -107,6 +114,10 @@ run_sql_non_select(GdaConnection *cnc, const gchar *sql)
 }
 
 int main(int argc, char **argv) {
+	GError *err = NULL;
+	metadata data;
+	data.error = 0;
+
 	if(argc < 2) {
 		fprintf(stderr, "Usage: %s <story file>\n", argv[0]);
 		return 1;
@@ -114,29 +125,54 @@ int main(int argc, char **argv) {
 
 	babel_init(argv[1]);
 	int len = babel_treaty(GET_STORY_FILE_METADATA_EXTENT_SEL, NULL, 0);
-	if(len == 0) {
-		printf("No metadata found.\n");
+	gchar *ifiction;
+	if(len) {
+		printf("Metadata found in file.\n");
+		gchar *buffer = malloc(len * sizeof(gchar));
+		babel_treaty(GET_STORY_FILE_METADATA_SEL, buffer, len);
+		ifiction = g_strndup(buffer, len);
+		g_free(buffer);
+	} else {
+		printf("No metadata found in file, performing IFDB lookup.\n");
+		gchar *ifid = malloc(TREATY_MINIMUM_EXTENT * sizeof(gchar));
+		if( !babel_treaty(GET_STORY_FILE_IFID_SEL, ifid, TREATY_MINIMUM_EXTENT) ) {
+			fprintf(stderr, "Unable to create an IFID (A serious problem occurred while loading the file).\n");
+			babel_release();
+			return 1;
+		}
+		printf("Looking up IFID: %s.\n", ifid);
 		babel_release();
-		return 0;
+
+		ghttp_request *request = ghttp_request_new();
+		ghttp_set_uri(request, g_strconcat("http://ifdb.tads.org/viewgame?ifiction&ifid=", ifid, NULL));
+		ghttp_set_header(request, http_hdr_Connection, "close");
+		ghttp_prepare(request);
+		ghttp_process(request);
+
+		ifiction = g_strndup( ghttp_get_body(request), ghttp_get_body_len(request) );
+		ghttp_request_destroy(request);
 	}
 
-	gchar *buffer = malloc(len * sizeof(gchar));
-	babel_treaty(GET_STORY_FILE_METADATA_SEL, buffer, len);
-	g_strchomp(buffer);
-	len = strlen(buffer);
 
-	metadata data;
+	ifiction = g_strchomp(ifiction);
+
 	GMarkupParser xml_parser = {start_element, end_element, text, NULL, NULL};
 	GMarkupParseContext *context = g_markup_parse_context_new(&xml_parser, 0, &data, NULL);
 
-	GError *err = NULL;
-	if( g_markup_parse_context_parse(context, buffer, len, &err) == FALSE ) {
+	if( g_markup_parse_context_parse(context, ifiction, strlen(ifiction), &err) == FALSE ) {
 		fprintf(stderr, "Metadata parse failed: %s\n", err->message);
 	}
 
-	free(buffer);
 	g_markup_parse_context_free(context);
+	g_free(ifiction);
+
 	babel_release();
+
+	// Check for errors
+	if(data.error) {
+		fprintf(stderr, "ERROR %s: %s\n", data.error_code, data.error_message);
+		return 1;
+	}
 
 	// Open DB connection
 	GdaConnection *cnc;
@@ -157,16 +193,16 @@ int main(int argc, char **argv) {
 	
 	// Create stories table
 	//run_sql_non_select(cnc, "DROP TABLE IF EXISTS stories");
-	run_sql_non_select(cnc, "CREATE TABLE IF NOT EXISTS stories (ifid text not null primary key, title text, author text, year integer)");
+	run_sql_non_select(cnc, "CREATE TABLE IF NOT EXISTS stories (ifid text not null primary key, title text, author text, firstpublished text)");
 
 	// Populate the table
 	GValue *v1, *v2, *v3, *v4;
 	v1 = gda_value_new_from_string(data.ifid, G_TYPE_STRING);
 	v2 = gda_value_new_from_string(data.title, G_TYPE_STRING);
 	v3 = gda_value_new_from_string(data.author, G_TYPE_STRING);
-	v4 = gda_value_new_from_string(data.year, G_TYPE_UINT);
+	v4 = gda_value_new_from_string(data.firstpublished, G_TYPE_STRING);
 
-	if( !gda_insert_row_into_table(cnc, "stories", &err, "ifid", v1, "title", v2, "author", v3, "year", v4, NULL) ) {
+	if( !gda_insert_row_into_table(cnc, "stories", &err, "ifid", v1, "title", v2, "author", v3, "firstpublished", v4, NULL) ) {
 		g_warning("Could not INSERT data into the 'stories' table: %s\n", err && err->message ? err->message : "No details");
 	}
 
