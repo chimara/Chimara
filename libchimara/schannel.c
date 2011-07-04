@@ -453,6 +453,49 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 }
 
 /**
+ * glk_schannel_play_multi:
+ * @chanarray:
+ * @chancount:
+ * @sndarray:
+ * @soundcount:
+ * @notify:
+ * 
+ * [DRAFT SPEC]
+ *
+ * This works the same as glk_schannel_play_ext(), except that you can specify
+ * more than one sound. The channel references and sound resource numbers are
+ * given as two arrays, which must be the same length. The @notify argument
+ * applies to all the sounds; the repeats value for all the sounds is 1.
+ * 
+ * All the sounds will begin at exactly the same time.
+ * 
+ * This returns the number of sounds that began playing correctly. (This will be
+ * a number from 0 to @soundcount.)
+ *
+ * <note><para>
+ *   Note that you have to supply @chancount and @soundcount as separate
+ *   arguments, even though they are required to be the same. This is an awkward
+ *   consequence of the way array arguments are dispatched in Glulx.
+ * </para></note>
+ * 
+ * Returns: The number of sounds that started playing correctly.
+ */
+glui32
+glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray, glui32 soundcount, glui32 notify)
+{
+	g_return_val_if_fail(chancount == soundcount, 0);
+	g_return_val_if_fail(chanarray == NULL && chancount != 0, 0);
+	g_return_val_if_fail(sndarray == NULL && soundcount != 0, 0);
+
+	int count;
+	for(count = 0; count < chancount; count++)
+		VALID_SCHANNEL(chanarray[count], return 0);
+	
+	g_warning("Not implemented");
+	return 0;
+}
+
+/**
  * glk_schannel_stop:
  * @chan: Channel to silence.
  *
@@ -466,6 +509,45 @@ glk_schannel_stop(schanid_t chan)
 #ifdef GSTREAMER_SOUND
 	clean_up_after_playing_sound(chan);
 #endif
+}
+
+/**
+ * glk_schannel_pause:
+ * @chan: Channel to pause.
+ * 
+ * [DRAFT SPEC]
+ * 
+ * Pause any sound playing in the channel. This does not generate any
+ * notification events. If the channel is already paused, this does nothing.
+ * 
+ * New sounds started in a paused channel are paused immediately.
+ * 
+ * A volume change in progress is <emphasis>not</emphasis> paused, and may
+ * proceed to completion, generating a notification if appropriate.
+ */
+void
+glk_schannel_pause(schanid_t chan)
+{
+	VALID_SCHANNEL(chan, return);
+
+	/* Not implemented */
+}
+
+/**
+ * glk_schannel_unpause:
+ * @chan: Channel to unpause.
+ * 
+ * [DRAFT SPEC]
+ *
+ * Unpause the channel. Any paused sounds begin playing where they left off. If
+ * the channel is not already paused, this does nothing.
+ */
+void
+glk_schannel_unpause(schanid_t chan)
+{
+	VALID_SCHANNEL(chan, return);
+
+	/* Not implemented */
 }
 
 /**
@@ -500,12 +582,60 @@ glk_schannel_stop(schanid_t chan)
 void 
 glk_schannel_set_volume(schanid_t chan, glui32 vol)
 {
+	glk_schannel_set_volume_ext(chan, vol, 0, 0);
+}
+
+/**
+ * glk_schannel_set_volume_ext:
+ * @chan: Channel to set the volume of.
+ * @vol: Integer representing the volume; 0x10000 is 100&percnt;.
+ * @duration: Length of volume change in milliseconds, or 0 for immediate.
+ * @notify: If nonzero, requests a notification when the volume change finishes.
+ * 
+ * [DRAFT SPEC]
+ * 
+ * Sets the volume in the channel, from 0 (silence) to 0x10000 (full volume).
+ * Again, you can overdrive the volume by setting a value greater than 0x10000,
+ * but this is not recommended.
+ *
+ * If the @duration is zero, the change is immediate. Otherwise, the change
+ * begins immediately, and occurs smoothly over the next @duration milliseconds.
+ *
+ * The @notify value should be nonzero in order to request a volume notification
+ * event. If you do this, when the volume change is completed, you will get an
+ * event with type #evtype_VolumeNotify. The window will be %NULL, @val1 will be
+ * zero, and @val2 will be the nonzero value you passed as @notify.
+ *
+ * The glk_schannel_set_volume() does not include @duration and @notify values.
+ * Both are assumed to be zero: immediate change, no notification.
+ *
+ * You can call these functions between sounds, or while a sound is playing.
+ * However, a zero-duration change while a sound is playing may produce
+ * unpleasant clicks.
+ *
+ * At most one volume change can be occurring on a sound channel at any time. If
+ * you call one of these functions while a previous volume change is in
+ * progress, the previous change is interrupted. The beginning point of the new
+ * volume change should be wherever the previous volume change was interrupted
+ * (rather than the previous change's beginning or ending point).
+ *
+ * Not all libraries support thse functions. You should test the appropriate
+ * gestalt selectors before you rely on them; see "Testing for Sound
+ * Capabilities".
+ */
+void
+glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 notify)
+{
 	VALID_SCHANNEL(chan, return);
+	/* Silently ignore out-of-range volume values */
+	
 #ifdef GSTREAMER_SOUND
 	gdouble volume_gst = (gdouble)vol / 0x10000;
 	g_printerr("Volume set to: %f\n", volume_gst);
 	g_object_set(chan->filter, "volume", CLAMP(volume_gst, 0.0, 10.0), NULL);
 #endif
+
+	/* Not implemented */
 }
 
 /**
