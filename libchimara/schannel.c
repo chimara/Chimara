@@ -175,6 +175,24 @@ finally:
 schanid_t 
 glk_schannel_create(glui32 rock)
 {
+	return glk_schannel_create_ext(rock, 0x10000);
+}
+
+/**
+ * glk_schannel_create_ext:
+ * @rock: The rock value to give the new sound channel.
+ * @volume: Integer representing the volume; 0x10000 is 100&percnt;.
+ *
+ * [DRAFT SPEC]
+ *
+ * The glk_schannel_create_ext() call lets you create a channel with the volume
+ * already set at a given level.
+ *
+ * Returns: A new sound channel, or %NULL.
+ */
+schanid_t
+glk_schannel_create_ext(glui32 rock, glui32 volume)
+{
 #ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
@@ -212,6 +230,9 @@ glk_schannel_create(glui32 rock)
 		WARNING(_("Could not create one or more GStreamer elements"));
 		goto fail;
 	}
+
+	/* Set the initial volume */
+	glk_schannel_set_volume(s, volume);
 
 	/* Put the elements in the pipeline and link as many together as we can
 	 without knowing the type of the audio stream */
@@ -530,7 +551,21 @@ glk_schannel_pause(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 
-	/* Not implemented */
+	if(chan->paused)
+		return; /* Silently do nothing */
+	GstState state;
+	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
+		WARNING(_("Could not get GstElement state"));
+		return;
+	}
+	if(state != GST_STATE_PLAYING)
+		return; /* Silently do nothing if no sound is playing */
+
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_PAUSED)) {
+		WARNING_S(_("Could not set GstElement state to"), "PAUSED");
+		return;
+	}
+	chan->paused = TRUE;
 }
 
 /**
@@ -547,7 +582,22 @@ glk_schannel_unpause(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 
-	/* Not implemented */
+	if(!chan->paused)
+		return; /* Silently do nothing */
+
+	GstState state;
+	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
+		WARNING(_("Could not get GstElement state"));
+		return;
+	}
+	if(state != GST_STATE_PAUSED)
+		return; /* Silently do nothing */
+
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
+		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
+		return;
+	}
+	chan->paused = FALSE;
 }
 
 /**
@@ -631,7 +681,6 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	
 #ifdef GSTREAMER_SOUND
 	gdouble volume_gst = (gdouble)vol / 0x10000;
-	g_printerr("Volume set to: %f\n", volume_gst);
 	g_object_set(chan->filter, "volume", CLAMP(volume_gst, 0.0, 10.0), NULL);
 #endif
 

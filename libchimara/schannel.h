@@ -25,6 +25,8 @@ struct glk_schannel_struct
 	glui32 resource, notify;
 	/* How many times to repeat the last sound played (-1 = forever) */
 	glui32 repeats;
+	/* Whether channel is paused */
+	gboolean paused;
 	
 #ifdef GSTREAMER_SOUND
 	/* Each sound channel is represented as a GStreamer pipeline.  */
