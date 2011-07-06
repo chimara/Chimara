@@ -636,7 +636,7 @@ is_unicode_newline(glsi32 ch, strid_t str, gboolean utf8)
 		glsi32 ch2 = utf8? read_utf8_char_from_file(str) :
 			read_ucs4be_char_from_file(str);
 		if(ch2 != 0x0A) {
-			if(fseek(str->file_pointer, utf8? -1 : -4, SEEK_CUR) == -1);
+			if(fseek(str->file_pointer, utf8? -1 : -4, SEEK_CUR) == -1)
 				WARNING_S("Seek failed on stream", g_strerror(errno) );
 			str->lastop = 0; /* can read or write after a seek */
 		}
