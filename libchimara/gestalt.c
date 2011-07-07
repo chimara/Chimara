@@ -137,7 +137,9 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		/* none! */
+		/* We do not support the entire new sound suite yet */
+		case gestalt_Sound2:
+			return 0;
 
 		/* Selector not supported */	
 		default:
