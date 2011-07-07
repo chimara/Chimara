@@ -675,7 +675,7 @@ glk_schannel_set_volume(schanid_t chan, glui32 vol)
  * volume change should be wherever the previous volume change was interrupted
  * (rather than the previous change's beginning or ending point).
  *
- * Not all libraries support thse functions. You should test the appropriate
+ * Not all libraries support these functions. You should test the appropriate
  * gestalt selectors before you rely on them; see "Testing for Sound
  * Capabilities".
  */
