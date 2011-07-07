@@ -1045,10 +1045,15 @@
  * SECTION:glk-sound-testing
  * @short_description: Checking whether the library supports sound
  *
- * Before calling Glk sound functions, you should use the %gestalt_Sound
- * selector. To test for additional capabilities, you can use the 
- * %gestalt_SoundMusic, %gestalt_SoundVolume, and %gestalt_SoundNotify 
- * selectors.
+ * Before calling Glk sound functions, you should use the %gestalt_Sound2
+ * selector.
+ *
+ * Earlier versions of the Glk spec defined separate selectors for various
+ * optional capabilities. This has proven to be an unnecessarily confusing
+ * strategy, and is no longer used. The %gestalt_Sound, %gestalt_SoundMusic,
+ * %gestalt_SoundVolume, and %gestalt_SoundNotify selectors still exist, but you
+ * should not need to test them; the %gestalt_Sound2 selector covers all of
+ * them.
  */
 
 /**
@@ -1578,9 +1583,23 @@
  */
 
 /**
+ * gestalt_Sound2:
+ *
+ * You can test whether the library supports sound:
+ * |[
+ * glui32 res;
+ * res = glk_gestalt(gestalt_Sound2, 0);
+ * ]|
+ * This returns 1 if the overall suite of sound functions is available. This
+ * includes all the functions defined in <link
+ * linkend="chimara-chapter-Sound">this chapter</link>. It also includes the
+ * capabilities described below under %gestalt_SoundMusic, %gestalt_SoundVolume,
+ * and %gestalt_SoundNotify.
+ */
+
+/**
  * gestalt_Sound:
  *
- * You can test whether the library supports sound: 
  * |[
  * glui32 res;
  * res = glk_gestalt(gestalt_Sound, 0);
@@ -1592,7 +1611,7 @@
  * glk_sound_load_hint().
  *
  * If this selector returns 0, you should not try to call these functions. They 
- * may have no effect, or they may cause a run-time error. 
+ * may have no effect, or they may cause a run-time error.
  */
 
 /**
@@ -1605,7 +1624,7 @@
  * res = glk_gestalt(gestalt_SoundVolume, 0);
  * ]|
  * This selector returns 1 if the glk_schannel_set_volume() function works. If 
- * it returns zero, glk_schannel_set_volume() has no effect.     
+ * it returns zero, glk_schannel_set_volume() has no effect.
  */
 
 /**
@@ -1617,7 +1636,7 @@
  * res = glk_gestalt(gestalt_SoundNotify, 0);
  * ]| 
  * This selector returns 1 if the library supports sound notification events. If
- * it returns zero, you will never get such events. 
+ * it returns zero, you will never get such events.
  */
 
 /**

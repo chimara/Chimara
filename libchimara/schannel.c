@@ -476,11 +476,11 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 
 /**
  * glk_schannel_play_multi:
- * @chanarray:
- * @chancount:
- * @sndarray:
- * @soundcount:
- * @notify:
+ * @chanarray: Array of #schanid_t structures.
+ * @chancount: Length of @chanarray.
+ * @sndarray: Array of sound resource numbers.
+ * @soundcount: Length of @sndarray, must be equal to @chanarray.
+ * @notify: If nonzero, request a notification when each sound finishes.
  * 
  * [DRAFT SPEC]
  *

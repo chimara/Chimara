@@ -105,7 +105,7 @@
     </chapter>
     
     <!-- Chapter 8. Sound -->
-    <chapter>
+    <chapter id="chimara-chapter-Sound">
       <title>Sound</title>
       <xi:include href="glk-sound-resources.sgml"/>
       <xi:include href="xml/glk-sound-channels.xml"/>
