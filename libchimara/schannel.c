@@ -463,8 +463,9 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	g_object_set(chan->source, "stream", stream, NULL);
 	g_object_unref(stream); /* Now owned by GStreamer element */
 	
-	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
-		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
+	/* Play the sound; unless the channel is paused, then pause it instead */
+	if(!gst_element_set_state(chan->pipeline, chan->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
+		WARNING_S(_("Could not set GstElement state to"), chan->paused? "PAUSED" : "PLAYING");
 		return 0;
 	}
 	return 1;
@@ -553,6 +554,10 @@ glk_schannel_pause(schanid_t chan)
 
 	if(chan->paused)
 		return; /* Silently do nothing */
+
+	/* Mark the channel as paused even if there is no sound playing yet */
+	chan->paused = TRUE;
+
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING(_("Could not get GstElement state"));
@@ -565,7 +570,6 @@ glk_schannel_pause(schanid_t chan)
 		WARNING_S(_("Could not set GstElement state to"), "PAUSED");
 		return;
 	}
-	chan->paused = TRUE;
 }
 
 /**
@@ -585,6 +589,9 @@ glk_schannel_unpause(schanid_t chan)
 	if(!chan->paused)
 		return; /* Silently do nothing */
 
+	/* Mark the channel as not paused in any case */
+	chan->paused = FALSE;
+
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING(_("Could not get GstElement state"));
@@ -597,7 +604,6 @@ glk_schannel_unpause(schanid_t chan)
 		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
 		return;
 	}
-	chan->paused = FALSE;
 }
 
 /**
