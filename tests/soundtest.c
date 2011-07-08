@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#define NUM_CHANNELS 2
+
 void
 glk_main(void)
 {
@@ -19,10 +21,14 @@ glk_main(void)
 		return;
 	}
 	
-	schanid_t sc = glk_schannel_create(0);
-	if(!sc) {
-		fprintf(stderr, "Could not create sound channel.\n");
-		return;
+	schanid_t sc[NUM_CHANNELS];
+	int count;
+	for(count = 0; count < NUM_CHANNELS; count++) {
+		sc[count] = glk_schannel_create(count);
+		if(!sc[count]) {
+			fprintf(stderr, "Could not create sound channel number %d.\n", count);
+			return;
+		}
 	}
 
 	/* Open the main window. */
@@ -35,12 +41,16 @@ glk_main(void)
 	glk_set_window(mainwin);
 	glk_put_string("Copy a sound file to the current directory and rename it "
 	    "to SND3. Supported formats: AIFF, OGG, MOD, S3M, IT, XM. Type 'play' "
-	    "to play it.\n");
+	    "to play it.\n\n"
+		"If you want to test multi-sound playing, copy another sound file and "
+		"rename it to SND4 as well. You can't stop it, so make it a short "
+		"sound effect.\n");
 
 	char buffer[1024];
 	int len;
 	int finish = 0;
 	int repeat = 1;
+	int ramp = 0;
 
 	event_t ev;
 	while(!finish) {
@@ -67,13 +77,13 @@ glk_main(void)
 					finish = 1;
 				} else if(strcmp(buffer, "play") == 0) {
 					glk_put_string("Playing sound.\n");
-					if(!glk_schannel_play_ext(sc, 3, repeat, 1)) {
+					if(!glk_schannel_play_ext(sc[0], 3, repeat, 1)) {
 						fprintf(stderr, "Could not start sound channel.\n");
 						finish = 1;
 					}
 				} else if(strcmp(buffer, "stop") == 0) {
 					glk_put_string("Stopping sound.\n");
-					glk_schannel_stop(sc);
+					glk_schannel_stop(sc[0]);
 				} else if(strcmp(buffer, "repeat") == 0) {
 					glk_put_string("Setting repeat to ");
 					if(repeat == 1) {
@@ -89,19 +99,49 @@ glk_main(void)
 						glk_put_string("ONCE.\n");
 						repeat = 1;
 					}
+				} else if(strcmp(buffer, "pause") == 0) {
+					glk_put_string("Pausing channel.\n");
+					glk_schannel_pause(sc[0]);
+				} else if(strcmp(buffer, "unpause") == 0) {
+					glk_put_string("Unpausing channel.\n");
+					glk_schannel_unpause(sc[0]);
+				} else if(strcmp(buffer, "ramp") == 0) {
+					glk_put_string("Ramping volume to ");
+					if(ramp == 0) {
+						glk_put_string("HALF.\n");
+						glk_schannel_set_volume_ext(sc[0], 0x8000, 1000, 42);
+						ramp = 1;
+					} else if(ramp == 1) {
+						glk_put_string("FULL.\n");
+						glk_schannel_set_volume_ext(sc[0], 0x10000, 1000, 69);
+						ramp = 0;
+					}
+				} else if(strcmp(buffer, "multi") == 0) {
+					glk_put_string("Playing two sounds. (These will not repeat.)\n");
+					glui32 sounds[NUM_CHANNELS] = { 3, 4 };
+					if(glk_schannel_play_multi(sc, NUM_CHANNELS, sounds, NUM_CHANNELS, 1) < 2) {
+						fprintf(stderr, "Tried to start %d sounds, but not all were successful.", NUM_CHANNELS);
+						finish = 1;
+					}
 				} else if(strcmp(buffer, "help") == 0) {
-					glk_put_string("Type PLAY or REPEAT or STOP or QUIT.\n");
+					glk_put_string("Type PLAY or MULTI or REPEAT or PAUSE or UNPAUSE or RAMP or STOP or QUIT.\n");
 				}
 				break;
 			case evtype_SoundNotify:
 				glk_cancel_line_event(mainwin, NULL);
 				glk_put_string("\nGot sound notify event!\n");
 				break;
+			case evtype_VolumeNotify:
+				glk_cancel_line_event(mainwin, NULL);
+				glk_put_string("\nGot volume notify event!\n");
+				break;
 			default:
 				;
 		}
 	}
 
-	glk_schannel_stop(sc);
-	glk_schannel_destroy(sc);
+	for(count = 0; count < NUM_CHANNELS; count++) {
+		glk_schannel_stop(sc[count]);
+		glk_schannel_destroy(sc[count]);
+	}
 }
