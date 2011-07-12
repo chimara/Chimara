@@ -410,7 +410,6 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-	g_printerr("Play sound %d with repeats %d and notify %d\n", snd, repeats, notify);
 #ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GInputStream *stream;
@@ -506,15 +505,88 @@ glui32
 glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray, glui32 soundcount, glui32 notify)
 {
 	g_return_val_if_fail(chancount == soundcount, 0);
-	g_return_val_if_fail(chanarray == NULL && chancount != 0, 0);
-	g_return_val_if_fail(sndarray == NULL && soundcount != 0, 0);
+	g_return_val_if_fail(chanarray != NULL || chancount == 0, 0);
+	g_return_val_if_fail(sndarray != NULL || soundcount == 0, 0);
 
 	int count;
 	for(count = 0; count < chancount; count++)
 		VALID_SCHANNEL(chanarray[count], return 0);
-	
-	g_warning("Not implemented");
+
+#ifdef GSTREAMER_SOUND
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	GInputStream *stream;
+
+	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
+		WARNING(_("No resource map has been loaded yet."));
+		return 0;
+	}
+
+	/* We keep an array of sounds to skip if any of them have errors */
+	gboolean *skiparray = g_new0(gboolean, chancount);
+
+	/* Set up all the channels one by one */
+	for(count = 0; count < chancount; count++) {
+		/* Stop the previous sound */
+		clean_up_after_playing_sound(chanarray[count]);
+
+		/* Load the sound into a GInputStream, by whatever method */
+		if(!glk_data->resource_map) {
+			gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, sndarray[count], glk_data->resource_load_callback_data);
+			if(!filename) {
+				WARNING(_("Error loading resource from alternative location."));
+				skiparray[count] = TRUE;
+				continue;
+			}
+
+			GError *err = NULL;
+			GFile *file = g_file_new_for_path(filename);
+			stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
+			if(!stream) {
+				IO_WARNING(_("Error loading resource from file"), filename, err->message);
+				g_free(filename);
+				g_object_unref(file);
+				skiparray[count] = TRUE;
+				continue;
+			}
+			g_free(filename);
+			g_object_unref(file);
+		} else {
+			giblorb_result_t resource;
+			giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, sndarray[count]);
+			if(result != giblorb_err_None) {
+				WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+				skiparray[count] = TRUE;
+				continue;
+			}
+			stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+		}
+
+		chanarray[count]->repeats = 1;
+		chanarray[count]->resource = sndarray[count];
+		chanarray[count]->notify = notify;
+		g_object_set(chanarray[count]->source, "stream", stream, NULL);
+		g_object_unref(stream); /* Now owned by GStreamer element */
+	}
+
+	/* Start all the sounds as close to each other as possible. */
+	/* FIXME: Is there a way to start them exactly at the same time? */
+	glui32 successes = 0;
+	for(count = 0; count < chancount; count++) {
+		if(skiparray[count])
+			continue;
+		/* Play the sound; unless the channel is paused, then pause it instead */
+		if(!gst_element_set_state(chanarray[count]->pipeline, chanarray[count]->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
+			WARNING_S(_("Could not set GstElement state to"), chanarray[count]->paused? "PAUSED" : "PLAYING");
+			skiparray[count] = TRUE;
+			continue;
+		}
+		successes++;
+	}
+	g_free(skiparray);
+	return successes;
+#else
 	return 0;
+#endif
 }
 
 /**
