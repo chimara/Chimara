@@ -118,7 +118,7 @@ AC_ARG_WITH([gstreamer],
 SOUND_MODULE=
 AS_IF([$TEST "x$with_gstreamer" != xno], 
 	[AC_DEFINE([GSTREAMER_SOUND], [1], [Define to enable sound support with GStreamer])
-	SOUND_MODULE="gstreamer-0.10 >= 0.10.12"])
+	SOUND_MODULE="gstreamer-0.10 >= 0.10.12 gstreamer-controller-0.10"])
 
 ### CHECK FOR LIBRARIES #######################################################
 

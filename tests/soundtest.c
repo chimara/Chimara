@@ -109,11 +109,11 @@ glk_main(void)
 					glk_put_string("Ramping volume to ");
 					if(ramp == 0) {
 						glk_put_string("HALF.\n");
-						glk_schannel_set_volume_ext(sc[0], 0x8000, 1000, 42);
+						glk_schannel_set_volume_ext(sc[0], 0x8000, 3000, 42);
 						ramp = 1;
 					} else if(ramp == 1) {
 						glk_put_string("FULL.\n");
-						glk_schannel_set_volume_ext(sc[0], 0x10000, 1000, 69);
+						glk_schannel_set_volume_ext(sc[0], 0x10000, 3000, 69);
 						ramp = 0;
 					}
 				} else if(strcmp(buffer, "multi") == 0) {

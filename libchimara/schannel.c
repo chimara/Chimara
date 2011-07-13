@@ -4,6 +4,7 @@
 #include <libchimara/glk.h>
 #ifdef GSTREAMER_SOUND
 #include <gst/gst.h>
+#include <gst/controller/gstcontroller.h>
 #endif
 #include "magic.h"
 #include "schannel.h"
@@ -678,6 +679,22 @@ glk_schannel_unpause(schanid_t chan)
 	}
 }
 
+static double
+volume_glk_to_gstreamer(glui32 volume_glk)
+{
+	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
+}
+
+static void
+channel_set_volume_immediately(schanid_t chan, double volume, glui32 notify)
+{
+	g_object_set(chan->filter, "volume", volume, NULL);
+
+	if(notify != 0) {
+		/* Send a notification */
+	}
+}
+
 /**
  * glk_schannel_set_volume:
  * @chan: Channel to set the volume of.
@@ -710,7 +727,13 @@ glk_schannel_unpause(schanid_t chan)
 void 
 glk_schannel_set_volume(schanid_t chan, glui32 vol)
 {
-	glk_schannel_set_volume_ext(chan, vol, 0, 0);
+	VALID_SCHANNEL(chan, return);
+	/* Silently ignore out-of-range volume values */
+
+#ifdef GSTREAMER_SOUND
+	double volume = volume_glk_to_gstreamer(vol);
+	channel_set_volume_immediately(chan, volume, 0);
+#endif
 }
 
 /**
@@ -758,11 +781,58 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	/* Silently ignore out-of-range volume values */
 	
 #ifdef GSTREAMER_SOUND
-	gdouble volume_gst = (gdouble)vol / 0x10000;
-	g_object_set(chan->filter, "volume", CLAMP(volume_gst, 0.0, 10.0), NULL);
-#endif
+	double volume = volume_glk_to_gstreamer(vol);
 
-	/* Not implemented */
+	/* TODO: If channel is not playing, change the volume anyway */
+
+	if(duration == 0) {
+		channel_set_volume_immediately(chan, volume, notify);
+		return;
+	}
+
+	/* Get the volume levels as GValues */
+	GValue current_volume = { 0 };
+	GValue target_volume = { 0 };
+	g_value_init(&current_volume, G_TYPE_DOUBLE);
+	g_value_init(&target_volume, G_TYPE_DOUBLE);
+	g_object_get_property(G_OBJECT(chan->filter), "volume", &current_volume);
+	g_value_set_double(&target_volume, volume);
+
+	/* Make a controller for the volume */
+	GstController *controller = gst_object_control_properties(G_OBJECT(chan->filter), "volume", NULL);
+	if(controller == NULL) {
+		WARNING(_("Couldn't get controller for volume change"));
+		goto fail;
+	}
+	GstInterpolationControlSource *csource = gst_interpolation_control_source_new();
+	gst_interpolation_control_source_set_interpolation_mode(csource, GST_INTERPOLATE_LINEAR);
+	if(!gst_controller_set_control_source(controller, "volume", GST_CONTROL_SOURCE(csource))) {
+		WARNING(_("Couldn't set control source for volume change"));
+		goto fail;
+	}
+
+	/* Get the current time on the pipeline */
+	GstClock *clock = gst_pipeline_get_clock(GST_PIPELINE(chan->pipeline));
+	GstClockTime current = gst_clock_get_time(clock);
+	g_object_unref(clock);
+
+	if(!gst_interpolation_control_source_set(csource, current, &current_volume)) {
+		WARNING(_("Couldn't program volume change"));
+		goto fail;
+	}
+	if(!gst_interpolation_control_source_set(csource, current + duration * GST_MSECOND, &target_volume)) {
+		WARNING(_("Couldn't program volume change"));
+		goto fail;
+	}
+
+	/* TODO: SET UP NOTIFICATION */
+
+	return;
+
+fail:
+	/* Changing the volume dynamically didn't work; just do it immediately. */
+	channel_set_volume_immediately(chan, volume, notify);
+#endif
 }
 
 /**
