@@ -680,21 +680,6 @@ glk_schannel_unpause(schanid_t chan)
 	}
 }
 
-static double
-volume_glk_to_gstreamer(glui32 volume_glk)
-{
-	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
-}
-
-static void
-channel_set_volume_immediately(schanid_t chan, double volume, glui32 notify)
-{
-	g_object_set(chan->filter, "volume", volume, NULL);
-
-	if(notify != 0)
-		event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, notify);
-}
-
 /**
  * glk_schannel_set_volume:
  * @chan: Channel to set the volume of.
@@ -727,15 +712,16 @@ channel_set_volume_immediately(schanid_t chan, double volume, glui32 notify)
 void 
 glk_schannel_set_volume(schanid_t chan, glui32 vol)
 {
-	VALID_SCHANNEL(chan, return);
-	/* Silently ignore out-of-range volume values */
-
-#ifdef GSTREAMER_SOUND
-	double volume = volume_glk_to_gstreamer(vol);
-	channel_set_volume_immediately(chan, volume, 0);
-#endif
+	glk_schannel_set_volume_ext(chan, vol, 0, 0);
 }
 
+static double
+volume_glk_to_gstreamer(glui32 volume_glk)
+{
+	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
+}
+
+#ifdef GSTREAMER_SOUND
 static gboolean
 volume_change_timeout(schanid_t chan)
 {
@@ -749,6 +735,7 @@ volume_change_timeout(schanid_t chan)
 		if(chan->volume_notify)
 			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, chan->volume_notify);
 
+		chan->volume_timer_id = 0;
 		return FALSE;
 	}
 
@@ -765,6 +752,7 @@ volume_change_timeout(schanid_t chan)
 
 	return TRUE;
 }
+#endif /* GSTREAMER_SOUND */
 
 /**
  * glk_schannel_set_volume_ext:
@@ -809,12 +797,20 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 {
 	VALID_SCHANNEL(chan, return);
 	/* Silently ignore out-of-range volume values */
-	
+
 #ifdef GSTREAMER_SOUND
+	/* Interrupt a previous volume change */
+	if(chan->volume_timer_id > 0)
+		g_source_remove(chan->volume_timer_id);
+	
 	double target_volume = volume_glk_to_gstreamer(vol);
 
 	if(duration == 0) {
-		channel_set_volume_immediately(chan, target_volume, notify);
+		g_object_set(chan->filter, "volume", target_volume, NULL);
+
+		if(notify != 0)
+			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, notify);
+
 		return;
 	}
 
@@ -828,7 +824,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	chan->volume_notify = notify;
 
 	/* Set up a timer for the volume */
-	g_timeout_add(VOLUME_TIMER_RESOLUTION, (GSourceFunc)volume_change_timeout, chan);
+	chan->volume_timer_id = g_timeout_add(VOLUME_TIMER_RESOLUTION, (GSourceFunc)volume_change_timeout, chan);
 #endif
 }
 

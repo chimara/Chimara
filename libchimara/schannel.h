@@ -31,6 +31,7 @@ struct glk_schannel_struct
 	/* Volume change information */
 	double target_volume;
 	long target_time_sec, target_time_usec;
+	guint volume_timer_id;
 	glui32 volume_notify;
 
 #ifdef GSTREAMER_SOUND
