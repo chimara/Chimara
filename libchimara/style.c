@@ -239,9 +239,6 @@ style_init(ChimaraGlk *glk)
 	GHashTable *glk_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GtkTextTag *tag;
 
-	PangoFontDescription *default_font_desc = pango_font_description_from_string("Serif");
-	PangoFontDescription *monospace_font_desc = pango_font_description_from_string("Monospace");
-	
 	/* Initialise the default styles for a text grid */
 	tag = gtk_text_tag_new("default");
 	g_object_set(tag, "family", "Monospace", "family-set", TRUE, NULL);
@@ -344,9 +341,6 @@ style_init(ChimaraGlk *glk)
 	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
 	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 
-	pango_font_description_free(default_font_desc);
-	pango_font_description_free(monospace_font_desc);
-	
 	priv->styles->text_grid = default_text_grid_styles;
 	priv->styles->text_buffer = default_text_buffer_styles;
 
@@ -1108,17 +1102,17 @@ get_current_font(guint32 wintype)
 	switch(wintype) {
 	case wintype_TextGrid:
 		tag = g_hash_table_lookup(glk_data->styles->text_grid, "default");
+		return pango_font_description_from_string("Monospace");
 		break;
 	case wintype_TextBuffer:
 		tag = g_hash_table_lookup(glk_data->styles->text_buffer, "default");
+		return pango_font_description_from_string("Serif");
 		break;
 	default:
 		return NULL;
 	}
 
 	PangoFontDescription *font;
-	g_object_get( G_OBJECT(tag), "font-desc", &font, NULL );
-
 	return font;
 }
 
@@ -1156,7 +1150,8 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 	}
 
 	/* Font description updates the following properties simultaniously:
-	 * family, style, weight, variant, stretch, size
+	 * family, style, weight, variant, stretch, size.
+	 * FIXME: Except it doesn't really.
 	 */
 	g_object_get(tag, "font-desc", &font_desc, NULL);
 	pango_attr_list_insert(
