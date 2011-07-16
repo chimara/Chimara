@@ -4,7 +4,6 @@
 #include <libchimara/glk.h>
 #ifdef GSTREAMER_SOUND
 #include <gst/gst.h>
-#include <gst/controller/gstcontroller.h>
 #endif
 #include "magic.h"
 #include "schannel.h"
@@ -13,6 +12,8 @@
 #include "gi_blorb.h"
 #include "resource.h"
 #include "event.h"
+
+#define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
 
 extern GPrivate *glk_data_key;
 
@@ -736,6 +737,39 @@ glk_schannel_set_volume(schanid_t chan, glui32 vol)
 #endif
 }
 
+static gboolean
+volume_change_timeout(schanid_t chan)
+{
+	GTimeVal now;
+	g_get_current_time(&now);
+
+	if(now.tv_sec >= chan->target_time_sec && now.tv_usec >= chan->target_time_usec) {
+		/* We're done - make sure the volume is at the requested level */
+		g_object_set(chan->filter, "volume", chan->target_volume, NULL);
+
+		if(chan->volume_notify) {
+			/* Send a notification */
+		}
+		return FALSE;
+	}
+
+	/* Calculate the appropriate step every time - a busy system may delay or
+	 * drop	timer ticks */
+	double time_left_msec = (chan->target_time_sec - now.tv_sec) * 1000.0
+		+ (chan->target_time_usec - now.tv_usec) / 1000.0;
+	double steps_left = time_left_msec / VOLUME_TIMER_RESOLUTION;
+	double current_volume;
+	g_object_get(chan->filter, "volume", &current_volume, NULL);
+	double volume_step = (chan->target_volume - current_volume) / steps_left;
+
+	g_printerr("Time left: %.2f ms\nVolume difference: %.2f\nVolume step: %.4f\n",
+		time_left_msec, chan->target_volume - current_volume, volume_step);
+
+	g_object_set(chan->filter, "volume", current_volume + volume_step, NULL);
+
+	return TRUE;
+}
+
 /**
  * glk_schannel_set_volume_ext:
  * @chan: Channel to set the volume of.
@@ -781,57 +815,24 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	/* Silently ignore out-of-range volume values */
 	
 #ifdef GSTREAMER_SOUND
-	double volume = volume_glk_to_gstreamer(vol);
-
-	/* TODO: If channel is not playing, change the volume anyway */
+	double target_volume = volume_glk_to_gstreamer(vol);
 
 	if(duration == 0) {
-		channel_set_volume_immediately(chan, volume, notify);
+		channel_set_volume_immediately(chan, target_volume, notify);
 		return;
 	}
 
-	/* Get the volume levels as GValues */
-	GValue current_volume = { 0 };
-	GValue target_volume = { 0 };
-	g_value_init(&current_volume, G_TYPE_DOUBLE);
-	g_value_init(&target_volume, G_TYPE_DOUBLE);
-	g_object_get_property(G_OBJECT(chan->filter), "volume", &current_volume);
-	g_value_set_double(&target_volume, volume);
+	GTimeVal target_time;
+	g_get_current_time(&target_time);
+	g_time_val_add(&target_time, (long)duration * 1000);
 
-	/* Make a controller for the volume */
-	GstController *controller = gst_object_control_properties(G_OBJECT(chan->filter), "volume", NULL);
-	if(controller == NULL) {
-		WARNING(_("Couldn't get controller for volume change"));
-		goto fail;
-	}
-	GstInterpolationControlSource *csource = gst_interpolation_control_source_new();
-	gst_interpolation_control_source_set_interpolation_mode(csource, GST_INTERPOLATE_LINEAR);
-	if(!gst_controller_set_control_source(controller, "volume", GST_CONTROL_SOURCE(csource))) {
-		WARNING(_("Couldn't set control source for volume change"));
-		goto fail;
-	}
+	chan->target_volume = target_volume;
+	chan->target_time_sec = target_time.tv_sec;
+	chan->target_time_usec = target_time.tv_usec;
+	chan->volume_notify = notify;
 
-	/* Get the current time on the pipeline */
-	GstClock *clock = gst_pipeline_get_clock(GST_PIPELINE(chan->pipeline));
-	GstClockTime current = gst_clock_get_time(clock);
-	g_object_unref(clock);
-
-	if(!gst_interpolation_control_source_set(csource, current, &current_volume)) {
-		WARNING(_("Couldn't program volume change"));
-		goto fail;
-	}
-	if(!gst_interpolation_control_source_set(csource, current + duration * GST_MSECOND, &target_volume)) {
-		WARNING(_("Couldn't program volume change"));
-		goto fail;
-	}
-
-	/* TODO: SET UP NOTIFICATION */
-
-	return;
-
-fail:
-	/* Changing the volume dynamically didn't work; just do it immediately. */
-	channel_set_volume_immediately(chan, volume, notify);
+	/* Set up a timer for the volume */
+	g_timeout_add(VOLUME_TIMER_RESOLUTION, (GSourceFunc)volume_change_timeout, chan);
 #endif
 }
 

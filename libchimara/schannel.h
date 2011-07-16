@@ -28,6 +28,11 @@ struct glk_schannel_struct
 	/* Whether channel is paused */
 	gboolean paused;
 	
+	/* Volume change information */
+	double target_volume;
+	long target_time_sec, target_time_usec;
+	glui32 volume_notify;
+
 #ifdef GSTREAMER_SOUND
 	/* Each sound channel is represented as a GStreamer pipeline.  */
 	GstElement *pipeline, *source, *typefind, *demux, *decode, *convert, *filter, *sink;
