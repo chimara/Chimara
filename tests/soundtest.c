@@ -8,16 +8,8 @@
 void
 glk_main(void)
 {
-	if(!glk_gestalt(gestalt_Sound, 0)) {
+	if(!glk_gestalt(gestalt_Sound2, 0)) {
 		fprintf(stderr, "Sound not supported.\n");
-		return;
-	}
-	if(!glk_gestalt(gestalt_SoundVolume, 0)) {
-		fprintf(stderr, "Sound volume not supported.\n");
-		return;
-	}
-	if(!glk_gestalt(gestalt_SoundNotify, 0)) {
-		fprintf(stderr, "Sound notification not supported.\n");
 		return;
 	}
 	
