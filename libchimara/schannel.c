@@ -691,9 +691,8 @@ channel_set_volume_immediately(schanid_t chan, double volume, glui32 notify)
 {
 	g_object_set(chan->filter, "volume", volume, NULL);
 
-	if(notify != 0) {
-		/* Send a notification */
-	}
+	if(notify != 0)
+		event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, notify);
 }
 
 /**
@@ -747,9 +746,9 @@ volume_change_timeout(schanid_t chan)
 		/* We're done - make sure the volume is at the requested level */
 		g_object_set(chan->filter, "volume", chan->target_volume, NULL);
 
-		if(chan->volume_notify) {
-			/* Send a notification */
-		}
+		if(chan->volume_notify)
+			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, chan->volume_notify);
+
 		return FALSE;
 	}
 
@@ -761,9 +760,6 @@ volume_change_timeout(schanid_t chan)
 	double current_volume;
 	g_object_get(chan->filter, "volume", &current_volume, NULL);
 	double volume_step = (chan->target_volume - current_volume) / steps_left;
-
-	g_printerr("Time left: %.2f ms\nVolume difference: %.2f\nVolume step: %.4f\n",
-		time_left_msec, chan->target_volume - current_volume, volume_step);
 
 	g_object_set(chan->filter, "volume", current_volume + volume_step, NULL);
 
