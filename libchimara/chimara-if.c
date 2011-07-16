@@ -10,6 +10,10 @@
 #include "chimara-marshallers.h"
 #include "init.h"
 
+#ifndef PLUGINDIR
+#define PLUGINDIR "."
+#endif
+
 /**
  * SECTION:chimara-if
  * @short_description: Widget which plays an interactive fiction game
