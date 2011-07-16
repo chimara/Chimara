@@ -21,8 +21,8 @@ chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\"
-chimara_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
-chimara_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
+chimara_CFLAGS = @PLAYER_CFLAGS@ $(AM_CFLAGS)
+chimara_LDADD = @PLAYER_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 gsettings_SCHEMAS = org.chimara-if.gschema.xml
 @GSETTINGS_RULES@

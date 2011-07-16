@@ -6,8 +6,8 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 #include <libgda/libgda.h>
-#include <sql-parser/gda-sql-parser.h>
-#include <ghttp.h>
+#include <libgda/sql-parser/gda-sql-parser.h>
+#include <libsoup/soup.h>
 
 typedef struct _metadata {
 	const gchar *element_name;
@@ -123,6 +123,8 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	g_type_init();
+
 	babel_init(argv[1]);
 	int len = babel_treaty(GET_STORY_FILE_METADATA_EXTENT_SEL, NULL, 0);
 	gchar *ifiction;
@@ -143,16 +145,17 @@ int main(int argc, char **argv) {
 		printf("Looking up IFID: %s.\n", ifid);
 		babel_release();
 
-		ghttp_request *request = ghttp_request_new();
-		ghttp_set_uri(request, g_strconcat("http://ifdb.tads.org/viewgame?ifiction&ifid=", ifid, NULL));
-		ghttp_set_header(request, http_hdr_Connection, "close");
-		ghttp_prepare(request);
-		ghttp_process(request);
-
-		ifiction = g_strndup( ghttp_get_body(request), ghttp_get_body_len(request) );
-		ghttp_request_destroy(request);
+		SoupSession *session = soup_session_async_new();
+		char *uri_string = g_strconcat("http://ifdb.tads.org/viewgame?ifiction&ifid=", ifid, NULL);
+		SoupMessage *message = soup_message_new("GET", uri_string);
+		g_free(uri_string);
+		soup_message_headers_append(message->request_headers, "Connection", "close");
+		if(soup_session_send_message(session, message) != 200)
+			g_printerr("ERROR: did not get HTTP status 200\n");
+		ifiction = g_strndup(message->response_body->data, message->response_body->length);
+		g_object_unref(message);
+		g_object_unref(session);
 	}
-
 
 	ifiction = g_strchomp(ifiction);
 

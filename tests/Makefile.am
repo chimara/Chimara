@@ -30,8 +30,8 @@ test_close_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_close_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 babeltest_SOURCES = babeltest.c
-babeltest_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
-babeltest_LDADD = @TEST_LIBS@ $(top_builddir)/babel/libbabel_functions.la  $(top_builddir)/babel/libbabel.la $(top_builddir)/babel/libifiction.la -lghttp
+babeltest_CFLAGS = @PLAYER_CFLAGS@ $(AM_CFLAGS)
+babeltest_LDADD = @PLAYER_LIBS@ $(top_builddir)/babel/libbabel_functions.la  $(top_builddir)/babel/libbabel.la $(top_builddir)/babel/libifiction.la
 
 noinst_LTLIBRARIES = first.la model.la gridtest.la splittest.la multiwin.la \
 	styletest.la soundtest.la test-userstyle.la fileio.la
