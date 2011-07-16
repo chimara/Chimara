@@ -28,6 +28,27 @@
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
 
+/* Substitute functions for compiling on iLiad */
+
+#if !GTK_CHECK_VERSION(2, 18, 0)
+#define gtk_widget_get_allocation(w, a) \
+	G_STMT_START { \
+		(a)->x = (w)->allocation.x; \
+		(a)->y = (w)->allocation.y; \
+		(a)->width = (w)->allocation.width; \
+		(a)->height = (w)->allocation.height; \
+	} G_STMT_END
+#define gtk_widget_set_allocation(w, a) \
+	G_STMT_START { (w)->allocation = *(a); } G_STMT_END
+#define gtk_widget_set_has_window(w, f) \
+	G_STMT_START { \
+		if(f) \
+			GTK_WIDGET_UNSET_FLAGS((w), GTK_NO_WINDOW); \
+		else \
+			GTK_WIDGET_SET_FLAGS((w), GTK_NO_WINDOW); \
+	} G_STMT_END
+#endif /* GTK 2.18 */
+
 /**
  * SECTION:chimara-glk
  * @short_description: Widget which executes a Glk program
@@ -149,7 +170,7 @@ G_DEFINE_TYPE(ChimaraGlk, chimara_glk, GTK_TYPE_CONTAINER);
 static void
 chimara_glk_init(ChimaraGlk *self)
 {
-    GTK_WIDGET_SET_FLAGS(GTK_WIDGET(self), GTK_NO_WINDOW);
+    gtk_widget_set_has_window(GTK_WIDGET(self), FALSE);
 
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
     
@@ -392,17 +413,18 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
     
+    guint border_width = gtk_container_get_border_width(GTK_CONTAINER(widget));
     /* For now, just pass the size request on to the root Glk window */
     if(priv->root_window) 
 	{
 		request_recurse(priv->root_window->data, requisition, priv->spacing);
-		requisition->width += 2 * GTK_CONTAINER(widget)->border_width;
-		requisition->height += 2 * GTK_CONTAINER(widget)->border_width;
+		requisition->width += 2 * border_width;
+		requisition->height += 2 * border_width;
 	} 
 	else 
 	{
-        requisition->width = CHIMARA_GLK_MIN_WIDTH + 2 * GTK_CONTAINER(widget)->border_width;
-        requisition->height = CHIMARA_GLK_MIN_HEIGHT + 2 * GTK_CONTAINER(widget)->border_width;
+        requisition->width = CHIMARA_GLK_MIN_WIDTH + 2 * border_width;
+        requisition->height = CHIMARA_GLK_MIN_HEIGHT + 2 * border_width;
     }
 }
 
@@ -522,8 +544,10 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		/* It says in the spec that when a text grid window is resized smaller,
 		 the bottom or right area is thrown away; when it is resized larger, the
 		 bottom or right area is filled with blanks. */
-		glui32 newwidth = (glui32)(win->widget->allocation.width / win->unit_width);
-		glui32 newheight = (glui32)(win->widget->allocation.height / win->unit_height);
+		GtkAllocation widget_allocation;
+		gtk_widget_get_allocation(win->widget, &widget_allocation);
+		glui32 newwidth = (glui32)(widget_allocation.width / win->unit_width);
+		glui32 newheight = (glui32)(widget_allocation.height / win->unit_height);
 		gint line;
 		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 		GtkTextIter start, end;
@@ -598,14 +622,15 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
     
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
             
     if(priv->root_window) {
 		GtkAllocation child;
-		child.x = allocation->x + GTK_CONTAINER(widget)->border_width;
-		child.y = allocation->y + GTK_CONTAINER(widget)->border_width;
-		child.width = CLAMP(allocation->width - 2 * GTK_CONTAINER(widget)->border_width, 0, allocation->width);
-		child.height = CLAMP(allocation->height - 2 * GTK_CONTAINER(widget)->border_width, 0, allocation->height);
+		guint border_width = gtk_container_get_border_width(GTK_CONTAINER(widget));
+		child.x = allocation->x + border_width;
+		child.y = allocation->y + border_width;
+		child.width = CLAMP(allocation->width - 2 * border_width, 0, allocation->width);
+		child.height = CLAMP(allocation->height - 2 * border_width, 0, allocation->height);
 		winid_t arrange = allocate_recurse(priv->root_window->data, &child, priv->spacing);
 		
 		/* arrange points to a window that contains all text grid and graphics
