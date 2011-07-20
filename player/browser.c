@@ -38,6 +38,7 @@
 
 typedef struct _ChimaraBrowserPrivate {
 	GtkActionGroup *action_group;
+	GtkListStore *library_model;
 } ChimaraBrowserPrivate;
 
 #define CHIMARA_BROWSER_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_BROWSER, ChimaraBrowserPrivate))
@@ -61,6 +62,7 @@ chimara_browser_finalize(GObject *self)
 {
 	CHIMARA_BROWSER_USE_PRIVATE;
 	g_object_unref(priv->action_group);
+	g_object_unref(priv->library_model);
 
 	/* Chain up */
 	G_OBJECT_CLASS(chimara_browser_parent_class)->finalize(self);
@@ -91,6 +93,8 @@ chimara_browser_init(ChimaraBrowser *self)
 	/* Build user interface */
 	char *object_ids[] = {
 		"browser_group",
+		"browser-box",
+		"library-model",
 		NULL
 	};
 	GtkBuilder *builder = new_builder_with_objects(object_ids);
@@ -104,10 +108,27 @@ chimara_browser_init(ChimaraBrowser *self)
 	gtk_ui_manager_insert_action_group(uimanager, chimara_app_get_action_group(theapp), 1);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/browser_menu");
 	GtkWidget *toolbar = gtk_ui_manager_get_widget(uimanager, "/browser_toolbar");
-	GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
+	GtkWidget *vbox = GTK_WIDGET(load_object(builder, "browser-box"));
 	gtk_container_add(GTK_CONTAINER(self), vbox);
 	gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
+
+	priv->library_model = GTK_LIST_STORE(load_object(builder, "library-model"));
+	g_object_ref(priv->library_model);
+
+	/* Make up some fake library data */
+	GdkPixbuf *fake_cover_art = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, 120, 120);
+	gdk_pixbuf_fill(fake_cover_art, 0xA4000000);
+	GtkTreeIter iter;
+	gtk_list_store_append(priv->library_model, &iter);
+	gtk_list_store_set(priv->library_model, &iter,
+		0, "IFID-02343-234213D-23423",
+	    1, "The Great Nose Picker",
+	    2, "Hank Berriman",
+	    3, 2004,
+	    4, fake_cover_art,
+	    -1);
+	gdk_pixbuf_unref(fake_cover_art);
 
 	g_signal_connect(self, "delete-event", G_CALLBACK(on_browser_delete_event), NULL);
 
