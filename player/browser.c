@@ -32,6 +32,7 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include "browser.h"
 #include "app.h"
 #include "util.h"
@@ -80,6 +81,20 @@ chimara_browser_class_init(ChimaraBrowserClass *klass)
 }
 
 static void
+text_function(GtkTreeViewColumn *column, GtkCellRenderer *cell, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+{
+	char *title, *author, *rendered_string;
+	unsigned year;
+	gtk_tree_model_get(model, iter,
+		1, &title,
+		2, &author,
+		3, &year,
+		-1);
+	rendered_string = g_strdup_printf("<big><big><b><i>%s</i></b></big>\nby %s</big> (%d)", title, author, year);
+	g_object_set(cell, "markup", rendered_string, NULL);
+}
+
+static void
 chimara_browser_init(ChimaraBrowser *self)
 {
 	CHIMARA_BROWSER_USE_PRIVATE;
@@ -115,6 +130,10 @@ chimara_browser_init(ChimaraBrowser *self)
 
 	priv->library_model = GTK_LIST_STORE(load_object(builder, "library-model"));
 	g_object_ref(priv->library_model);
+
+	GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN(load_object(builder, "library-text-column"));
+	GtkCellRenderer *renderer = GTK_CELL_RENDERER(load_object(builder, "library-text-renderer"));
+	gtk_tree_view_column_set_cell_data_func(column, renderer, (GtkTreeCellDataFunc)text_function, NULL, NULL);
 
 	/* Make up some fake library data */
 	GdkPixbuf *fake_cover_art = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, 120, 120);

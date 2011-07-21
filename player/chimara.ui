@@ -304,6 +304,9 @@ Philip Chimento</property>
           <object class="GtkTreeViewColumn" id="library-text-column">
             <property name="title" translatable="yes">Text</property>
             <property name="expand">True</property>
+            <child>
+              <object class="GtkCellRendererText" id="library-text-renderer"/>
+            </child>
           </object>
         </child>
         <child>
