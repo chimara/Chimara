@@ -115,7 +115,7 @@ expand_content_files = \
 # Only needed if you are using gtkdoc-scangobj to dynamically query widget
 # signals and properties.
 GTKDOC_CFLAGS = -I$(top_srcdir) $(CHIMARA_CFLAGS)
-GTKDOC_LIBS =  $(top_builddir)/libchimara/libchimara.la
+GTKDOC_LIBS =  $(top_builddir)/libchimara/libchimara.la $(CHIMARA_LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
