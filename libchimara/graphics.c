@@ -123,6 +123,9 @@ load_image_in_cache(glui32 image, gint width, gint height)
 		info = load_image_from_blorb(resource, image, width, height);
 	}
 
+	if(info == NULL)
+		return NULL;
+
 	/* Store the image in the cache */
 	gdk_threads_enter();
 
