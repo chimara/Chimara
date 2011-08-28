@@ -15,9 +15,9 @@ G_GNUC_INTERNAL gboolean magic_is_valid_or_null(const glui32 goodmagic, const gl
 G_GNUC_INTERNAL gboolean magic_is_valid(const void *obj, const glui32 goodmagic, const glui32 realmagic, const gchar *function);
 
 #define VALID_MAGIC(obj, goodmagic, die) \
-	if( !magic_is_valid(obj, goodmagic, obj->magic, G_STRFUNC) ) die
+	if( !magic_is_valid((obj), (goodmagic), (obj)? (obj)->magic : 0, G_STRFUNC) ) die
 #define VALID_MAGIC_OR_NULL(obj, goodmagic, die) \
-	if( !magic_is_valid_or_null(goodmagic, obj? obj->magic : MAGIC_NULL, G_STRFUNC) ) die
+	if( !magic_is_valid_or_null((goodmagic), (obj)? (obj)->magic : MAGIC_NULL, G_STRFUNC) ) die
 
 #define VALID_WINDOW(o, d)           VALID_MAGIC(o, MAGIC_WINDOW, d)
 #define VALID_WINDOW_OR_NULL(o, d)   VALID_MAGIC_OR_NULL(o, MAGIC_WINDOW, d)
