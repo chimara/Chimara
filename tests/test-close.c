@@ -13,10 +13,24 @@ on_command(ChimaraIF *glk, gchar *input, gchar *response, GtkWindow *window)
 	gtk_widget_destroy(dialog);
 }
 
+void
+on_stop(GtkButton *button, ChimaraIF *glk)
+{
+	chimara_glk_stop(CHIMARA_GLK(glk));
+	chimara_glk_wait(CHIMARA_GLK(glk));
+}
+
+void
+on_go(GtkButton *button, ChimaraIF *glk)
+{
+	on_stop(button, glk);
+	g_assert(chimara_if_run_game(CHIMARA_IF(glk), "unicodetest.ulx", NULL));
+}
+
 int
 main(int argc, char *argv[])
 {
-    GtkWidget *window, *glk;
+    GtkWidget *window, *vbox, *hbox, *stop, *go, *glk;
 
     /* Initialize threads and GTK */
     if(!g_thread_supported())
@@ -29,9 +43,20 @@ main(int argc, char *argv[])
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
     g_signal_connect(window, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+    vbox = gtk_vbox_new(FALSE, 6);
     glk = chimara_if_new();
-    g_signal_connect(glk, "command", G_CALLBACK(on_command), window);
-    gtk_container_add(GTK_CONTAINER(window), glk);
+    //g_signal_connect(glk, "command", G_CALLBACK(on_command), window);
+    hbox = gtk_hbutton_box_new();
+    stop = gtk_button_new_with_label("Stop");
+    g_signal_connect(stop, "clicked", G_CALLBACK(on_stop), glk);
+    go = gtk_button_new_with_label("Go");
+    g_signal_connect(go, "clicked", G_CALLBACK(on_go), glk);
+
+    gtk_box_pack_start(GTK_BOX(hbox), stop, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), go, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), glk, TRUE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
     
     /* Add a reference to the ChimaraGlk widget, because we want to keep it
