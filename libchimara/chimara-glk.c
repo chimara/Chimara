@@ -1307,6 +1307,8 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
  * Signals the Glk program running in @glk to abort. Note that if the program is
  * caught in an infinite loop in which glk_tick() is not called, this may not
  * work.
+ *
+ * This function does nothing if no Glk program is running.
  */
 void
 chimara_glk_stop(ChimaraGlk *glk)
@@ -1337,6 +1339,8 @@ chimara_glk_stop(ChimaraGlk *glk)
  *
  * Holds up the main thread and waits for the Glk program running in @glk to 
  * finish.
+ *
+ * This function does nothing if no Glk program is running.
  */
 void
 chimara_glk_wait(ChimaraGlk *glk)
