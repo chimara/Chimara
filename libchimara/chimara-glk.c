@@ -1257,8 +1257,7 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
     g_assert( g_module_supported() );
 	/* If there is already a module loaded, free it first -- you see, we want to
 	 * keep modules loaded as long as possible to avoid crashes in stack unwinding */
-	if( priv->program && !g_module_close(priv->program) )
-		g_warning( "Error closing module :%s", g_module_error() );
+	chimara_glk_unload_plugin(glk);
 	/* Open the module to run */
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
@@ -1354,6 +1353,26 @@ chimara_glk_wait(ChimaraGlk *glk)
 	gdk_threads_leave();
     g_thread_join(priv->thread);
 	gdk_threads_enter();
+}
+
+/**
+ * chimara_glk_unload_plugin:
+ * @glk: a #ChimaraGlk widget
+ *
+ * The plugin containing the Glk program is unloaded as late as possible before
+ * loading a new plugin, in order to prevent crashes while printing stack
+ * backtraces during debugging. Sometimes this behavior is not desirable. This
+ * function forces @glk to unload the plugin running in it.
+ *
+ * This function does nothing if there is no plugin loaded.
+ */
+void
+chimara_glk_unload_plugin(ChimaraGlk *glk)
+{
+	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
+    CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	if( priv->program && !g_module_close(priv->program) )
+		g_warning( "Error closing module :%s", g_module_error() );
 }
 
 /**
