@@ -783,7 +783,9 @@ after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar
 	GtkTextIter input_iter;
 	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
 	gtk_text_buffer_get_iter_at_mark(window_buffer, &input_iter, input_position);
+	gtk_text_buffer_apply_tag_by_name(window_buffer, "default", &input_iter, &end_iter);
 	gtk_text_buffer_apply_tag_by_name(window_buffer, "input", &input_iter, &end_iter);
+	gtk_text_buffer_apply_tag_by_name(window_buffer, "glk-input", &input_iter, &end_iter);
 }
 
 /* Internal function: Callback for signal activate on the line input GtkEntry
@@ -965,7 +967,7 @@ force_line_input_from_queue(winid_t win, event_t *event)
 		{
 			gtk_text_buffer_get_end_iter(buffer, &end);
 			gchar *text_to_insert = g_strconcat(text, "\n", NULL);
-			gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", NULL);
+			gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", "glk-input", NULL);
 		}
 
 		chars_written = finish_text_buffer_line_input(win, TRUE);
