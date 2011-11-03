@@ -1120,19 +1120,21 @@ get_current_font(guint32 wintype)
 	text_tag_to_attr_list( g_hash_table_lookup(styles, "default"), list );
 	PangoAttrIterator *it = pango_attr_list_get_iterator(list);
 	pango_attr_iterator_get_font(it, font, NULL, NULL);
+	pango_attr_iterator_destroy(it);
 
 	text_tag_to_attr_list( g_hash_table_lookup(styles, "normal"), list );
 	it = pango_attr_list_get_iterator(list);
 	pango_attr_iterator_get_font(it, font, NULL, NULL);
+	pango_attr_iterator_destroy(it);
 
 	text_tag_to_attr_list( g_hash_table_lookup(glk_styles, "glk-normal"), list );
 	it = pango_attr_list_get_iterator(list);
 	pango_attr_iterator_get_font(it, font, NULL, NULL);
+	pango_attr_iterator_destroy(it);
 
 	/* Make a copy of the family, preventing it's destruction at the end of this function. */
 	pango_font_description_set_family( font, pango_font_description_get_family(font) );
 
-	pango_attr_iterator_destroy(it);
 	pango_attr_list_unref(list);
 
 	return font;
