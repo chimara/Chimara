@@ -1097,22 +1097,44 @@ PangoFontDescription *
 get_current_font(guint32 wintype)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	GtkTextTag *tag;
+	GHashTable *styles, *glk_styles;
+	PangoFontDescription *font;
 
 	switch(wintype) {
 	case wintype_TextGrid:
-		tag = g_hash_table_lookup(glk_data->styles->text_grid, "default");
-		return pango_font_description_from_string("Monospace");
+		styles = glk_data->styles->text_grid;
+		glk_styles = glk_data->glk_styles->text_grid;
+		font = pango_font_description_from_string("Monospace");
 		break;
 	case wintype_TextBuffer:
-		tag = g_hash_table_lookup(glk_data->styles->text_buffer, "default");
-		return pango_font_description_from_string("Serif");
+		styles = glk_data->styles->text_buffer;
+		glk_styles = glk_data->glk_styles->text_buffer;
+		font = pango_font_description_from_string("Serif");
 		break;
 	default:
 		return NULL;
 	}
 
-	PangoFontDescription *font;
+	PangoAttrList *list = pango_attr_list_new();
+
+	text_tag_to_attr_list( g_hash_table_lookup(styles, "default"), list );
+	PangoAttrIterator *it = pango_attr_list_get_iterator(list);
+	pango_attr_iterator_get_font(it, font, NULL, NULL);
+
+	text_tag_to_attr_list( g_hash_table_lookup(styles, "normal"), list );
+	it = pango_attr_list_get_iterator(list);
+	pango_attr_iterator_get_font(it, font, NULL, NULL);
+
+	text_tag_to_attr_list( g_hash_table_lookup(glk_styles, "glk-normal"), list );
+	it = pango_attr_list_get_iterator(list);
+	pango_attr_iterator_get_font(it, font, NULL, NULL);
+
+	/* Make a copy of the family, preventing it's destruction at the end of this function. */
+	pango_font_description_set_family( font, pango_font_description_get_family(font) );
+
+	pango_attr_iterator_destroy(it);
+	pango_attr_list_unref(list);
+
 	return font;
 }
 
