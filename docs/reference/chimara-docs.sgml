@@ -9,13 +9,13 @@
     <releaseinfo>for Chimara &version;</releaseinfo>
   </bookinfo>
 
-  <reference>
+  <reference id="chimara-api-reference">
     <title>Chimara API Reference</title>
     <xi:include href="xml/chimara-glk.xml"/>
     <xi:include href="xml/chimara-if.xml"/>
   </reference>
   
-  <reference>
+  <reference id="chimara-glk-api-spec">
     <title>Glk API Specification, version 0.7.0</title>
     <xi:include href="glk-front-matter.sgml"/>
     
@@ -23,7 +23,7 @@
     <xi:include href="glk-introduction.sgml"/>
     
     <!-- Chapter 1. Overall Structure -->
-    <chapter>
+    <chapter id="chimara-glk-spec-overall-structure">
       <title>Overall Structure</title>
       <!-- For Gtk-Doc post-processed SGML files, look in the xml directory-->
       <xi:include href="xml/glk-main-function.sgml"/>
@@ -37,7 +37,7 @@
     </chapter>
     
     <!-- Chapter 2. Character Encoding -->
-    <chapter>
+    <chapter id="chimara-glk-spec-character-encoding">
       <title>Character Encoding</title>
       <xi:include href="glk-character-encoding.sgml"/>
       <xi:include href="xml/glk-output.sgml"/>
@@ -49,7 +49,7 @@
     </chapter>
     
     <!-- Chapter 3. Windows -->
-    <chapter>
+    <chapter id="chimara-glk-spec-windows">
       <title>Windows</title>
       <xi:include href="glk-windows.sgml"/>
       <xi:include href="xml/glk-window-arrangement.sgml"/>
@@ -62,7 +62,7 @@
     </chapter>
     
     <!-- Chapter 4. Events -->
-    <chapter>
+    <chapter id="chimara-glk-spec-events">
       <title>Events</title>
       <xi:include href="xml/glk-events.xml"/>
       <xi:include href="xml/glk-character-input-events.xml"/>
@@ -73,7 +73,7 @@
 	</chapter>
 	
 	<!-- Chapter 5. Streams -->
-	<chapter>
+	<chapter id="chimara-glk-spec-streams">
 	  <title>Streams</title>
 	  <xi:include href="xml/glk-streams.xml"/>
 	  <xi:include href="xml/glk-print.xml"/>
@@ -88,7 +88,7 @@
 	</chapter>
 	
 	<!-- Chapter 6. File References -->
-	<chapter>
+	<chapter id="chimara-glk-spec-file-references">
 	  <title>File References</title>
 	  <xi:include href="xml/glk-fileref.xml"/>
 	  <xi:include href="xml/glk-fileref-types.xml"/>      
@@ -96,7 +96,7 @@
     </chapter>
     
     <!-- Chapter 7. Graphics -->
-    <chapter>
+    <chapter id="chimara-glk-spec-graphics">
       <title>Graphics</title>
       <xi:include href="xml/glk-image-resources.xml"/>
       <xi:include href="xml/glk-graphics-windows.xml"/>
@@ -105,7 +105,7 @@
     </chapter>
     
     <!-- Chapter 8. Sound -->
-    <chapter>
+    <chapter id="chimara-glk-spec-sound">
       <title>Sound</title>
       <xi:include href="glk-sound-resources.sgml"/>
       <xi:include href="xml/glk-sound-channels.xml"/>
@@ -115,7 +115,7 @@
     </chapter>
     
     <!-- Chapter 9. Hyperlinks -->
-    <chapter>
+    <chapter id="chimara-glk-spec-hyperlinks">
       <title>Hyperlinks</title>
       <xi:include href="xml/glk-creating-hyperlinks.xml"/>
       <xi:include href="xml/glk-accepting-hyperlinks.xml"/>
@@ -123,7 +123,7 @@
     </chapter>
 
 	<!-- Chapter 10. The System Clock -->
-	<chapter>
+	<chapter id="chimara-glk-spec-the-system-clock">
 	  <title>The System Clock</title>
 	  <xi:include href="xml/glk-clock.xml"/>
 	  <xi:include href="xml/glk-clock-conversions.xml"/>
@@ -134,7 +134,7 @@
     <xi:include href="glk-porting.sgml"/>
    
     <!-- Appendices -->
-    <appendix>
+    <appendix id="chimara-glk-spec-the-dispatch-layer">
       <title>The Dispatch Layer</title>
       <xi:include href="dispatch.sgml"/>
       <xi:include href="xml/dispatch-interrogating.xml"/>
@@ -144,7 +144,7 @@
       <xi:include href="dispatch-selectors.sgml"/>
     </appendix>
 
-    <appendix>
+    <appendix id="chimara-glk-spec-the-blorb-layer">
       <title>The Blorb Layer</title>
       <xi:include href="blorb.sgml"/>
       <xi:include href="xml/blorb-program.xml"/>
@@ -153,7 +153,7 @@
       <xi:include href="xml/blorb-errors.xml"/>
     </appendix>
     
-    <appendix>
+    <appendix id="chimara-glk-spec-glk-extensions">
      <title>Glk Extensions</title>
      <xi:include href="xml/glkext-startup.xml"/>
      <xi:include href="xml/glkext-unix.xml"/>
