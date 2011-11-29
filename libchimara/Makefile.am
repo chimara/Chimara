@@ -103,6 +103,7 @@ typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
 endif
+GITIGNOREFILES = Chimara-1.0.gir Chimara-1.0.typelib
 
 # Currently, install the Vala VAPI file statically - generation is broken?
 
