@@ -139,7 +139,7 @@ DISTCLEANFILES = version.xml $(DOC_MODULE)-overrides.txt
 dist_noinst_SCRIPTS = build-selector-table.pl
 
 selectors.xml: $(srcdir)/../../libchimara/gi_dispa.c
-	$(PERL) build-selector-table.pl $< > $@
+	$(AM_V_GEN)$(PERL) build-selector-table.pl $< > $@
 
 
 -include $(top_srcdir)/git.mk
