@@ -574,7 +574,7 @@ chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
  * case @error is set.
  */
 gboolean
-chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
+chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), FALSE);
 	g_return_val_if_fail(gamefile, FALSE);
@@ -679,7 +679,7 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	}
 
 	/* Game file and external blorb file */
-	args = g_slist_prepend(args, gamefile);
+	args = g_slist_prepend(args, (gpointer)gamefile);
 	if(priv->graphics_file
 		&& (interpreter == CHIMARA_IF_INTERPRETER_FROTZ || interpreter == CHIMARA_IF_INTERPRETER_NITFOL)
 	    && g_file_test(priv->graphics_file, G_FILE_TEST_EXISTS)) {
@@ -696,7 +696,7 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	int count;
 	GSList *ptr;
 	for(count = 0, ptr = args; ptr; count++, ptr = g_slist_next(ptr))
-		argv[count] = ptr->data;
+		argv[count] = g_strdup(ptr->data);
 
 	/* Set the story name */
 	/* We peek into ChimaraGlk's private data here, because GObject has no
@@ -706,7 +706,7 @@ chimara_if_run_game(ChimaraIF *self, gchar *gamefile, GError **error)
 	g_object_notify(G_OBJECT(self), "story-name");
 	
 	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, argc, argv, error);
-	g_free(argv);
+	g_strfreev(argv);
 	if(terpnumstr)
 		g_free(terpnumstr);
 	if(randomstr)
