@@ -562,7 +562,7 @@ chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
 /**
  * chimara_if_run_game:
  * @self: A #ChimaraIF widget.
- * @gamefile: Path to an interactive fiction game file.
+ * @game_path: Path to an interactive fiction game file.
  * @error: Return location for an error, or %NULL.
  *
  * Autodetects the type of a game file and runs it using an appropriate
@@ -574,27 +574,28 @@ chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
  * case @error is set.
  */
 gboolean
-chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
+chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), FALSE);
-	g_return_val_if_fail(gamefile, FALSE);
+	g_return_val_if_fail(game_path, FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
 	CHIMARA_IF_USE_PRIVATE(self, priv);
 
 	/* Find out what format the game is */
 	/* TODO: Look inside the file instead of just looking at the extension */
 	ChimaraIFFormat format = CHIMARA_IF_FORMAT_Z5;
-	if(g_str_has_suffix(gamefile, ".z5"))
+	if(g_str_has_suffix(game_path, ".z5"))
 		format = CHIMARA_IF_FORMAT_Z5;
-	else if(g_str_has_suffix(gamefile, ".z6"))
+	else if(g_str_has_suffix(game_path, ".z6"))
 		format = CHIMARA_IF_FORMAT_Z6;
-	else if(g_str_has_suffix(gamefile, ".z8"))
+	else if(g_str_has_suffix(game_path, ".z8"))
 		format = CHIMARA_IF_FORMAT_Z8;
-	else if(g_str_has_suffix(gamefile, ".zlb") || g_str_has_suffix(gamefile, ".zblorb"))
+	else if(g_str_has_suffix(game_path, ".zlb") || g_str_has_suffix(game_path, ".zblorb"))
 		format = CHIMARA_IF_FORMAT_Z_BLORB;
-	else if(g_str_has_suffix(gamefile, ".ulx"))
+	else if(g_str_has_suffix(game_path, ".ulx"))
 		format = CHIMARA_IF_FORMAT_GLULX;
-	else if(g_str_has_suffix(gamefile, ".blb") || g_str_has_suffix(gamefile, ".blorb") || g_str_has_suffix(gamefile, ".glb") || g_str_has_suffix(gamefile, ".gblorb"))
+	else if(g_str_has_suffix(game_path, ".blb") || g_str_has_suffix(game_path, ".blorb") || g_str_has_suffix(game_path, ".glb") || g_str_has_suffix(game_path, ".gblorb"))
 		format = CHIMARA_IF_FORMAT_GLULX_BLORB;
 
 	/* Now decide what interpreter to use */
@@ -679,7 +680,7 @@ chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
 	}
 
 	/* Game file and external blorb file */
-	args = g_slist_prepend(args, (gpointer)gamefile);
+	args = g_slist_prepend(args, (gpointer)game_path);
 	if(priv->graphics_file
 		&& (interpreter == CHIMARA_IF_INTERPRETER_FROTZ || interpreter == CHIMARA_IF_INTERPRETER_NITFOL)
 	    && g_file_test(priv->graphics_file, G_FILE_TEST_EXISTS)) {
@@ -702,7 +703,7 @@ chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
 	/* We peek into ChimaraGlk's private data here, because GObject has no
 	equivalent to "protected" */
 	CHIMARA_GLK_USE_PRIVATE(self, glk_priv);
-	glk_priv->story_name = g_path_get_basename(gamefile);
+	glk_priv->story_name = g_path_get_basename(game_path);
 	g_object_notify(G_OBJECT(self), "story-name");
 	
 	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, argc, argv, error);
@@ -719,6 +720,31 @@ chimara_if_run_game(ChimaraIF *self, const char *gamefile, GError **error)
 		priv->format = format;
 		priv->interpreter = interpreter;
 	}
+	return retval;
+}
+
+/**
+ * chimara_if_run_game_file:
+ * @self: A #ChimaraIF widget.
+ * @game_file: a #GFile pointing to an interactive fiction game file.
+ * @error: Return location for an error, or %NULL.
+ *
+ * Autodetects the type of a game file and runs it using an appropriate
+ * interpreter plugin. See chimara_if_run_game() for more information.
+ *
+ * Returns: %TRUE if the game was started successfully, %FALSE if not, in which
+ * case @error is set.
+ */
+gboolean
+chimara_if_run_game_file(ChimaraIF *self, GFile *game_file, GError **error)
+{
+	g_return_val_if_fail(self || CHIMARA_IS_IF(self), FALSE);
+	g_return_val_if_fail(game_file || G_IS_FILE(game_file), FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+	char *path = g_file_get_path(game_file);
+	gboolean retval = chimara_if_run_game(self, path, error);
+	g_free(path);
 	return retval;
 }
 

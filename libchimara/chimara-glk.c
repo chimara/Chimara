@@ -1300,6 +1300,35 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 }
 
 /**
+ * chimara_glk_run_file:
+ * @self: a #ChimaraGlk widget
+ * @plugin_file: a #GFile pointing to a plugin module compiled with <filename
+ * class="header">glk.h</filename>
+ * @argc: Number of command line arguments in @argv
+ * @argv: Array of command line arguments to pass to the plugin
+ * @error: location to store a <link
+ * linkend="glib-Error-Reporting">GError</link>, or %NULL
+ *
+ * Opens a Glk program compiled as a plugin, from a #GFile. See
+ * chimara_glk_run() for details.
+ *
+ * Return value: %TRUE if the Glk program was started successfully.
+ */
+gboolean
+chimara_glk_run_file(ChimaraGlk *self, GFile *plugin_file, int argc, char *argv[], GError **error)
+{
+	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
+	g_return_val_if_fail(plugin_file || G_IS_FILE(plugin_file), FALSE);
+	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+	char *path = g_file_get_path(plugin_file);
+	gboolean retval = chimara_glk_run(self, path, argc, argv, error);
+	g_free(path);
+
+	return retval;
+}
+
+/**
  * chimara_glk_stop:
  * @glk: a #ChimaraGlk widget
  *

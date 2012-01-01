@@ -122,6 +122,7 @@ void chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css);
 void chimara_glk_set_spacing(ChimaraGlk *glk, guint spacing);
 guint chimara_glk_get_spacing(ChimaraGlk *glk);
 gboolean chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GError **error);
+gboolean chimara_glk_run_file(ChimaraGlk *self, GFile *plugin_file, int argc, char *argv[], GError **error);
 void chimara_glk_stop(ChimaraGlk *glk);
 void chimara_glk_wait(ChimaraGlk *glk);
 void chimara_glk_unload_plugin(ChimaraGlk *glk);
