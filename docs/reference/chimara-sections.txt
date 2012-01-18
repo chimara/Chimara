@@ -130,6 +130,7 @@ gestalt_MouseInput
 gestalt_Timer
 gestalt_Graphics
 gestalt_DrawImage
+gestalt_Sound2
 gestalt_Sound
 gestalt_SoundVolume
 gestalt_SoundNotify
@@ -494,6 +495,7 @@ GLK_MODULE_IMAGE
 <FILE>glk-sound-channels</FILE>
 <TITLE>Creating and Destroying Sound Channels</TITLE>
 glk_schannel_create
+glk_schannel_create_ext
 glk_schannel_destroy
 </SECTION>
 
@@ -502,8 +504,12 @@ glk_schannel_destroy
 <TITLE>Playing Sounds</TITLE>
 glk_schannel_play
 glk_schannel_play_ext
+glk_schannel_play_multi
 glk_schannel_stop
+glk_schannel_pause
+glk_schannel_unpause
 glk_schannel_set_volume
+glk_schannel_set_volume_ext
 glk_sound_load_hint
 </SECTION>
 
@@ -518,6 +524,7 @@ glk_schannel_get_rock
 <FILE>glk-sound-testing</FILE>
 <TITLE>Testing for Sound Capabilities</TITLE>
 GLK_MODULE_SOUND
+GLK_MODULE_SOUND2
 </SECTION>
 
 <SECTION>

@@ -13,6 +13,8 @@
 #include "resource.h"
 #include "event.h"
 
+#define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
+
 extern GPrivate *glk_data_key;
 
 #ifdef GSTREAMER_SOUND
@@ -175,6 +177,24 @@ finally:
 schanid_t 
 glk_schannel_create(glui32 rock)
 {
+	return glk_schannel_create_ext(rock, 0x10000);
+}
+
+/**
+ * glk_schannel_create_ext:
+ * @rock: The rock value to give the new sound channel.
+ * @volume: Integer representing the volume; 0x10000 is 100&percnt;.
+ *
+ * [DRAFT SPEC]
+ *
+ * The glk_schannel_create_ext() call lets you create a channel with the volume
+ * already set at a given level.
+ *
+ * Returns: A new sound channel, or %NULL.
+ */
+schanid_t
+glk_schannel_create_ext(glui32 rock, glui32 volume)
+{
 #ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
@@ -212,6 +232,9 @@ glk_schannel_create(glui32 rock)
 		WARNING(_("Could not create one or more GStreamer elements"));
 		goto fail;
 	}
+
+	/* Set the initial volume */
+	glk_schannel_set_volume(s, volume);
 
 	/* Put the elements in the pipeline and link as many together as we can
 	 without knowing the type of the audio stream */
@@ -389,7 +412,6 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-	g_printerr("Play sound %d with repeats %d and notify %d\n", snd, repeats, notify);
 #ifdef GSTREAMER_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	GInputStream *stream;
@@ -442,11 +464,128 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	g_object_set(chan->source, "stream", stream, NULL);
 	g_object_unref(stream); /* Now owned by GStreamer element */
 	
-	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
-		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
+	/* Play the sound; unless the channel is paused, then pause it instead */
+	if(!gst_element_set_state(chan->pipeline, chan->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
+		WARNING_S(_("Could not set GstElement state to"), chan->paused? "PAUSED" : "PLAYING");
 		return 0;
 	}
 	return 1;
+#else
+	return 0;
+#endif
+}
+
+/**
+ * glk_schannel_play_multi:
+ * @chanarray: Array of #schanid_t structures.
+ * @chancount: Length of @chanarray.
+ * @sndarray: Array of sound resource numbers.
+ * @soundcount: Length of @sndarray, must be equal to @chanarray.
+ * @notify: If nonzero, request a notification when each sound finishes.
+ * 
+ * [DRAFT SPEC]
+ *
+ * This works the same as glk_schannel_play_ext(), except that you can specify
+ * more than one sound. The channel references and sound resource numbers are
+ * given as two arrays, which must be the same length. The @notify argument
+ * applies to all the sounds; the repeats value for all the sounds is 1.
+ * 
+ * All the sounds will begin at exactly the same time.
+ * 
+ * This returns the number of sounds that began playing correctly. (This will be
+ * a number from 0 to @soundcount.)
+ *
+ * <note><para>
+ *   Note that you have to supply @chancount and @soundcount as separate
+ *   arguments, even though they are required to be the same. This is an awkward
+ *   consequence of the way array arguments are dispatched in Glulx.
+ * </para></note>
+ * 
+ * Returns: The number of sounds that started playing correctly.
+ */
+glui32
+glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray, glui32 soundcount, glui32 notify)
+{
+	g_return_val_if_fail(chancount == soundcount, 0);
+	g_return_val_if_fail(chanarray != NULL || chancount == 0, 0);
+	g_return_val_if_fail(sndarray != NULL || soundcount == 0, 0);
+
+	int count;
+	for(count = 0; count < chancount; count++)
+		VALID_SCHANNEL(chanarray[count], return 0);
+
+#ifdef GSTREAMER_SOUND
+	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	GInputStream *stream;
+
+	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
+		WARNING(_("No resource map has been loaded yet."));
+		return 0;
+	}
+
+	/* We keep an array of sounds to skip if any of them have errors */
+	gboolean *skiparray = g_new0(gboolean, chancount);
+
+	/* Set up all the channels one by one */
+	for(count = 0; count < chancount; count++) {
+		/* Stop the previous sound */
+		clean_up_after_playing_sound(chanarray[count]);
+
+		/* Load the sound into a GInputStream, by whatever method */
+		if(!glk_data->resource_map) {
+			gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, sndarray[count], glk_data->resource_load_callback_data);
+			if(!filename) {
+				WARNING(_("Error loading resource from alternative location."));
+				skiparray[count] = TRUE;
+				continue;
+			}
+
+			GError *err = NULL;
+			GFile *file = g_file_new_for_path(filename);
+			stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
+			if(!stream) {
+				IO_WARNING(_("Error loading resource from file"), filename, err->message);
+				g_free(filename);
+				g_object_unref(file);
+				skiparray[count] = TRUE;
+				continue;
+			}
+			g_free(filename);
+			g_object_unref(file);
+		} else {
+			giblorb_result_t resource;
+			giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, sndarray[count]);
+			if(result != giblorb_err_None) {
+				WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+				skiparray[count] = TRUE;
+				continue;
+			}
+			stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+		}
+
+		chanarray[count]->repeats = 1;
+		chanarray[count]->resource = sndarray[count];
+		chanarray[count]->notify = notify;
+		g_object_set(chanarray[count]->source, "stream", stream, NULL);
+		g_object_unref(stream); /* Now owned by GStreamer element */
+	}
+
+	/* Start all the sounds as close to each other as possible. */
+	/* FIXME: Is there a way to start them exactly at the same time? */
+	glui32 successes = 0;
+	for(count = 0; count < chancount; count++) {
+		if(skiparray[count])
+			continue;
+		/* Play the sound; unless the channel is paused, then pause it instead */
+		if(!gst_element_set_state(chanarray[count]->pipeline, chanarray[count]->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
+			WARNING_S(_("Could not set GstElement state to"), chanarray[count]->paused? "PAUSED" : "PLAYING");
+			skiparray[count] = TRUE;
+			continue;
+		}
+		successes++;
+	}
+	g_free(skiparray);
+	return successes;
 #else
 	return 0;
 #endif
@@ -466,6 +605,79 @@ glk_schannel_stop(schanid_t chan)
 #ifdef GSTREAMER_SOUND
 	clean_up_after_playing_sound(chan);
 #endif
+}
+
+/**
+ * glk_schannel_pause:
+ * @chan: Channel to pause.
+ * 
+ * [DRAFT SPEC]
+ * 
+ * Pause any sound playing in the channel. This does not generate any
+ * notification events. If the channel is already paused, this does nothing.
+ * 
+ * New sounds started in a paused channel are paused immediately.
+ * 
+ * A volume change in progress is <emphasis>not</emphasis> paused, and may
+ * proceed to completion, generating a notification if appropriate.
+ */
+void
+glk_schannel_pause(schanid_t chan)
+{
+	VALID_SCHANNEL(chan, return);
+
+	if(chan->paused)
+		return; /* Silently do nothing */
+
+	/* Mark the channel as paused even if there is no sound playing yet */
+	chan->paused = TRUE;
+
+	GstState state;
+	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
+		WARNING(_("Could not get GstElement state"));
+		return;
+	}
+	if(state != GST_STATE_PLAYING)
+		return; /* Silently do nothing if no sound is playing */
+
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_PAUSED)) {
+		WARNING_S(_("Could not set GstElement state to"), "PAUSED");
+		return;
+	}
+}
+
+/**
+ * glk_schannel_unpause:
+ * @chan: Channel to unpause.
+ * 
+ * [DRAFT SPEC]
+ *
+ * Unpause the channel. Any paused sounds begin playing where they left off. If
+ * the channel is not already paused, this does nothing.
+ */
+void
+glk_schannel_unpause(schanid_t chan)
+{
+	VALID_SCHANNEL(chan, return);
+
+	if(!chan->paused)
+		return; /* Silently do nothing */
+
+	/* Mark the channel as not paused in any case */
+	chan->paused = FALSE;
+
+	GstState state;
+	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
+		WARNING(_("Could not get GstElement state"));
+		return;
+	}
+	if(state != GST_STATE_PAUSED)
+		return; /* Silently do nothing */
+
+	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
+		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
+		return;
+	}
 }
 
 /**
@@ -500,11 +712,119 @@ glk_schannel_stop(schanid_t chan)
 void 
 glk_schannel_set_volume(schanid_t chan, glui32 vol)
 {
-	VALID_SCHANNEL(chan, return);
+	glk_schannel_set_volume_ext(chan, vol, 0, 0);
+}
+
+static double
+volume_glk_to_gstreamer(glui32 volume_glk)
+{
+	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
+}
+
 #ifdef GSTREAMER_SOUND
-	gdouble volume_gst = (gdouble)vol / 0x10000;
-	g_printerr("Volume set to: %f\n", volume_gst);
-	g_object_set(chan->filter, "volume", CLAMP(volume_gst, 0.0, 10.0), NULL);
+static gboolean
+volume_change_timeout(schanid_t chan)
+{
+	GTimeVal now;
+	g_get_current_time(&now);
+
+	if(now.tv_sec >= chan->target_time_sec && now.tv_usec >= chan->target_time_usec) {
+		/* We're done - make sure the volume is at the requested level */
+		g_object_set(chan->filter, "volume", chan->target_volume, NULL);
+
+		if(chan->volume_notify)
+			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, chan->volume_notify);
+
+		chan->volume_timer_id = 0;
+		return FALSE;
+	}
+
+	/* Calculate the appropriate step every time - a busy system may delay or
+	 * drop	timer ticks */
+	double time_left_msec = (chan->target_time_sec - now.tv_sec) * 1000.0
+		+ (chan->target_time_usec - now.tv_usec) / 1000.0;
+	double steps_left = time_left_msec / VOLUME_TIMER_RESOLUTION;
+	double current_volume;
+	g_object_get(chan->filter, "volume", &current_volume, NULL);
+	double volume_step = (chan->target_volume - current_volume) / steps_left;
+
+	g_object_set(chan->filter, "volume", current_volume + volume_step, NULL);
+
+	return TRUE;
+}
+#endif /* GSTREAMER_SOUND */
+
+/**
+ * glk_schannel_set_volume_ext:
+ * @chan: Channel to set the volume of.
+ * @vol: Integer representing the volume; 0x10000 is 100&percnt;.
+ * @duration: Length of volume change in milliseconds, or 0 for immediate.
+ * @notify: If nonzero, requests a notification when the volume change finishes.
+ * 
+ * [DRAFT SPEC]
+ * 
+ * Sets the volume in the channel, from 0 (silence) to 0x10000 (full volume).
+ * Again, you can overdrive the volume by setting a value greater than 0x10000,
+ * but this is not recommended.
+ *
+ * If the @duration is zero, the change is immediate. Otherwise, the change
+ * begins immediately, and occurs smoothly over the next @duration milliseconds.
+ *
+ * The @notify value should be nonzero in order to request a volume notification
+ * event. If you do this, when the volume change is completed, you will get an
+ * event with type #evtype_VolumeNotify. The window will be %NULL, @val1 will be
+ * zero, and @val2 will be the nonzero value you passed as @notify.
+ *
+ * The glk_schannel_set_volume() does not include @duration and @notify values.
+ * Both are assumed to be zero: immediate change, no notification.
+ *
+ * You can call these functions between sounds, or while a sound is playing.
+ * However, a zero-duration change while a sound is playing may produce
+ * unpleasant clicks.
+ *
+ * At most one volume change can be occurring on a sound channel at any time. If
+ * you call one of these functions while a previous volume change is in
+ * progress, the previous change is interrupted. The beginning point of the new
+ * volume change should be wherever the previous volume change was interrupted
+ * (rather than the previous change's beginning or ending point).
+ *
+ * Not all libraries support these functions. You should test the appropriate
+ * gestalt selectors before you rely on them; see "Testing for Sound
+ * Capabilities".
+ */
+void
+glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 notify)
+{
+	VALID_SCHANNEL(chan, return);
+	/* Silently ignore out-of-range volume values */
+
+#ifdef GSTREAMER_SOUND
+	/* Interrupt a previous volume change */
+	if(chan->volume_timer_id > 0)
+		g_source_remove(chan->volume_timer_id);
+	
+	double target_volume = volume_glk_to_gstreamer(vol);
+
+	if(duration == 0) {
+		g_object_set(chan->filter, "volume", target_volume, NULL);
+
+		if(notify != 0)
+			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, notify);
+
+		return;
+	}
+
+	GTimeVal target_time;
+	g_get_current_time(&target_time);
+	g_time_val_add(&target_time, (long)duration * 1000);
+
+	chan->target_volume = target_volume;
+	chan->target_time_sec = target_time.tv_sec;
+	chan->target_time_usec = target_time.tv_usec;
+	chan->volume_notify = notify;
+
+	/* Set up a timer for the volume */
+	chan->volume_timer_id = g_timeout_add(VOLUME_TIMER_RESOLUTION, (GSourceFunc)volume_change_timeout, chan);
 #endif
 }
 
