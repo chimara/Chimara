@@ -1410,8 +1410,8 @@
  *   So the version number 78.2.11 would be encoded as 0x004E020B.
  * </para></note>
  *
- * The current Glk specification version is 0.7.2, so this selector will return
- * 0x00000702.
+ * The current Glk specification version is 0.7.3, so this selector will return
+ * 0x00000703.
  *
  * |[
  * glui32 res;
