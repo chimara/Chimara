@@ -120,6 +120,11 @@ AS_IF([$TEST "x$with_gstreamer" != xno],
 	[AC_DEFINE([GSTREAMER_SOUND], [1], [Define to enable sound support with GStreamer])
 	SOUND_MODULE="gstreamer-0.10 >= 0.10.12"])
 
+### WHETHER TO GENERATE A .VAPI FILE ##########################################
+# Requires vapigen
+AC_PATH_PROG([VAPIGEN], [vapigen], [notfound])
+AM_CONDITIONAL(BUILDING_VAPI, $TEST "x$VAPIGEN" != xnotfound)
+
 ### CHECK FOR LIBRARIES #######################################################
 
 # Libraries needed to build Chimara library
