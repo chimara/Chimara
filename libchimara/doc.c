@@ -586,6 +586,28 @@
  * A stream is opened with a particular file mode, see the 
  * <code>filemode_</code> constants below.
  *
+ * <note><para>
+ *   In the stdio library, using fopen(), %filemode_Write would be mode
+ *   <code>"w"</code>; %filemode_Read would be mode <code>"r"</code>;
+ *   %filemode_ReadWrite would be mode <code>"r+"</code>. Confusingly,
+ *   %filemode_WriteAppend cannot be mode <code>"a"</code>, because the stdio
+ *   spec says that when you open a file with mode <code>"a"</code>, then
+ *   fseek() doesn't work. So we have to use mode <code>"r+"</code> for
+ *   appending. Then we run into the <emphasis>other</emphasis> stdio problem,
+ *   which is that <code>"r+"</code> never creates a new file. So
+ *   %filemode_WriteAppend has to <emphasis>first</emphasis> open the file with
+ *   <code>"a"</code>, close it, reopen with <code>"r+"</code>, and then
+ *   fseek() to the end of the file. For %filemode_ReadWrite, the process is
+ *   the same, except without the fseek() &mdash; we begin at the beginning of
+ *   the file.
+ * </para></note>
+ * <note><para>
+ *   We must also obey an obscure geas of ANSI C <code>"r+"</code> files: you
+ *   can't switch from reading to writing without doing an fseek() in between.
+ *   Switching from writing to reading has the same restriction, except that an
+ *   fflush() also works.
+ * </para></note>
+ *
  * For information on opening streams, see the discussion of each specific type
  * of stream in <link linkend="chimara-The-Types-of-Streams">The Types of
  * Streams</link>. Remember that it is always possible that opening a stream
@@ -1313,7 +1335,7 @@
  */
 
 /**
- * GLK_MODULE_SOUND:
+ * GLK_MODULE_SOUND2:
  *
  * If you are writing a C program, there is an additional complication. A 
  * library which does not support sound may not implement the sound functions at
@@ -1323,9 +1345,17 @@
  * even get compile-time errors.
  * 
  * To avoid this, you can perform a preprocessor test for the existence of
- * %GLK_MODULE_SOUND. If this is defined, so are all the functions and constants
+ * %GLK_MODULE_SOUND2. If this is defined, so are all the functions and constants
  * described in this section. If not, not.
- */ 
+ */
+
+/**
+ * GLK_MODULE_SOUND:
+ *
+ * You can perform a preprocessor test for the existence of %GLK_MODULE_SOUND.
+ * If this is defined, so are all the functions and constants described in this
+ * section. If not, not.
+ */
  
 /**
  * GLK_MODULE_HYPERLINKS:
@@ -1612,6 +1642,8 @@
  *
  * If this selector returns 0, you should not try to call these functions. They 
  * may have no effect, or they may cause a run-time error.
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */
 
 /**
@@ -1619,24 +1651,22 @@
  *
  * You can test whether the library supports setting the volume of sound 
  * channels: 
- * |[
- * glui32 res;
- * res = glk_gestalt(gestalt_SoundVolume, 0);
- * ]|
+ * |[ res = glk_gestalt(gestalt_SoundVolume, 0); ]|
  * This selector returns 1 if the glk_schannel_set_volume() function works. If 
  * it returns zero, glk_schannel_set_volume() has no effect.
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */
 
 /**
  * gestalt_SoundNotify:
  *
  * You can test whether the library supports sound notification events:
- * |[
- * glui32 res;
- * res = glk_gestalt(gestalt_SoundNotify, 0);
- * ]| 
+ * |[ res = glk_gestalt(gestalt_SoundNotify, 0); ]| 
  * This selector returns 1 if the library supports sound notification events. If
  * it returns zero, you will never get such events.
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */
 
 /**
@@ -1680,6 +1710,8 @@
  *   course, an ugly hack. It is a concession to the current state of the Glk 
  *   libraries, some of which can handle AIFF but not MOD sounds.
  * </para></note>
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */ 
   
 /**
@@ -1963,6 +1995,8 @@
 /**
  * evtype_SoundNotify:
  *
+ * The completion of a sound being played in a sound channel.
+ *
  * On platforms that support sound, you can request to receive an 
  * %evtype_SoundNotify event when a sound finishes playing. See <link
  * linkend="chimara-Playing-Sounds">Playing Sounds</link>.
@@ -1970,11 +2004,23 @@
  
 /**
  * evtype_Hyperlink:
+ *
+ * The selection of a hyperlink in a window.
  * 
  * On platforms that support hyperlinks, you can request to receive an
  * %evtype_Hyperlink event when the player selects a link. See <link
  * linkend="chimara-Accepting-Hyperlink-Events">Accepting Hyperlink 
  * Events</link>.
+ */
+
+/**
+ * evtype_VolumeNotify:
+ *
+ * The completion of a gradual volume change in a sound channel.
+ *
+ * On platforms that support sound, you can request to receive an
+ * %evtype_VolumeNotify event when a gradual volume change completes. See <link
+ * linkend="chimara-Playing-Sounds">Playing Sounds</link>.
  */
 
 /**
@@ -2601,7 +2647,7 @@
  * linefeed-plus-carriage-return combinations; Latin-1 characters may be
  * converted to native character codes. When reading a file in text mode, native
  * line breaks will be converted back to newline (0x0A) characters, and native
- * character codes may be converted to Latin-1. 
+ * character codes may be converted to Latin-1 or UTF-8. 
  *
  * <note><para>
  *   Line breaks will always be converted; other conversions are more

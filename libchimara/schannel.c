@@ -172,6 +172,23 @@ finally:
  * Remember that it is possible that the library will be unable to create a new
  * channel, in which case glk_schannel_create() will return %NULL.
  *
+ * When you create a channel using glk_schannel_create(), it has full volume,
+ * represented by the value 0x10000. Half volume would be 0x8000, three-quarters
+ * volume would be 0xC000, and so on. A volume of zero represents silence.
+ *
+ * You can overdrive the volume of a channel by setting a volume greater than 
+ * 0x10000. However, this is not recommended; the library may be unable to 
+ * increase the volume past full, or the sound may become distorted. You should 
+ * always create sound resources with the maximum volume you will need, and then
+ * reduce the volume when appropriate using the channel-volume calls.
+ *
+ * <note><para>
+ *   Mathematically, these volume changes should be taken as linear
+ *   multiplication of a waveform represented as linear samples. As I
+ *   understand it, linear PCM encodes the sound pressure, and therefore a
+ *   volume of 0x8000 should represent a 6 dB drop.
+ * </para></note>
+ *
  * Returns: A new sound channel, or %NULL.
  */
 schanid_t 
@@ -185,10 +202,13 @@ glk_schannel_create(glui32 rock)
  * @rock: The rock value to give the new sound channel.
  * @volume: Integer representing the volume; 0x10000 is 100&percnt;.
  *
- * [DRAFT SPEC]
- *
  * The glk_schannel_create_ext() call lets you create a channel with the volume
  * already set at a given level.
+ *
+ * Not all libraries support glk_schannel_create_ext(). You should test the
+ * %gestalt_Sound2 selector before you rely on it; see <link
+ * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound
+ * Capabilities</link>.
  *
  * Returns: A new sound channel, or %NULL.
  */
@@ -402,9 +422,14 @@ glk_schannel_play(schanid_t chan, glui32 snd)
  * sound is playing, there will be no notification event.
  *
  * Not all libraries support sound notification. You should test the
- * %gestalt_SoundNotify selector before you rely on it; see <link
+ * %gestalt_Sound2 selector before you rely on it; see <link
  * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound 
  * Capabilities</link>.
+ *
+ * Note that you can play a sound on a channel whose volume is zero. This has
+ * no audible result, unless you later change the volume; but it produces
+ * notifications as usual. You can also play a sound on a paused channel; the
+ * sound is paused immediately, and does not progress.
  * 
  * Returns: 1 on success, 0 on failure.
  */
@@ -482,8 +507,6 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
  * @sndarray: Array of sound resource numbers.
  * @soundcount: Length of @sndarray, must be equal to @chanarray.
  * @notify: If nonzero, request a notification when each sound finishes.
- * 
- * [DRAFT SPEC]
  *
  * This works the same as glk_schannel_play_ext(), except that you can specify
  * more than one sound. The channel references and sound resource numbers are
@@ -495,6 +518,11 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
  * This returns the number of sounds that began playing correctly. (This will be
  * a number from 0 to @soundcount.)
  *
+ * <note><para>
+ *   If the @notify argument is nonzero, you will get a separate sound
+ *   notification event as each sound finishes. They will all have the same
+ *   @val2 value.
+ * </para></note>
  * <note><para>
  *   Note that you have to supply @chancount and @soundcount as separate
  *   arguments, even though they are required to be the same. This is an awkward
@@ -610,9 +638,7 @@ glk_schannel_stop(schanid_t chan)
 /**
  * glk_schannel_pause:
  * @chan: Channel to pause.
- * 
- * [DRAFT SPEC]
- * 
+ *
  * Pause any sound playing in the channel. This does not generate any
  * notification events. If the channel is already paused, this does nothing.
  * 
@@ -649,11 +675,16 @@ glk_schannel_pause(schanid_t chan)
 /**
  * glk_schannel_unpause:
  * @chan: Channel to unpause.
- * 
- * [DRAFT SPEC]
  *
  * Unpause the channel. Any paused sounds begin playing where they left off. If
  * the channel is not already paused, this does nothing.
+ *
+ * <note><para>
+ *   This means, for example, that you can pause a channel that is currently
+ *   not playing any sounds. If you then add a sound to the channel, it will
+ *   not start playing; it will be paused at its beginning. If you later
+ *   unpaise the channel, the sound will commence.
+ * </para></note>
  */
 void
 glk_schannel_unpause(schanid_t chan)
@@ -685,19 +716,20 @@ glk_schannel_unpause(schanid_t chan)
  * @chan: Channel to set the volume of.
  * @vol: Integer representing the volume; 0x10000 is 100&percnt;.
  *
- * Sets the volume in the channel. When you create a channel, it has full 
- * volume, represented by the value 0x10000. Half volume would be 0x8000, 
- * three-quarters volume would be 0xC000, and so on. A volume of zero represents
- * silence, although the sound is still considered to be playing.
+ * Sets the volume in the channel, from 0 (silence) to 0x10000 (full volume).
+ * Again, you can overdrive the volume by setting a value greater than 0x10000,
+ * but this is not recommended.
  *
- * You can call this function between sounds, or while a sound is playing. The 
- * effect is immediate.
+ * The glk_schannel_set_volume() function does not include duration and notify
+ * values. Both are assumed to be zero: immediate change, no notification.
+ *
+ * You can call this function between sounds, or while a sound is playing.
+ * However, a zero-duration change while a sound is playing may produce
+ * unpleasant clicks.
  * 
- * You can overdrive the volume of a channel by setting a volume greater than 
- * 0x10000. However, this is not recommended; the library may be unable to 
- * increase the volume past full, or the sound may become distorted. You should 
- * always create sound resources with the maximum volume you will need, and then
- * call glk_schannel_set_volume() to reduce the volume when appropriate.
+ * At most one volume change can be occurring on a sound channel at any time.
+ * If you call this function while a previous volume change is in progress, the
+ * previous change is interrupted.
  *
  * Not all libraries support this function. You should test the
  * %gestalt_SoundVolume selector before you rely on it; see <link
@@ -760,9 +792,7 @@ volume_change_timeout(schanid_t chan)
  * @vol: Integer representing the volume; 0x10000 is 100&percnt;.
  * @duration: Length of volume change in milliseconds, or 0 for immediate.
  * @notify: If nonzero, requests a notification when the volume change finishes.
- * 
- * [DRAFT SPEC]
- * 
+ *
  * Sets the volume in the channel, from 0 (silence) to 0x10000 (full volume).
  * Again, you can overdrive the volume by setting a value greater than 0x10000,
  * but this is not recommended.
@@ -775,18 +805,15 @@ volume_change_timeout(schanid_t chan)
  * event with type #evtype_VolumeNotify. The window will be %NULL, @val1 will be
  * zero, and @val2 will be the nonzero value you passed as @notify.
  *
- * The glk_schannel_set_volume() does not include @duration and @notify values.
- * Both are assumed to be zero: immediate change, no notification.
- *
- * You can call these functions between sounds, or while a sound is playing.
+ * You can call this function between sounds, or while a sound is playing.
  * However, a zero-duration change while a sound is playing may produce
  * unpleasant clicks.
  *
  * At most one volume change can be occurring on a sound channel at any time. If
- * you call one of these functions while a previous volume change is in
- * progress, the previous change is interrupted. The beginning point of the new
- * volume change should be wherever the previous volume change was interrupted
- * (rather than the previous change's beginning or ending point).
+ * you call this function while a previous volume change is in progress, the
+ * previous change is interrupted. The beginning point of the new volume change
+ * should be wherever the previous volume change was interrupted (rather than
+ * the previous change's beginning or ending point).
  *
  * Not all libraries support these functions. You should test the appropriate
  * gestalt selectors before you rely on them; see "Testing for Sound
