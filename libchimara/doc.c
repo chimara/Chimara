@@ -1592,7 +1592,7 @@
  * ]|
  * This returns 1 if the overall suite of sound functions is available. This
  * includes all the functions defined in <link
- * linkend="chimara-chapter-Sound">this chapter</link>. It also includes the
+ * linkend="chimara-glk-spec-sound">this chapter</link>. It also includes the
  * capabilities described below under %gestalt_SoundMusic, %gestalt_SoundVolume,
  * and %gestalt_SoundNotify.
  */

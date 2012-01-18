@@ -20,6 +20,7 @@ chimara_glk_set_css_to_default
 chimara_glk_set_css_from_file
 chimara_glk_set_css_from_string
 chimara_glk_run
+chimara_glk_run_file
 chimara_glk_stop
 chimara_glk_wait
 chimara_glk_unload_plugin
@@ -54,6 +55,7 @@ chimara_if_new
 chimara_if_set_preferred_interpreter
 chimara_if_get_preferred_interpreter
 chimara_if_run_game
+chimara_if_run_game_file
 chimara_if_get_format
 chimara_if_get_interpreter
 <SUBSECTION Standard>
@@ -266,6 +268,7 @@ evtype_Arrange
 evtype_Redraw
 evtype_SoundNotify
 evtype_Hyperlink
+evtype_VolumeNotify
 </SECTION>
 
 <SECTION>
