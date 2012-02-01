@@ -148,7 +148,8 @@ enum {
 	PROP_SPACING,
 	PROP_PROGRAM_NAME,
 	PROP_PROGRAM_INFO,
-	PROP_STORY_NAME
+	PROP_STORY_NAME,
+	PROP_RUNNING
 };
 
 enum {
@@ -268,6 +269,9 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
 			break;
 		case PROP_STORY_NAME:
 			g_value_set_string(value, priv->story_name);
+			break;
+		case PROP_RUNNING:
+			g_value_set_boolean(value, priv->running);
 			break;
 		default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -949,6 +953,17 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
 	
+	/**
+	 * ChimaraGlk:running:
+	 *
+	 * Whether this Glk widget is currently running a game or not.
+	 */
+	g_object_class_install_property(object_class, PROP_RUNNING,
+		g_param_spec_boolean("running", _("Running"),
+		_("Whether there is a program currently running"),
+		FALSE,
+		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
+
 	/* Private data */
     g_type_class_add_private(klass, sizeof(ChimaraGlkPrivate));
 }
