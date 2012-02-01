@@ -196,6 +196,7 @@ interpreters/git/Makefile
 tests/Makefile
 player/Makefile
 player/chimara.menus
+player/config.py
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
