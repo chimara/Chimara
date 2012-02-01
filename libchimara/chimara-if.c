@@ -159,6 +159,8 @@ chimara_if_text_buffer_output(ChimaraGlk *glk, guint32 win_rock, gchar *output)
 static void
 chimara_if_init(ChimaraIF *self)
 {
+	chimara_init(); /* This is a library entry point */
+
 	CHIMARA_IF_USE_PRIVATE(self, priv);
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z5] = CHIMARA_IF_INTERPRETER_FROTZ;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z6] = CHIMARA_IF_INTERPRETER_NITFOL;

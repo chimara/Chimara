@@ -170,6 +170,8 @@ G_DEFINE_TYPE(ChimaraGlk, chimara_glk, GTK_TYPE_CONTAINER);
 static void
 chimara_glk_init(ChimaraGlk *self)
 {
+	chimara_init(); /* This is a library entry point */
+
     gtk_widget_set_has_window(GTK_WIDGET(self), FALSE);
 
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
