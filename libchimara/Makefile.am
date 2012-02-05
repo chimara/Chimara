@@ -109,8 +109,9 @@ vapidir = $(datadir)/vala/vapi
 dist_vapi_DATA = chimara.vapi
 
 if BUILDING_VAPI
-chimara.vapi: Chimara-1.0.gir
-	$(AM_V_GEN)$(VAPIGEN) --library=chimara --pkg gtk+-2.0 Chimara-1.0.gir
+chimara.vapi: $(INTROSPECTION_GIRS)
+	$(AM_V_GEN)$(VAPIGEN) --library=chimara --pkg gtk+-2.0 Chimara-1.0.gir && \
+	touch $@
 endif
 
 MAINTAINERCLEANFILES = chimara.vapi
