@@ -4,7 +4,7 @@
 ]>
 <referenceinfo>
 <title>Glk API Specification</title>
-<subtitle>API version 0.7.3</subtitle>
+<subtitle>API version 0.7.4</subtitle>
 <author>
   <personname>
     <firstname>Andrew</firstname>
@@ -13,7 +13,7 @@
   <email>erkyrath@eblong.com</email>
 </author>
 <copyright>
-  <year>1998&ndash;2011</year>
+  <year>1998&ndash;2012</year>
   <holder>Andrew Plotkin</holder>
 </copyright>
 <legalnotice>
@@ -26,6 +26,6 @@ Anyone is free to write programs that use the Glk API or libraries that implemen
 </para>
 </legalnotice>
 <releaseinfo>
-The authors of the Chimara library have adapted this document to better fit the format of a GtkDoc reference manual. They have also added notes specific to Chimara's implementation of the Glk API. The original API specification and further Glk information can be found at: <ulink url="http://www.eblong.com/zarf/glk/">http://www.eblong.com/zarf/glk/</ulink>
+The authors of the Chimara library have adapted this document to better fit the format of a GtkDoc reference manual. They have also added notes specific to Chimara's implementation of the Glk API. The original API specification and further Glk information can be found at: <ulink url="http://eblong.com/zarf/glk/"/>
 </releaseinfo>
 </referenceinfo>

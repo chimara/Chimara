@@ -204,6 +204,11 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  *   value is valid before you use it.
  * </para></note>
  *
+ * The recommended file suffixes for files are <filename>.glkdata</filename> for
+ * %fileusage_Data, <filename>.glksave</filename> for %fileusage_SavedGame,
+ * <filename>.txt</filename> for %fileusage_Transcript and
+ * %fileusage_InputRecord.
+ *
  * Returns: A new fileref, or #NULL if the fileref creation failed or the
  * dialog was canceled.
  */
@@ -292,25 +297,89 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  * glkunix_set_base_file(), and otherwise in the current working directory.
  * </para></note>
  *
- * Since filenames are highly platform-specific, you should use
- * glk_fileref_create_by_name() with care. It is legal to pass any string in the
- * name argument. However, the library may have to mangle, transform, or
- * truncate the string to make it a legal native filename. 
+ * Earlier versions of the Glk spec specified that the library may have to
+ * extend, truncate, or change your name argument in order to produce a legal
+ * native filename. This remains true. However, since Glk was originally
+ * proposed, the world has largely reached consensus about what a filename looks
+ * like. Therefore, it is worth including some recommended library behavior
+ * here. Libraries that share this behavior will more easily be able to exchange
+ * files, which may be valuable both to authors (distributing data files for
+ * games) and for players (moving data between different computers or different
+ * applications).
+ *
+ * The library should take the given filename argument, and delete any
+ * characters illegal for a filename. This will include all of the following
+ * characters (and more, if the OS requires it): slash, backslash, angle
+ * brackets (less-than and greater-than), colon, double-quote, pipe (vertical
+ * bar), question-mark, asterisk. The library should also truncate the argument
+ * at the first period (delete the first period and any following characters).
+ * If the result is the empty string, change it to the string
+ * <code>"null"</code>.
+ *
+ * It should then append an appropriate suffix, depending on the usage:
+ * <filename>.glkdata</filename> for %fileusage_Data,
+ * <filename>.glksave</filename> for %fileusage_SavedGame,
+ * <filename>.txt</filename> for %fileusage_Transcript and
+ * %fileusage_InputRecord.
+ *
+ * The above behavior is not a requirement of the Glk spec. Older
+ * implementations can continue doing what they do. Some programs (e.g.
+ * web-based interpreters) may not have access to a traditional filesystem at
+ * all, and to them these recommendations will be meaningless.
+ *
+ * On the other side of the coin, the game file should not press these
+ * limitations. Best practice is for the game to pass a filename containing only
+ * letters and digits, beginning with a letter, and not mixing upper and lower
+ * case. Avoid overly-long filenames.
  *
  * <note><para>
- *   For example, if you create two filerefs with the names <quote>File</quote>
- *   and <quote>FILE</quote>, they may wind up pointing to the same file; the
- *   platform may not support case distinctions in file names. Another example:
- *   on a platform where file type is specified by filename suffix, the library
- *   will add an appropriate suffix based on the usage; any suffix in the string
- *   will be overwritten or added to. For that matter, remember that the period
- *   is not a legal character in Acorn filenames...
+ *   The earlier Glk spec gave more stringent recommendations: <quote>No more
+ *   than 8 characters, consisting entirely of upper-case letters and numbers,
+ *   starting with a letter</quote>. The DOS era is safely contained, if not
+ *   over, so this has been relaxed. The I7 manual recommends <quote>23
+ *   characters or fewer</quote>.
  * </para></note>
  *
- * The most conservative approach is to pass a string of no more than 8
- * characters, consisting entirely of upper-case letters and numbers, starting
- * with a letter. You can then be reasonably sure that the resulting filename
- * will display all the characters you specify &mdash; in some form. 
+ * <note><para>
+ *   To address other complications:</para>
+ *   <itemizedlist>
+ *     <listitem><para>
+ *       Some filesystems are case-insensitive. If you create two filerefs with
+ *       the names <filename>File</filename> and <filename>FILE</filename>, they
+ *       may wind up pointing to the same file, or they may not. Avoid doing
+ *       this.
+ *     </para></listitem>
+ *     <listitem><para>
+ *       Some programs will look for all files in the same directory as the
+ *       program itself (or, for interpreted games, in the same directory as the
+ *       game file). Others may keep files in a data-specific directory
+ *       appropriate for the user (e.g., <filename
+ *       class="directory">~/Library</filename> on MacOS).
+ *     </para></listitem>
+ *     <listitem><para>
+ *       If a game interpreter uses a data-specific directory, there is a
+ *       question of whether to use a common location, or divide it into
+ *       game-specific subdirectories. (Or to put it another way: should the
+ *       namespace of named files be per-game or app-wide?) Since data files may
+ *       be exchanged between games, they should be given an app-wide namespace.
+ *       In contrast, saved games should be per-game, as they can never be
+ *       exchanged. Transcripts and input records can go either way.
+ *     </para></listitem>
+ *     <listitem><para>
+ *       When updating an older library to follow these recommendations,
+ *       consider backwards compatibility for games already installed. When
+ *       opening an existing file (that is, not in a write-only mode) it may be
+ *       worth looking under the older name (suffix) if the newer one does not
+ *       already exist.
+ *     </para></listitem>
+ *     <listitem><para>
+ *       Game-save files are already stored with a variety of file suffixes,
+ *       since that usage goes back to the oldest IF interpreters, long
+ *       predating Glk. It is reasonable to treat them in some special way,
+ *       while hewing closer to these recommendations for data files.
+ *     </para></listitem>
+ *   </itemizedlist>
+ * </note>
  *
  * Returns: A new fileref, or %NULL if the fileref creation failed. 
  */
@@ -365,8 +434,8 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
  * not point to the same actual disk file.
  *
  * <note><para>
- *   This generally depends on whether the platform uses suffixes to indicate
- *   file type.
+ *   Most platforms use suffixes to indicate file type, so it typically will
+ *   not. See the earlier comments about recommended file suffixes.
  * </para></note>
  *
  * If you do this, and open both file references for writing, the results are

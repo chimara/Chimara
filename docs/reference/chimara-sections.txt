@@ -141,6 +141,8 @@ gestalt_HyperlinkInput
 gestalt_SoundMusic
 gestalt_GraphicsTransparency
 gestalt_DateTime
+gestalt_ResourceStream
+GLK_MODULE_RESOURCE_STREAM
 </SECTION>
 
 <SECTION>
@@ -419,6 +421,8 @@ glk_stream_open_memory
 glk_stream_open_memory_uni
 glk_stream_open_file
 glk_stream_open_file_uni
+glk_stream_open_resource
+glk_stream_open_resource_uni
 </SECTION>
 
 <SECTION>

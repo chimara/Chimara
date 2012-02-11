@@ -800,7 +800,7 @@
 
 /**
  * SECTION:glk-stream-types
- * @short_description: Window, memory, and file streams
+ * @short_description: Window, memory, file, and resource streams
  *
  * <refsect2 id="chimara-Window-Streams"><title>Window Streams</title>
  * <para>
@@ -861,6 +861,30 @@
  * file reference you open the stream with. Similarly, platform-dependent
  * attributes such as file type are determined by the file reference. See <link
  * linkend="chimara-File-References">File References</link>.
+ * </para>
+ * </refsect2>
+ * <refsect2 id="chimara-Resource-Streams"><title>Resource Streams</title>
+ * <para>
+ * You can open a stream which reads from (but not writes to) a resource file.
+ *
+ * <note><para>
+ *   Typically this is embedded in a Blorb file, as Blorb is the official
+ *   resource-storage format of Glk. A Blorb file can contain images and sounds,
+ *   but it can also contain raw data files, which are accessed by
+ *   glk_stream_open_resource() and glk_stream_open_resource_uni(). A data file
+ *   is identified by number, not by a filename. The Blorb usage field will be
+ *   <code>'Data'</code>. The chunk type will be <code>'TEXT'</code> for text
+ *   resources, <code>'BINA'</code> for binary resources.
+ * </para></note>
+ *
+ * <note><para>
+ *   If the running program is not associated with a Blorb file, the library may
+ *   look for data files as actual files instead. These would be named
+ *   <filename>DATA1</filename>, <filename>DATA2</filename>, etc, with a suffix
+ *   distinguishing text and binary files. See <quote>Other Resource
+ *   Arrangements</quote> in the Blorb spec: <ulink
+ *   url="http://eblong.com/zarf/blorb/"></ulink>
+ * </para></note>
  * </para>
  * </refsect2>
  */
@@ -1440,8 +1464,8 @@
  *   So the version number 78.2.11 would be encoded as 0x004E020B.
  * </para></note>
  *
- * The current Glk specification version is 0.7.3, so this selector will return
- * 0x00000703.
+ * The current Glk specification version is 0.7.4, so this selector will return
+ * 0x00000704.
  *
  * |[
  * glui32 res;
@@ -1832,6 +1856,18 @@
  * <note><para>
  *   Glk timer events are covered by a different selector. See %gestalt_Timer.
  * </para></note>
+ */
+
+/**
+ * gestalt_ResourceStream:
+ *
+ * |[
+ * res = glk_gestalt(gestalt_ResourceStream, 0);
+ * ]|
+ *
+ * This returns 1 if the glk_stream_open_resource() and
+ * glk_stream_open_resource_uni() functions are available. If it returns 0, you
+ * should not call them.
  */
 
 /**
