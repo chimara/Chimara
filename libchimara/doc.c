@@ -873,8 +873,8 @@
  *   but it can also contain raw data files, which are accessed by
  *   glk_stream_open_resource() and glk_stream_open_resource_uni(). A data file
  *   is identified by number, not by a filename. The Blorb usage field will be
- *   <code>'Data'</code>. The chunk type will be <code>'TEXT'</code> for text
- *   resources, <code>'BINA'</code> for binary resources.
+ *   <code>'Data'</code>. The chunk type will be %giblorb_ID_TEXT for text
+ *   resources, %giblorb_ID_BINA for binary resources.
  * </para></note>
  *
  * <note><para>
@@ -3657,6 +3657,12 @@
  */
 
 /**
+ * giblorb_ID_Data:
+ *
+ * Resource usage constant representing a data file.
+ */
+
+/**
  * giblorb_ID_Copyright:
  *
  * Resource usage constant representing the copyright message (date and holder, 
@@ -3678,7 +3684,19 @@
  * Resource usage constant representing any textual annotation that the user or 
  * writing program sees fit to include.
  */ 
- 
+
+/**
+ * giblorb_ID_TEXT:
+ *
+ * Resource usage constant representing a text data file.
+ */
+
+/**
+ * giblorb_ID_BINA:
+ *
+ * Resource usage constant representing a binary data file.
+ */
+
 /**
  * giblorb_map_t:
  *

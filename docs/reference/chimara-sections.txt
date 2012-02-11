@@ -650,12 +650,15 @@ giblorb_count_resources
 giblorb_method_DontLoad
 giblorb_method_Memory
 giblorb_method_FilePos
-giblorb_ID_Snd
 giblorb_ID_Exec
+giblorb_ID_Snd
 giblorb_ID_Pict
+giblorb_ID_Data
 giblorb_ID_Copyright
 giblorb_ID_AUTH
 giblorb_ID_ANNO
+giblorb_ID_TEXT
+giblorb_ID_BINA
 <SUBSECTION Private>
 giblorb_make_id
 </SECTION>
