@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
+  <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window">
     <property name="border_width">6</property>
@@ -188,6 +188,10 @@
       <row>
         <col id="0" translatable="yes">MemStreamTest</col>
         <col id="1">memstreamtest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ResStreamTest</col>
+        <col id="1">resstreamtest.gblorb</col>
       </row>
       <row>
         <col id="0" translatable="yes">UniCaseTest</col>
