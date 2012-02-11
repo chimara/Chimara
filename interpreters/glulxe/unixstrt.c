@@ -3,14 +3,22 @@
     http://eblong.com/zarf/glulx/index.html
 */
 
+#include <string.h>
 #include "glk.h"
 #include "glulxe.h"
 #include "glkstart.h" /* This comes with the Glk library. */
-#include <string.h>
 
-/* The only command-line argument is the filename. */
+/* The only command-line argument is the filename. And the profiling switch,
+   if that's compiled in. The only *two* command-line arguments are... 
+*/
 glkunix_argumentlist_t glkunix_arguments[] = {
+
+#if VM_PROFILING
+  { "--profile", glkunix_arg_ValueFollows, "Generate profiling information to a file." },
+#endif /* VM_PROFILING */
+
   { "", glkunix_arg_ValueFollows, "filename: The game file to load." },
+
   { NULL, glkunix_arg_End, NULL }
 };
 
@@ -18,35 +26,64 @@ int glkunix_startup_code(glkunix_startup_t *data)
 {
   /* It turns out to be more convenient if we return TRUE from here, even 
      when an error occurs, and display an error in glk_main(). */
-  char *cx;
+  int ix;
+  char *filename = NULL;
   unsigned char buf[12];
   int res;
 
 #ifdef GARGLK
-  garglk_set_program_name("Glulxe 0.4.6");
-  garglk_set_program_info("Glulxe 0.4.6 by Andrew Plotkin");
+  char *cx;
+  garglk_set_program_name("Glulxe 0.4.7");
+  garglk_set_program_info("Glulxe 0.4.7 by Andrew Plotkin");
 #endif
 
-  if (data->argc <= 1) {
+  /* Parse out the arguments. They've already been checked for validity,
+     and the library-specific ones stripped out.
+     As usual for Unix, the zeroth argument is the executable name. */
+  for (ix=1; ix<data->argc; ix++) {
+
+#if VM_PROFILING
+    if (!strcmp(data->argv[ix], "--profile")) {
+      ix++;
+      if (ix<data->argc) {
+        strid_t profstr = glkunix_stream_open_pathname_gen(data->argv[ix], TRUE, FALSE, 1);
+        if (!profstr) {
+          init_err = "Unable to open profile output file.";
+          init_err2 = data->argv[ix];
+          return TRUE;
+        }
+        setup_profile(profstr, NULL);
+      }
+      continue;
+    }
+#endif /* VM_PROFILING */
+
+    if (filename) {
+      init_err = "You must supply exactly one game file.";
+      return TRUE;
+    }
+    filename = data->argv[ix];
+  }
+
+  if (!filename) {
     init_err = "You must supply the name of a game file.";
 #ifdef GARGLK
     return TRUE; /* Hack! but I want error message in glk window */
 #endif
 	return FALSE;
   }
-  cx = data->argv[1];
     
-  gamefile = glkunix_stream_open_pathname(cx, FALSE, 1);
+  gamefile = glkunix_stream_open_pathname(filename, FALSE, 1);
   if (!gamefile) {
     init_err = "The game file could not be opened.";
-    init_err2 = cx;
+    init_err2 = filename;
     return TRUE;
   }
 
 #ifdef GARGLK
-  cx = strrchr(data->argv[1], '/');
-  if (!cx) cx = strrchr(data->argv[1], '\\');
-  garglk_set_story_name(cx ? cx + 1 : data->argv[1]);
+  cx = strrchr(filename, '/');
+  if (!cx) cx = strrchr(filename, '\\');
+  garglk_set_story_name(cx ? cx + 1 : filename);
 #endif
 
   /* Now we have to check to see if it's a Blorb file. */
