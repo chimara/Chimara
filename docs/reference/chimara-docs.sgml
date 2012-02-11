@@ -19,7 +19,7 @@
   </reference>
   
   <reference id="chimara-glk-api-spec">
-    <title>Glk API Specification, version 0.7.3</title>
+    <title>Glk API Specification, version 0.7.4</title>
     <xi:include href="glk-front-matter.sgml"/>
     
     <!-- Chapter 0. Introduction -->
