@@ -138,7 +138,8 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		/* none! */
+		case gestalt_ResourceStream:
+			return 0;
 
 		/* Selector not supported */	
 		default:

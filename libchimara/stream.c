@@ -489,6 +489,64 @@ glk_stream_open_file_uni(frefid_t fileref, glui32 fmode, glui32 rock)
 }
 
 /**
+ * glk_stream_open_resource:
+ * @filenum: Resource chunk number to open.
+ * @rock: The new stream's rock value.
+ *
+ * Open the given data resource for reading (only), as a normal stream.
+ *
+ * <note><para>
+ *   Note that there is no notion of file usage &mdash; the resource does not
+ *   have to be specified as <quote>saved game</quote> or whatever.
+ * </para></note>
+ *
+ * If no resource chunk of the given number exists, the open function returns
+ * %NULL.
+ *
+ * As with file streams, a binary resource stream reads the resource as bytes. A
+ * text resource stream reads characters encoded as Latin-1.
+ *
+ * When reading from a resource stream, newlines are not remapped, even if they
+ * normally would be when reading from a text file on the host OS. If you read a
+ * line (glk_get_line_stream() or glk_get_line_stream_uni()), a Unix newline
+ * (0x0A) terminates the line.
+ *
+ * Returns: the new stream, or %NULL.
+ */
+strid_t
+glk_stream_open_resource(glui32 filenum, glui32 rock)
+{
+	g_warning("Not implemented");
+	return NULL;
+}
+
+/**
+ * glk_stream_open_resource_uni:
+ * @filenum: Resource chunk number to open.
+ * @rock: The new stream's rock value.
+ *
+ * Open the given data resource for reading (only), as a Unicode stream. See
+ * glk_stream_open_resource() for more information.
+ *
+ * As with file streams, a binary resource stream reads the resource as
+ * four-byte (big-endian) words. A text resource stream reads characters encoded
+ * as UTF-8.
+ *
+ * <note><para>
+ *   Thus, the difference between text and binary resources is only important
+ *   when opened as a Unicode stream.
+ * </para></note>
+ *
+ * Returns: the new stream, or %NULL.
+ */
+strid_t
+glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
+{
+	g_warning("Not implemented");
+	return NULL;
+}
+
+/**
  * glk_stream_close:
  * @str: Stream to close.
  * @result: Pointer to a #stream_result_t, or %NULL.
