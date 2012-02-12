@@ -433,8 +433,48 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	/* Do any string-munging here to remove illegal Latin-1 characters from 
-	filename. On ext3, the only illegal characters are '/' and '\0'. */
-	g_strdelimit(name, "/", '_');
+	filename. On ext3, the only illegal characters are '/' and '\0', but the Glk
+	spec calls for removing any other tricky characters. */
+	char *buf = g_malloc(strlen(name));
+	char *ptr, *filename, *extension;
+	int len;
+	for(ptr = name, len = 0; *ptr && *ptr != '.'; ptr++)
+	{
+		switch(*ptr)
+		{
+			case '"': case '\\': case '/': case '>': case '<':
+			case ':': case '|': 	case '?': case '*':
+				break;
+			default:
+				buf[len++] = *ptr;
+		}
+	}
+	buf[len] = '\0';
+
+	/* If there is nothing left, make the name "null" */
+	if(len == 0) {
+		strcpy(buf, "null");
+		len = strlen(buf);
+	}
+
+	switch(usage & fileusage_TypeMask)
+	{
+		case fileusage_Data:
+			extension = ".glkdata";
+			break;
+		case fileusage_SavedGame:
+			extension = ".glksave";
+			break;
+		case fileusage_InputRecord:
+		case fileusage_Transcript:
+			extension = ".txt";
+			break;
+		default:
+			ILLEGAL_PARAM("Unknown file usage: %u", usage);
+			return NULL;
+	}
+	filename = g_strconcat(buf, extension, NULL);
+	g_free(buf);
 	
 	/* Find out what encoding filenames are in */
 	const gchar **charsets; /* Do not free */
@@ -442,8 +482,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 
 	/* Convert name to that encoding */
 	GError *error = NULL;
-	gchar *osname = g_convert(name, -1, charsets[0], "ISO-8859-1", NULL, NULL,
-		&error);
+	char *osname = g_convert(filename, -1, charsets[0], "ISO-8859-1", NULL, NULL, &error);
 	if(osname == NULL)
 	{
 		WARNING_S("Error during latin1->filename conversion", error->message);
