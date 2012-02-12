@@ -261,6 +261,48 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			return NULL;
 	}
 	
+	/* Set up a file filter with suggested extensions */
+	GtkFileFilter *filter = gtk_file_filter_new();
+	switch(usage & fileusage_TypeMask)
+	{
+		case fileusage_Data:
+			gtk_file_filter_set_name(filter, _("Data files (*.glkdata)"));
+			gtk_file_filter_add_pattern(filter, "*.glkdata");
+			break;
+		case fileusage_SavedGame:
+			gtk_file_filter_set_name(filter, _("Saved games (*.glksave)"));
+			gtk_file_filter_add_pattern(filter, "*.glksave");
+			break;
+		case fileusage_InputRecord:
+			gtk_file_filter_set_name(filter, _("Text files (*.txt)"));
+			gtk_file_filter_add_pattern(filter, "*.txt");
+			break;
+		case fileusage_Transcript:
+			gtk_file_filter_set_name(filter, _("Transcript files (*.txt)"));
+			gtk_file_filter_add_pattern(filter, "*.txt");
+			break;
+		default:
+			ILLEGAL_PARAM("Unknown file usage: %u", usage);
+			gdk_threads_leave();
+			return NULL;
+	}
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
+
+	/* Add a "text mode" filter for text files */
+	if((usage & fileusage_TypeMask) == fileusage_InputRecord || (usage & fileusage_TypeMask) == fileusage_Transcript)
+	{
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, _("All text files"));
+		gtk_file_filter_add_mime_type(filter, "text/plain");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
+	}
+
+	/* Add another non-restricted filter */
+	filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(filter, _("All files"));
+	gtk_file_filter_add_pattern(filter, "*");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
+
 	if(glk_data->current_dir)
 		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), glk_data->current_dir);
 	
