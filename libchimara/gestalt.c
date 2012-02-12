@@ -123,6 +123,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_UnicodeNorm:
 		case gestalt_LineInputEcho:
 		case gestalt_LineTerminators:
+		case gestalt_ResourceStream:
 			return 1;
 
 		/* Capabilities supported if compiled with GStreamer */
@@ -138,8 +139,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		case gestalt_ResourceStream:
-			return 0;
+			/* None! */
 
 		/* Selector not supported */	
 		default:
