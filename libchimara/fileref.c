@@ -12,9 +12,10 @@
 
 extern GPrivate *glk_data_key;
 
-/* Internal function: create a fileref using the given parameters. */
+/* Internal function: create a fileref using the given parameters. If @basename
+is NULL, compute a basename from @filename. */
 frefid_t
-fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
+fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 orig_filemode)
 {
 	g_return_val_if_fail(filename != NULL, NULL);
 
@@ -27,6 +28,10 @@ fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode)
 		f->disprock = (*glk_data->register_obj)(f, gidisp_Class_Fileref);
 	
 	f->filename = g_strdup(filename);
+	if(basename)
+		f->basename = g_strdup(basename);
+	else
+		f->basename = g_path_get_basename(filename);
 	f->usage = usage;
 	f->orig_filemode = orig_filemode;
 	
@@ -50,8 +55,8 @@ fileref_close_common(frefid_t fref)
 		fref->disprock.ptr = NULL;
 	}
 	
-	if(fref->filename)
-		g_free(fref->filename);
+	g_free(fref->filename);
+	g_free(fref->basename);
 	
 	fref->magic = MAGIC_FREE;
 	g_free(fref);
@@ -147,7 +152,8 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
 		return NULL;
 	}
 	
-	frefid_t f = fileref_new(filename, rock, usage, filemode_Write);
+	/* Pass a basename of "" to ensure that this file can't be repurposed */
+	frefid_t f = fileref_new(filename, "", rock, usage, filemode_Write);
 	g_free(filename);
 	return f;
 }
@@ -313,7 +319,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		return NULL;
 	}
 	gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(chooser) );
-	frefid_t f = fileref_new(filename, rock, usage, fmode);
+	frefid_t f = fileref_new(filename, NULL, rock, usage, fmode);
 	g_free(filename);
 	gtk_widget_destroy(chooser);
 
@@ -474,7 +480,6 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 			return NULL;
 	}
 	filename = g_strconcat(buf, extension, NULL);
-	g_free(buf);
 	
 	/* Find out what encoding filenames are in */
 	const gchar **charsets; /* Do not free */
@@ -496,8 +501,9 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		path = g_strdup(osname);
 	g_free(osname);
 	
-	frefid_t f = fileref_new(path, rock, usage, filemode_ReadWrite);
+	frefid_t f = fileref_new(path, buf, rock, usage, filemode_ReadWrite);
 	g_free(path);
+	g_free(buf);
 	return f;
 }
 
@@ -536,7 +542,7 @@ frefid_t
 glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
 {
 	VALID_FILEREF(fref, return NULL);
-	return fileref_new(fref->filename, rock, usage, fref->orig_filemode);
+	return fileref_new(fref->filename, fref->basename, rock, usage, fref->orig_filemode);
 }
 
 /**
