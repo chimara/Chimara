@@ -1,10 +1,13 @@
+#include <config.h>
 #include "stream.h"
 #include "fileref.h"
 #include "magic.h"
+#include "gi_blorb.h"
 #include <errno.h>
 #include <stdio.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n-lib.h>
 
 #include "chimara-glk-private.h"
 extern GPrivate *glk_data_key;
@@ -516,8 +519,58 @@ glk_stream_open_file_uni(frefid_t fileref, glui32 fmode, glui32 rock)
 strid_t
 glk_stream_open_resource(glui32 filenum, glui32 rock)
 {
-	g_warning("Not implemented");
-	return NULL;
+	/* Adapted from CheapGlk */
+	strid_t str;
+	gboolean isbinary;
+	giblorb_err_t err;
+	giblorb_result_t res;
+	giblorb_map_t *map = giblorb_get_resource_map();
+	if(map == NULL) {
+		WARNING(_("Could not create resource stream, because there was no "
+			"resource map."));
+		return NULL; /* Not running from a blorb file */
+	}
+
+	err = giblorb_load_resource(map, giblorb_method_Memory, &res, giblorb_ID_Data, filenum);
+	if(err) {
+		WARNING_S(_("Could not create resource stream, because the resource "
+			"could not be loaded"), giblorb_get_error_message(err));
+		return 0; /* Not found, or some other error */
+	}
+
+	/* We'll use the in-memory copy of the chunk data as the basis for
+	our new stream. It's important to not call chunk_unload() until
+	the stream is closed (and we won't).
+
+	This will be memory-hoggish for giant data chunks, but I don't
+	expect giant data chunks at this point. A more efficient model
+	would be to use the file on disk, but this requires some hacking
+	into the file stream code (we'd need to open a new FILE*) and
+	I don't feel like doing that. */
+
+	if(res.chunktype == giblorb_ID_TEXT)
+		isbinary = FALSE;
+	else if(res.chunktype == giblorb_ID_BINA)
+		isbinary = TRUE;
+	else {
+		WARNING(_("Could not create resource stream, because chunk was of "
+			"unknown type."));
+		return NULL; /* Unknown chunk type */
+	}
+
+	str = stream_new_common(rock);
+	str->type = STREAM_TYPE_RESOURCE;
+	str->file_mode = filemode_Read;
+	str->binary = isbinary;
+
+	if (res.data.ptr && res.length) {
+		str->buffer = res.data.ptr;
+		str->mark = 0;
+		str->buflen = res.length;
+		str->endmark = str->buflen;
+	}
+
+	return str;
 }
 
 /**
@@ -542,8 +595,16 @@ glk_stream_open_resource(glui32 filenum, glui32 rock)
 strid_t
 glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
 {
-	g_warning("Not implemented");
-	return NULL;
+	/* Adapted from CheapGlk */
+	/* We have been handed an array of bytes. (They're big-endian
+	four-byte chunks, or perhaps a UTF-8 byte sequence, rather than
+	native-endian four-byte integers). So we drop it into str->buffer,
+	rather than str->ubuffer -- we'll have to do the translation in the
+	get() functions. */
+	strid_t str = glk_stream_open_resource(filenum, rock);
+	if(str != NULL)
+		str->unicode = TRUE;
+	return str;
 }
 
 /**
@@ -592,6 +653,12 @@ glk_stream_close(strid_t str, stream_result_t *result)
 				IO_WARNING( "Failed to close file", str->filename, g_strerror(errno) );
 			g_free(str->filename);
 			break;
+
+		case STREAM_TYPE_RESOURCE:
+			/* Shouldn't free the chunk; someone else might be using it. It will
+			be freed when the resource map is freed. */
+			break;
+
 		default:
 			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
 			return;

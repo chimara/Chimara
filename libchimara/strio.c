@@ -1,3 +1,4 @@
+#include <config.h>
 #include "charset.h"
 #include "magic.h"
 #include "stream.h"
@@ -6,6 +7,7 @@
 #include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n-lib.h>
 
 /* Internal function: ensure that an fseek() is called on a file pointer in
  between reading and writing operations, and vice versa. This will only come up
@@ -346,6 +348,9 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			
 			str->write_count += len;
 			break;
+		case STREAM_TYPE_RESOURCE:
+			ILLEGAL(_("Writing to a resource stream is illegal."));
+			break;
 		default:
 			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
 	}
@@ -443,6 +448,9 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 			}
 			
 			str->write_count += len;
+			break;
+		case STREAM_TYPE_RESOURCE:
+			ILLEGAL(_("Writing to a resource stream is illegal."));
 			break;
 		default:
 			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
@@ -623,6 +631,58 @@ read_utf8_char_from_file(strid_t str)
 	return charresult;
 }
 
+/* Internal function: Read one UTF-8 character, which may be more than one byte,
+from a memory stream @str, and return it as a Unicode code point. */
+static glsi32
+read_utf8_char_from_buffer(strid_t str)
+{
+	size_t foo;
+	gunichar charresult = (gunichar)-2;
+	char *buffer = str->buffer + str->mark;
+	size_t maxlen = str->buflen - str->mark;
+
+	if(maxlen == 0)
+		return -1;
+
+	for(foo = 1; foo <= maxlen; foo++)
+	{
+		charresult = g_utf8_get_char_validated(buffer, foo);
+		/* charresult is -1 if invalid, -2 if incomplete, and the
+		Unicode code point otherwise */
+		if(charresult != (gunichar)-2)
+			break;
+	}
+	str->mark += foo;
+	str->read_count++;
+
+	/* Return -1 on EOS */
+	if(charresult == (gunichar)-2)
+		return -1;
+	/* Silently return unknown characters as 0xFFFD, Replacement Character */
+	if(charresult == (gunichar)-1)
+		return 0xFFFD;
+	return charresult;
+}
+
+/* Internal function: Read one big-endian four-byte character from memory and
+return it as a Unicode code point, or -1 on EOF */
+static glsi32
+read_ucs4be_char_from_buffer(strid_t str)
+{
+	glui32 ch = str->buffer[str->mark++];
+	if(str->mark >= str->buflen)
+		return -1;
+	ch = (ch << 8) | (str->buffer[str->mark++] & 0xFF);
+	if(str->mark >= str->buflen)
+		return -1;
+	ch = (ch << 8) | (str->buffer[str->mark++] & 0xFF);
+	if(str->mark >= str->buflen)
+		return -1;
+	ch = (ch << 8) | (str->buffer[str->mark++] & 0xFF);
+	str->read_count++;
+	return ch;
+}
+
 /* Internal function: Tell whether this code point is a Unicode newline. The
 file pointer and eight-bit flag are included in case the newline is a CR 
 (U+000D). If the next character is LF (U+000A) then it also belongs to the
@@ -653,6 +713,18 @@ get_char_stream_common(strid_t str)
 {
 	switch(str->type)
 	{
+		case STREAM_TYPE_RESOURCE:
+			if(str->unicode)
+			{
+				if(!str->buffer || str->mark >= str->buflen)
+					return -1;
+				if(str->binary)
+					/* Cheap big-endian stream */
+					return read_ucs4be_char_from_buffer(str);
+				/* slightly less cheap UTF8 stream */
+				return read_utf8_char_from_buffer(str);
+			}
+			/* for text streams, fall through to memory case */
 		case STREAM_TYPE_MEMORY:
 			if(str->unicode)
 			{
@@ -785,6 +857,24 @@ glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 	
 	switch(str->type)
 	{
+		case STREAM_TYPE_RESOURCE:
+		{
+			int copycount = 0;
+			if(str->unicode)
+			{
+				while(copycount < len && str->buffer && str->mark < str->buflen)
+				{
+					glui32 ch;
+					if(str->binary)
+						ch = read_ucs4be_char_from_buffer(str);
+					else
+						ch = read_utf8_char_from_buffer(str);
+					buf[copycount++] = (ch > 0xFF)? '?' : (char)ch;
+				}
+				return copycount;
+			}
+			/* for text streams, fall through to memory case */
+		}
 		case STREAM_TYPE_MEMORY:
 		{
 			int copycount = 0;
@@ -884,6 +974,24 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 	
 	switch(str->type)
 	{
+		case STREAM_TYPE_RESOURCE:
+		{
+			int copycount = 0;
+			if(str->unicode)
+			{
+				while(copycount < len && str->buffer && str->mark < str->buflen)
+				{
+					glui32 ch;
+					if(str->binary)
+						ch = read_ucs4be_char_from_buffer(str);
+					else
+						ch = read_utf8_char_from_buffer(str);
+					buf[copycount++] = ch;
+				}
+				return copycount;
+			}
+			/* for text streams, fall through to memory case */
+		}
 		case STREAM_TYPE_MEMORY:
 		{
 			int copycount = 0;
@@ -992,6 +1100,40 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
 
 	switch(str->type)
 	{
+		case STREAM_TYPE_RESOURCE:
+		{
+			int copycount = 0;
+			if(str->unicode)
+			{
+				/* Do it character-by-character */
+				while(copycount < len - 1 && str->buffer && str->mark < str->buflen)
+				{
+					glsi32 ch;
+					if(str->binary)
+						ch = read_ucs4be_char_from_buffer(str);
+					else
+						ch = read_utf8_char_from_buffer(str);
+					/* Check for Unicode newline; slightly different than
+					in file streams */
+					if(ch == 0x0A || ch == 0x85 || ch == 0x0C || ch == 0x2028 || ch == 0x2029)
+					{
+						buf[copycount++] = '\n';
+						break;
+					}
+					if(ch == 0x0D)
+					{
+						if(str->buffer[str->mark] == 0x0A)
+							str->mark++; /* skip past next newline */
+						buf[copycount++] = '\n';
+						break;
+					}
+					buf[copycount++] = (ch > 0xFF)? '?' : (char)ch;
+				}
+				buf[copycount] = '\0';
+				return copycount;
+			}
+			/* for text streams, fall through to the memory case */
+		}
 		case STREAM_TYPE_MEMORY:
 		{
 			int copycount = 0;
@@ -1129,6 +1271,40 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 
 	switch(str->type)
 	{
+		case STREAM_TYPE_RESOURCE:
+		{
+			int copycount = 0;
+			if(str->unicode)
+			{
+				/* Do it character-by-character */
+				while(copycount < len - 1 && str->buffer && str->mark < str->buflen) 
+				{
+					glsi32 ch;
+					if(str->binary)
+						ch = read_ucs4be_char_from_buffer(str);
+					else
+						ch = read_utf8_char_from_buffer(str);
+					/* Check for Unicode newline; slightly different than
+					in file streams */
+					if(ch == 0x0A || ch == 0x85 || ch == 0x0C || ch == 0x2028 || ch == 0x2029)
+					{
+						buf[copycount++] = '\n';
+						break;
+					}
+					if(ch == 0x0D)
+					{
+						if(str->ubuffer[str->mark] == 0x0A)
+							str->mark++; /* skip past next newline */
+						buf[copycount++] = '\n';
+						break;
+					}
+					buf[copycount++] = ch;
+				}
+				buf[copycount] = '\0';
+				return copycount;
+			}
+			/* for text streams, fall through to the memory case */
+		}
 		case STREAM_TYPE_MEMORY:
 		{
 			int copycount = 0;
@@ -1297,6 +1473,7 @@ glk_stream_get_position(strid_t str)
 	switch(str->type)
 	{
 		case STREAM_TYPE_MEMORY:
+		case STREAM_TYPE_RESOURCE:
 			return str->mark;
 		case STREAM_TYPE_FILE:
 			return ftell(str->file_pointer);
@@ -1346,6 +1523,7 @@ glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
 	
 	switch(str->type)
 	{
+		case STREAM_TYPE_RESOURCE:
 		case STREAM_TYPE_MEMORY:
 			switch(seekmode)
 			{
