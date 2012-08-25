@@ -67,30 +67,7 @@ class Player(GObject.GObject):
         vbox.pack_start(menubar, False, False, 0)
         vbox.pack_start(toolbar, False, False, 0)
 
-        #builder.connect_signals(self)  # FIXME Segfaults?!
-        builder.get_object('open').connect('activate', self.on_open_activate)
-        builder.get_object('restore').connect('activate',
-            self.on_restore_activate)
-        builder.get_object('save').connect('activate', self.on_save_activate)
-        builder.get_object('stop').connect('activate', self.on_stop_activate)
-        builder.get_object('recent').connect('item-activated',
-            self.on_recent_item_activated)
-        builder.get_object('undo').connect('activate', self.on_undo_activate)
-        builder.get_object('quit').connect('activate', self.on_quit_activate)
-        builder.get_object('copy').connect('activate', self.on_copy_activate)
-        builder.get_object('paste').connect('activate', self.on_paste_activate)
-        builder.get_object('preferences').connect('activate',
-            self.on_preferences_activate)
-        builder.get_object('about').connect('activate', self.on_about_activate)
-        toolbar_action.connect('toggled', self.on_toolbar_toggled)
-        self.aboutwindow.connect('response', lambda x, *args: x.hide())
-        self.aboutwindow.connect('delete-event',
-            lambda x, *args: x.hide_on_delete())
-        self.window.connect('delete-event', self.on_window_delete_event)
-        self.prefswindow.connect('response', lambda x, *args: x.hide())
-        self.prefswindow.connect('delete-event',
-            lambda x, *args: x.hide_on_delete())
-        # FIXME Delete to here when above bug is fixed
+        builder.connect_signals(self)
 
         self.glk.connect('notify::program-name', self.change_window_title)
         self.glk.connect('notify::story-name', self.change_window_title)
@@ -266,6 +243,30 @@ class Player(GObject.GObject):
         blorbfile = os.path.join(resource_path, base_noext + '.blb')
         if os.path.exists(blorbfile):
             self.glk.graphics_file = blorbfile
+
+    # Various signal handlers for GtkBuilder file
+    def gtk_widget_hide(self, *args):
+        return Gtk.Widget.hide(*args)
+
+    def gtk_widget_hide_on_delete(self, *args):
+        return Gtk.Widget.hide_on_delete(*args)
+
+    def dummy_handler(self, *args):
+        pass
+
+    on_resource_file_set = dummy_handler
+    on_interpreter_cell_changed = dummy_handler
+    on_toggle_underline = dummy_handler
+    on_toggle_italic = dummy_handler
+    on_toggle_bold = dummy_handler
+    on_toggle_justify = dummy_handler
+    on_toggle_right = dummy_handler
+    on_toggle_center = dummy_handler
+    on_toggle_left = dummy_handler
+    on_background_color_set = dummy_handler
+    on_foreground_color_set = dummy_handler
+    on_font_set = dummy_handler
+    on_css_filechooser_file_set = dummy_handler
 
 
 def _maybe(variant):
