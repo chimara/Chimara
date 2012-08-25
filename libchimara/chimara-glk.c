@@ -409,7 +409,9 @@ request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
 		gtk_widget_size_request(win->frame, requisition);
 }
 
-/* Overrides gtk_widget_size_request */
+/* Old GTK 2 functionality overriding gtk_widget_size_request();
+get_preferred_width() and get_preferred_height() are implemented in terms of
+this function. */
 static void
 chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
 {
@@ -432,6 +434,36 @@ chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
         requisition->width = CHIMARA_GLK_MIN_WIDTH + 2 * border_width;
         requisition->height = CHIMARA_GLK_MIN_HEIGHT + 2 * border_width;
     }
+}
+
+/* Minimal implementation of width-for-height request, in terms of the old
+GTK 2 mechanism. FIXME: make this more efficient. */
+static void
+chimara_glk_get_preferred_width(GtkWidget *widget, int *minimal, int *natural)
+{
+    g_return_if_fail(widget || CHIMARA_IS_GLK(widget));
+    g_return_if_fail(minimal);
+    g_return_if_fail(natural);
+
+    GtkRequisition requisition;
+
+    chimara_glk_size_request(widget, &requisition);
+    *minimal = *natural = requisition.width;
+}
+
+/* Minimal implementation of height-for-width request, in terms of the old
+GTK 2 mechanism. FIXME: make this more efficient. */
+static void
+chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
+{
+    g_return_if_fail(widget || CHIMARA_IS_GLK(widget));
+    g_return_if_fail(minimal);
+    g_return_if_fail(natural);
+
+    GtkRequisition requisition;
+
+    chimara_glk_size_request(widget, &requisition);
+    *minimal = *natural = requisition.height;
 }
 
 /* Recursively give the Glk windows their allocated space. Returns a window
@@ -757,7 +789,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     object_class->finalize = chimara_glk_finalize;
     
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->size_request = chimara_glk_size_request;
+    widget_class->get_preferred_width = chimara_glk_get_preferred_width;
+    widget_class->get_preferred_height = chimara_glk_get_preferred_height;
     widget_class->size_allocate = chimara_glk_size_allocate;
 
     GtkContainerClass *container_class = GTK_CONTAINER_CLASS(klass);
