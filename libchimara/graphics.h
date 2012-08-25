@@ -21,7 +21,8 @@ struct image_info {
 	gboolean scaled;
 };
 
-void on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t win);
+gboolean on_graphics_configure(GtkWidget *widget, GdkEventConfigure *event, winid_t win);
+gboolean on_graphics_expose(GtkWidget *widget, GdkEventExpose *event, winid_t win);
 void clear_image_cache(struct image_info *data, gpointer user_data);
 
 #endif

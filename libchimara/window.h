@@ -95,6 +95,7 @@ struct glk_window_struct
 	gboolean hyperlink_event_requested;
 	/* Graphics */
 	glui32 background_color;
+	cairo_surface_t *backing_store;
 	/* Pager (textbuffer only) */
 	gboolean currently_paging;
 	PangoLayout *pager_layout;
