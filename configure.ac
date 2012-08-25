@@ -26,10 +26,8 @@ LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
 AC_SUBST(LT_VERSION_INFO)
 
 ### REQUIREMENTS ##############################################################
-# Recommended GTK version: at least 2.12
-# Recommended Glib version: at least 2.16
-GTK_REQUIRED_VERSION=2.6
-GLIB_REQUIRED_VERSION=2.6
+GTK_REQUIRED_VERSION=3.2
+GLIB_REQUIRED_VERSION=2.16
 GTK_DOC_REQUIRED_VERSION=1.12
 AC_SUBST(GTK_REQUIRED_VERSION)
 AC_SUBST(GLIB_REQUIRED_VERSION)
@@ -118,7 +116,7 @@ AM_CONDITIONAL(BUILDING_VAPI, $TEST "x$VAPIGEN" != xnotfound)
 # Libraries needed to build Chimara library
 PKG_CHECK_MODULES([CHIMARA], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gthread-2.0 
 	gmodule-2.0
 	pango
@@ -129,14 +127,14 @@ AC_SUBST(CHIMARA_LIBS)
 # Libraries needed to build Chimara player
 PKG_CHECK_MODULES([PLAYER], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0
-	libgda-4.0
+	dnl libgda-4.0
 	libsoup-2.4
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0 >= $GLIB_REQUIRED_VERSION
 ])
 

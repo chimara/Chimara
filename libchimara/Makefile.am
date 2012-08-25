@@ -84,7 +84,7 @@ introspection_sources = \
 	chimara-if.c chimara-if.h
 
 Chimara-1.0.gir: libchimara.la
-Chimara_1_0_gir_INCLUDES = GObject-2.0 GLib-2.0 Gtk-2.0
+Chimara_1_0_gir_INCLUDES = GObject-2.0 GLib-2.0 Gtk-3.0
 Chimara_1_0_gir_CFLAGS = @CHIMARA_CFLAGS@ -I$(top_srcdir)
 Chimara_1_0_gir_LIBS = libchimara.la
 Chimara_1_0_gir_FILES = $(introspection_sources)
@@ -110,7 +110,7 @@ dist_vapi_DATA = chimara.vapi
 
 if BUILDING_VAPI
 chimara.vapi: $(INTROSPECTION_GIRS)
-	$(AM_V_GEN)$(VAPIGEN) --library=chimara --pkg gtk+-2.0 Chimara-1.0.gir && \
+	$(AM_V_GEN)$(VAPIGEN) --library=chimara --pkg gtk+-3.0 Chimara-1.0.gir && \
 	touch $@
 endif
 
