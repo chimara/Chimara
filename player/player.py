@@ -53,7 +53,7 @@ class Player(GObject.GObject):
 
         uimanager = Gtk.UIManager()
         uimanager.add_ui_from_file('chimara.menus')
-        uimanager.insert_action_group(actiongroup, 0)
+        uimanager.insert_action_group(actiongroup)
         menubar = uimanager.get_widget('/menubar')
         toolbar = uimanager.get_widget('/toolbar')
         toolbar.no_show_all = True
@@ -66,8 +66,7 @@ class Player(GObject.GObject):
         accels = uimanager.get_accel_group()
         self.window.add_accel_group(accels)
 
-        self.glk = Chimara.IF()
-        self.glk.props.ignore_errors = True
+        self.glk = Chimara.IF(ignore_errors=True)
         css_file = _maybe(self.prefs_settings.get_value('css-file'))
         if css_file is None:
             css_file = 'style.css'
@@ -256,11 +255,11 @@ class Player(GObject.GObject):
             self.glk.graphics_file = blorbfile
 
     # Various signal handlers for GtkBuilder file
-    def gtk_widget_hide(self, *args):
-        return Gtk.Widget.hide(*args)
+    def gtk_widget_hide(self, widget, *args):
+        return Gtk.Widget.hide(widget)
 
-    def gtk_widget_hide_on_delete(self, *args):
-        return Gtk.Widget.hide_on_delete(*args)
+    def gtk_widget_hide_on_delete(self, widget, *args):
+        return Gtk.Widget.hide_on_delete(widget)
 
     def dummy_handler(self, *args):
         pass
