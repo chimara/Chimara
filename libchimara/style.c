@@ -186,36 +186,43 @@ GtkTextTag *
 gtk_text_tag_copy(GtkTextTag *tag)
 {
 	GtkTextTag *copy;
+	char *tag_name;
+	GParamSpec **properties;
+	unsigned nprops, count;
 
 	g_return_val_if_fail(tag != NULL, NULL);
 
-	copy = gtk_text_tag_new(tag->name);
-	gtk_text_attributes_copy_values(tag->values, copy->values);
-	
-	#define _COPY_FLAG(flag) copy->flag = tag->flag
-		_COPY_FLAG (bg_color_set);
-		_COPY_FLAG (bg_color_set);
-		_COPY_FLAG (bg_stipple_set);
-		_COPY_FLAG (fg_color_set);
-		_COPY_FLAG (fg_stipple_set);
-		_COPY_FLAG (justification_set);
-		_COPY_FLAG (left_margin_set);
-		_COPY_FLAG (indent_set);
-		_COPY_FLAG (rise_set);
-		_COPY_FLAG (strikethrough_set);
-		_COPY_FLAG (right_margin_set);
-		_COPY_FLAG (pixels_above_lines_set);
-		_COPY_FLAG (pixels_below_lines_set);
-		_COPY_FLAG (pixels_inside_wrap_set);
-		_COPY_FLAG (tabs_set);
-		_COPY_FLAG (underline_set);
-		_COPY_FLAG (wrap_mode_set);
-		_COPY_FLAG (bg_full_height_set);
-		_COPY_FLAG (invisible_set);
-		_COPY_FLAG (editable_set);
-		_COPY_FLAG (language_set);
-		_COPY_FLAG (scale_set);
-	#undef _COPY_FLAG
+	g_object_get(tag, "name", &tag_name, NULL);
+	copy = gtk_text_tag_new(tag_name);
+	g_free(tag_name);
+
+	/* Copy all the original tag's properties to the new tag */
+	properties = g_object_class_list_properties( G_OBJECT_GET_CLASS(tag), &nprops );
+	for(count = 0; count < nprops; count++) {
+
+		/* Only copy properties that are readable, writable, not construct-only,
+		and not deprecated */
+		GParamFlags flags = properties[count]->flags;
+		if(flags & G_PARAM_CONSTRUCT_ONLY
+			|| flags & G_PARAM_DEPRECATED
+			|| !(flags & G_PARAM_READABLE)
+			|| !(flags & G_PARAM_WRITABLE))
+			continue;
+
+		const char *prop_name = g_param_spec_get_name(properties[count]);
+		GValue prop_value = G_VALUE_INIT;
+
+		g_value_init( &prop_value, G_PARAM_SPEC_VALUE_TYPE(properties[count]) );
+		g_object_get_property( G_OBJECT(tag), prop_name, &prop_value );
+		/* Don't copy the PangoTabArray if it is NULL, that prints a warning */
+		if(strcmp(prop_name, "tabs") == 0 && g_value_get_boxed(&prop_value) == NULL) {
+			g_value_unset(&prop_value);
+			continue;
+		}
+		g_object_set_property( G_OBJECT(copy), prop_name, &prop_value );
+		g_value_unset(&prop_value);
+	}
+	g_free(properties);
 
 	/* Copy the data that was added manually */
 	gpointer reverse_color = g_object_get_data( G_OBJECT(tag), "reverse-color" );
