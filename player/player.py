@@ -15,10 +15,18 @@ class Player(GObject.GObject):
     def __init__(self):
         super(Player, self).__init__()
 
-        # FIXME: should use the Keyfile backend, but that's not available from
-        # Python
-        self.prefs_settings = Gio.Settings('org.chimara-if.player.preferences')
-        self.state_settings = Gio.Settings('org.chimara-if.player.state')
+        if os.path.exists('chimara-config'):
+            keyfile = 'chimara-config'
+        else:
+            keyfile = os.path.expanduser('~/.chimara/config')
+        try:
+            # This only works on my custom-built gobject-introspection; opened
+            # bug #682702
+            backend = Gio.keyfile_settings_backend_new(keyfile, "/org/chimara-if/player/", None)
+        except AttributeError:
+            backend = None
+        self.prefs_settings = Gio.Settings('org.chimara-if.player.preferences', backend=backend)
+        self.state_settings = Gio.Settings('org.chimara-if.player.state', backend=backend)
 
         builder = Gtk.Builder()
         builder.add_from_file('chimara.ui')
@@ -60,7 +68,10 @@ class Player(GObject.GObject):
 
         self.glk = Chimara.IF()
         self.glk.props.ignore_errors = True
-        self.glk.set_css_from_file('style.css')
+        css_file = _maybe(self.prefs_settings.get_value('css-file'))
+        if css_file is None:
+            css_file = 'style.css'
+        self.glk.set_css_from_file(css_file)
 
         vbox = builder.get_object('vbox')
         vbox.pack_end(self.glk, True, True, 0)
