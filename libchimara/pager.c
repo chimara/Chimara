@@ -104,24 +104,20 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 	return FALSE; /* if the key wasn't handled here, pass it to other handlers */
 }
 
-/* Draw the "more" prompt on top of the buffer, after the regular expose event has run */
+/* Draw the "more" prompt on top of the buffer, after the regular draw event has run */
 gboolean
-pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
+pager_on_draw(GtkTextView *textview, cairo_t *cr, winid_t win)
 {
 	/* Calculate the position of the 'more' tag */
 	gint promptwidth, promptheight;
 	pango_layout_get_pixel_size(win->pager_layout, &promptwidth, &promptheight);
 
-	gint winx, winy, winwidth, winheight;
-	gdk_window_get_position(event->window, &winx, &winy);
-	gdk_drawable_get_size(GDK_DRAWABLE(event->window), &winwidth, &winheight);
+	int winwidth = gtk_widget_get_allocated_width( GTK_WIDGET(textview) );
+	int winheight = gtk_widget_get_allocated_height( GTK_WIDGET(textview) );
 
 	/* Draw the 'more' tag */
-	GdkGC *context = gdk_gc_new(GDK_DRAWABLE(event->window));
-	gdk_draw_layout(event->window, context, 
-		winx + winwidth - promptwidth, 
-		winy + winheight - promptheight, 
-		win->pager_layout);
+	cairo_move_to(cr, winwidth - promptwidth, winheight - promptheight);
+	pango_cairo_show_layout(cr, win->pager_layout);
 
 	return FALSE; /* Propagate event further */
 }
@@ -129,7 +125,7 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 /* Check whether paging should be done. This function is called after the
  * textview has finished validating text positions. */
 void 
-pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, winid_t win) 
+pager_after_size_allocate(GtkTextView *textview, GdkRectangle *allocation, winid_t win)
 {
 	/* Move the pager to the last visible character in the buffer */
 	gint view_height, scroll_distance; 
