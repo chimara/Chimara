@@ -90,12 +90,12 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 		NULL);
 	
 	switch (event->keyval) {
-		case GDK_space: case GDK_KP_Space:
-		case GDK_Page_Down: case GDK_KP_Page_Down:
-		case GDK_Return: case GDK_KP_Enter:
+		case GDK_KEY_space: case GDK_KEY_KP_Space:
+		case GDK_KEY_Page_Down: case GDK_KEY_KP_Page_Down:
+		case GDK_KEY_Return: case GDK_KEY_KP_Enter:
 			gtk_adjustment_set_value(adj, CLAMP(value + page_size, lower, upper - page_size));
 			return TRUE;
-		case GDK_Page_Up: case GDK_KP_Page_Up:
+		case GDK_KEY_Page_Up: case GDK_KEY_KP_Page_Up:
 			gtk_adjustment_set_value(adj, CLAMP(value - page_size, lower, upper - page_size));
 			return TRUE;
 			/* don't handle "up" and "down", they're used for input history */
