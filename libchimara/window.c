@@ -76,6 +76,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 
 	if(win->pager_layout)
 		g_object_unref(win->pager_layout);
+	if(win->backing_store)
+		cairo_surface_destroy(win->backing_store);
 
 	g_free(win);
 }
@@ -603,7 +605,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 		case wintype_Graphics:
 		{
-		    GtkWidget *image = gtk_image_new_from_pixmap(NULL, NULL);
+		    GtkWidget *image = gtk_drawing_area_new();
 			gtk_widget_show(image);
 
 			win->unit_width = 1;
@@ -611,13 +613,15 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    win->widget = image;
 		    win->frame = image;
 			win->background_color = 0x00FFFFFF;
-		    		
+			win->backing_store = NULL;
+
 			/* Connect signal handlers */
 			win->button_press_event_handler = g_signal_connect(image, "button-press-event", G_CALLBACK(on_window_button_press), win);
 			g_signal_handler_block(image, win->button_press_event_handler);
 			win->shutdown_keypress_handler = g_signal_connect(image, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win);
 			g_signal_handler_block(image, win->shutdown_keypress_handler);			
-			win->size_allocate_handler = g_signal_connect(image, "size-allocate", G_CALLBACK(on_graphics_size_allocate), win);
+			g_signal_connect(image, "configure-event", G_CALLBACK(on_graphics_configure), win);
+			g_signal_connect(image, "draw", G_CALLBACK(on_graphics_draw), win);
 		}
 		    break;
 			
