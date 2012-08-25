@@ -1008,13 +1008,19 @@ glk_window_clear(winid_t win)
 
 		case wintype_Graphics:
 		{
+			GtkAllocation allocation;
+
 			/* Wait for the window's size to be updated */
 			g_mutex_lock(glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
 				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
 			g_mutex_unlock(glk_data->arrange_lock);
 
-			glk_window_erase_rect(win, 0, 0, win->widget->allocation.width, win->widget->allocation.height);
+			gdk_threads_enter();
+			gtk_widget_get_allocation(win->widget, &allocation);
+			gdk_threads_leave();
+
+			glk_window_erase_rect(win, 0, 0, allocation.width, allocation.height);
 		}
 			break;
 		
@@ -1134,6 +1140,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 {
 	VALID_WINDOW(win, return);
 
+	GtkAllocation allocation;
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
     switch(win->type)
@@ -1154,9 +1161,10 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 			g_mutex_unlock(glk_data->arrange_lock);
 			
 			gdk_threads_enter();
+			gtk_widget_get_allocation(win->widget, &allocation);
 			/* Cache the width and height */
-			win->width = (glui32)(win->widget->allocation.width / win->unit_width);
-		    win->height = (glui32)(win->widget->allocation.height / win->unit_height);
+			win->width = (glui32)(allocation.width / win->unit_width);
+		    win->height = (glui32)(allocation.height / win->unit_height);
             gdk_threads_leave();
 			
             if(widthptr != NULL)
@@ -1173,10 +1181,11 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 			g_mutex_unlock(glk_data->arrange_lock);
 			
             gdk_threads_enter();
+            gtk_widget_get_allocation(win->widget, &allocation);
             if(widthptr != NULL)
-                *widthptr = (glui32)(win->widget->allocation.width / win->unit_width);
+                *widthptr = (glui32)(allocation.width / win->unit_width);
             if(heightptr != NULL)
-                *heightptr = (glui32)(win->widget->allocation.height / win->unit_height);
+                *heightptr = (glui32)(allocation.height / win->unit_height);
             gdk_threads_leave();
             
             break;
@@ -1188,10 +1197,11 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 			g_mutex_unlock(glk_data->arrange_lock);
 			
             gdk_threads_enter();
+            gtk_widget_get_allocation(win->widget, &allocation);
             if(widthptr != NULL)
-                *widthptr = (glui32)(win->widget->allocation.width);
+                *widthptr = (glui32)(allocation.width);
             if(heightptr != NULL)
-                *heightptr = (glui32)(win->widget->allocation.height);
+                *heightptr = (glui32)(allocation.height);
             gdk_threads_leave();
             
             break;
