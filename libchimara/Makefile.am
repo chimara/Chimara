@@ -42,7 +42,7 @@ libchimara_la_SOURCES = \
 	style.c style.h \
 	timer.c timer.h \
 	window.c window.h
-libchimara_la_CPPFLAGS = \
+libchimara_la_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
 	-DPLUGINDIR=\""$(pluginpath)"\" \
