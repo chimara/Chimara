@@ -2,19 +2,26 @@
 
 import sys
 import os.path
+import argparse
 from gi.repository import GObject, GLib, Gdk, Gio, Gtk, Chimara
 import config
 
-# FIXME: Dummy translation function, for now
-_ = lambda x: x
+if config.ENABLE_NLS:
+    import gettext
+    gettext.install(config.GETTEXT_PACKAGE, config.PACKAGE_LOCALE_DIR,
+        unicode=True, codeset='UTF-8')
+else:
+    _ = lambda x: x
 
 
 class Player(GObject.GObject):
     __gtype_name__ = 'ChimaraPlayer'
 
-    def __init__(self):
+    def __init__(self, graphics_file=None):
         super(Player, self).__init__()
 
+        # Initialize settings file; it can be overridden by a "chimara-config"
+        # file in the current directory
         if os.path.exists('chimara-config'):
             keyfile = 'chimara-config'
         else:
@@ -22,14 +29,25 @@ class Player(GObject.GObject):
         try:
             # This only works on my custom-built gobject-introspection; opened
             # bug #682702
-            backend = Gio.keyfile_settings_backend_new(keyfile, "/org/chimara-if/player/", None)
+            backend = Gio.keyfile_settings_backend_new(keyfile,
+                "/org/chimara-if/player/", None)
         except AttributeError:
             backend = None
-        self.prefs_settings = Gio.Settings('org.chimara-if.player.preferences', backend=backend)
-        self.state_settings = Gio.Settings('org.chimara-if.player.state', backend=backend)
+        self.prefs_settings = Gio.Settings('org.chimara-if.player.preferences',
+            backend=backend)
+        self.state_settings = Gio.Settings('org.chimara-if.player.state',
+            backend=backend)
 
         builder = Gtk.Builder()
-        builder.add_from_file('chimara.ui')
+        try:
+            builder.add_from_file(os.path.join(config.PACKAGE_DATA_DIR,
+                'chimara.ui'))
+        except GLib.GError:
+            if config.DEBUG:
+                builder.add_from_file(os.path.join(config.PACKAGE_SRC_DIR,
+                    'chimara.ui'))
+            else:
+                raise
         self.window = builder.get_object('chimara')
         self.aboutwindow = builder.get_object('aboutwindow')
         self.prefswindow = builder.get_object('prefswindow')
@@ -45,6 +63,8 @@ class Player(GObject.GObject):
             'active', Gio.SettingsBindFlags.SET)
 
         filt = Gtk.RecentFilter()
+        # TODO: Use mimetypes and construct the filter dynamically depending on
+        # what plugins are installed
         for pattern in ['*.z[1-8]', '*.[zg]lb', '*.[zg]blorb', '*.ulx', '*.blb',
             '*.blorb']:
             filt.add_pattern(pattern)
@@ -52,7 +72,15 @@ class Player(GObject.GObject):
         recent.add_filter(filt)
 
         uimanager = Gtk.UIManager()
-        uimanager.add_ui_from_file('chimara.menus')
+        try:
+            uimanager.add_ui_from_file(os.path.join(config.PACKAGE_DATA_DIR,
+                'chimara.menus'))
+        except GLib.GError:
+            if config.DEBUG:
+                uimanager.add_ui_from_file(os.path.join(config.PACKAGE_SRC_DIR,
+                    'chimara.menus'))
+            else:
+                raise
         uimanager.insert_action_group(actiongroup)
         menubar = uimanager.get_widget('/menubar')
         toolbar = uimanager.get_widget('/toolbar')
@@ -66,11 +94,17 @@ class Player(GObject.GObject):
         accels = uimanager.get_accel_group()
         self.window.add_accel_group(accels)
 
-        self.glk = Chimara.IF(ignore_errors=True)
+        self.glk = Chimara.IF(ignore_errors=True,
+            # interpreter_number=Chimara.IFZmachineVersion.TANDY_COLOR,
+            graphics_file=graphics_file)
         css_file = _maybe(self.prefs_settings.get_value('css-file'))
         if css_file is None:
             css_file = 'style.css'
         self.glk.set_css_from_file(css_file)
+
+        # DON'T UNCOMMENT THIS your eyes will burn
+        # but it is a good test of programmatically altering just one style
+        # self.glk.set_css_from_string("buffer{font-family: 'Comic Sans MS';}")
 
         vbox = builder.get_object('vbox')
         vbox.pack_end(self.glk, True, True, 0)
@@ -78,7 +112,6 @@ class Player(GObject.GObject):
         vbox.pack_start(toolbar, False, False, 0)
 
         builder.connect_signals(self)
-
         self.glk.connect('notify::program-name', self.change_window_title)
         self.glk.connect('notify::story-name', self.change_window_title)
 
@@ -156,13 +189,13 @@ class Player(GObject.GObject):
         manager = Gtk.RecentManager.get_default()
         manager.add_item(uri)
 
-    def on_stop_activate(self, action, data=None):
+    def on_stop_activate(self, *args):
         self.glk.stop()
 
-    def on_quit_chimara_activate(self, action, data=None):
+    def on_quit_chimara_activate(self, *args):
         Gtk.main_quit()
 
-    def on_copy_activate(self, action, data=None):
+    def on_copy_activate(self, *args):
         focus = self.window.get_focus()
         # Call "copy clipboard" on any widget that defines it
         if (isinstance(focus, Gtk.Label)
@@ -170,41 +203,41 @@ class Player(GObject.GObject):
             or isinstance(focus, Gtk.TextView)):
             focus.emit('copy-clipboard')
 
-    def on_paste_activate(self, action, data=None):
+    def on_paste_activate(self, *args):
         focus = self.window.get_focus()
         # Call "paste clipboard" on any widget that defines it
         if isinstance(focus, Gtk.Entry) or isinstance(focus, Gtk.TextView):
             focus.emit('paste-clipboard')
 
-    def on_preferences_activate(self, action, data=None):
+    def on_preferences_activate(self, *args):
         self.prefswindow.present()
 
-    def on_toolbar_toggled(self, action, data=None):
+    def on_toolbar_toggled(self, action, *args):
         if action.get_active():
             self.toolbar.show()
         else:
             self.toolbar.hide()
 
-    def on_undo_activate(self, action, data=None):
+    def on_undo_activate(self, *args):
         self.glk.feed_line_input('undo')
 
-    def on_save_activate(self, action, data=None):
+    def on_save_activate(self, *args):
         self.glk.feed_line_input('save')
 
-    def on_restore_activate(self, action, data=None):
+    def on_restore_activate(self, *args):
         self.glk.feed_line_input('restore')
 
-    def on_restart_activate(self, action, data=None):
+    def on_restart_activate(self, *args):
         self.glk.feed_line_input('restart')
 
-    def on_quit_activate(self, action, data=None):
+    def on_quit_activate(self, *args):
         self.glk.feed_line_input('quit')
 
-    def on_about_activate(self, action, data=None):
+    def on_about_activate(self, *args):
         self.aboutwindow.set_version(config.PACKAGE_VERSION)
         self.aboutwindow.present()
 
-    def on_window_delete_event(self, widget, event, data=None):
+    def on_window_delete_event(self, *args):
         Gtk.main_quit()
         return True
 
@@ -294,16 +327,28 @@ def error_dialog(parent, message):
     dialog.destroy()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('game_file', nargs='?', default=None,
+        metavar='GAME FILE', help='the game file to load and start')
+    parser.add_argument('graphics_file', nargs='?', default=None,
+        metavar='GRAPHICS FILE', help='a Blorb resource file to include')
+    args = parser.parse_args()
+
     Gdk.threads_init()
 
-    player = Player()
+    # Create configuration dir ~/.chimara
+    try:
+        os.mkdir(os.path.expanduser('~/.chimara'))
+    except OSError:
+        # already exists
+        assert os.path.isdir(os.path.expanduser('~/.chimara'))
+
+    player = Player(graphics_file=args.graphics_file)
     player.window.show_all()
 
-    if len(sys.argv) == 3:
-        player.glk.props.graphics_file = sys.argv[2]
-    if len(sys.argv) >= 2:
+    if args.game_file is not None:
         try:
-            player.glk.run_game(sys.argv[1])
+            player.glk.run_game(args.game_file)
         except GLib.Error as e:
             error_dialog(player.window,
                 _("Error starting Glk library: {errmsg}").format(

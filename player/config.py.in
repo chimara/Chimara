@@ -1,1 +1,7 @@
 PACKAGE_VERSION = '''@PACKAGE_VERSION@'''
+GETTEXT_PACKAGE = '''@GETTEXT_PACKAGE@'''
+PACKAGE_DATA_DIR = '''@prefix@/@DATADIRNAME@/@PACKAGE@'''
+PACKAGE_SRC_DIR = '''@srcdir@'''
+PACKAGE_LOCALE_DIR = '''@prefix@/@DATADIRNAME@/locale'''
+ENABLE_NLS = ('''@USE_NLS@''' == 'yes')
+DEBUG = ('-DDEBUG' in '''@CPPFLAGS@''')
