@@ -131,8 +131,6 @@ PKG_CHECK_MODULES([PLAYER], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
 	gtk+-2.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0
-	libgda-4.0
-	libsoup-2.4
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
