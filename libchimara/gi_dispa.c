@@ -1,8 +1,8 @@
-/* gi_dispa.c: Dispatch layer for Glk API, version 0.7.2.
+/* gi_dispa.c: Dispatch layer for Glk API, version 0.7.4.
     Designed by Andrew Plotkin <erkyrath@eblong.com>
     http://eblong.com/zarf/glk/
 
-    This file is copyright 1998-2011 by Andrew Plotkin. You may copy,
+    This file is copyright 1998-2012 by Andrew Plotkin. You may copy,
     distribute, and incorporate it into your own programs, by any means
     and under any conditions, as long as you do not modify it. You may
     also modify this file, incorporate it into your own programs,
@@ -49,6 +49,7 @@ static gidispatch_intconst_t intconstant_table[] = {
     { "evtype_Redraw", (6) },
     { "evtype_SoundNotify", (7) },
     { "evtype_Timer", (1) },
+    { "evtype_VolumeNotify", (9) },
 
     { "filemode_Read", (0x02) },
     { "filemode_ReadWrite", (0x03) },
@@ -79,7 +80,9 @@ static gidispatch_intconst_t intconstant_table[] = {
     { "gestalt_LineTerminatorKey", (19) },
     { "gestalt_LineTerminators", (18) },
     { "gestalt_MouseInput", (4) },
+    { "gestalt_ResourceStream", (22) },
     { "gestalt_Sound", (8) },
+    { "gestalt_Sound2", (21) },
     { "gestalt_SoundMusic", (13) },
     { "gestalt_SoundNotify", (10) },
     { "gestalt_SoundVolume", (9) },
@@ -260,6 +263,13 @@ static gidispatch_function_t function_table[] = {
     { 0x00FA, glk_schannel_stop, "schannel_stop" },
     { 0x00FB, glk_schannel_set_volume, "schannel_set_volume" },
     { 0x00FC, glk_sound_load_hint, "sound_load_hint" },
+#ifdef GLK_MODULE_SOUND2
+    { 0x00F4, glk_schannel_create_ext, "schannel_create_ext" },
+    { 0x00F7, glk_schannel_play_multi, "schannel_play_multi" },
+    { 0x00FD, glk_schannel_set_volume_ext, "schannel_set_volume_ext" },
+    { 0x00FE, glk_schannel_pause, "schannel_pause" },
+    { 0x00FF, glk_schannel_unpause, "schannel_unpause" },
+#endif /* GLK_MODULE_SOUND2 */
 #endif /* GLK_MODULE_SOUND */
 #ifdef GLK_MODULE_HYPERLINKS
     { 0x0100, glk_set_hyperlink, "set_hyperlink" },
@@ -307,6 +317,10 @@ static gidispatch_function_t function_table[] = {
     { 0x016E, glk_date_to_simple_time_utc, "date_to_simple_time_utc" },
     { 0x016F, glk_date_to_simple_time_local, "date_to_simple_time_local" },
 #endif /* GLK_MODULE_DATETIME */
+#ifdef GLK_MODULE_RESOURCE_STREAM
+    { 0x0049, glk_stream_open_resource, "stream_open_resource" },
+    { 0x013A, glk_stream_open_resource_uni, "stream_open_resource_uni" },
+#endif /* GLK_MODULE_RESOURCE_STREAM */
 };
 
 glui32 gidispatch_count_classes()
@@ -544,6 +558,19 @@ char *gidispatch_prototype(glui32 funcnum)
             return "2QdIu:";
         case 0x00FC: /* sound_load_hint */
             return "2IuIu:";
+
+#ifdef GLK_MODULE_SOUND2
+        case 0x00F4: /* schannel_create_ext */
+            return "3IuIu:Qd";
+        case 0x00F7: /* schannel_play_multi */
+            return "4>+#Qd>+#IuIu:Iu";
+        case 0x00FD: /* schannel_set_volume_ext */
+            return "4QdIuIuIu:";
+        case 0x00FE: /* schannel_pause */
+            return "1Qd:";
+        case 0x00FF: /* schannel_unpause */
+            return "1Qd:";
+#endif /* GLK_MODULE_SOUND2 */
 #endif /* GLK_MODULE_SOUND */
 
 #ifdef GLK_MODULE_HYPERLINKS
@@ -631,6 +658,13 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x016F: /* date_to_simple_time_local */
             return "3>+[8IsIsIsIsIsIsIsIs]Iu:Is";
 #endif /* GLK_MODULE_DATETIME */
+
+#ifdef GLK_MODULE_RESOURCE_STREAM
+        case 0x0049: /* stream_open_resource */
+            return "3IuIu:Qb";
+        case 0x013A: /* stream_open_resource_uni */
+            return "3IuIu:Qb";
+#endif /* GLK_MODULE_RESOURCE_STREAM */
 
         default:
             return NULL;
@@ -1081,6 +1115,31 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
         case 0x00FC: /* sound_load_hint */
             glk_sound_load_hint(arglist[0].uint, arglist[1].uint);
             break;
+
+#ifdef GLK_MODULE_SOUND2
+        case 0x00F4: /* schannel_create_ext */
+            arglist[3].opaqueref = glk_schannel_create_ext(arglist[0].uint, arglist[1].uint);
+            break;
+        case 0x00F7: /* schannel_play_multi */
+            if (arglist[0].ptrflag && arglist[3].ptrflag)
+                arglist[8].uint = glk_schannel_play_multi(arglist[1].array, arglist[2].uint, arglist[4].array, arglist[5].uint, arglist[6].uint);
+            else if (arglist[0].ptrflag)
+                arglist[6].uint = glk_schannel_play_multi(arglist[1].array, arglist[2].uint, NULL, 0, arglist[4].uint);
+            else if (arglist[1].ptrflag)
+                arglist[6].uint = glk_schannel_play_multi(NULL, 0, arglist[2].array, arglist[3].uint, arglist[4].uint);
+            else
+                arglist[4].uint = glk_schannel_play_multi(NULL, 0, NULL, 0, arglist[2].uint);
+            break;
+        case 0x00FD: /* schannel_set_volume_ext */
+            glk_schannel_set_volume_ext(arglist[0].opaqueref, arglist[1].uint, arglist[2].uint, arglist[3].uint);
+            break;
+        case 0x00FE: /* schannel_pause */
+            glk_schannel_pause(arglist[0].opaqueref);
+            break;
+        case 0x00FF: /* schannel_unpause */
+            glk_schannel_unpause(arglist[0].opaqueref);
+            break;
+#endif /* GLK_MODULE_SOUND2 */
 #endif /* GLK_MODULE_SOUND */
 
 #ifdef GLK_MODULE_HYPERLINKS
@@ -1424,6 +1483,15 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             }
             break;
 #endif /* GLK_MODULE_DATETIME */
+
+#ifdef GLK_MODULE_RESOURCE_STREAM
+        case 0x0049: /* stream_open_resource */
+            arglist[3].opaqueref = glk_stream_open_resource(arglist[0].uint, arglist[1].uint);
+            break;
+        case 0x013A: /* stream_open_resource_uni */
+            arglist[3].opaqueref = glk_stream_open_resource_uni(arglist[0].uint, arglist[1].uint);
+            break;
+#endif /* GLK_MODULE_RESOURCE_STREAM */
 
         default:
             /* do nothing */

@@ -30,7 +30,7 @@ AC_SUBST(LT_VERSION_INFO)
 # Recommended Glib version: at least 2.16
 GTK_REQUIRED_VERSION=2.6
 GLIB_REQUIRED_VERSION=2.6
-GTK_DOC_REQUIRED_VERSION=1.9
+GTK_DOC_REQUIRED_VERSION=1.12
 AC_SUBST(GTK_REQUIRED_VERSION)
 AC_SUBST(GLIB_REQUIRED_VERSION)
 AC_SUBST(GTK_DOC_REQUIRED_VERSION)
@@ -85,18 +85,6 @@ AC_ARG_ENABLE([iliad],
 	[enable_iliad=no])
 AM_CONDITIONAL(TARGET_ILIAD, $TEST "x$enable_iliad" = xyes)
 
-### BUILD WITHOUT RECENT FILES MANAGER #########################################
-# (to work around a bug on OS X)
-AC_ARG_ENABLE([recent],
-	[AS_HELP_STRING([--disable-recent],
-		[Omit recent files menu (to work around a bug on OS X])],
-	[],
-	[enable_recent=yes])
-AS_IF([$TEST "x$enable_recent" = "xyes"],
-	[OPEN_RECENT_MENU_ITEM="<menuitem action=\"recent\"/>"],
-	[OPEN_RECENT_MENU_ITEM="<!--  <menuitem action=\"recent\"/>-->"])
-AC_SUBST(OPEN_RECENT_MENU_ITEM)
-
 ### RPM CONFIGURATION ##########################################################
 # --enable-rpm requires rpm and rpmbuild
 AC_PATH_PROG([RPMBUILD], [rpmbuild], [notfound])
@@ -119,6 +107,11 @@ SOUND_MODULE=
 AS_IF([$TEST "x$with_gstreamer" != xno], 
 	[AC_DEFINE([GSTREAMER_SOUND], [1], [Define to enable sound support with GStreamer])
 	SOUND_MODULE="gstreamer-0.10 >= 0.10.12"])
+
+### WHETHER TO GENERATE A .VAPI FILE ##########################################
+# Requires vapigen
+AC_PATH_PROG([VAPIGEN], [vapigen], [notfound])
+AM_CONDITIONAL(BUILDING_VAPI, $TEST "x$VAPIGEN" != xnotfound)
 
 ### CHECK FOR LIBRARIES #######################################################
 
@@ -188,7 +181,7 @@ interpreters/glulxe/Makefile
 interpreters/git/Makefile
 tests/Makefile
 player/Makefile
-player/chimara.menus
+player/config.py
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml

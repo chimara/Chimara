@@ -95,7 +95,7 @@ change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkWindow *window)
 	g_free(title);
 }
 
-static void
+static gboolean
 create_window(void)
 {
 	GError *error = NULL;
@@ -107,8 +107,7 @@ create_window(void)
 		error = NULL;
 		if( !gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", &error) ) {
 #endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");	
-			return;
+			return FALSE;
 #ifdef DEBUG
 		}
 #endif /* DEBUG */
@@ -144,13 +143,9 @@ create_window(void)
 #ifdef DEBUG
 		g_error_free(error);
 		error = NULL;
-		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) ) {
+		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) )
 #endif /* DEBUG */
-			error_dialog(NULL, error, "Error while building interface: ");
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
+			return FALSE;
 	}
 
 	glk = chimara_if_new();
@@ -162,13 +157,9 @@ create_window(void)
 #ifdef DEBUG
 		g_error_free(error);
 		error = NULL;
-		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/style.css", &error) ) {
+		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/style.css", &error) )
 #endif /* DEBUG */
-			error_dialog(NULL, error, "Couldn't open CSS file: ");
-			return;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
+			return FALSE;
 	}
 	
 	/* DON'T UNCOMMENT THIS your eyes will burn
@@ -178,10 +169,7 @@ create_window(void)
 	
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)
-	{
-		error_dialog(NULL, NULL, "Could not find vbox");
-		return;
-	}
+		return FALSE;
 
 	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
 	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/menubar");
@@ -206,6 +194,8 @@ create_window(void)
 	
 	/* Create preferences window */
 	preferences_create(CHIMARA_GLK(glk));
+
+	return TRUE;
 }
 
 int
@@ -243,7 +233,10 @@ main(int argc, char *argv[])
 	state_settings = g_settings_new_with_backend("org.chimara-if.player.state", backend);
 	g_free(keyfile);
 
-	create_window();
+	if( !create_window() ) {
+		error_dialog(NULL, NULL, "Error while building interface.");
+		return 1;
+	}
 	gtk_widget_show_all(window);
 
 	g_object_unref( G_OBJECT(uimanager) );

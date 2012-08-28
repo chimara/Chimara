@@ -29,7 +29,7 @@ A resource can theoretically contain any kind of sound data, of any length. A re
 A resource can also contain two or more channels of sound (stereo data). Do not confuse such in-sound channels with Glk sound channels. A single Glk sound channel suffices to play any sound, even stereo sounds.
 </para>
 <note><para>
-Again, Blorb is the official resource-storage format of Glk. Sounds in Blorb files can be encoded as AIFF, MOD, or MOD song data. See the Blorb specification for details.
+Again, Blorb is the official resource-storage format of Glk. Sounds in Blorb files can be encoded as Ogg, AIFF, or MOD. See the Blorb specification for details.
 </para></note>
 </refsect1>
 </refentry>

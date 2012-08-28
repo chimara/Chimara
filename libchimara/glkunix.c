@@ -36,7 +36,7 @@ glkunix_stream_open_pathname_gen(char *pathname, glui32 writemode, glui32 textmo
 	g_return_val_if_fail(pathname, NULL);
 	g_return_val_if_fail(strlen(pathname) > 0, NULL);
 
-	frefid_t fileref = fileref_new(pathname, rock,
+	frefid_t fileref = fileref_new(pathname, NULL, rock,
 		textmode? fileusage_TextMode : fileusage_BinaryMode,
 		writemode? filemode_Write : filemode_Read);
 	return file_stream_new(fileref, writemode? filemode_Write : filemode_Read, rock, FALSE);
@@ -67,7 +67,7 @@ glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
 	g_return_val_if_fail(pathname, NULL);
 	g_return_val_if_fail(strlen(pathname) > 0, NULL);
 
-	frefid_t fileref = fileref_new(pathname, rock, textmode? fileusage_TextMode : fileusage_BinaryMode, filemode_Read);
+	frefid_t fileref = fileref_new(pathname, NULL, rock, textmode? fileusage_TextMode : fileusage_BinaryMode, filemode_Read);
 	return file_stream_new(fileref, filemode_Read, rock, FALSE);
 }
 

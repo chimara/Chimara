@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
+  <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window">
     <property name="border_width">6</property>
@@ -157,9 +157,21 @@
         <col id="0" translatable="yes">ArrayLimitTest</col>
         <col id="1">arraylimittest.ulx</col>
       </row>
+      <row>
+        <col id="0" translatable="yes">ChineseDictTest</col>
+        <col id="1">chinesedicttest.ulx</col>
+      </row>
 	  <row>
         <col id="0" translatable="yes">DateTimeTest</col>
         <col id="1">datetimetest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">DictFlagTest</col>
+        <col id="1">dictflagtest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">DictFlagTest (Z5)</col>
+        <col id="1">dictflagtest.z5</col>
       </row>
       <row>
         <col id="0" translatable="yes">ExternalFile</col>
@@ -190,6 +202,10 @@
         <col id="1">memstreamtest.ulx</col>
       </row>
       <row>
+        <col id="0" translatable="yes">ResStreamTest</col>
+        <col id="1">resstreamtest.gblorb</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">UniCaseTest</col>
         <col id="1">unicasetest.ulx</col>
       </row>
@@ -200,6 +216,10 @@
       <row>
         <col id="0" translatable="yes">UniDictTest</col>
         <col id="1">unidicttest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">UniSourceTest</col>
+        <col id="1">unisourcetest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">WindowTest</col>

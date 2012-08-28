@@ -29,5 +29,12 @@ gsettings_SCHEMAS = org.chimara-if.gschema.xml
 
 endif
 
-EXTRA_DIST = $(gsettings_SCHEMAS)
+CLEANFILES = config.pyc
+DISTCLEANFILES = config.py
+
+EXTRA_DIST = \
+	$(gsettings_SCHEMAS) \
+	config.py \
+	player.py
+
 -include $(top_srcdir)/git.mk

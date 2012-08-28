@@ -20,6 +20,7 @@ chimara_glk_set_css_to_default
 chimara_glk_set_css_from_file
 chimara_glk_set_css_from_string
 chimara_glk_run
+chimara_glk_run_file
 chimara_glk_stop
 chimara_glk_wait
 chimara_glk_unload_plugin
@@ -54,6 +55,7 @@ chimara_if_new
 chimara_if_set_preferred_interpreter
 chimara_if_get_preferred_interpreter
 chimara_if_run_game
+chimara_if_run_game_file
 chimara_if_get_format
 chimara_if_get_interpreter
 <SUBSECTION Standard>
@@ -130,6 +132,7 @@ gestalt_MouseInput
 gestalt_Timer
 gestalt_Graphics
 gestalt_DrawImage
+gestalt_Sound2
 gestalt_Sound
 gestalt_SoundVolume
 gestalt_SoundNotify
@@ -138,6 +141,8 @@ gestalt_HyperlinkInput
 gestalt_SoundMusic
 gestalt_GraphicsTransparency
 gestalt_DateTime
+gestalt_ResourceStream
+GLK_MODULE_RESOURCE_STREAM
 </SECTION>
 
 <SECTION>
@@ -265,6 +270,7 @@ evtype_Arrange
 evtype_Redraw
 evtype_SoundNotify
 evtype_Hyperlink
+evtype_VolumeNotify
 </SECTION>
 
 <SECTION>
@@ -415,6 +421,8 @@ glk_stream_open_memory
 glk_stream_open_memory_uni
 glk_stream_open_file
 glk_stream_open_file_uni
+glk_stream_open_resource
+glk_stream_open_resource_uni
 </SECTION>
 
 <SECTION>
@@ -494,6 +502,7 @@ GLK_MODULE_IMAGE
 <FILE>glk-sound-channels</FILE>
 <TITLE>Creating and Destroying Sound Channels</TITLE>
 glk_schannel_create
+glk_schannel_create_ext
 glk_schannel_destroy
 </SECTION>
 
@@ -502,8 +511,12 @@ glk_schannel_destroy
 <TITLE>Playing Sounds</TITLE>
 glk_schannel_play
 glk_schannel_play_ext
+glk_schannel_play_multi
 glk_schannel_stop
+glk_schannel_pause
+glk_schannel_unpause
 glk_schannel_set_volume
+glk_schannel_set_volume_ext
 glk_sound_load_hint
 </SECTION>
 
@@ -518,6 +531,7 @@ glk_schannel_get_rock
 <FILE>glk-sound-testing</FILE>
 <TITLE>Testing for Sound Capabilities</TITLE>
 GLK_MODULE_SOUND
+GLK_MODULE_SOUND2
 </SECTION>
 
 <SECTION>
@@ -636,12 +650,15 @@ giblorb_count_resources
 giblorb_method_DontLoad
 giblorb_method_Memory
 giblorb_method_FilePos
-giblorb_ID_Snd
 giblorb_ID_Exec
+giblorb_ID_Snd
 giblorb_ID_Pict
+giblorb_ID_Data
 giblorb_ID_Copyright
 giblorb_ID_AUTH
 giblorb_ID_ANNO
+giblorb_ID_TEXT
+giblorb_ID_BINA
 <SUBSECTION Private>
 giblorb_make_id
 </SECTION>

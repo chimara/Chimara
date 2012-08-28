@@ -21,13 +21,13 @@ G_BEGIN_DECLS
  * 
  * This structure contains no public members.
  */
-typedef struct _ChimaraGlk {
+typedef struct {
 	GtkContainer parent_instance;
     
 	/*< public >*/
 } ChimaraGlk;
 
-typedef struct _ChimaraGlkClass {
+typedef struct {
 	GtkContainerClass parent_class;
 	/* Signals */
 	void(* stopped) (ChimaraGlk *self);

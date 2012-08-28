@@ -45,7 +45,7 @@ You can think of Glk as an IF virtual machine, without the virtual machine part.
 An IF virtual machine has been designed specifically to go along with Glk. This VM, called Glulx, uses Glk as its interface; each Glk call corresponds to an input/output opcode of the VM.
 </para>
 <para>
-For more discussion of this approach, see <link linkend="chimara-Glk-and-the-Virtual-Machine">Glk and the Virtual Machine</link>. Glulx is documented at <ulink url="http://www.eblong.com/zarf/glulx/">http://www.eblong.com/zarf/glulx</ulink>.
+For more discussion of this approach, see <link linkend="chimara-Glk-and-the-Virtual-Machine">Glk and the Virtual Machine</link>. Glulx is documented at <ulink url="http://eblong.com/zarf/glulx/">http://eblong.com/zarf/glulx</ulink>.
 </para>
 <para>
 Of course, Glk can be used with other IF systems. The advantage of Glulx is that it provides the game author with direct and complete access to the Glk API. Other IF systems typically have an built-in abstract I/O API, which maps only partially onto Glk. For these systems, Glk tends to be a least-common-denominator interface: highly portable, but not necessarily featureful. (Even if Glk has a feature, it may not be available through the layers of abstraction.) 

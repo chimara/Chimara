@@ -586,6 +586,28 @@
  * A stream is opened with a particular file mode, see the 
  * <code>filemode_</code> constants below.
  *
+ * <note><para>
+ *   In the stdio library, using fopen(), %filemode_Write would be mode
+ *   <code>"w"</code>; %filemode_Read would be mode <code>"r"</code>;
+ *   %filemode_ReadWrite would be mode <code>"r+"</code>. Confusingly,
+ *   %filemode_WriteAppend cannot be mode <code>"a"</code>, because the stdio
+ *   spec says that when you open a file with mode <code>"a"</code>, then
+ *   fseek() doesn't work. So we have to use mode <code>"r+"</code> for
+ *   appending. Then we run into the <emphasis>other</emphasis> stdio problem,
+ *   which is that <code>"r+"</code> never creates a new file. So
+ *   %filemode_WriteAppend has to <emphasis>first</emphasis> open the file with
+ *   <code>"a"</code>, close it, reopen with <code>"r+"</code>, and then
+ *   fseek() to the end of the file. For %filemode_ReadWrite, the process is
+ *   the same, except without the fseek() &mdash; we begin at the beginning of
+ *   the file.
+ * </para></note>
+ * <note><para>
+ *   We must also obey an obscure geas of ANSI C <code>"r+"</code> files: you
+ *   can't switch from reading to writing without doing an fseek() in between.
+ *   Switching from writing to reading has the same restriction, except that an
+ *   fflush() also works.
+ * </para></note>
+ *
  * For information on opening streams, see the discussion of each specific type
  * of stream in <link linkend="chimara-The-Types-of-Streams">The Types of
  * Streams</link>. Remember that it is always possible that opening a stream
@@ -778,7 +800,7 @@
 
 /**
  * SECTION:glk-stream-types
- * @short_description: Window, memory, and file streams
+ * @short_description: Window, memory, file, and resource streams
  *
  * <refsect2 id="chimara-Window-Streams"><title>Window Streams</title>
  * <para>
@@ -839,6 +861,30 @@
  * file reference you open the stream with. Similarly, platform-dependent
  * attributes such as file type are determined by the file reference. See <link
  * linkend="chimara-File-References">File References</link>.
+ * </para>
+ * </refsect2>
+ * <refsect2 id="chimara-Resource-Streams"><title>Resource Streams</title>
+ * <para>
+ * You can open a stream which reads from (but not writes to) a resource file.
+ *
+ * <note><para>
+ *   Typically this is embedded in a Blorb file, as Blorb is the official
+ *   resource-storage format of Glk. A Blorb file can contain images and sounds,
+ *   but it can also contain raw data files, which are accessed by
+ *   glk_stream_open_resource() and glk_stream_open_resource_uni(). A data file
+ *   is identified by number, not by a filename. The Blorb usage field will be
+ *   <code>'Data'</code>. The chunk type will be %giblorb_ID_TEXT for text
+ *   resources, %giblorb_ID_BINA for binary resources.
+ * </para></note>
+ *
+ * <note><para>
+ *   If the running program is not associated with a Blorb file, the library may
+ *   look for data files as actual files instead. These would be named
+ *   <filename>DATA1</filename>, <filename>DATA2</filename>, etc, with a suffix
+ *   distinguishing text and binary files. See <quote>Other Resource
+ *   Arrangements</quote> in the Blorb spec: <ulink
+ *   url="http://eblong.com/zarf/blorb/"></ulink>
+ * </para></note>
  * </para>
  * </refsect2>
  */
@@ -1045,10 +1091,15 @@
  * SECTION:glk-sound-testing
  * @short_description: Checking whether the library supports sound
  *
- * Before calling Glk sound functions, you should use the %gestalt_Sound
- * selector. To test for additional capabilities, you can use the 
- * %gestalt_SoundMusic, %gestalt_SoundVolume, and %gestalt_SoundNotify 
- * selectors.
+ * Before calling Glk sound functions, you should use the %gestalt_Sound2
+ * selector.
+ *
+ * Earlier versions of the Glk spec defined separate selectors for various
+ * optional capabilities. This has proven to be an unnecessarily confusing
+ * strategy, and is no longer used. The %gestalt_Sound, %gestalt_SoundMusic,
+ * %gestalt_SoundVolume, and %gestalt_SoundNotify selectors still exist, but you
+ * should not need to test them; the %gestalt_Sound2 selector covers all of
+ * them.
  */
 
 /**
@@ -1308,7 +1359,7 @@
  */
 
 /**
- * GLK_MODULE_SOUND:
+ * GLK_MODULE_SOUND2:
  *
  * If you are writing a C program, there is an additional complication. A 
  * library which does not support sound may not implement the sound functions at
@@ -1318,9 +1369,17 @@
  * even get compile-time errors.
  * 
  * To avoid this, you can perform a preprocessor test for the existence of
- * %GLK_MODULE_SOUND. If this is defined, so are all the functions and constants
+ * %GLK_MODULE_SOUND2. If this is defined, so are all the functions and constants
  * described in this section. If not, not.
- */ 
+ */
+
+/**
+ * GLK_MODULE_SOUND:
+ *
+ * You can perform a preprocessor test for the existence of %GLK_MODULE_SOUND.
+ * If this is defined, so are all the functions and constants described in this
+ * section. If not, not.
+ */
  
 /**
  * GLK_MODULE_HYPERLINKS:
@@ -1405,8 +1464,8 @@
  *   So the version number 78.2.11 would be encoded as 0x004E020B.
  * </para></note>
  *
- * The current Glk specification version is 0.7.2, so this selector will return
- * 0x00000702.
+ * The current Glk specification version is 0.7.4, so this selector will return
+ * 0x00000704.
  *
  * |[
  * glui32 res;
@@ -1578,9 +1637,23 @@
  */
 
 /**
+ * gestalt_Sound2:
+ *
+ * You can test whether the library supports sound:
+ * |[
+ * glui32 res;
+ * res = glk_gestalt(gestalt_Sound2, 0);
+ * ]|
+ * This returns 1 if the overall suite of sound functions is available. This
+ * includes all the functions defined in <link
+ * linkend="chimara-glk-spec-sound">this chapter</link>. It also includes the
+ * capabilities described below under %gestalt_SoundMusic, %gestalt_SoundVolume,
+ * and %gestalt_SoundNotify.
+ */
+
+/**
  * gestalt_Sound:
  *
- * You can test whether the library supports sound: 
  * |[
  * glui32 res;
  * res = glk_gestalt(gestalt_Sound, 0);
@@ -1592,7 +1665,9 @@
  * glk_sound_load_hint().
  *
  * If this selector returns 0, you should not try to call these functions. They 
- * may have no effect, or they may cause a run-time error. 
+ * may have no effect, or they may cause a run-time error.
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */
 
 /**
@@ -1600,24 +1675,22 @@
  *
  * You can test whether the library supports setting the volume of sound 
  * channels: 
- * |[
- * glui32 res;
- * res = glk_gestalt(gestalt_SoundVolume, 0);
- * ]|
+ * |[ res = glk_gestalt(gestalt_SoundVolume, 0); ]|
  * This selector returns 1 if the glk_schannel_set_volume() function works. If 
- * it returns zero, glk_schannel_set_volume() has no effect.     
+ * it returns zero, glk_schannel_set_volume() has no effect.
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */
 
 /**
  * gestalt_SoundNotify:
  *
  * You can test whether the library supports sound notification events:
- * |[
- * glui32 res;
- * res = glk_gestalt(gestalt_SoundNotify, 0);
- * ]| 
+ * |[ res = glk_gestalt(gestalt_SoundNotify, 0); ]| 
  * This selector returns 1 if the library supports sound notification events. If
- * it returns zero, you will never get such events. 
+ * it returns zero, you will never get such events.
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */
 
 /**
@@ -1661,6 +1734,8 @@
  *   course, an ugly hack. It is a concession to the current state of the Glk 
  *   libraries, some of which can handle AIFF but not MOD sounds.
  * </para></note>
+ *
+ * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
  */ 
   
 /**
@@ -1781,6 +1856,18 @@
  * <note><para>
  *   Glk timer events are covered by a different selector. See %gestalt_Timer.
  * </para></note>
+ */
+
+/**
+ * gestalt_ResourceStream:
+ *
+ * |[
+ * res = glk_gestalt(gestalt_ResourceStream, 0);
+ * ]|
+ *
+ * This returns 1 if the glk_stream_open_resource() and
+ * glk_stream_open_resource_uni() functions are available. If it returns 0, you
+ * should not call them.
  */
 
 /**
@@ -1944,6 +2031,8 @@
 /**
  * evtype_SoundNotify:
  *
+ * The completion of a sound being played in a sound channel.
+ *
  * On platforms that support sound, you can request to receive an 
  * %evtype_SoundNotify event when a sound finishes playing. See <link
  * linkend="chimara-Playing-Sounds">Playing Sounds</link>.
@@ -1951,11 +2040,23 @@
  
 /**
  * evtype_Hyperlink:
+ *
+ * The selection of a hyperlink in a window.
  * 
  * On platforms that support hyperlinks, you can request to receive an
  * %evtype_Hyperlink event when the player selects a link. See <link
  * linkend="chimara-Accepting-Hyperlink-Events">Accepting Hyperlink 
  * Events</link>.
+ */
+
+/**
+ * evtype_VolumeNotify:
+ *
+ * The completion of a gradual volume change in a sound channel.
+ *
+ * On platforms that support sound, you can request to receive an
+ * %evtype_VolumeNotify event when a gradual volume change completes. See <link
+ * linkend="chimara-Playing-Sounds">Playing Sounds</link>.
  */
 
 /**
@@ -2582,7 +2683,7 @@
  * linefeed-plus-carriage-return combinations; Latin-1 characters may be
  * converted to native character codes. When reading a file in text mode, native
  * line breaks will be converted back to newline (0x0A) characters, and native
- * character codes may be converted to Latin-1. 
+ * character codes may be converted to Latin-1 or UTF-8. 
  *
  * <note><para>
  *   Line breaks will always be converted; other conversions are more
@@ -3556,6 +3657,12 @@
  */
 
 /**
+ * giblorb_ID_Data:
+ *
+ * Resource usage constant representing a data file.
+ */
+
+/**
  * giblorb_ID_Copyright:
  *
  * Resource usage constant representing the copyright message (date and holder, 
@@ -3577,7 +3684,19 @@
  * Resource usage constant representing any textual annotation that the user or 
  * writing program sees fit to include.
  */ 
- 
+
+/**
+ * giblorb_ID_TEXT:
+ *
+ * Resource usage constant representing a text data file.
+ */
+
+/**
+ * giblorb_ID_BINA:
+ *
+ * Resource usage constant representing a binary data file.
+ */
+
 /**
  * giblorb_map_t:
  *

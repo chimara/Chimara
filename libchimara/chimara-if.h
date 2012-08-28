@@ -24,7 +24,7 @@ G_BEGIN_DECLS
  *
  * Constants representing all game formats supported by the Chimara system.
  */
-typedef enum _ChimaraIFFormat {
+typedef enum {
 	/*< private >*/
 	CHIMARA_IF_FORMAT_NONE = -1,
 	/*< public >*/
@@ -47,7 +47,7 @@ typedef enum _ChimaraIFFormat {
  * 
  * Constants representing the available interpreter plugins.
  */
-typedef enum _ChimaraIFInterpreter {
+typedef enum {
     /*< private >*/
 	CHIMARA_IF_INTERPRETER_NONE = -1,
 	/*< public >*/
@@ -78,7 +78,7 @@ typedef enum _ChimaraIFInterpreter {
  * Allowed values for the #ChimaraIF:interpreter-number property. All trademarks
  * are the property of their respective owners.
  */
-typedef enum _ChimaraIFZmachineVersion {
+typedef enum {
 	CHIMARA_IF_ZMACHINE_DEFAULT = 0,
 	CHIMARA_IF_ZMACHINE_DECSYSTEM_20,
 	CHIMARA_IF_ZMACHINE_APPLE_IIE,
@@ -100,13 +100,13 @@ typedef enum _ChimaraIFZmachineVersion {
  * 
  * This structure contains no public members.
  */
-typedef struct _ChimaraIF {
+typedef struct {
 	ChimaraGlk parent_instance;
 	
 	/*< public >*/
 } ChimaraIF;
 
-typedef struct _ChimaraIFClass {
+typedef struct {
 	ChimaraGlkClass parent_class;
 	/* Signals */
 	void(* command) (ChimaraIF *self, gchar *input, gchar *response);

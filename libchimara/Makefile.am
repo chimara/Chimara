@@ -42,7 +42,7 @@ libchimara_la_SOURCES = \
 	style.c style.h \
 	timer.c timer.h \
 	window.c window.h
-libchimara_la_CPPFLAGS = \
+libchimara_la_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
 	-DPLUGINDIR=\""$(pluginpath)"\" \
@@ -105,9 +105,14 @@ CLEANFILES += $(gir_DATA) $(typelib_DATA)
 endif
 GITIGNOREFILES = Chimara-1.0.gir Chimara-1.0.typelib
 
-# Currently, install the Vala VAPI file statically - generation is broken?
-
 vapidir = $(datadir)/vala/vapi
 dist_vapi_DATA = chimara.vapi
 
+if BUILDING_VAPI
+chimara.vapi: $(INTROSPECTION_GIRS)
+	$(AM_V_GEN)$(VAPIGEN) --library=chimara --pkg gtk+-2.0 Chimara-1.0.gir && \
+	touch $@
+endif
+
+MAINTAINERCLEANFILES = chimara.vapi
 -include $(top_srcdir)/git.mk

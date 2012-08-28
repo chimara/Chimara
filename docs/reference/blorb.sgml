@@ -29,7 +29,7 @@ This is for historical reasons; Infocom's Z-machine architecture used this schem
 </para>
 <para>
 For the complete Blorb specification and tools for Blorb file manipulation, see:
-<ulink role="online-location" url="http://www.eblong.com/zarf/blorb/">http://www.eblong.com/zarf/blorb/</ulink>
+<ulink role="online-location" url="http://eblong.com/zarf/blorb/"/>
 </para>
 <refsect2 id="chimara-How-This-Works">
 <title>How This Works</title>

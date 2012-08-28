@@ -6,7 +6,7 @@
 /* Version of the Glk specification implemented by this library */
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 7
-#define SUB_VERSION   2
+#define SUB_VERSION   4
 
 /**
  * glk_gestalt:
@@ -123,6 +123,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_UnicodeNorm:
 		case gestalt_LineInputEcho:
 		case gestalt_LineTerminators:
+		case gestalt_ResourceStream:
 			return 1;
 
 		/* Capabilities supported if compiled with GStreamer */
@@ -130,6 +131,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_SoundVolume:
 		case gestalt_SoundNotify:
 		case gestalt_SoundMusic:
+		case gestalt_Sound2:
 #ifdef GSTREAMER_SOUND
 			return 1;
 #else
@@ -137,7 +139,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
 			
 		/* Unsupported capabilities */
-		/* none! */
+			/* None! */
 
 		/* Selector not supported */	
 		default:

@@ -22,10 +22,11 @@ struct glk_fileref_struct
 	/* Fileref parameters */
 	gchar *filename; /* Always stored in the default filename encoding, not
 		UTF8 or Latin-1 */
+	char *basename; /* Name from which real filename was derived */
 	glui32 orig_filemode; /* Used to check if the user gets a fileref in read
 		mode and then tries to open it in write mode */
 	glui32 usage;
 };
 
-G_GNUC_INTERNAL frefid_t fileref_new(gchar *filename, glui32 rock, glui32 usage, glui32 orig_filemode);
+G_GNUC_INTERNAL frefid_t fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 orig_filemode);
 #endif
