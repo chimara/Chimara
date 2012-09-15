@@ -28,27 +28,6 @@
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
 
-/* Substitute functions for compiling on iLiad */
-
-#if !GTK_CHECK_VERSION(2, 18, 0)
-#define gtk_widget_get_allocation(w, a) \
-	G_STMT_START { \
-		(a)->x = (w)->allocation.x; \
-		(a)->y = (w)->allocation.y; \
-		(a)->width = (w)->allocation.width; \
-		(a)->height = (w)->allocation.height; \
-	} G_STMT_END
-#define gtk_widget_set_allocation(w, a) \
-	G_STMT_START { (w)->allocation = *(a); } G_STMT_END
-#define gtk_widget_set_has_window(w, f) \
-	G_STMT_START { \
-		if(f) \
-			GTK_WIDGET_UNSET_FLAGS((w), GTK_NO_WINDOW); \
-		else \
-			GTK_WIDGET_SET_FLAGS((w), GTK_NO_WINDOW); \
-	} G_STMT_END
-#endif /* GTK 2.18 */
-
 /**
  * SECTION:chimara-glk
  * @short_description: Widget which executes a Glk program
@@ -766,18 +745,6 @@ chimara_glk_iliad_screen_update(ChimaraGlk *self, gboolean typing)
 {
 	/* Default signal handler */
 }
-
-/* COMPAT: G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
-#ifndef G_PARAM_STATIC_STRINGS
-
-/* COMPAT: G_PARAM_STATIC_NAME and friends only appeared in GTK 2.8 */
-#if GTK_CHECK_VERSION(2,8,0)
-#define G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
-#else
-#define G_PARAM_STATIC_STRINGS (0)
-#endif
-
-#endif
 
 static void
 chimara_glk_class_init(ChimaraGlkClass *klass)

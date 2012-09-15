@@ -143,10 +143,7 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 	gtk_entry_set_has_frame(GTK_ENTRY(win->input_entry), FALSE);
 	GtkBorder border = { 0, 0, 0, 0 };
 
-	/* COMPAT: */
-#if GTK_CHECK_VERSION(2,10,0)
 	gtk_entry_set_inner_border(GTK_ENTRY(win->input_entry), &border);
-#endif
     gtk_entry_set_max_length(GTK_ENTRY(win->input_entry), win->input_length);
     gtk_entry_set_width_chars(GTK_ENTRY(win->input_entry), win->input_length);
 
