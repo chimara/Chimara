@@ -129,8 +129,6 @@ PKG_CHECK_MODULES([PLAYER], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
 	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0
-	dnl libgda-4.0
-	libsoup-2.4
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
@@ -187,7 +185,6 @@ docs/reference/Makefile
 docs/reference/version.xml
 docs/reference/build-selector-table.pl
 po/Makefile.in
-babel/Makefile
 ])
 
 # Do it
