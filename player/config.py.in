@@ -1,7 +1,8 @@
 PACKAGE_VERSION = '''@PACKAGE_VERSION@'''
 GETTEXT_PACKAGE = '''@GETTEXT_PACKAGE@'''
-PACKAGE_DATA_DIR = '''@prefix@/@DATADIRNAME@/@PACKAGE@'''
+datarootdir = '''@datarootdir@'''.replace('${prefix}', '''@prefix@''')
+PACKAGE_DATA_DIR = datarootdir + '''/@PACKAGE@'''
 PACKAGE_SRC_DIR = '''@srcdir@'''
-PACKAGE_LOCALE_DIR = '''@prefix@/@DATADIRNAME@/locale'''
+PACKAGE_LOCALE_DIR = datarootdir + '/locale'
 ENABLE_NLS = ('''@USE_NLS@''' == 'yes')
 DEBUG = ('-DDEBUG' in '''@CPPFLAGS@''')
