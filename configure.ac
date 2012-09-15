@@ -75,14 +75,6 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 
 GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
-### ILIAD #####################################################################
-AC_ARG_ENABLE([iliad],
-	[AS_HELP_STRING([--enable-iliad=@<:@yes/no@:>@],
-		[Compiles Chimara for the iLiad @<:@default=no@:>@])],
-	[],
-	[enable_iliad=no])
-AM_CONDITIONAL(TARGET_ILIAD, $TEST "x$enable_iliad" = xyes)
-
 ### RPM CONFIGURATION ##########################################################
 # --enable-rpm requires rpm and rpmbuild
 AC_PATH_PROG([RPMBUILD], [rpmbuild], [notfound])
@@ -129,8 +121,6 @@ PKG_CHECK_MODULES([PLAYER], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
 	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0
-	dnl libgda-4.0
-	libsoup-2.4
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
@@ -187,7 +177,6 @@ docs/reference/Makefile
 docs/reference/version.xml
 docs/reference/build-selector-table.pl
 po/Makefile.in
-babel/Makefile
 ])
 
 # Do it
