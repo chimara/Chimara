@@ -161,13 +161,7 @@ pager_after_size_request(GtkTextView *textview, GtkRequisition *requisition, win
 	if(!win->currently_paging) {
 		if(scroll_distance > view_height) {
 			start_paging(win);
-			/* Seriously... */
-			/* COMPAT: */
-#if GTK_CHECK_VERSION(2,14,0)
 			gdk_window_invalidate_rect(gtk_widget_get_window(win->widget), NULL, TRUE);
-#else
-			gdk_window_invalidate_rect(win->widget->window, NULL, TRUE);
-#endif
 		}
 	}
 }

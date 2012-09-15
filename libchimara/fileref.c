@@ -246,11 +246,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				NULL);
 			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
-
-			/* COMPAT: */
-#if GTK_CHECK_VERSION(2,8,0)
 			gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(chooser), TRUE);
-#endif
 			break;
 		case filemode_ReadWrite:
 		case filemode_WriteAppend:
