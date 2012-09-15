@@ -1279,3 +1279,44 @@ style_stream_colors(strid_t str, GdkColor **foreground, GdkColor **background)
 			g_object_get(str->window->zcolor, "background-gdk", background, NULL);
 	}
 }
+
+/* Apply styles to a segment of text in a GtkTextBuffer
+ */
+void
+style_apply(winid_t win, GtkTextIter *start, GtkTextIter *end)
+{
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
+
+	GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
+	GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
+	GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
+
+	// Player's style overrides
+	gtk_text_buffer_apply_tag(buffer, style_tag, start, end);
+
+	// GLK Program's style overrides
+	gtk_text_buffer_apply_tag(buffer, glk_style_tag, start, end);
+
+	// Default style
+	gtk_text_buffer_apply_tag(buffer, default_tag, start, end);
+
+	// Link style overrides
+	if(win->window_stream->hyperlink_mode) {
+		GtkTextTag *link_style_tag = gtk_text_tag_table_lookup(tags, "hyperlink");
+		GtkTextTag *link_tag = win->current_hyperlink->tag;
+		gtk_text_buffer_apply_tag(buffer, link_style_tag, start, end);
+		gtk_text_buffer_apply_tag(buffer, link_tag, start, end);
+	}
+
+	// GLK Program's style overrides using garglk_set_zcolors()
+	if(win->zcolor != NULL) {
+		gtk_text_buffer_apply_tag(buffer, win->zcolor, start, end);
+	}
+
+	// GLK Program's style overrides using garglk_set_reversevideo()
+	if(win->zcolor_reversed != NULL) {
+		gtk_text_buffer_apply_tag(buffer, win->zcolor_reversed, start, end);
+	}
+}
+	
