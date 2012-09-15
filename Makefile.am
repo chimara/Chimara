@@ -2,9 +2,9 @@
 ## Created by Anjuta
 
 if TARGET_ILIAD
-SUBDIRS = libchimara interpreters babel player po
+SUBDIRS = libchimara interpreters player po
 else
-SUBDIRS = libchimara interpreters babel player tests docs po
+SUBDIRS = libchimara interpreters player tests docs po
 endif
 
 chimaradocdir = $(datadir)/doc/chimara

@@ -187,7 +187,6 @@ docs/reference/Makefile
 docs/reference/version.xml
 docs/reference/build-selector-table.pl
 po/Makefile.in
-babel/Makefile
 ])
 
 # Do it
