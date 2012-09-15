@@ -324,99 +324,15 @@ chimara_glk_finalize(GObject *object)
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
 
-/* Internal function: Recursively get the Glk window tree's size request */
-static void
-request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
+/* Implementation of get_request_mode(): Always request constant size */
+static GtkSizeRequestMode
+chimara_glk_get_request_mode(GtkWidget *widget)
 {
-	if(win->type == wintype_Pair)
-	{
-		/* Get children's size requests */
-		GtkRequisition child1, child2;
-		request_recurse(win->window_node->children->data, &child1, spacing);
-		request_recurse(win->window_node->children->next->data, &child2, spacing);
-
-		glui32 division = win->split_method & winmethod_DivisionMask;
-		glui32 direction = win->split_method & winmethod_DirMask;
-		unsigned border = ((win->split_method & winmethod_BorderMask) == winmethod_NoBorder)? 0 : spacing;
-
-		/* If the split is fixed, get the size of the fixed child */
-		if(division == winmethod_Fixed)
-		{
-			switch(direction)
-			{
-				case winmethod_Left:
-					child1.width = win->key_window?
-						win->constraint_size * win->key_window->unit_width
-						: 0;
-					break;
-				case winmethod_Right:
-					child2.width = win->key_window?
-						win->constraint_size * win->key_window->unit_width
-						: 0;
-					break;
-				case winmethod_Above:
-					child1.height = win->key_window?
-						win->constraint_size * win->key_window->unit_height
-						: 0;
-					break;
-				case winmethod_Below:
-					child2.height = win->key_window?
-						win->constraint_size * win->key_window->unit_height
-						: 0;
-					break;
-			}
-		}
-		
-		/* Add the children's requests */
-		switch(direction)
-		{
-			case winmethod_Left:
-			case winmethod_Right:
-				requisition->width = child1.width + child2.width + border;
-				requisition->height = MAX(child1.height, child2.height);
-				break;
-			case winmethod_Above:
-			case winmethod_Below:
-				requisition->width = MAX(child1.width, child2.width);
-				requisition->height = child1.height + child2.height + border;
-				break;
-		}
-	}
-	
-	/* For non-pair windows, just use the size that GTK requests */
-	else
-		gtk_widget_size_request(win->frame, requisition);
+	return GTK_SIZE_REQUEST_CONSTANT_SIZE;
 }
 
-/* Old GTK 2 functionality overriding gtk_widget_size_request();
-get_preferred_width() and get_preferred_height() are implemented in terms of
-this function. */
-static void
-chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
-{
-    g_return_if_fail(widget);
-    g_return_if_fail(requisition);
-    g_return_if_fail(CHIMARA_IS_GLK(widget));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
-    
-    guint border_width = gtk_container_get_border_width(GTK_CONTAINER(widget));
-    /* For now, just pass the size request on to the root Glk window */
-    if(priv->root_window) 
-	{
-		request_recurse(priv->root_window->data, requisition, priv->spacing);
-		requisition->width += 2 * border_width;
-		requisition->height += 2 * border_width;
-	} 
-	else 
-	{
-        requisition->width = CHIMARA_GLK_MIN_WIDTH + 2 * border_width;
-        requisition->height = CHIMARA_GLK_MIN_HEIGHT + 2 * border_width;
-    }
-}
-
-/* Minimal implementation of width-for-height request, in terms of the old
-GTK 2 mechanism. FIXME: make this more efficient. */
+/* Minimal implementation of width request. Allocation in Glk is
+strictly top-down, so we just request our current size by returning 1. */
 static void
 chimara_glk_get_preferred_width(GtkWidget *widget, int *minimal, int *natural)
 {
@@ -424,14 +340,11 @@ chimara_glk_get_preferred_width(GtkWidget *widget, int *minimal, int *natural)
     g_return_if_fail(minimal);
     g_return_if_fail(natural);
 
-    GtkRequisition requisition;
-
-    chimara_glk_size_request(widget, &requisition);
-    *minimal = *natural = requisition.width;
+    *minimal = *natural = 1;
 }
 
-/* Minimal implementation of height-for-width request, in terms of the old
-GTK 2 mechanism. FIXME: make this more efficient. */
+/* Minimal implementation of height request. Allocation in Glk is
+strictly top-down, so we just request our current size by returning 1. */
 static void
 chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
 {
@@ -439,10 +352,7 @@ chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
     g_return_if_fail(minimal);
     g_return_if_fail(natural);
 
-    GtkRequisition requisition;
-
-    chimara_glk_size_request(widget, &requisition);
-    *minimal = *natural = requisition.height;
+    *minimal = *natural = 1;
 }
 
 /* Recursively give the Glk windows their allocated space. Returns a window
@@ -640,16 +550,11 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
     
     gtk_widget_set_allocation(widget, allocation);
-            
+
     if(priv->root_window) {
-		GtkAllocation child;
-		guint border_width = gtk_container_get_border_width(GTK_CONTAINER(widget));
-		child.x = allocation->x + border_width;
-		child.y = allocation->y + border_width;
-		child.width = CLAMP(allocation->width - 2 * border_width, 0, allocation->width);
-		child.height = CLAMP(allocation->height - 2 * border_width, 0, allocation->height);
+		GtkAllocation child = *allocation;
 		winid_t arrange = allocate_recurse(priv->root_window->data, &child, priv->spacing);
-		
+
 		/* arrange points to a window that contains all text grid and graphics
 		 windows which have been resized */
 		g_mutex_lock(priv->arrange_lock);
@@ -756,12 +661,15 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     object_class->finalize = chimara_glk_finalize;
     
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
+    widget_class->get_request_mode = chimara_glk_get_request_mode;
     widget_class->get_preferred_width = chimara_glk_get_preferred_width;
     widget_class->get_preferred_height = chimara_glk_get_preferred_height;
     widget_class->size_allocate = chimara_glk_size_allocate;
 
     GtkContainerClass *container_class = GTK_CONTAINER_CLASS(klass);
     container_class->forall = chimara_glk_forall;
+    /* Automatically handle the GtkContainer:border-width property */
+    gtk_container_class_handle_border_width(container_class);
 
     /* Signals */
     klass->stopped = chimara_glk_stopped;
