@@ -3,16 +3,6 @@ AM_CPPFLAGS = -I$(top_srcdir)
 
 PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
 
-if TARGET_ILIAD
-
-chimara_iliad_SOURCES = iliad.c xepdmgrclient.c xepdmgrclient.h
-chimara_iliad_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
-chimara_iliad_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
-
-bin_PROGRAMS = chimara_iliad
-
-else
-
 dist_pkgdata_DATA = chimara.ui chimara.menus style.css
 bin_PROGRAMS = chimara
 
@@ -26,8 +16,6 @@ chimara_LDADD = @PLAYER_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 gsettings_SCHEMAS = org.chimara-if.gschema.xml
 @GSETTINGS_RULES@
-
-endif
 
 CLEANFILES = config.pyc
 DISTCLEANFILES = config.py
