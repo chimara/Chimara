@@ -4,12 +4,6 @@ AM_CFLAGS = -Wall
 
 lib_LTLIBRARIES = libchimara.la
 
-if TARGET_ILIAD
-pluginpath = "../interpreters"
-else
-pluginpath = $(pkglibdir)
-endif
-
 libchimara_la_SOURCES = \
 	abort.c abort.h \
 	case.c \
@@ -45,7 +39,7 @@ libchimara_la_SOURCES = \
 libchimara_la_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
-	-DPLUGINDIR=\""$(pluginpath)"\" \
+	-DPLUGINDIR=\""$(pkglibdir)"\" \
 	-DPLUGINSOURCEDIR=\""$(abs_builddir)/../interpreters"\" \
 	-I$(top_srcdir)
 libchimara_la_CFLAGS = @CHIMARA_CFLAGS@ $(AM_CFLAGS)

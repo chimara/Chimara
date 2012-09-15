@@ -1,11 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-if TARGET_ILIAD
-SUBDIRS = libchimara interpreters player po
-else
 SUBDIRS = libchimara interpreters player tests docs po
-endif
 
 chimaradocdir = $(datadir)/doc/chimara
 dist_chimaradoc_DATA = \
