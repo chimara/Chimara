@@ -1280,7 +1280,8 @@ style_stream_colors(strid_t str, GdkColor **foreground, GdkColor **background)
 	}
 }
 
-/* Apply styles to a segment of text in a GtkTextBuffer
+/* Apply styles to a segment of text in a GtkTextBuffer, combining multiple
+ * GtkTextTags.
  */
 void
 style_apply(winid_t win, GtkTextIter *start, GtkTextIter *end)

@@ -1,4 +1,5 @@
 #include "resource.h"
+#include "stream.h"
 
 extern GPrivate *glk_data_key;
 
@@ -38,7 +39,6 @@ giblorb_set_resource_map(strid_t file)
 	glk_data->resource_map = newmap;
 	glk_data->resource_file = file;
 
-	//giblorb_print_contents(newmap);
 	return giblorb_err_None;
 }
 
