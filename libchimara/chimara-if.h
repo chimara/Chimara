@@ -44,6 +44,7 @@ typedef enum {
  * @CHIMARA_IF_INTERPRETER_NITFOL: Nitfol
  * @CHIMARA_IF_INTERPRETER_GLULXE: Glulxe
  * @CHIMARA_IF_INTERPRETER_GIT: Git
+ * @CHIMARA_IF_INTERPRETER_BOCFEL: Bocfel
  * 
  * Constants representing the available interpreter plugins.
  */
@@ -55,6 +56,7 @@ typedef enum {
 	CHIMARA_IF_INTERPRETER_NITFOL,
 	CHIMARA_IF_INTERPRETER_GLULXE,
 	CHIMARA_IF_INTERPRETER_GIT,
+	CHIMARA_IF_INTERPRETER_BOCFEL,
 	/*< private >*/
 	CHIMARA_IF_NUM_INTERPRETERS
 } ChimaraIFInterpreter;

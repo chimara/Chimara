@@ -104,11 +104,13 @@ parse_interpreter(const char *interp)
 		return CHIMARA_IF_INTERPRETER_GLULXE;
 	if(strcmp(interp, "git") == 0)
 		return CHIMARA_IF_INTERPRETER_GIT;
+	if(strcmp(interp, "bocfel") == 0)
+		return CHIMARA_IF_INTERPRETER_BOCFEL;
 	return CHIMARA_IF_INTERPRETER_NONE;
 }
 
 static const char *interpreter_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
-	"frotz", "nitfol", "glulxe", "git"
+	"frotz", "nitfol", "glulxe", "git", "bocfel"
 };
 
 static const char *
@@ -123,7 +125,8 @@ static const char *interpreter_display_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
 	N_("Frotz"),
 	N_("Nitfol"),
 	N_("Glulxe"),
-	N_("Git")
+	N_("Git"),
+	N_("Bocfel")
 };
 
 static const char *

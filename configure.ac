@@ -169,6 +169,7 @@ interpreters/frotz/Makefile
 interpreters/nitfol/Makefile
 interpreters/glulxe/Makefile
 interpreters/git/Makefile
+interpreters/bocfel/Makefile
 tests/Makefile
 player/Makefile
 player/config.py
