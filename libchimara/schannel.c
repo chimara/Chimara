@@ -25,6 +25,11 @@ clean_up_after_playing_sound(schanid_t chan)
 {
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
 		WARNING_S(_("Could not set GstElement state to"), "NULL");
+	if(chan->source)
+	{
+		gst_bin_remove(GST_BIN(chan->pipeline), chan->source);
+		chan->source = NULL;
+	}
 	if(chan->demux)
 	{
 		gst_bin_remove(GST_BIN(chan->pipeline), chan->demux);
@@ -243,12 +248,11 @@ glk_schannel_create_ext(glui32 rock, glui32 volume)
 	gst_object_unref(bus);
 
 	/* Create GStreamer elements to put in the pipeline */
-	s->source = gst_element_factory_make("giostreamsrc", NULL);
 	s->typefind = gst_element_factory_make("typefind", NULL);
 	s->convert = gst_element_factory_make("audioconvert", NULL);
 	s->filter = gst_element_factory_make("volume", NULL);
 	s->sink = gst_element_factory_make("autoaudiosink", NULL);
-	if(!s->source || !s->typefind || !s->convert || !s->filter || !s->sink) {
+	if(!s->typefind || !s->convert || !s->filter || !s->sink) {
 		WARNING(_("Could not create one or more GStreamer elements"));
 		goto fail;
 	}
@@ -258,9 +262,10 @@ glk_schannel_create_ext(glui32 rock, glui32 volume)
 
 	/* Put the elements in the pipeline and link as many together as we can
 	 without knowing the type of the audio stream */
-	gst_bin_add_many(GST_BIN(s->pipeline), s->source, s->typefind, s->convert, s->filter, s->sink, NULL);
-	/* Link elements: Source -> typefinder -> ??? -> Converter -> Volume filter -> Sink */
-	if(!gst_element_link(s->source, s->typefind) || !gst_element_link_many(s->convert, s->filter, s->sink, NULL)) {
+	gst_bin_add_many(GST_BIN(s->pipeline), s->typefind, s->convert, s->filter, s->sink, NULL);
+
+	/* Link elements: ??? -> Converter -> Volume filter -> Sink */
+	if(!gst_element_link_many(s->convert, s->filter, s->sink, NULL)) {
 		WARNING(_("Could not link GStreamer elements"));
 		goto fail;
 	}
@@ -483,15 +488,24 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
 	}
 
+	chan->source = gst_element_factory_make("giostreamsrc", NULL);
+	g_object_set(chan->source, "stream", stream, NULL);
+	g_object_unref(stream); /* Now owned by GStreamer element */
+	gst_bin_add(GST_BIN(chan->pipeline), chan->source);
+	if(!gst_element_link(chan->source, chan->typefind)) {
+		WARNING(_("Could not link GStreamer elements"));
+		clean_up_after_playing_sound(chan);
+		return 0;
+	}
+
 	chan->repeats = repeats;
 	chan->resource = snd;
 	chan->notify = notify;
-	g_object_set(chan->source, "stream", stream, NULL);
-	g_object_unref(stream); /* Now owned by GStreamer element */
 	
 	/* Play the sound; unless the channel is paused, then pause it instead */
 	if(!gst_element_set_state(chan->pipeline, chan->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
 		WARNING_S(_("Could not set GstElement state to"), chan->paused? "PAUSED" : "PLAYING");
+		clean_up_after_playing_sound(chan);
 		return 0;
 	}
 	return 1;
@@ -591,11 +605,18 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 			stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
 		}
 
+		chanarray[count]->source = gst_element_factory_make("giostreamsrc", NULL);
+		g_object_set(chanarray[count]->source, "stream", stream, NULL);
+		g_object_unref(stream); /* Now owned by GStreamer element */
+		gst_bin_add(GST_BIN(chanarray[count]->pipeline), chanarray[count]->source);
+		if(!gst_element_link(chanarray[count]->source, chanarray[count]->typefind)) {
+			WARNING(_("Could not link GStreamer elements"));
+			clean_up_after_playing_sound(chanarray[count]);
+		}
+
 		chanarray[count]->repeats = 1;
 		chanarray[count]->resource = sndarray[count];
 		chanarray[count]->notify = notify;
-		g_object_set(chanarray[count]->source, "stream", stream, NULL);
-		g_object_unref(stream); /* Now owned by GStreamer element */
 	}
 
 	/* Start all the sounds as close to each other as possible. */
@@ -608,6 +629,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 		if(!gst_element_set_state(chanarray[count]->pipeline, chanarray[count]->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
 			WARNING_S(_("Could not set GstElement state to"), chanarray[count]->paused? "PAUSED" : "PLAYING");
 			skiparray[count] = TRUE;
+			clean_up_after_playing_sound(chanarray[count]);
 			continue;
 		}
 		successes++;
