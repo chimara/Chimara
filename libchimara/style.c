@@ -53,7 +53,6 @@ static const gchar* TAG_NAMES[] = {
 	"user1",
 	"user2",
 	"hyperlink",
-	"pager",
 	"default"
 };
 
@@ -121,16 +120,6 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 	flush_window_buffer(str->window);
 	str->style = (gchar*) get_tag_name(styl);
 	str->glk_style = (gchar*) get_glk_tag_name(styl);
-}
-
-/* Internal function: call this to initialize the layout of the 'more' prompt. */
-void
-style_init_more_prompt(winid_t win)
-{
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-
-	win->pager_layout = gtk_widget_create_pango_layout(win->widget, "More");
-	pango_layout_set_attributes(win->pager_layout, glk_data->pager_attr_list);
 }
 
 /* Internal function: call this to initialize the default styles to a textbuffer. */
@@ -343,14 +332,8 @@ style_init(ChimaraGlk *glk)
 	g_object_set(tag, "foreground", "#0000ff", "foreground-set", TRUE, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
-	GtkTextTag *pager_tag = gtk_text_tag_new("pager");
-	g_object_set(pager_tag, "family", "Monospace", "family-set", TRUE, "foreground", "#ffffff", "foreground-set", TRUE, "background", "#000000", "background-set", TRUE, NULL);
-	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
-
 	priv->styles->text_grid = default_text_grid_styles;
 	priv->styles->text_buffer = default_text_buffer_styles;
-
 
 	/* Initialize the GLK styles to empty tags */
 	int i;
@@ -396,9 +379,6 @@ scan_css_file(GScanner *scanner, ChimaraGlk *glk)
 	}
 
 	g_scanner_destroy(scanner);
-
-	/* Update the pager prompt to the new style */
-	style_update(glk);
 }
 
 /* Internal function: parses a token */
@@ -1204,16 +1184,6 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 			pango_attr_underline_new(underline)
 		);
 	}
-}
-
-/* Update pager tag */
-void
-style_update(ChimaraGlk *glk)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
 }
 
 /* Determine the current colors used to render the text for a given stream. 

@@ -30,7 +30,6 @@ struct _ChimaraGlkPrivate {
 	/* Hashtable containing the current styles set by CSS and GLK */
 	struct StyleSet *styles;
 	struct StyleSet *glk_styles;
-	PangoAttrList *pager_attr_list;
 	/* Final message displayed when game exits */
 	gchar *final_message;
 	/* Image cache */
