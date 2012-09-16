@@ -79,7 +79,18 @@ search_for_graphics_file(const char *filename, ChimaraIF *glk)
 
 	/* First get the name of the story file */
 	char *scratch = g_path_get_basename(filename);
-	*(strrchr(scratch, '.')) = '\0';
+	char *ext = strrchr(scratch, '.');
+	if(strcmp(ext, ".zlb") == 0 ||
+		strcmp(ext, ".zblorb") == 0 ||
+		strcmp(ext, ".glb") == 0 ||
+		strcmp(ext, ".gblorb") == 0 ||
+		strcmp(ext, ".blorb") == 0 ||
+		strcmp(ext, ".blb") == 0)
+	{
+		g_object_set(glk, "graphics-file", NULL, NULL);
+		return;
+	}
+	*ext = '\0';
 
 	/* Check in the stored resource path, if set */
 	char *resource_path;
