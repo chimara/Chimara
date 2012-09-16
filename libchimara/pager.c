@@ -79,6 +79,8 @@ pager_on_clicked(GtkButton *pager, winid_t win)
 	double upper = gtk_adjustment_get_upper(adj);
 	gtk_adjustment_set_value(adj, upper);
 	check_paging(adj, win);
+	/* Give the focus back to the text view */
+	gtk_widget_grab_focus(win->widget);
 }
 
 /* When the user scrolls up in a textbuffer, start paging. */
