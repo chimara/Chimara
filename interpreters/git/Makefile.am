@@ -1,7 +1,7 @@
 # Automatically generate version.h
 MAJOR = 1
 MINOR = 2
-PATCH = 8
+PATCH = 9
 version.h: Makefile.am
 	$(AM_V_GEN)echo "// Automatically generated file -- do not edit!" > version.h
 	$(AM_V_at)echo "#define GIT_MAJOR" $(MAJOR) >> version.h
