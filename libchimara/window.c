@@ -581,6 +581,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			g_signal_handler_block(textview, win->pager_keypress_handler);
 			GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
 			win->pager_adjustment_handler = g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
+			g_signal_connect(pager, "clicked", G_CALLBACK(pager_on_clicked), win);
 
 			/* Char and line input */
 			win->char_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );

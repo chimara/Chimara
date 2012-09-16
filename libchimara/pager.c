@@ -59,6 +59,14 @@ stop_paging(winid_t win)
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
 }
 
+void
+pager_on_clicked(GtkButton *pager, winid_t win)
+{
+	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->scrolledwindow) );
+	double upper = gtk_adjustment_get_upper(adj);
+	gtk_adjustment_set_value(adj, upper);
+}
+
 /* When the user scrolls up in a textbuffer, start paging. */
 void
 pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
@@ -71,9 +79,6 @@ pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
 		start_paging(win);
 	else if(scroll_distance == 0 && win->currently_paging)
 		stop_paging(win);
-	
-	/* Refresh the widget so that any extra "more" prompts disappear */
-	gtk_widget_queue_draw(win->widget);
 }
 
 /* Handle key press events in the textview while paging is active */
