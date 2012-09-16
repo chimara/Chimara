@@ -473,64 +473,92 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		 bottom or right area is filled with blanks. */
 		GtkAllocation widget_allocation;
 		gtk_widget_get_allocation(win->widget, &widget_allocation);
-		glui32 newwidth = (glui32)(widget_allocation.width / win->unit_width);
-		glui32 newheight = (glui32)(widget_allocation.height / win->unit_height);
-		gint line;
-		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextIter start, end;
-	
-		for(line = 0; line < win->height; line++)
+		glui32 new_width = (glui32)(widget_allocation.width / win->unit_width);
+		glui32 new_height = (glui32)(widget_allocation.height / win->unit_height);
+
+		if(new_width != win->width || new_height != win->height)
 		{
-			gtk_text_buffer_get_iter_at_line(textbuffer, &start, line);
-			/* If this line is going to fall off the bottom, delete it */
-			if(line >= newheight)
-			{
-				end = start;
-				gtk_text_iter_forward_to_line_end(&end);
-				gtk_text_iter_forward_char(&end);
-				gtk_text_buffer_delete(textbuffer, &start, &end);
-				break;
+			// Window has changed size, trim or expand the textbuffer if necessary.
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+			GtkTextIter start, end;
+
+			// Add or remove lines
+			if(new_height == 0) {
+				gtk_text_buffer_get_start_iter(buffer, &start);
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_delete(buffer, &start, &end);
 			}
-			/* If this line is not long enough, add spaces on the end */
-			if(newwidth > win->width)
+			else if(new_height < win->height)
 			{
-				gchar *spaces = g_strnfill(newwidth - win->width, ' ');
+				// Remove surplus lines
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_get_iter_at_line(buffer, &start, new_height-1);
 				gtk_text_iter_forward_to_line_end(&start);
-				gtk_text_buffer_insert(textbuffer, &start, spaces, -1);
-				g_free(spaces);
+				gtk_text_buffer_delete(buffer, &start, &end);
+
 			}
-			/* But if it's too long, delete characters from the end */
-			else if(newwidth < win->width)
+			else if(new_height > win->height)
 			{
-				end = start;
-				gtk_text_iter_forward_chars(&start, newwidth);
-				gtk_text_iter_forward_to_line_end(&end);
-				gtk_text_buffer_delete(textbuffer, &start, &end);
+				// Add extra lines
+				gint lines_to_add = new_height - win->height;
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				start = end;
+
+				gchar *blanks = g_strnfill(win->width, ' ');
+				gchar **blanklines = g_new0(gchar *, lines_to_add + 1);
+				int count;
+				for(count = 0; count < lines_to_add; count++)
+					blanklines[count] = blanks;
+				blanklines[lines_to_add] = NULL;
+				gchar *vertical_blanks = g_strjoinv("\n", blanklines);
+				g_free(blanklines); 
+				g_free(blanks);
+
+				if(win->height > 0) 
+					gtk_text_buffer_insert(buffer, &end, "\n", 1);
+
+				gtk_text_buffer_insert(buffer, &end, vertical_blanks, -1);
 			}
-			/* Note: if the widths are equal, do nothing */
-		}
-		/* Add blank lines if there aren't enough lines to fit the new size */
-		if(newheight > win->height)
-		{
-			gchar *blanks = g_strnfill(win->width, ' ');
-		    gchar **blanklines = g_new0(gchar *, (newheight - win->height) + 1);
-		    int count;
-		    for(count = 0; count < newheight - win->height; count++)
-		        blanklines[count] = blanks;
-		    blanklines[newheight - win->height] = NULL;
-		    gchar *text = g_strjoinv("\n", blanklines);
-		    g_free(blanklines); /* not g_strfreev() */
-		    g_free(blanks);
-		    
-			gtk_text_buffer_get_end_iter(textbuffer, &start);
-			gtk_text_buffer_insert(textbuffer, &start, "\n", -1);
-		    gtk_text_buffer_insert(textbuffer, &start, text, -1);
-		    g_free(text);
+
+			// Trim or expand lines
+			if(new_width < win->width) {
+				gtk_text_buffer_get_start_iter(buffer, &start);
+				end = start;
+
+				gint line;
+				for(line = 0; line <= new_height; line++) {
+					// Trim the line
+					gtk_text_iter_forward_cursor_positions(&start, new_width);
+					gtk_text_iter_forward_to_line_end(&end);
+					gtk_text_buffer_delete(buffer, &start, &end);
+					gtk_text_iter_forward_line(&start);
+					end = start;
+				}
+			} else if(new_width > win->width) {
+				gint chars_to_add = new_width - win->width;
+				gchar *horizontal_blanks = g_strnfill(chars_to_add, ' ');
+
+				gtk_text_buffer_get_start_iter(buffer, &start);
+				end = start;
+
+				gint line;
+				for(line = 0; line <= new_height; line++) {
+					gtk_text_iter_forward_to_line_end(&start);
+					end = start;
+					gint start_offset = gtk_text_iter_get_offset(&start);
+					gtk_text_buffer_insert(buffer, &end, horizontal_blanks, -1);
+					gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
+					gtk_text_iter_forward_line(&start);
+					end = start;
+				}
+
+				g_free(horizontal_blanks);
+			}
 		}
 	
-		gboolean arrange = !(win->width == newwidth && win->height == newheight);
-		win->width = newwidth;
-		win->height = newheight;
+		gboolean arrange = !(win->width == new_width && win->height == new_height);
+		win->width = new_width;
+		win->height = new_height;
 		return arrange? win : NULL;
 	}
 	
