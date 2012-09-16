@@ -31,13 +31,13 @@
  */
 
 static gboolean supported_formats[CHIMARA_IF_NUM_FORMATS][CHIMARA_IF_NUM_INTERPRETERS] = {
-	/* Frotz Nitfol Glulxe Git */
-	{ TRUE,  TRUE,  FALSE, FALSE }, /* Z5 */
-	{ TRUE,  TRUE,  FALSE, FALSE }, /* Z6 */
-	{ TRUE,  TRUE,  FALSE, FALSE }, /* Z8 */
-	{ TRUE,  TRUE,  FALSE, FALSE }, /* Zblorb */
-	{ FALSE, FALSE, TRUE,  TRUE  }, /* Glulx */
-	{ FALSE, FALSE, TRUE,  TRUE  }  /* Gblorb */
+	/* Frotz Nitfol Glulxe Git    Bocfel */
+	{ TRUE,  TRUE,  FALSE, FALSE, TRUE  }, /* Z5 */
+	{ TRUE,  TRUE,  FALSE, FALSE, TRUE  }, /* Z6 */
+	{ TRUE,  TRUE,  FALSE, FALSE, TRUE  }, /* Z8 */
+	{ TRUE,  TRUE,  FALSE, FALSE, TRUE  }, /* Zblorb */
+	{ FALSE, FALSE, TRUE,  TRUE,  FALSE }, /* Glulx */
+	{ FALSE, FALSE, TRUE,  TRUE,  FALSE }  /* Gblorb */
 };
 static gchar *format_names[CHIMARA_IF_NUM_FORMATS] = {
 	N_("Z-code version 5"),
@@ -48,10 +48,10 @@ static gchar *format_names[CHIMARA_IF_NUM_FORMATS] = {
 	N_("Blorbed Glulx")
 };
 static gchar *interpreter_names[CHIMARA_IF_NUM_INTERPRETERS] = {
-	N_("Frotz"), N_("Nitfol"), N_("Glulxe"), N_("Git")
+	N_("Frotz"), N_("Nitfol"), N_("Glulxe"), N_("Git"), N_("Bocfel")
 };
 static gchar *plugin_names[CHIMARA_IF_NUM_INTERPRETERS] = {
-	"frotz", "nitfol", "glulxe", "git"
+	"frotz", "nitfol", "glulxe", "git", "bocfel"
 };
 
 typedef enum _ChimaraIFFlags {
