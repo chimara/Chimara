@@ -74,8 +74,6 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_hash_table_destroy(win->hyperlinks);
 	g_free(win->current_hyperlink);
 
-	if(win->pager_layout)
-		g_object_unref(win->pager_layout);
 	if(win->backing_store)
 		cairo_surface_destroy(win->backing_store);
 
@@ -535,12 +533,20 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		
 		case wintype_TextBuffer:
 		{
+			GtkWidget *overlay = gtk_overlay_new();
 			GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 			GtkWidget *textview = gtk_text_view_new();
+			GtkWidget *pager = gtk_button_new_with_label("More");
+			GtkWidget *image = gtk_image_new_from_stock(GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_BUTTON);
 			GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 
 			gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
-			
+
+			gtk_button_set_image( GTK_BUTTON(pager), image );
+			gtk_widget_set_halign(pager, GTK_ALIGN_END);
+			gtk_widget_set_valign(pager, GTK_ALIGN_END);
+			gtk_widget_set_no_show_all(pager, TRUE);
+
 			gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_WORD_CHAR );
 			gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
 			gtk_text_view_set_pixels_inside_wrap( GTK_TEXT_VIEW(textview), 3 );
@@ -548,16 +554,19 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_text_view_set_right_margin( GTK_TEXT_VIEW(textview), 20 );
 
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
-			gtk_widget_show_all(scrolledwindow);
+			gtk_container_add( GTK_CONTAINER(overlay), scrolledwindow );
+			gtk_overlay_add_overlay( GTK_OVERLAY(overlay), pager );
+			gtk_widget_show_all(overlay);
 
 			win->widget = textview;
-			win->frame = scrolledwindow;
-			
+			win->scrolledwindow = scrolledwindow;
+			win->pager = pager;
+			win->frame = overlay;
+
 			/* Create the styles available to the window stream */
 			style_init_textbuffer(textbuffer);
-			style_init_more_prompt(win);
 			gtk_widget_modify_font( textview, get_current_font(wintype) );
-			
+
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
 			pango_layout_set_font_description( zero, get_current_font(wintype) );
@@ -568,8 +577,6 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			
 			/* Pager */
 			g_signal_connect_after( textview, "size-allocate", G_CALLBACK(pager_after_size_allocate), win );
-			win->pager_expose_handler = g_signal_connect_after( textview, "draw", G_CALLBACK(pager_on_draw), win );
-			g_signal_handler_block(textview, win->pager_expose_handler);
 			win->pager_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(pager_on_key_press_event), win );
 			g_signal_handler_block(textview, win->pager_keypress_handler);
 			GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));

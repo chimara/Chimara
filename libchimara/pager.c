@@ -46,7 +46,7 @@ static void
 start_paging(winid_t win)
 {
 	win->currently_paging = TRUE;
-	g_signal_handler_unblock(win->widget, win->pager_expose_handler);
+	gtk_widget_show(win->pager);
 	g_signal_handler_unblock(win->widget, win->pager_keypress_handler);
 }
 
@@ -55,7 +55,7 @@ static void
 stop_paging(winid_t win)
 {
 	win->currently_paging = FALSE;
-	g_signal_handler_block(win->widget, win->pager_expose_handler);
+	gtk_widget_hide(win->pager);
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
 }
 
@@ -80,7 +80,7 @@ pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
 gboolean
 pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 {
-	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->frame) );
+	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->scrolledwindow) );
 	gdouble page_size, upper, lower, value;
 	g_object_get(adj, 
 		"page-size", &page_size,
@@ -102,24 +102,6 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 	}
 	
 	return FALSE; /* if the key wasn't handled here, pass it to other handlers */
-}
-
-/* Draw the "more" prompt on top of the buffer, after the regular draw event has run */
-gboolean
-pager_on_draw(GtkTextView *textview, cairo_t *cr, winid_t win)
-{
-	/* Calculate the position of the 'more' tag */
-	gint promptwidth, promptheight;
-	pango_layout_get_pixel_size(win->pager_layout, &promptwidth, &promptheight);
-
-	int winwidth = gtk_widget_get_allocated_width( GTK_WIDGET(textview) );
-	int winheight = gtk_widget_get_allocated_height( GTK_WIDGET(textview) );
-
-	/* Draw the 'more' tag */
-	cairo_move_to(cr, winwidth - promptwidth, winheight - promptheight);
-	pango_cairo_show_layout(cr, win->pager_layout);
-
-	return FALSE; /* Propagate event further */
 }
 
 /* Check whether paging should be done. This function is called after the
@@ -147,7 +129,7 @@ pager_after_size_allocate(GtkTextView *textview, GdkRectangle *allocation, winid
 	
 	/* Scroll past text already read by user. This is automatic scrolling, so disable the pager_ajustment_handler
 	 * first, that acts on the belief the scolling is performed by the user. */
-	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(win->frame));
+	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(win->scrolledwindow));
 	g_signal_handler_block(adj, win->pager_adjustment_handler);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
 	GtkTextMark *pager_position = gtk_text_buffer_get_mark(buffer, "pager_position");
