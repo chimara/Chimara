@@ -161,7 +161,6 @@ chimara_glk_init(ChimaraGlk *self)
     priv->protect = FALSE;
 	priv->styles = g_new0(StyleSet,1);
 	priv->glk_styles = g_new0(StyleSet,1);
-	priv->pager_attr_list = pango_attr_list_new();
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->running = FALSE;
     priv->program = NULL;
@@ -270,8 +269,7 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->styles->text_grid);
 	g_hash_table_destroy(priv->glk_styles->text_buffer);
 	g_hash_table_destroy(priv->glk_styles->text_grid);
-	pango_attr_list_unref(priv->pager_attr_list);
-	
+
     /* Free the event queue */
     g_mutex_lock(priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
@@ -1495,28 +1493,6 @@ chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags)
 
 	*num_tags = CHIMARA_NUM_STYLES;
 	return style_get_tag_names();
-}
-
-/**
- * chimara_glk_update_style:
- * @glk: a #ChimaraGlk widget
- *
- * Processes style updates and updates the widget to reflect the new style.
- * Call this every time you change a property of a #GtkTextTag retrieved by
- * chimara_glk_get_tag().
- */
-void
-chimara_glk_update_style(ChimaraGlk *glk)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	style_update(glk);
-
-	/* Schedule a redraw */
-	g_mutex_lock(priv->arrange_lock);
-	priv->needs_rearrange = TRUE;
-	priv->ignore_next_arrange_event = TRUE;
-	g_mutex_unlock(priv->arrange_lock);
-	gtk_widget_queue_resize( GTK_WIDGET(priv->self) );
 }
 
 /**

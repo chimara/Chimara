@@ -101,7 +101,6 @@ struct glk_window_struct
 	cairo_surface_t *backing_store;
 	/* Pager (textbuffer only) */
 	gboolean currently_paging;
-	PangoLayout *pager_layout;
 };
 
 #endif
