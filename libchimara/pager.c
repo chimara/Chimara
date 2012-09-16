@@ -2,6 +2,10 @@
 
 #include "pager.h"
 
+/* Not sure if necessary, but this is the margin within which the pager will
+stop paging if it's close to the end of the text buffer */
+#define PAGER_FUZZINESS 1.0
+
 /* Helper function: move the pager to the last visible position in the buffer,
  and return the distance between the pager and the end of the buffer in buffer
  coordinates */
@@ -32,11 +36,6 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	gtk_text_view_get_iter_location(textview, &newpager, &pagerpos);
 	gtk_text_view_get_iter_location(textview, &end, &endpos);
 
-	/*
-	g_printerr("View height = %d\n", visiblerect.height);
-	g_printerr("End - Pager = %d - %d = %d\n", endpos.y, pagerpos.y, endpos.y - pagerpos.y);
-	*/
-	
 	*view_height = visiblerect.height;
 	*scroll_distance = endpos.y - pagerpos.y;
 }
@@ -59,12 +58,27 @@ stop_paging(winid_t win)
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
 }
 
+/* Helper function: If the adjustment is at its maximum value, stop paging */
+static void
+check_paging(GtkAdjustment *adj, winid_t win)
+{
+	double page_size, upper, value;
+	g_object_get(adj,
+		"page-size", &page_size,
+		"upper", &upper,
+		"value", &value,
+		NULL);
+	if(value + PAGER_FUZZINESS >= upper - page_size && win->currently_paging)
+		stop_paging(win);
+}
+
 void
 pager_on_clicked(GtkButton *pager, winid_t win)
 {
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->scrolledwindow) );
 	double upper = gtk_adjustment_get_upper(adj);
 	gtk_adjustment_set_value(adj, upper);
+	check_paging(adj, win);
 }
 
 /* When the user scrolls up in a textbuffer, start paging. */
@@ -76,9 +90,17 @@ pager_after_adjustment_changed(GtkAdjustment *adj, winid_t win)
    	move_pager_and_get_scroll_distance( GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, TRUE );
 
 	if(scroll_distance > 0 && !win->currently_paging)
+	{
 		start_paging(win);
+		return;
+	}
 	else if(scroll_distance == 0 && win->currently_paging)
+	{
 		stop_paging(win);
+		return;
+	}
+
+	check_paging(adj, win);
 }
 
 /* Handle key press events in the textview while paging is active */
@@ -99,12 +121,15 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 		case GDK_KEY_Page_Down: case GDK_KEY_KP_Page_Down:
 		case GDK_KEY_Return: case GDK_KEY_KP_Enter:
 			gtk_adjustment_set_value(adj, CLAMP(value + page_size, lower, upper - page_size));
+			check_paging(adj, win);
 			return TRUE;
 		case GDK_KEY_Page_Up: case GDK_KEY_KP_Page_Up:
 			gtk_adjustment_set_value(adj, CLAMP(value - page_size, lower, upper - page_size));
+			check_paging(adj, win);
 			return TRUE;
 		case GDK_KEY_End: case GDK_KEY_KP_End:
-			gtk_adjustment_set_value(adj, upper);
+			gtk_adjustment_set_value(adj, upper - page_size);
+			check_paging(adj, win);
 			return TRUE;
 			/* don't handle "up" and "down", they're used for input history */
 	}
