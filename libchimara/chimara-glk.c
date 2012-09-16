@@ -1130,6 +1130,15 @@ struct StartupData {
 	ChimaraGlkPrivate *glk_data;
 };
 
+static void
+free_startup_data(struct StartupData *startup)
+{
+	int i = 0;
+	while(i < startup->args.argc)
+		g_free(startup->args.argv[i++]);
+	g_free(startup->args.argv);
+}
+
 /* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */
 static gpointer
 glk_enter(struct StartupData *startup)
@@ -1146,14 +1155,11 @@ glk_enter(struct StartupData *startup)
 		startup->glk_data->in_startup = TRUE;
 		int result = startup->glkunix_startup_code(&startup->args);
 		startup->glk_data->in_startup = FALSE;
-		
-		int i = 0;
-		while(i < startup->args.argc)
-			g_free(startup->args.argv[i++]);
-		g_free(startup->args.argv);
-		
-		if(!result)
+
+		if(!result) {
+			free_startup_data(startup);
 			return NULL;
+		}
 	}
 	
 	/* Run main function */
@@ -1163,6 +1169,7 @@ glk_enter(struct StartupData *startup)
 	g_free(startup);
     g_signal_emit_by_name(startup->glk_data->self, "started");
 	glk_main();
+	free_startup_data(startup);
 	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
 	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
 	return NULL; 
