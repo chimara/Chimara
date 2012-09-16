@@ -971,24 +971,7 @@ glk_window_clear(winid_t win)
             GtkTextIter start, end;
             gtk_text_buffer_get_start_iter(textbuffer, &start);
             gtk_text_buffer_get_end_iter(textbuffer, &end);
-
-			/* Determine default style */
-			GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(textbuffer);
-			GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
-			GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, "normal");
-			GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, "normal");
-
-			// Default style
-			gtk_text_buffer_apply_tag(textbuffer, default_tag, &start, &end);
-
-			// Player's style overrides
-			gtk_text_buffer_apply_tag(textbuffer, style_tag, &start, &end);
-
-			// GLK Program's style overrides
-			gtk_text_buffer_apply_tag(textbuffer, glk_style_tag, &start, &end);
-
-			if(win->zcolor != NULL)
-				gtk_text_buffer_apply_tag(textbuffer, win->zcolor, &start, &end);
+			style_apply(win, &start, &end);
 
             gtk_text_buffer_move_mark_by_name(textbuffer, "cursor_position", &start);
 		    
