@@ -165,7 +165,7 @@ create_window(void)
 	/* DON'T UNCOMMENT THIS your eyes will burn
 	 but it is a good test of programmatically altering just one style
 	chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
-	    "buffer.normal { font-family: 'Comic Sans MS'; }");*/
+	    "buffer { font-family: 'Comic Sans MS'; }");*/
 	
 	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
 	if(vbox == NULL)

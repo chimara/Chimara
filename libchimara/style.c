@@ -53,7 +53,6 @@ static const gchar* TAG_NAMES[] = {
 	"user1",
 	"user2",
 	"hyperlink",
-	"pager",
 	"default"
 };
 
@@ -123,16 +122,6 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 	str->glk_style = (gchar*) get_glk_tag_name(styl);
 }
 
-/* Internal function: call this to initialize the layout of the 'more' prompt. */
-void
-style_init_more_prompt(winid_t win)
-{
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-
-	win->pager_layout = gtk_widget_create_pango_layout(win->widget, "More");
-	pango_layout_set_attributes(win->pager_layout, glk_data->pager_attr_list);
-}
-
 /* Internal function: call this to initialize the default styles to a textbuffer. */
 void
 style_init_textbuffer(GtkTextBuffer *buffer)
@@ -186,36 +175,43 @@ GtkTextTag *
 gtk_text_tag_copy(GtkTextTag *tag)
 {
 	GtkTextTag *copy;
+	char *tag_name;
+	GParamSpec **properties;
+	unsigned nprops, count;
 
 	g_return_val_if_fail(tag != NULL, NULL);
 
-	copy = gtk_text_tag_new(tag->name);
-	gtk_text_attributes_copy_values(tag->values, copy->values);
-	
-	#define _COPY_FLAG(flag) copy->flag = tag->flag
-		_COPY_FLAG (bg_color_set);
-		_COPY_FLAG (bg_color_set);
-		_COPY_FLAG (bg_stipple_set);
-		_COPY_FLAG (fg_color_set);
-		_COPY_FLAG (fg_stipple_set);
-		_COPY_FLAG (justification_set);
-		_COPY_FLAG (left_margin_set);
-		_COPY_FLAG (indent_set);
-		_COPY_FLAG (rise_set);
-		_COPY_FLAG (strikethrough_set);
-		_COPY_FLAG (right_margin_set);
-		_COPY_FLAG (pixels_above_lines_set);
-		_COPY_FLAG (pixels_below_lines_set);
-		_COPY_FLAG (pixels_inside_wrap_set);
-		_COPY_FLAG (tabs_set);
-		_COPY_FLAG (underline_set);
-		_COPY_FLAG (wrap_mode_set);
-		_COPY_FLAG (bg_full_height_set);
-		_COPY_FLAG (invisible_set);
-		_COPY_FLAG (editable_set);
-		_COPY_FLAG (language_set);
-		_COPY_FLAG (scale_set);
-	#undef _COPY_FLAG
+	g_object_get(tag, "name", &tag_name, NULL);
+	copy = gtk_text_tag_new(tag_name);
+	g_free(tag_name);
+
+	/* Copy all the original tag's properties to the new tag */
+	properties = g_object_class_list_properties( G_OBJECT_GET_CLASS(tag), &nprops );
+	for(count = 0; count < nprops; count++) {
+
+		/* Only copy properties that are readable, writable, not construct-only,
+		and not deprecated */
+		GParamFlags flags = properties[count]->flags;
+		if(flags & G_PARAM_CONSTRUCT_ONLY
+			|| flags & G_PARAM_DEPRECATED
+			|| !(flags & G_PARAM_READABLE)
+			|| !(flags & G_PARAM_WRITABLE))
+			continue;
+
+		const char *prop_name = g_param_spec_get_name(properties[count]);
+		GValue prop_value = G_VALUE_INIT;
+
+		g_value_init( &prop_value, G_PARAM_SPEC_VALUE_TYPE(properties[count]) );
+		g_object_get_property( G_OBJECT(tag), prop_name, &prop_value );
+		/* Don't copy the PangoTabArray if it is NULL, that prints a warning */
+		if(strcmp(prop_name, "tabs") == 0 && g_value_get_boxed(&prop_value) == NULL) {
+			g_value_unset(&prop_value);
+			continue;
+		}
+		g_object_set_property( G_OBJECT(copy), prop_name, &prop_value );
+		g_value_unset(&prop_value);
+	}
+	g_free(properties);
 
 	/* Copy the data that was added manually */
 	gpointer reverse_color = g_object_get_data( G_OBJECT(tag), "reverse-color" );
@@ -336,14 +332,8 @@ style_init(ChimaraGlk *glk)
 	g_object_set(tag, "foreground", "#0000ff", "foreground-set", TRUE, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	g_hash_table_insert(default_text_buffer_styles, "hyperlink", tag);
 
-	GtkTextTag *pager_tag = gtk_text_tag_new("pager");
-	g_object_set(pager_tag, "family", "Monospace", "family-set", TRUE, "foreground", "#ffffff", "foreground-set", TRUE, "background", "#000000", "background-set", TRUE, NULL);
-	g_hash_table_insert(default_text_buffer_styles, "pager", pager_tag);
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
-
 	priv->styles->text_grid = default_text_grid_styles;
 	priv->styles->text_buffer = default_text_buffer_styles;
-
 
 	/* Initialize the GLK styles to empty tags */
 	int i;
@@ -389,9 +379,6 @@ scan_css_file(GScanner *scanner, ChimaraGlk *glk)
 	}
 
 	g_scanner_destroy(scanner);
-
-	/* Update the pager prompt to the new style */
-	style_update(glk);
 }
 
 /* Internal function: parses a token */
@@ -1199,16 +1186,6 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 	}
 }
 
-/* Update pager tag */
-void
-style_update(ChimaraGlk *glk)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	GtkTextTag *pager_tag = GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_buffer, "pager") );
-	text_tag_to_attr_list(pager_tag, priv->pager_attr_list);
-}
-
 /* Determine the current colors used to render the text for a given stream. 
  * This can be set in a number of places */
 static void
@@ -1273,7 +1250,8 @@ style_stream_colors(strid_t str, GdkColor **foreground, GdkColor **background)
 	}
 }
 
-/* Apply styles to a segment of text in a GtkTextBuffer
+/* Apply styles to a segment of text in a GtkTextBuffer, combining multiple
+ * GtkTextTags.
  */
 void
 style_apply(winid_t win, GtkTextIter *start, GtkTextIter *end)

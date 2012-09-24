@@ -74,8 +74,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_hash_table_destroy(win->hyperlinks);
 	g_free(win->current_hyperlink);
 
-	if(win->pager_layout)
-		g_object_unref(win->pager_layout);
+	if(win->backing_store)
+		cairo_surface_destroy(win->backing_store);
 
 	g_free(win);
 }
@@ -533,12 +533,20 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		
 		case wintype_TextBuffer:
 		{
+			GtkWidget *overlay = gtk_overlay_new();
 			GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 			GtkWidget *textview = gtk_text_view_new();
+			GtkWidget *pager = gtk_button_new_with_label("More");
+			GtkWidget *image = gtk_image_new_from_stock(GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_BUTTON);
 			GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 
 			gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
-			
+
+			gtk_button_set_image( GTK_BUTTON(pager), image );
+			gtk_widget_set_halign(pager, GTK_ALIGN_END);
+			gtk_widget_set_valign(pager, GTK_ALIGN_END);
+			gtk_widget_set_no_show_all(pager, TRUE);
+
 			gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(textview), GTK_WRAP_WORD_CHAR );
 			gtk_text_view_set_editable( GTK_TEXT_VIEW(textview), FALSE );
 			gtk_text_view_set_pixels_inside_wrap( GTK_TEXT_VIEW(textview), 3 );
@@ -546,16 +554,19 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			gtk_text_view_set_right_margin( GTK_TEXT_VIEW(textview), 20 );
 
 			gtk_container_add( GTK_CONTAINER(scrolledwindow), textview );
-			gtk_widget_show_all(scrolledwindow);
+			gtk_container_add( GTK_CONTAINER(overlay), scrolledwindow );
+			gtk_overlay_add_overlay( GTK_OVERLAY(overlay), pager );
+			gtk_widget_show_all(overlay);
 
 			win->widget = textview;
-			win->frame = scrolledwindow;
-			
+			win->scrolledwindow = scrolledwindow;
+			win->pager = pager;
+			win->frame = overlay;
+
 			/* Create the styles available to the window stream */
 			style_init_textbuffer(textbuffer);
-			style_init_more_prompt(win);
 			gtk_widget_modify_font( textview, get_current_font(wintype) );
-			
+
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
 			pango_layout_set_font_description( zero, get_current_font(wintype) );
@@ -565,13 +576,12 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			/* Connect signal handlers */
 			
 			/* Pager */
-			g_signal_connect_after( textview, "size-request", G_CALLBACK(pager_after_size_request), win );
-			win->pager_expose_handler = g_signal_connect_after( textview, "expose-event", G_CALLBACK(pager_on_expose), win );
-			g_signal_handler_block(textview, win->pager_expose_handler);
+			g_signal_connect_after( textview, "size-allocate", G_CALLBACK(pager_after_size_allocate), win );
 			win->pager_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(pager_on_key_press_event), win );
 			g_signal_handler_block(textview, win->pager_keypress_handler);
 			GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolledwindow));
 			win->pager_adjustment_handler = g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
+			g_signal_connect(pager, "clicked", G_CALLBACK(pager_on_clicked), win);
 
 			/* Char and line input */
 			win->char_input_keypress_handler = g_signal_connect( textview, "key-press-event", G_CALLBACK(on_char_input_key_press_event), win );
@@ -603,7 +613,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 		case wintype_Graphics:
 		{
-		    GtkWidget *image = gtk_image_new_from_pixmap(NULL, NULL);
+		    GtkWidget *image = gtk_drawing_area_new();
 			gtk_widget_show(image);
 
 			win->unit_width = 1;
@@ -611,13 +621,15 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    win->widget = image;
 		    win->frame = image;
 			win->background_color = 0x00FFFFFF;
-		    		
+			win->backing_store = NULL;
+
 			/* Connect signal handlers */
 			win->button_press_event_handler = g_signal_connect(image, "button-press-event", G_CALLBACK(on_window_button_press), win);
 			g_signal_handler_block(image, win->button_press_event_handler);
 			win->shutdown_keypress_handler = g_signal_connect(image, "key-press-event", G_CALLBACK(on_shutdown_key_press_event), win);
 			g_signal_handler_block(image, win->shutdown_keypress_handler);			
-			win->size_allocate_handler = g_signal_connect(image, "size-allocate", G_CALLBACK(on_graphics_size_allocate), win);
+			g_signal_connect(image, "configure-event", G_CALLBACK(on_graphics_configure), win);
+			g_signal_connect(image, "draw", G_CALLBACK(on_graphics_draw), win);
 		}
 		    break;
 			
@@ -967,24 +979,7 @@ glk_window_clear(winid_t win)
             GtkTextIter start, end;
             gtk_text_buffer_get_start_iter(textbuffer, &start);
             gtk_text_buffer_get_end_iter(textbuffer, &end);
-
-			/* Determine default style */
-			GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(textbuffer);
-			GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
-			GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, "normal");
-			GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, "normal");
-
-			// Default style
-			gtk_text_buffer_apply_tag(textbuffer, default_tag, &start, &end);
-
-			// Player's style overrides
-			gtk_text_buffer_apply_tag(textbuffer, style_tag, &start, &end);
-
-			// GLK Program's style overrides
-			gtk_text_buffer_apply_tag(textbuffer, glk_style_tag, &start, &end);
-
-			if(win->zcolor != NULL)
-				gtk_text_buffer_apply_tag(textbuffer, win->zcolor, &start, &end);
+			style_apply(win, &start, &end);
 
             gtk_text_buffer_move_mark_by_name(textbuffer, "cursor_position", &start);
 		    
@@ -1008,13 +1003,19 @@ glk_window_clear(winid_t win)
 
 		case wintype_Graphics:
 		{
+			GtkAllocation allocation;
+
 			/* Wait for the window's size to be updated */
 			g_mutex_lock(glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
 				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
 			g_mutex_unlock(glk_data->arrange_lock);
 
-			glk_window_erase_rect(win, 0, 0, win->widget->allocation.width, win->widget->allocation.height);
+			gdk_threads_enter();
+			gtk_widget_get_allocation(win->widget, &allocation);
+			gdk_threads_leave();
+
+			glk_window_erase_rect(win, 0, 0, allocation.width, allocation.height);
 		}
 			break;
 		
@@ -1134,6 +1135,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 {
 	VALID_WINDOW(win, return);
 
+	GtkAllocation allocation;
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
     switch(win->type)
@@ -1154,9 +1156,10 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 			g_mutex_unlock(glk_data->arrange_lock);
 			
 			gdk_threads_enter();
+			gtk_widget_get_allocation(win->widget, &allocation);
 			/* Cache the width and height */
-			win->width = (glui32)(win->widget->allocation.width / win->unit_width);
-		    win->height = (glui32)(win->widget->allocation.height / win->unit_height);
+			win->width = (glui32)(allocation.width / win->unit_width);
+		    win->height = (glui32)(allocation.height / win->unit_height);
             gdk_threads_leave();
 			
             if(widthptr != NULL)
@@ -1173,10 +1176,11 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 			g_mutex_unlock(glk_data->arrange_lock);
 			
             gdk_threads_enter();
+            gtk_widget_get_allocation(win->widget, &allocation);
             if(widthptr != NULL)
-                *widthptr = (glui32)(win->widget->allocation.width / win->unit_width);
+                *widthptr = (glui32)(allocation.width / win->unit_width);
             if(heightptr != NULL)
-                *heightptr = (glui32)(win->widget->allocation.height / win->unit_height);
+                *heightptr = (glui32)(allocation.height / win->unit_height);
             gdk_threads_leave();
             
             break;
@@ -1188,10 +1192,11 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 			g_mutex_unlock(glk_data->arrange_lock);
 			
             gdk_threads_enter();
+            gtk_widget_get_allocation(win->widget, &allocation);
             if(widthptr != NULL)
-                *widthptr = (glui32)(win->widget->allocation.width);
+                *widthptr = (glui32)(allocation.width);
             if(heightptr != NULL)
-                *heightptr = (glui32)(win->widget->allocation.height);
+                *heightptr = (glui32)(allocation.height);
             gdk_threads_leave();
             
             break;

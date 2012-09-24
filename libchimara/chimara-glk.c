@@ -28,27 +28,6 @@
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
 
-/* Substitute functions for compiling on iLiad */
-
-#if !GTK_CHECK_VERSION(2, 18, 0)
-#define gtk_widget_get_allocation(w, a) \
-	G_STMT_START { \
-		(a)->x = (w)->allocation.x; \
-		(a)->y = (w)->allocation.y; \
-		(a)->width = (w)->allocation.width; \
-		(a)->height = (w)->allocation.height; \
-	} G_STMT_END
-#define gtk_widget_set_allocation(w, a) \
-	G_STMT_START { (w)->allocation = *(a); } G_STMT_END
-#define gtk_widget_set_has_window(w, f) \
-	G_STMT_START { \
-		if(f) \
-			GTK_WIDGET_UNSET_FLAGS((w), GTK_NO_WINDOW); \
-		else \
-			GTK_WIDGET_SET_FLAGS((w), GTK_NO_WINDOW); \
-	} G_STMT_END
-#endif /* GTK 2.18 */
-
 /**
  * SECTION:chimara-glk
  * @short_description: Widget which executes a Glk program
@@ -182,7 +161,6 @@ chimara_glk_init(ChimaraGlk *self)
     priv->protect = FALSE;
 	priv->styles = g_new0(StyleSet,1);
 	priv->glk_styles = g_new0(StyleSet,1);
-	priv->pager_attr_list = pango_attr_list_new();
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->running = FALSE;
     priv->program = NULL;
@@ -291,8 +269,7 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->styles->text_grid);
 	g_hash_table_destroy(priv->glk_styles->text_buffer);
 	g_hash_table_destroy(priv->glk_styles->text_grid);
-	pango_attr_list_unref(priv->pager_attr_list);
-	
+
     /* Free the event queue */
     g_mutex_lock(priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
@@ -345,93 +322,35 @@ chimara_glk_finalize(GObject *object)
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
 }
 
-/* Internal function: Recursively get the Glk window tree's size request */
-static void
-request_recurse(winid_t win, GtkRequisition *requisition, guint spacing)
+/* Implementation of get_request_mode(): Always request constant size */
+static GtkSizeRequestMode
+chimara_glk_get_request_mode(GtkWidget *widget)
 {
-	if(win->type == wintype_Pair)
-	{
-		/* Get children's size requests */
-		GtkRequisition child1, child2;
-		request_recurse(win->window_node->children->data, &child1, spacing);
-		request_recurse(win->window_node->children->next->data, &child2, spacing);
-
-		glui32 division = win->split_method & winmethod_DivisionMask;
-		glui32 direction = win->split_method & winmethod_DirMask;
-		unsigned border = ((win->split_method & winmethod_BorderMask) == winmethod_NoBorder)? 0 : spacing;
-
-		/* If the split is fixed, get the size of the fixed child */
-		if(division == winmethod_Fixed)
-		{
-			switch(direction)
-			{
-				case winmethod_Left:
-					child1.width = win->key_window?
-						win->constraint_size * win->key_window->unit_width
-						: 0;
-					break;
-				case winmethod_Right:
-					child2.width = win->key_window?
-						win->constraint_size * win->key_window->unit_width
-						: 0;
-					break;
-				case winmethod_Above:
-					child1.height = win->key_window?
-						win->constraint_size * win->key_window->unit_height
-						: 0;
-					break;
-				case winmethod_Below:
-					child2.height = win->key_window?
-						win->constraint_size * win->key_window->unit_height
-						: 0;
-					break;
-			}
-		}
-		
-		/* Add the children's requests */
-		switch(direction)
-		{
-			case winmethod_Left:
-			case winmethod_Right:
-				requisition->width = child1.width + child2.width + border;
-				requisition->height = MAX(child1.height, child2.height);
-				break;
-			case winmethod_Above:
-			case winmethod_Below:
-				requisition->width = MAX(child1.width, child2.width);
-				requisition->height = child1.height + child2.height + border;
-				break;
-		}
-	}
-	
-	/* For non-pair windows, just use the size that GTK requests */
-	else
-		gtk_widget_size_request(win->frame, requisition);
+	return GTK_SIZE_REQUEST_CONSTANT_SIZE;
 }
 
-/* Overrides gtk_widget_size_request */
+/* Minimal implementation of width request. Allocation in Glk is
+strictly top-down, so we just request our current size by returning 1. */
 static void
-chimara_glk_size_request(GtkWidget *widget, GtkRequisition *requisition)
+chimara_glk_get_preferred_width(GtkWidget *widget, int *minimal, int *natural)
 {
-    g_return_if_fail(widget);
-    g_return_if_fail(requisition);
-    g_return_if_fail(CHIMARA_IS_GLK(widget));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
-    
-    guint border_width = gtk_container_get_border_width(GTK_CONTAINER(widget));
-    /* For now, just pass the size request on to the root Glk window */
-    if(priv->root_window) 
-	{
-		request_recurse(priv->root_window->data, requisition, priv->spacing);
-		requisition->width += 2 * border_width;
-		requisition->height += 2 * border_width;
-	} 
-	else 
-	{
-        requisition->width = CHIMARA_GLK_MIN_WIDTH + 2 * border_width;
-        requisition->height = CHIMARA_GLK_MIN_HEIGHT + 2 * border_width;
-    }
+    g_return_if_fail(widget || CHIMARA_IS_GLK(widget));
+    g_return_if_fail(minimal);
+    g_return_if_fail(natural);
+
+    *minimal = *natural = 1;
+}
+
+/* Minimal implementation of height request. Allocation in Glk is
+strictly top-down, so we just request our current size by returning 1. */
+static void
+chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
+{
+    g_return_if_fail(widget || CHIMARA_IS_GLK(widget));
+    g_return_if_fail(minimal);
+    g_return_if_fail(natural);
+
+    *minimal = *natural = 1;
 }
 
 /* Recursively give the Glk windows their allocated space. Returns a window
@@ -552,64 +471,92 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		 bottom or right area is filled with blanks. */
 		GtkAllocation widget_allocation;
 		gtk_widget_get_allocation(win->widget, &widget_allocation);
-		glui32 newwidth = (glui32)(widget_allocation.width / win->unit_width);
-		glui32 newheight = (glui32)(widget_allocation.height / win->unit_height);
-		gint line;
-		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextIter start, end;
-	
-		for(line = 0; line < win->height; line++)
+		glui32 new_width = (glui32)(widget_allocation.width / win->unit_width);
+		glui32 new_height = (glui32)(widget_allocation.height / win->unit_height);
+
+		if(new_width != win->width || new_height != win->height)
 		{
-			gtk_text_buffer_get_iter_at_line(textbuffer, &start, line);
-			/* If this line is going to fall off the bottom, delete it */
-			if(line >= newheight)
-			{
-				end = start;
-				gtk_text_iter_forward_to_line_end(&end);
-				gtk_text_iter_forward_char(&end);
-				gtk_text_buffer_delete(textbuffer, &start, &end);
-				break;
+			// Window has changed size, trim or expand the textbuffer if necessary.
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+			GtkTextIter start, end;
+
+			// Add or remove lines
+			if(new_height == 0) {
+				gtk_text_buffer_get_start_iter(buffer, &start);
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_delete(buffer, &start, &end);
 			}
-			/* If this line is not long enough, add spaces on the end */
-			if(newwidth > win->width)
+			else if(new_height < win->height)
 			{
-				gchar *spaces = g_strnfill(newwidth - win->width, ' ');
+				// Remove surplus lines
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				gtk_text_buffer_get_iter_at_line(buffer, &start, new_height-1);
 				gtk_text_iter_forward_to_line_end(&start);
-				gtk_text_buffer_insert(textbuffer, &start, spaces, -1);
-				g_free(spaces);
+				gtk_text_buffer_delete(buffer, &start, &end);
+
 			}
-			/* But if it's too long, delete characters from the end */
-			else if(newwidth < win->width)
+			else if(new_height > win->height)
 			{
-				end = start;
-				gtk_text_iter_forward_chars(&start, newwidth);
-				gtk_text_iter_forward_to_line_end(&end);
-				gtk_text_buffer_delete(textbuffer, &start, &end);
+				// Add extra lines
+				gint lines_to_add = new_height - win->height;
+				gtk_text_buffer_get_end_iter(buffer, &end);
+				start = end;
+
+				gchar *blanks = g_strnfill(win->width, ' ');
+				gchar **blanklines = g_new0(gchar *, lines_to_add + 1);
+				int count;
+				for(count = 0; count < lines_to_add; count++)
+					blanklines[count] = blanks;
+				blanklines[lines_to_add] = NULL;
+				gchar *vertical_blanks = g_strjoinv("\n", blanklines);
+				g_free(blanklines); 
+				g_free(blanks);
+
+				if(win->height > 0) 
+					gtk_text_buffer_insert(buffer, &end, "\n", 1);
+
+				gtk_text_buffer_insert(buffer, &end, vertical_blanks, -1);
 			}
-			/* Note: if the widths are equal, do nothing */
-		}
-		/* Add blank lines if there aren't enough lines to fit the new size */
-		if(newheight > win->height)
-		{
-			gchar *blanks = g_strnfill(win->width, ' ');
-		    gchar **blanklines = g_new0(gchar *, (newheight - win->height) + 1);
-		    int count;
-		    for(count = 0; count < newheight - win->height; count++)
-		        blanklines[count] = blanks;
-		    blanklines[newheight - win->height] = NULL;
-		    gchar *text = g_strjoinv("\n", blanklines);
-		    g_free(blanklines); /* not g_strfreev() */
-		    g_free(blanks);
-		    
-			gtk_text_buffer_get_end_iter(textbuffer, &start);
-			gtk_text_buffer_insert(textbuffer, &start, "\n", -1);
-		    gtk_text_buffer_insert(textbuffer, &start, text, -1);
-		    g_free(text);
+
+			// Trim or expand lines
+			if(new_width < win->width) {
+				gtk_text_buffer_get_start_iter(buffer, &start);
+				end = start;
+
+				gint line;
+				for(line = 0; line <= new_height; line++) {
+					// Trim the line
+					gtk_text_iter_forward_cursor_positions(&start, new_width);
+					gtk_text_iter_forward_to_line_end(&end);
+					gtk_text_buffer_delete(buffer, &start, &end);
+					gtk_text_iter_forward_line(&start);
+					end = start;
+				}
+			} else if(new_width > win->width) {
+				gint chars_to_add = new_width - win->width;
+				gchar *horizontal_blanks = g_strnfill(chars_to_add, ' ');
+
+				gtk_text_buffer_get_start_iter(buffer, &start);
+				end = start;
+
+				gint line;
+				for(line = 0; line <= new_height; line++) {
+					gtk_text_iter_forward_to_line_end(&start);
+					end = start;
+					gint start_offset = gtk_text_iter_get_offset(&start);
+					gtk_text_buffer_insert(buffer, &end, horizontal_blanks, -1);
+					gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
+					gtk_text_iter_forward_line(&start);
+					end = start;
+				}
+
+				g_free(horizontal_blanks);
+			}
 		}
 	
-		gboolean arrange = !(win->width == newwidth && win->height == newheight);
-		win->width = newwidth;
-		win->height = newheight;
+		gboolean arrange = !(win->width == new_width && win->height == new_height);
+		win->width = new_width;
+		win->height = new_height;
 		return arrange? win : NULL;
 	}
 	
@@ -629,16 +576,11 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
     
     gtk_widget_set_allocation(widget, allocation);
-            
+
     if(priv->root_window) {
-		GtkAllocation child;
-		guint border_width = gtk_container_get_border_width(GTK_CONTAINER(widget));
-		child.x = allocation->x + border_width;
-		child.y = allocation->y + border_width;
-		child.width = CLAMP(allocation->width - 2 * border_width, 0, allocation->width);
-		child.height = CLAMP(allocation->height - 2 * border_width, 0, allocation->height);
+		GtkAllocation child = *allocation;
 		winid_t arrange = allocate_recurse(priv->root_window->data, &child, priv->spacing);
-		
+
 		/* arrange points to a window that contains all text grid and graphics
 		 windows which have been resized */
 		g_mutex_lock(priv->arrange_lock);
@@ -735,18 +677,6 @@ chimara_glk_iliad_screen_update(ChimaraGlk *self, gboolean typing)
 	/* Default signal handler */
 }
 
-/* COMPAT: G_PARAM_STATIC_STRINGS only appeared in GTK 2.13.0 */
-#ifndef G_PARAM_STATIC_STRINGS
-
-/* COMPAT: G_PARAM_STATIC_NAME and friends only appeared in GTK 2.8 */
-#if GTK_CHECK_VERSION(2,8,0)
-#define G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
-#else
-#define G_PARAM_STATIC_STRINGS (0)
-#endif
-
-#endif
-
 static void
 chimara_glk_class_init(ChimaraGlkClass *klass)
 {
@@ -757,11 +687,15 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     object_class->finalize = chimara_glk_finalize;
     
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->size_request = chimara_glk_size_request;
+    widget_class->get_request_mode = chimara_glk_get_request_mode;
+    widget_class->get_preferred_width = chimara_glk_get_preferred_width;
+    widget_class->get_preferred_height = chimara_glk_get_preferred_height;
     widget_class->size_allocate = chimara_glk_size_allocate;
 
     GtkContainerClass *container_class = GTK_CONTAINER_CLASS(klass);
     container_class->forall = chimara_glk_forall;
+    /* Automatically handle the GtkContainer:border-width property */
+    gtk_container_class_handle_border_width(container_class);
 
     /* Signals */
     klass->stopped = chimara_glk_stopped;
@@ -1196,6 +1130,15 @@ struct StartupData {
 	ChimaraGlkPrivate *glk_data;
 };
 
+static void
+free_startup_data(struct StartupData *startup)
+{
+	int i = 0;
+	while(i < startup->args.argc)
+		g_free(startup->args.argv[i++]);
+	g_free(startup->args.argv);
+}
+
 /* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */
 static gpointer
 glk_enter(struct StartupData *startup)
@@ -1212,14 +1155,11 @@ glk_enter(struct StartupData *startup)
 		startup->glk_data->in_startup = TRUE;
 		int result = startup->glkunix_startup_code(&startup->args);
 		startup->glk_data->in_startup = FALSE;
-		
-		int i = 0;
-		while(i < startup->args.argc)
-			g_free(startup->args.argv[i++]);
-		g_free(startup->args.argv);
-		
-		if(!result)
+
+		if(!result) {
+			free_startup_data(startup);
 			return NULL;
+		}
 	}
 	
 	/* Run main function */
@@ -1229,6 +1169,7 @@ glk_enter(struct StartupData *startup)
 	g_free(startup);
     g_signal_emit_by_name(startup->glk_data->self, "started");
 	glk_main();
+	free_startup_data(startup);
 	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
 	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
 	return NULL; 
@@ -1587,28 +1528,6 @@ chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags)
 
 	*num_tags = CHIMARA_NUM_STYLES;
 	return style_get_tag_names();
-}
-
-/**
- * chimara_glk_update_style:
- * @glk: a #ChimaraGlk widget
- *
- * Processes style updates and updates the widget to reflect the new style.
- * Call this every time you change a property of a #GtkTextTag retrieved by
- * chimara_glk_get_tag().
- */
-void
-chimara_glk_update_style(ChimaraGlk *glk)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	style_update(glk);
-
-	/* Schedule a redraw */
-	g_mutex_lock(priv->arrange_lock);
-	priv->needs_rearrange = TRUE;
-	priv->ignore_next_arrange_event = TRUE;
-	g_mutex_unlock(priv->arrange_lock);
-	gtk_widget_queue_resize( GTK_WIDGET(priv->self) );
 }
 
 /**

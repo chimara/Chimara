@@ -1,9 +1,9 @@
-GRAPHICS = no_graph.c no_graph.h
-# GRAPHICS = graphics.c graphics.h
+#GRAPHICS = no_graph.c no_graph.h
+GRAPHICS = graphics.c graphics.h
 BLORB = blorb.c 
 # BLORB = no_blorb.c
-SOUND = no_snd.c no_snd.h
-# SOUND = sound.c sound.h
+# SOUND = no_snd.c no_snd.h
+SOUND = sound.c sound.h
 
 dist_noinst_SCRIPTS = copying.awk opt2glkc.pl y2help.pl
 

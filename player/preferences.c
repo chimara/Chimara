@@ -104,11 +104,13 @@ parse_interpreter(const char *interp)
 		return CHIMARA_IF_INTERPRETER_GLULXE;
 	if(strcmp(interp, "git") == 0)
 		return CHIMARA_IF_INTERPRETER_GIT;
+	if(strcmp(interp, "bocfel") == 0)
+		return CHIMARA_IF_INTERPRETER_BOCFEL;
 	return CHIMARA_IF_INTERPRETER_NONE;
 }
 
 static const char *interpreter_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
-	"frotz", "nitfol", "glulxe", "git"
+	"frotz", "nitfol", "glulxe", "git", "bocfel"
 };
 
 static const char *
@@ -123,7 +125,8 @@ static const char *interpreter_display_strings[CHIMARA_IF_NUM_INTERPRETERS] = {
 	N_("Frotz"),
 	N_("Nitfol"),
 	N_("Glulxe"),
-	N_("Git")
+	N_("Git"),
+	N_("Bocfel")
 };
 
 static const char *
@@ -252,7 +255,6 @@ on_toggle_left(GtkToggleButton *button, ChimaraGlk *glk) {
 	if( !gtk_toggle_button_get_active(button) )
 		return;
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_LEFT, "justification-set", TRUE, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -260,7 +262,6 @@ on_toggle_center(GtkToggleButton *button, ChimaraGlk *glk) {
 	if( !gtk_toggle_button_get_active(button) )
 		return;
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_CENTER, "justification-set", TRUE, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -268,7 +269,6 @@ on_toggle_right(GtkToggleButton *button, ChimaraGlk *glk) {
 	if( !gtk_toggle_button_get_active(button) )
 		return;
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_RIGHT, "justification-set", TRUE, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -276,7 +276,6 @@ on_toggle_justify(GtkToggleButton *button, ChimaraGlk *glk) {
 	if( !gtk_toggle_button_get_active(button) )
 		return;
 	g_object_set(current_tag, "justification", GTK_JUSTIFY_FILL, "justification-set", TRUE, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -285,8 +284,6 @@ on_toggle_bold(GtkToggleButton *button, ChimaraGlk *glk) {
 		g_object_set(current_tag, "weight", PANGO_WEIGHT_BOLD, "weight-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "weight", PANGO_WEIGHT_NORMAL, "weight-set", TRUE, NULL);
-
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -295,8 +292,6 @@ on_toggle_italic(GtkToggleButton *button, ChimaraGlk *glk) {
 		g_object_set(current_tag, "style", PANGO_STYLE_ITALIC, "style-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "style", PANGO_STYLE_NORMAL, "style-set", TRUE, NULL);
-
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -305,8 +300,6 @@ on_toggle_underline(GtkToggleButton *button, ChimaraGlk *glk) {
 		g_object_set(current_tag, "underline", PANGO_UNDERLINE_SINGLE, "underline-set", TRUE, NULL);
 	else
 		g_object_set(current_tag, "underline", PANGO_UNDERLINE_NONE, "underline-set", TRUE, NULL);
-
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -315,7 +308,6 @@ on_foreground_color_set(GtkColorButton *button, ChimaraGlk *glk)
 	GdkColor color;
     gtk_color_button_get_color(button, &color);
 	g_object_set(current_tag, "foreground-gdk", &color, "foreground-set", TRUE, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -324,7 +316,6 @@ on_background_color_set(GtkColorButton *button, ChimaraGlk *glk)
 	GdkColor color;
     gtk_color_button_get_color(button, &color);
 	g_object_set(current_tag, "background-gdk", &color, "background-set", TRUE, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void
@@ -333,7 +324,6 @@ on_font_set(GtkFontButton *button, ChimaraGlk *glk)
 	const gchar *font_name = gtk_font_button_get_font_name(button);
 	PangoFontDescription *font_description = pango_font_description_from_string(font_name);
 	g_object_set(current_tag, "font-desc", font_description, NULL);
-	chimara_glk_update_style(glk);
 }
 
 void

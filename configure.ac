@@ -26,10 +26,8 @@ LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
 AC_SUBST(LT_VERSION_INFO)
 
 ### REQUIREMENTS ##############################################################
-# Recommended GTK version: at least 2.12
-# Recommended Glib version: at least 2.16
-GTK_REQUIRED_VERSION=2.6
-GLIB_REQUIRED_VERSION=2.6
+GTK_REQUIRED_VERSION=3.2
+GLIB_REQUIRED_VERSION=2.16
 GTK_DOC_REQUIRED_VERSION=1.12
 AC_SUBST(GTK_REQUIRED_VERSION)
 AC_SUBST(GLIB_REQUIRED_VERSION)
@@ -77,14 +75,6 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 
 GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
-### ILIAD #####################################################################
-AC_ARG_ENABLE([iliad],
-	[AS_HELP_STRING([--enable-iliad=@<:@yes/no@:>@],
-		[Compiles Chimara for the iLiad @<:@default=no@:>@])],
-	[],
-	[enable_iliad=no])
-AM_CONDITIONAL(TARGET_ILIAD, $TEST "x$enable_iliad" = xyes)
-
 ### RPM CONFIGURATION ##########################################################
 # --enable-rpm requires rpm and rpmbuild
 AC_PATH_PROG([RPMBUILD], [rpmbuild], [notfound])
@@ -118,7 +108,7 @@ AM_CONDITIONAL(BUILDING_VAPI, $TEST "x$VAPIGEN" != xnotfound)
 # Libraries needed to build Chimara library
 PKG_CHECK_MODULES([CHIMARA], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gthread-2.0 
 	gmodule-2.0
 	pango
@@ -129,12 +119,12 @@ AC_SUBST(CHIMARA_LIBS)
 # Libraries needed to build Chimara player
 PKG_CHECK_MODULES([PLAYER], [
 	glib-2.0 >= $GLIB_REQUIRED_VERSION
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
-	gtk+-2.0 >= $GTK_REQUIRED_VERSION
+	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0 >= $GLIB_REQUIRED_VERSION
 ])
 
@@ -179,6 +169,7 @@ interpreters/frotz/Makefile
 interpreters/nitfol/Makefile
 interpreters/glulxe/Makefile
 interpreters/git/Makefile
+interpreters/bocfel/Makefile
 tests/Makefile
 player/Makefile
 player/config.py
@@ -187,7 +178,6 @@ docs/reference/Makefile
 docs/reference/version.xml
 docs/reference/build-selector-table.pl
 po/Makefile.in
-babel/Makefile
 ])
 
 # Do it

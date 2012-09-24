@@ -386,24 +386,19 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 	return draw_image_common(win, info->pixbuf, val1, val2);
 }
 
-/* Internal function: draws a pixbuf to a graphics window of text buffer */
+/* Internal function: draws a pixbuf to a graphics window or text buffer */
 glui32
 draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
 {
 	switch(win->type) {
 	case wintype_Graphics:
 	{
-		GdkPixmap *canvas;
-
 		gdk_threads_enter();
 
-		gtk_image_get_pixmap( GTK_IMAGE(win->widget), &canvas, NULL );
-		if(canvas == NULL) {
-			WARNING("Could not get pixmap");
-			return FALSE;
-		}
-
-		gdk_draw_pixbuf( GDK_DRAWABLE(canvas), NULL, pixbuf, 0, 0, val1, val2, -1, -1, GDK_RGB_DITHER_NONE, 0, 0 );
+		cairo_t *cr = cairo_create(win->backing_store);
+		gdk_cairo_set_source_pixbuf(cr, pixbuf, val1, val2);
+		cairo_paint(cr);
+		cairo_destroy(cr);
 
 		/* Update the screen */
 		gtk_widget_queue_draw(win->widget);
@@ -483,6 +478,16 @@ glk_window_set_background_color(winid_t win, glui32 color)
 	win->background_color = color;
 }
 
+static void
+glkcairo_set_source_glkcolor(cairo_t *cr, glui32 val)
+{
+	double r, g, b;
+	r = ((val & 0xff0000) >> 16) / 256.0;
+	g = ((val & 0x00ff00) >> 8) / 256.0;
+	b = (val & 0x0000ff) / 256.0;
+	cairo_set_source_rgb(cr, r, g, b);
+}
+
 /**
  * glk_window_fill_rect:
  * @win: A graphics window.
@@ -504,16 +509,12 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 
 	gdk_threads_enter();
 
-	GdkPixmap *map;
-	gtk_image_get_pixmap( GTK_IMAGE(win->widget), &map, NULL );
-
-	GdkGC *gc = gdk_gc_new(map);
-	GdkColor gdkcolor;
-	glkcolor_to_gdkcolor(color, &gdkcolor);
-	gdk_gc_set_rgb_fg_color(gc, &gdkcolor);
-	gdk_draw_rectangle( GDK_DRAWABLE(map), gc, TRUE, left, top, width, height);
+	cairo_t *cr = cairo_create(win->backing_store);
+	glkcairo_set_source_glkcolor(cr, color);
+	cairo_rectangle(cr, (double)left, (double)top, (double)width, (double)height);
+	cairo_fill(cr);
 	gtk_widget_queue_draw(win->widget);
-	g_object_unref(gc);
+	cairo_destroy(cr);
 
 	gdk_threads_leave();
 }
@@ -579,37 +580,54 @@ void glk_window_flow_break(winid_t win)
 	VALID_WINDOW(win, return);
 }
 
-/*** Called when the graphics window is resized. Resize the backing pixmap if necessary ***/
-void
-on_graphics_size_allocate(GtkWidget *widget, GtkAllocation *allocation, winid_t win)
-{ 
-	GdkPixmap *oldmap;
-	gtk_image_get_pixmap( GTK_IMAGE(widget), &oldmap, NULL );
-	gint oldwidth = 0;
-	gint oldheight = 0;
- 
-	/* Determine whether a pixmap exists with the correct size */
+/* Called when the graphics window is resized, restacked, or moved. Resize the
+backing store if necessary. */
+gboolean
+on_graphics_configure(GtkWidget *widget, GdkEventConfigure *event, winid_t win)
+{
+	int oldwidth = 0, oldheight = 0;
+
+	/* Determine whether the backing store can stay the same size */
 	gboolean needs_resize = FALSE;
-	if(oldmap == NULL)
+	if(win->backing_store == NULL)
 		needs_resize = TRUE;
 	else {
-		gdk_drawable_get_size( GDK_DRAWABLE(oldmap), &oldwidth, &oldheight );
-		if(oldwidth != allocation->width || oldheight != allocation->height)
+		oldwidth = cairo_image_surface_get_width(win->backing_store);
+		oldheight = cairo_image_surface_get_height(win->backing_store);
+		if(oldwidth != event->width || oldheight != event->height)
 			needs_resize = TRUE;
 	}
 
 	if(needs_resize) {
-		/* Create a new pixmap */
-		GdkPixmap *newmap = gdk_pixmap_new(widget->window, allocation->width, allocation->height, -1);
-		gdk_draw_rectangle( GDK_DRAWABLE(newmap), widget->style->white_gc, TRUE, 0, 0, allocation->width, allocation->height);
+		/* Create a new backing store */
+		cairo_surface_t *new_backing_store = gdk_window_create_similar_surface( gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, gtk_widget_get_allocated_width(widget), gtk_widget_get_allocated_height(widget) );
+		cairo_t *cr = cairo_create(new_backing_store);
 
-		/* Copy the contents of the old pixmap */
-		if(oldmap != NULL)
-			gdk_draw_drawable( GDK_DRAWABLE(newmap), widget->style->white_gc, GDK_DRAWABLE(oldmap), 0, 0, 0, 0, oldwidth, oldheight);
-		
-		/* Use the new pixmap */
-		gtk_image_set_from_pixmap( GTK_IMAGE(widget), newmap, NULL );
-		g_object_unref(newmap);
+		/* Clear to background color */
+		glkcairo_set_source_glkcolor(cr, win->background_color);
+		cairo_paint(cr);
+
+		if(win->backing_store != NULL) {
+			/* Copy the contents of the old backing store */
+			cairo_set_source_surface(cr, win->backing_store, 0, 0);
+			cairo_paint(cr);
+			cairo_surface_destroy(win->backing_store);
+		}
+
+		cairo_destroy(cr);
+		/* Use the new backing store */
+		win->backing_store = new_backing_store;
 	}
+
+	return TRUE; /* Event handled, stop processing */
 }
 
+/* Draw the backing store to the screen. Called whenever the drawing area is
+exposed. */
+gboolean
+on_graphics_draw(GtkWidget *widget, cairo_t *cr, winid_t win)
+{
+	cairo_set_source_surface(cr, win->backing_store, 0, 0);
+	cairo_paint(cr);
+	return FALSE;
+}

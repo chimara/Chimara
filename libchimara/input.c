@@ -143,10 +143,7 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 	gtk_entry_set_has_frame(GTK_ENTRY(win->input_entry), FALSE);
 	GtkBorder border = { 0, 0, 0, 0 };
 
-	/* COMPAT: */
-#if GTK_CHECK_VERSION(2,10,0)
 	gtk_entry_set_inner_border(GTK_ENTRY(win->input_entry), &border);
-#endif
     gtk_entry_set_max_length(GTK_ENTRY(win->input_entry), win->input_length);
     gtk_entry_set_width_chars(GTK_ENTRY(win->input_entry), win->input_length);
 
@@ -497,7 +494,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 			gtk_text_buffer_get_selection_bounds(buffer, &selection_start, &selection_end);
 			if(gtk_text_iter_compare(&selection_start, &input_position_iter) < 0) {
 				// Cursor is somewhere else in the text, place it at the end if the user starts typing
-				if(event->keyval >= GDK_space && event->keyval <= GDK_asciitilde) {
+				if(event->keyval >= GDK_KEY_space && event->keyval <= GDK_KEY_asciitilde) {
 					gtk_text_buffer_place_cursor(buffer, &end_iter);
 				} else {
 					// User is walking around, let him be.
@@ -509,16 +506,16 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 			pager_update(win);
 
 			/* History up/down */
-			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
-				|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+			if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up
+				|| event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
 			{
 				/* Prevent falling off the end of the history list */
 				if(win->history == NULL)
 					return TRUE;
-				if( (event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+				if( (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
 					&& win->history_pos && win->history_pos->next == NULL)
 					return TRUE;
-				if( (event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+				if( (event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
 					&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
 					return TRUE;
 
@@ -531,7 +528,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 				gtk_text_buffer_delete(buffer, &input_position_iter, &end_iter);
 
-				if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+				if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
 				{
 					if(win->history_pos)
 						win->history_pos = g_list_next(win->history_pos);
@@ -552,20 +549,20 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 			}
 
 			/* Move to beginning/end of input field */
-			else if(event->keyval == GDK_Home) {
+			else if(event->keyval == GDK_KEY_Home) {
 				GtkTextIter input_iter;
 				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
 				gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
 				gtk_text_buffer_place_cursor(buffer, &input_iter);
 				return TRUE;
 			}
-			else if(event->keyval == GDK_End) {
+			else if(event->keyval == GDK_KEY_End) {
 				gtk_text_buffer_place_cursor(buffer, &end_iter);
 				return TRUE;
 			}
 
 			/* Handle the line terminators */
-			else if(event->keyval == GDK_Return || event->keyval == GDK_KP_Enter
+			else if(event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter
 			   || g_slist_find(win->current_extra_line_terminators, GUINT_TO_POINTER(event->keyval)))
 			{
 				/* Remove signal handlers */
@@ -591,15 +588,15 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
 		case wintype_TextGrid:
 		{
-			if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
-				|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down
-				|| event->keyval == GDK_Left || event->keyval == GDK_KP_Left
-				|| event->keyval == GDK_Right || event->keyval == GDK_KP_Right
-				|| event->keyval == GDK_Tab || event->keyval == GDK_KP_Tab
-				|| event->keyval == GDK_Page_Up || event->keyval == GDK_KP_Page_Up
-				|| event->keyval == GDK_Page_Down || event->keyval == GDK_KP_Page_Down
-				|| event->keyval == GDK_Home || event->keyval == GDK_KP_Home
-				|| event->keyval == GDK_End || event->keyval == GDK_KP_End)
+			if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up
+				|| event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down
+				|| event->keyval == GDK_KEY_Left || event->keyval == GDK_KEY_KP_Left
+				|| event->keyval == GDK_KEY_Right || event->keyval == GDK_KEY_KP_Right
+				|| event->keyval == GDK_KEY_Tab || event->keyval == GDK_KEY_KP_Tab
+				|| event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_KP_Page_Up
+				|| event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Down
+				|| event->keyval == GDK_KEY_Home || event->keyval == GDK_KEY_KP_Home
+				|| event->keyval == GDK_KEY_End || event->keyval == GDK_KEY_KP_End)
 				return FALSE; /* Don't redirect these keys */
 			gtk_widget_grab_focus(win->input_entry);
 			gtk_editable_set_position(GTK_EDITABLE(win->input_entry), -1);
@@ -805,14 +802,14 @@ GtkEntry in a text grid window. */
 gboolean
 on_input_entry_key_press_event(GtkEntry *input_entry, GdkEventKey *event, winid_t win)
 {
-	if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up
-		|| event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+	if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up
+		|| event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
 	{
 		/* Prevent falling off the end of the history list */
-		if( (event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+		if( (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
 			&& win->history_pos && win->history_pos->next == NULL)
 			return TRUE;
-		if( (event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
+		if( (event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
 			&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
 			return TRUE;
 
@@ -823,7 +820,7 @@ on_input_entry_key_press_event(GtkEntry *input_entry, GdkEventKey *event, winid_
 			win->history_pos = win->history;
 		}
 
-		if(event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
+		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
 		{
 			if(win->history_pos)
 				win->history_pos = g_list_next(win->history_pos);
@@ -864,47 +861,47 @@ keyval_to_glk_keycode(guint keyval, gboolean unicode)
 {
 	glui32 keycode;
 	switch(keyval) {
-		case GDK_Up:
-		case GDK_KP_Up: return keycode_Up;
-		case GDK_Down:
-		case GDK_KP_Down: return keycode_Down;
-		case GDK_Left:
-		case GDK_KP_Left: return keycode_Left;
-		case GDK_Right:
-		case GDK_KP_Right: return keycode_Right;
-		case GDK_Linefeed:
-		case GDK_Return:
-		case GDK_KP_Enter: return keycode_Return;
-		case GDK_Delete:
-		case GDK_BackSpace:
-		case GDK_KP_Delete: return keycode_Delete;
-		case GDK_Escape: return keycode_Escape;
-		case GDK_Tab:
-		case GDK_KP_Tab: return keycode_Tab;
-		case GDK_Page_Up:
-		case GDK_KP_Page_Up: return keycode_PageUp;
-		case GDK_Page_Down:
-		case GDK_KP_Page_Down: return keycode_PageDown;
-		case GDK_Home:
-		case GDK_KP_Home: return keycode_Home;
-		case GDK_End:
-		case GDK_KP_End: return keycode_End;
-		case GDK_F1:
-		case GDK_KP_F1: return keycode_Func1;
-		case GDK_F2:
-		case GDK_KP_F2: return keycode_Func2;
-		case GDK_F3:
-		case GDK_KP_F3: return keycode_Func3;
-		case GDK_F4:
-		case GDK_KP_F4: return keycode_Func4;
-		case GDK_F5: return keycode_Func5;
-		case GDK_F6: return keycode_Func6;
-		case GDK_F7: return keycode_Func7;
-		case GDK_F8: return keycode_Func8;
-		case GDK_F9: return keycode_Func9;
-		case GDK_F10: return keycode_Func10;
-		case GDK_F11: return keycode_Func11;
-		case GDK_F12: return keycode_Func12;
+		case GDK_KEY_Up:
+		case GDK_KEY_KP_Up: return keycode_Up;
+		case GDK_KEY_Down:
+		case GDK_KEY_KP_Down: return keycode_Down;
+		case GDK_KEY_Left:
+		case GDK_KEY_KP_Left: return keycode_Left;
+		case GDK_KEY_Right:
+		case GDK_KEY_KP_Right: return keycode_Right;
+		case GDK_KEY_Linefeed:
+		case GDK_KEY_Return:
+		case GDK_KEY_KP_Enter: return keycode_Return;
+		case GDK_KEY_Delete:
+		case GDK_KEY_BackSpace:
+		case GDK_KEY_KP_Delete: return keycode_Delete;
+		case GDK_KEY_Escape: return keycode_Escape;
+		case GDK_KEY_Tab:
+		case GDK_KEY_KP_Tab: return keycode_Tab;
+		case GDK_KEY_Page_Up:
+		case GDK_KEY_KP_Page_Up: return keycode_PageUp;
+		case GDK_KEY_Page_Down:
+		case GDK_KEY_KP_Page_Down: return keycode_PageDown;
+		case GDK_KEY_Home:
+		case GDK_KEY_KP_Home: return keycode_Home;
+		case GDK_KEY_End:
+		case GDK_KEY_KP_End: return keycode_End;
+		case GDK_KEY_F1:
+		case GDK_KEY_KP_F1: return keycode_Func1;
+		case GDK_KEY_F2:
+		case GDK_KEY_KP_F2: return keycode_Func2;
+		case GDK_KEY_F3:
+		case GDK_KEY_KP_F3: return keycode_Func3;
+		case GDK_KEY_F4:
+		case GDK_KEY_KP_F4: return keycode_Func4;
+		case GDK_KEY_F5: return keycode_Func5;
+		case GDK_KEY_F6: return keycode_Func6;
+		case GDK_KEY_F7: return keycode_Func7;
+		case GDK_KEY_F8: return keycode_Func8;
+		case GDK_KEY_F9: return keycode_Func9;
+		case GDK_KEY_F10: return keycode_Func10;
+		case GDK_KEY_F11: return keycode_Func11;
+		case GDK_KEY_F12: return keycode_Func12;
 		default:
 			keycode = gdk_keyval_to_unicode(keyval);
 			/* If keycode is 0, then keyval was not recognized; also return
@@ -1062,55 +1059,55 @@ keycode_to_gdk_keyval(glui32 keycode)
 	switch (keycode)
 	{
 		case keycode_Left:
-			return GDK_Left;
+			return GDK_KEY_Left;
 		case keycode_Right:
-			return GDK_Right;
+			return GDK_KEY_Right;
 		case keycode_Up:
-			return GDK_Up;
+			return GDK_KEY_Up;
 		case keycode_Down:
-			return GDK_Down;
+			return GDK_KEY_Down;
 		case keycode_Return:
-			return GDK_Return;
+			return GDK_KEY_Return;
 		case keycode_Delete:
-			return GDK_Delete;
+			return GDK_KEY_Delete;
 		case keycode_Escape:
-			return GDK_Escape;
+			return GDK_KEY_Escape;
 		case keycode_Tab:
-			return GDK_Tab;
+			return GDK_KEY_Tab;
 		case keycode_PageUp:
-			return GDK_Page_Up;
+			return GDK_KEY_Page_Up;
 		case keycode_PageDown:
-			return GDK_Page_Down;
+			return GDK_KEY_Page_Down;
 		case keycode_Home:
-			return GDK_Home;
+			return GDK_KEY_Home;
 		case keycode_End:
-			return GDK_End;
+			return GDK_KEY_End;
 		case keycode_Func1:
-			return GDK_F1;
+			return GDK_KEY_F1;
 		case keycode_Func2:
-			return GDK_F2;
+			return GDK_KEY_F2;
 		case keycode_Func3:
-			return GDK_F3;
+			return GDK_KEY_F3;
 		case keycode_Func4:
-			return GDK_F4;
+			return GDK_KEY_F4;
 		case keycode_Func5:
-			return GDK_F5;
+			return GDK_KEY_F5;
 		case keycode_Func6:
-			return GDK_F6;
+			return GDK_KEY_F6;
 		case keycode_Func7:
-			return GDK_F7;
+			return GDK_KEY_F7;
 		case keycode_Func8:
-			return GDK_F8;
+			return GDK_KEY_F8;
 		case keycode_Func9:
-			return GDK_F9;
+			return GDK_KEY_F9;
 		case keycode_Func10:
-			return GDK_F10;
+			return GDK_KEY_F10;
 		case keycode_Func11:
-			return GDK_F11;
+			return GDK_KEY_F11;
 		case keycode_Func12:
-			return GDK_F12;
+			return GDK_KEY_F12;
 		case keycode_Erase:
-			return GDK_BackSpace;
+			return GDK_KEY_BackSpace;
 	}
 	unsigned keyval = gdk_unicode_to_keyval(keycode);
 	if(keyval < 0x01000000) /* magic number meaning illegal unicode point */

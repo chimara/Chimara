@@ -94,7 +94,7 @@ main(int argc, char *argv[])
 	w->stop = LOAD_WIDGET("stop");
 	w->interp = chimara_if_new();
 	gtk_widget_set_size_request(w->interp, 500, 600);
-	gtk_box_pack_end_defaults(GTK_BOX(vbox), w->interp);
+	gtk_box_pack_end(GTK_BOX(vbox), w->interp, TRUE, TRUE, 0);
 	chimara_glk_set_css_from_string(CHIMARA_GLK(w->interp),
 		"buffer { font-size: 12; } buffer.input { color: #00a; font-style: italic; }");
 	chimara_glk_set_spacing(CHIMARA_GLK(w->interp), 1);

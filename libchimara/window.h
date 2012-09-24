@@ -42,6 +42,10 @@ struct glk_window_struct
 	/* "frame" is the widget that is the child of the ChimaraGlk container, such 
 	as a scroll window. It may be the same as "widget". */
 	GtkWidget *frame;
+	/* In text buffer windows, the scrolled window and the pager are extra
+	widgets that are neither "widget" nor "frame" */
+	GtkWidget *scrolledwindow;
+	GtkWidget *pager;
 	/* Width and height of the window's size units, in pixels */
 	int unit_width;
 	int unit_height;
@@ -82,7 +86,6 @@ struct glk_window_struct
 	gulong shutdown_keypress_handler;
 	gulong button_press_event_handler;
 	gulong size_allocate_handler;
-	gulong pager_expose_handler;
 	gulong pager_keypress_handler;
 	gulong pager_adjustment_handler;
 	/* Window buffer */
@@ -95,9 +98,9 @@ struct glk_window_struct
 	gboolean hyperlink_event_requested;
 	/* Graphics */
 	glui32 background_color;
+	cairo_surface_t *backing_store;
 	/* Pager (textbuffer only) */
 	gboolean currently_paging;
-	PangoLayout *pager_layout;
 };
 
 #endif
