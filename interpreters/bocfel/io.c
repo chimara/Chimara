@@ -78,8 +78,6 @@ zterp_io *zterp_io_open(const char *filename, int mode)
   zterp_io *io;
   char smode[] = "wb";
 
-  fprintf(stderr, "zterp_io_open: '%s'\n", filename);
-
   io = malloc(sizeof *io);
   if(io == NULL) goto err;
   io->mode = mode;
