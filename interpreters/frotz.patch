@@ -1,33 +1,11 @@
---- frotz/glkscreen.c	2009-11-14 17:44:15.617976131 +0100
-+++ frotz/glkscreen.c.new	2009-11-14 17:44:10.367194781 +0100
-@@ -305,13 +305,6 @@
- 			return;
- 	}
+diff -ur /Users/fliep/Documents/Coding/garglk/terps/frotz/glkfrotz.h ./glkfrotz.h
+--- orig/glkfrotz.h	2012-09-16 01:26:32.000000000 +0200
++++ new/glkfrotz.h	2011-05-01 16:18:48.000000000 +0200
+@@ -35,6 +35,7 @@
+ #include <time.h>
  
--	if (gos_upper && gos_curwin == gos_upper) {
--		if (cury > mach_status_ht) {
--			mach_status_ht = cury;
--			reset_status_ht();
--		}
--	}
--
- 	/* check fixed flag in header, game can change it at whim */
- 	if (gos_curwin == gos_lower)
- 	{
-@@ -583,8 +576,15 @@
- {
- 	cury = zargs[0];
- 	curx = zargs[1];
--	if (gos_upper)
-+
-+	if (gos_upper) {
-+		if (cury > mach_status_ht) {
-+			mach_status_ht = cury;
-+			reset_status_ht();
-+		}
-+
- 		glk_window_move_cursor(gos_upper, curx - 1, cury - 1);
-+	}
- }
+ #include "glk.h"
++#include <libchimara/garglk.h>
  
- /*
+ extern int curr_status_ht;
+ extern int mach_status_ht;

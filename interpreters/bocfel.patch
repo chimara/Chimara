@@ -1,0 +1,44 @@
+diff -ur /Users/fliep/Documents/Coding/garglk/terps/bocfel/glkstart.c ./glkstart.c
+--- orig/glkstart.c	2012-09-16 01:26:30.000000000 +0200
++++ new/glkstart.c	2012-09-23 17:53:56.000000000 +0200
+@@ -17,6 +17,7 @@
+  */
+ 
+ #include <glk.h>
++#include <libchimara/garglk.h>
+ 
+ /* Even on Win32, Gargoyle provides a glkunix startup. */
+ #if defined(ZTERP_UNIX) || defined(GARGLK)
+diff -ur /Users/fliep/Documents/Coding/garglk/terps/bocfel/screen.c ./screen.c
+--- orig/screen.c	2012-09-16 01:26:30.000000000 +0200
++++ new/screen.c	2012-09-23 17:53:56.000000000 +0200
+@@ -23,6 +23,7 @@
+ 
+ #ifdef ZTERP_GLK
+ #include <glk.h>
++#include <libchimara/garglk.h>
+ #endif
+ 
+ #include "screen.h"
+diff -ur /Users/fliep/Documents/Coding/garglk/terps/bocfel/util.c ./util.c
+--- orig/util.c	2012-09-16 01:26:30.000000000 +0200
++++ new/util.c	2012-09-23 17:53:56.000000000 +0200
+@@ -28,6 +28,7 @@
+ 
+ #ifdef ZTERP_GLK
+ #include <glk.h>
++#include <libchimara/garglk.h>
+ #endif
+ 
+ #ifndef ZTERP_NO_SAFETY_CHECKS
+diff -ur /Users/fliep/Documents/Coding/garglk/terps/bocfel/zterp.c ./zterp.c
+--- orig/zterp.c	2012-09-16 01:26:30.000000000 +0200
++++ new/zterp.c	2012-09-23 17:53:56.000000000 +0200
+@@ -39,6 +39,7 @@
+ 
+ #ifdef ZTERP_GLK
+ #include <glk.h>
++#include <libchimara/garglk.h>
+ #ifdef GARGLK
+ #include <glkstart.h>
+ #include <gi_blorb.h>
