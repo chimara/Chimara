@@ -3,6 +3,8 @@
 import sys
 import os.path
 import argparse
+from gi.repository import Gdk
+Gdk.threads_init()
 from gi.repository import GObject, GLib, Gdk, Gio, Gtk, Chimara
 import config
 
@@ -333,8 +335,6 @@ if __name__ == '__main__':
     parser.add_argument('graphics_file', nargs='?', default=None,
         metavar='GRAPHICS FILE', help='a Blorb resource file to include')
     args = parser.parse_args()
-
-    Gdk.threads_init()
 
     # Create configuration dir ~/.chimara
     try:
