@@ -1,11 +1,12 @@
 # All plugins
 
-pkglib_LTLIBRARIES = bocfel.la frotz.la git.la glulxe.la nitfol.la
+pkglib_LTLIBRARIES = libbocfel.la libfrotz.la libgit.la libglulxe.la \
+	libnitfol.la
 CLEANFILES =
 
 # Bocfel
 
-bocfel_la_SOURCES = bocfel/blorb.c bocfel/blorb.h bocfel/branch.c \
+libbocfel_la_SOURCES = bocfel/blorb.c bocfel/blorb.h bocfel/branch.c \
 	bocfel/branch.h bocfel/dict.c bocfel/dict.h bocfel/glkstart.c bocfel/iff.c \
 	bocfel/iff.h bocfel/io.c bocfel/io.h bocfel/math.c bocfel/math.h \
 	bocfel/memory.c bocfel/memory.h bocfel/objects.c bocfel/objects.h \
@@ -14,48 +15,49 @@ bocfel_la_SOURCES = bocfel/blorb.c bocfel/blorb.h bocfel/branch.c \
 	bocfel/stack.c bocfel/stack.h bocfel/table.c bocfel/table.h \
 	bocfel/unicode.c bocfel/unicode.h bocfel/util.c bocfel/util.h \
 	bocfel/zoom.c bocfel/zoom.h bocfel/zterp.c bocfel/zterp.h
-bocfel_la_CPPFLAGS = -DZTERP_GLK -DZTERP_UNIX \
+libbocfel_la_CPPFLAGS = -DZTERP_GLK -DZTERP_UNIX \
 	-I$(top_srcdir) -I$(top_srcdir)/libchimara
-bocfel_la_CFLAGS = -std=c99 $(AM_CFLAGS)
-bocfel_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
+libbocfel_la_CFLAGS = -std=c99 $(AM_CFLAGS)
+libbocfel_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 # Frotz
 
-frotz_la_SOURCES = frotz/buffer.c frotz/err.c frotz/fastmem.c frotz/files.c \
+libfrotz_la_SOURCES = frotz/buffer.c frotz/err.c frotz/fastmem.c frotz/files.c \
 	frotz/input.c frotz/main.c frotz/math.c frotz/object.c frotz/process.c \
 	frotz/quetzal.c frotz/random.c frotz/redirect.c frotz/sound.c \
 	frotz/stream.c frotz/table.c frotz/text.c frotz/variable.c \
 	frotz/glkscreen.c frotz/glkmisc.c frotz/frotz.h frotz/glkfrotz.h \
 	frotz/glkio.h
-frotz_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
-frotz_la_CFLAGS = -Wno-pointer-sign $(AM_CFLAGS)
-frotz_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
+libfrotz_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
+libfrotz_la_CFLAGS = -Wno-pointer-sign $(AM_CFLAGS)
+libfrotz_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 # Git
 
-git_la_SOURCES = git/version.h git/git.h git/config.h git/compiler.h \
+libgit_la_SOURCES = git/version.h git/git.h git/config.h git/compiler.h \
 	git/memory.h git/opcodes.h git/labels.inc git/compiler.c git/gestalt.c \
 	git/git.c git/git_unix.c git/glkop.c git/heap.c git/memory.c git/opcodes.c \
 	git/operands.c git/peephole.c git/savefile.c git/saveundo.c git/search.c \
 	git/terp.c git/accel.c
-git_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
-git_la_CFLAGS = -DCHIMARA_EXTENSIONS -DUSE_INLINE $(AM_CFLAGS)
-git_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
+libgit_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
+libgit_la_CFLAGS = -DCHIMARA_EXTENSIONS -DUSE_INLINE $(AM_CFLAGS)
+libgit_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 # Memory mapping (-DUSE_MMAP) doesn't seem to work... FIXME
 
 CLEANFILES += git/test/*.tmp
 
 # Glulxe
 
-glulxe_la_SOURCES = glulxe/accel.c glulxe/exec.c glulxe/files.c glulxe/funcs.c \
-	glulxe/gestalt.c glulxe/gestalt.h glulxe/glkop.c glulxe/glulxe.h \
-	glulxe/heap.c glulxe/main.c glulxe/opcodes.h glulxe/operand.c \
-	glulxe/osdepend.c glulxe/profile.c glulxe/search.c glulxe/serial.c \
-	glulxe/string.c glulxe/unixstrt.c glulxe/vm.c glulxe/float.c
-glulxe_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara -DOS_UNIX
-glulxe_la_CFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused \
-    $(AM_CFLAGS)
-glulxe_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
+libglulxe_la_SOURCES = glulxe/accel.c glulxe/exec.c glulxe/files.c \
+	glulxe/funcs.c glulxe/gestalt.c glulxe/gestalt.h glulxe/glkop.c \
+	glulxe/glulxe.h glulxe/heap.c glulxe/main.c glulxe/opcodes.h \
+	glulxe/operand.c glulxe/osdepend.c glulxe/profile.c glulxe/search.c \
+	glulxe/serial.c glulxe/string.c glulxe/unixstrt.c glulxe/vm.c \
+	glulxe/float.c
+libglulxe_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara -DOS_UNIX
+libglulxe_la_CFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes \
+	-Wno-unused $(AM_CFLAGS)
+libglulxe_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 #noinst_PROGRAMS = glulxdump
 #glulxdump_SOURCES = glulxe/glulxdump.c
@@ -76,7 +78,7 @@ NITFOL_SOUND = nitfol/sound.c nitfol/sound.h
 
 dist_noinst_SCRIPTS = nitfol/copying.awk nitfol/opt2glkc.pl nitfol/y2help.pl
 
-nitfol_la_SOURCES = nitfol/automap.c nitfol/automap.h nitfol/binary.h \
+libnitfol_la_SOURCES = nitfol/automap.c nitfol/automap.h nitfol/binary.h \
 	nitfol/copying.h nitfol/debug.c nitfol/debug.h nitfol/decode.c \
 	nitfol/decode.h nitfol/errmesg.c nitfol/errmesg.h nitfol/globals.c \
 	nitfol/globals.h nitfol/hash.c nitfol/hash.h nitfol/iff.c nitfol/iff.h \
@@ -93,10 +95,11 @@ nitfol_la_SOURCES = nitfol/automap.c nitfol/automap.h nitfol/binary.h \
 	nitfol/undo.c nitfol/undo.h nitfol/z_io.c nitfol/z_io.h nitfol/zscii.c \
 	nitfol/zscii.h \
 	$(NITFOL_GRAPHICS) $(NITFOL_BLORB) $(NITFOL_SOUND)
-nodist_nitfol_la_SOURCES = nitfol/copying.c nitfol/dbg_help.h nitfol/startunix.c
-nitfol_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara \
+nodist_libnitfol_la_SOURCES = nitfol/copying.c nitfol/dbg_help.h \
+	nitfol/startunix.c
+libnitfol_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara \
 	-I$(srcdir)/nitfol -DSMART_TOKENISER -DUSE_INLINE
-nitfol_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
+libnitfol_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 info_TEXINFOS = nitfol/nitfol.texi
 nitfol_TEXINFOS = nitfol/dbg_help.texi nitfol/options.texi
