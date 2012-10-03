@@ -1,0 +1,4 @@
+[Plugin]
+Module=frotz
+Name=Frotz
+Description=GlkFrotz interpreter

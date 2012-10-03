@@ -1,0 +1,4 @@
+[Plugin]
+Module=bocfel
+Name=Bocfel
+Description=Bocfel Z-machine interpreter

@@ -1,0 +1,5 @@
+[Plugin]
+Module=glulxe
+Name=Glulxe
+Description=Glulxe - reference interpreter for Glulx
+Authors=Andrew Plotkin

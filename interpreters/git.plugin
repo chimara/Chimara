@@ -1,0 +1,4 @@
+[Plugin]
+Module=git
+Name=Git
+Description=Git, a lightning-fast Glulx interpreter

@@ -1,0 +1,4 @@
+[Plugin]
+Module=nitfol
+Name=Nitfol
+Description=Nitfol Z-machine interpreter

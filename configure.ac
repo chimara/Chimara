@@ -122,6 +122,11 @@ PKG_CHECK_MODULES([PLAYER], [
 	gtk+-3.0 >= $GTK_REQUIRED_VERSION
 	gmodule-2.0
 ])
+# Libraries needed to build interpreter plugins
+PKG_CHECK_MODULES([PLUGIN], [
+	glib-2.0  dnl Any version will do
+	libpeas-1.0
+])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
 	gtk+-3.0 >= $GTK_REQUIRED_VERSION
@@ -150,7 +155,7 @@ AS_IF([$TEST "x$with_gstreamer" != xno], [
 # Plugin flags; include '-module' in each Makefile.am, because AC_SUBSTed
 # variables are black boxes to Automake, so it has to know about it being a
 # module in the makefile itself.
-PLUGIN_LIBTOOL_FLAGS='-avoid-version -shared -export-symbols-regex "^glk"'
+PLUGIN_LIBTOOL_FLAGS='-avoid-version -shared -export-symbols-regex "(^glk|peas_register_types)"'
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 
 ### OUTPUT ####################################################################
