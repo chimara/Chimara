@@ -125,7 +125,9 @@ PKG_CHECK_MODULES([PLAYER], [
 # Libraries needed to build interpreter plugins
 PKG_CHECK_MODULES([PLUGIN], [
 	glib-2.0  dnl Any version will do
+	gtk+-3.0
 	libpeas-1.0
+	libpeas-gtk-1.0
 ])
 # Libraries needed to build test programs
 PKG_CHECK_MODULES([TEST], [
