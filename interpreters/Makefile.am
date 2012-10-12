@@ -33,6 +33,8 @@ libfrotz_la_SOURCES = frotz/buffer.c frotz/err.c frotz/fastmem.c frotz/files.c \
 libfrotz_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
 libfrotz_la_CFLAGS = -Wno-pointer-sign $(PLUGIN_CFLAGS) $(AM_CFLAGS)
 libfrotz_la_LDFLAGS = -module $(PLUGIN_LIBS) $(PLUGIN_LIBTOOL_FLAGS)
+frotzdatadir = $(plugindir)/frotz
+dist_frotzdata_DATA = chimara-frotz-plugin.glade
 
 # Git
 

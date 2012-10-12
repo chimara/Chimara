@@ -1,0 +1,155 @@
+<interface>
+  <object class="GtkNotebook" id="frotz-configure-widget">
+    <child>
+      <object class="GtkGrid" id="options-page">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class="GtkCheckButton" id="expand-abbreviations-button">
+            <property name="label" translatable="yes">Expand G, X, and Z</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="piracy-button">
+            <property name="label" translatable="yes">Pretend the story file is pirated</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="tandy-button">
+            <property name="label" translatable="yes">Pretend the interpreter is the edition sold by Tandy</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="quetzal-button">
+            <property name="label" translatable="yes">Use the Quetzal saved-game format</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkGrid" id="transcript-columns-box">
+            <child>
+              <object class="GtkLabel" id="transcript-columns-label">
+                <property name="label" translatable="yes">Use</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="transcript-columns-button">
+                <property name="adjustment">columns-adjustment</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="transcript-columns-label2">
+                <property name="label" translatable="yes">columns when saving transcripts</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkGrid" id="undo-box">
+            <child>
+              <object class="GtkLabel" id="undo-label1">
+                <property name="label" translatable="yes">Reserve</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="undo-button">
+                <property name="adjustment">undo-adjustment</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="undo-label2">
+                <property name="label" translatable="yes">slots for multiple undo</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="options-tab-label">
+        <property name="label" translatable="yes">Options</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGrid" id="debug-box">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class="GtkCheckButton" id="ignore-errors-button">
+            <property name="label" translatable="yes">Ignore fatal errors</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="random-seed-set-button">
+            <property name="label" translatable="yes">Set random seed manually</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkGrid" id="random-seed-box">
+            <child>
+              <object class="GtkLabel" id="random-seed-label">
+                <property name="label" translatable="yes">to</property>
+                <property name="margin-left">12</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="random-seed-button">
+                <property name="adjustment">random-seed-adjustment</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="debug-messages-label">
+            <property name="label">Print debug messages on:</property>
+            <property name="halign">GTK_ALIGN_START</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="attribute-setting-button">
+            <property name="label">attribute setting</property>
+            <property name="margin-left">12</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="attribute-testing-button">
+            <property name="label">attribute testing</property>
+            <property name="margin-left">12</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="object-movement-button">
+            <property name="label">object movement</property>
+            <property name="margin-left">12</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="object-location-button">
+            <property name="label">object location</property>
+            <property name="margin-left">12</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="debug-tab-label">
+        <property name="label" translatable="yes">Debugging</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAdjustment" id="columns-adjustment">
+    <property name="lower">0</property>
+    <property name="value">80</property>
+    <property name="upper">200</property>
+    <property name="step-increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="undo-adjustment">
+    <property name="lower">1</property>
+    <property name="value">1</property>
+    <property name="upper">32767</property>
+    <property name="step-increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="random-seed-adjustment">
+    <property name="lower">0</property>
+    <property name="value">0</property>
+    <property name="upper">32767</property>
+    <property name="step-increment">1</property>
+  </object>
+</interface>

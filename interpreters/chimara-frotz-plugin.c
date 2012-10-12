@@ -16,7 +16,6 @@ typedef struct _ChimaraFrotzPluginPrivate {
 #define CHIMARA_FROTZ_PLUGIN_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_FROTZ_PLUGIN, ChimaraFrotzPluginPrivate))
 #define CHIMARA_FROTZ_PLUGIN_USE_PRIVATE ChimaraFrotzPluginPrivate *priv = CHIMARA_FROTZ_PLUGIN_PRIVATE(self)
 
-
 static void chimara_frotz_plugin_configurable_init(PeasGtkConfigurableInterface *);
 static GtkWidget *chimara_frotz_plugin_create_configure_widget(PeasGtkConfigurable *);
 
@@ -320,8 +319,101 @@ chimara_frotz_plugin_configurable_init(PeasGtkConfigurableInterface *iface)
 	iface->create_configure_widget = chimara_frotz_plugin_create_configure_widget;
 }
 
+/* Helper function to transform flags value to boolean; @data contains the
+GINT_TO_POINTER()'ed but position (0=LSB). */
+static gboolean
+debug_message_flags_transform_to(GBinding *binding, const GValue *source, GValue *target, gpointer data)
+{
+	int bit_shift = GPOINTER_TO_INT(data);
+	unsigned flags = g_value_get_uint(source);
+	g_value_set_boolean(target, flags & (1 << bit_shift));
+	return TRUE; /* success */
+}
+
+/* Reverse of debug_message_flags_transform_to(). */
+static gboolean
+debug_message_flags_transform_from(GBinding *binding, const GValue *source, GValue *target, gpointer data)
+{
+	int bit_shift = GPOINTER_TO_INT(data);
+	unsigned flags = g_value_get_uint(target);
+	int new_value = g_value_get_boolean(source)? 1 : 0;
+	g_value_set_uint(target, flags & (new_value << bit_shift));
+	return TRUE; /* success */
+}
+
 static GtkWidget *
 chimara_frotz_plugin_create_configure_widget(PeasGtkConfigurable *self)
 {
-	return gtk_label_new("Configure Widget");
+	GError *error = NULL;
+	const char *datadir = peas_plugin_info_get_data_dir(peas_engine_get_plugin_info(peas_engine_get_default(), "frotz"));
+	char *glade_file = g_build_filename(datadir, "chimara-frotz-plugin.glade", NULL);
+	GtkBuilder *builder = gtk_builder_new();
+	if(!gtk_builder_add_from_file(builder, glade_file, &error)) {
+		g_free(glade_file);
+		g_critical("Error building Frotz configuration dialog: %s\n", error->message);
+		return NULL;
+	}
+	g_free(glade_file);
+	GObject *retval = gtk_builder_get_object(builder, "frotz-configure-widget");
+
+	/* Bind GUI widget properties to this plugin's configuration properties */
+	g_object_bind_property_full(self, "debug-messages",
+		gtk_builder_get_object(builder, "attribute-setting-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL,
+		debug_message_flags_transform_to,
+		debug_message_flags_transform_from,
+		GINT_TO_POINTER(0), NULL);
+	g_object_bind_property_full(self, "debug-messages",
+		gtk_builder_get_object(builder, "attribute-testing-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL,
+		debug_message_flags_transform_to,
+		debug_message_flags_transform_from,
+		GINT_TO_POINTER(1), NULL);
+	g_object_bind_property_full(self, "debug-messages",
+		gtk_builder_get_object(builder, "object-movement-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL,
+		debug_message_flags_transform_to,
+		debug_message_flags_transform_from,
+		GINT_TO_POINTER(2), NULL);
+	g_object_bind_property_full(self, "debug-messages",
+		gtk_builder_get_object(builder, "object-location-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL,
+		debug_message_flags_transform_to,
+		debug_message_flags_transform_from,
+		GINT_TO_POINTER(3), NULL);
+	g_object_bind_property(self, "ignore-errors",
+		gtk_builder_get_object(builder, "ignore-errors-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "piracy-mode",
+		gtk_builder_get_object(builder, "piracy-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "quetzal-save-format",
+		gtk_builder_get_object(builder, "quetzal-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "tandy-bit",
+		gtk_builder_get_object(builder, "tandy-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "expand-abbreviations",
+		gtk_builder_get_object(builder, "expand-abbreviations-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "random-seed",
+		gtk_builder_get_object(builder, "random-seed-adjustment"), "value",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "random-seed-set",
+		gtk_builder_get_object(builder, "random-seed-set-button"), "active",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "random-seed-set",
+		gtk_builder_get_object(builder, "random-seed-button"), "sensitive",
+		G_BINDING_SYNC_CREATE);
+	g_object_bind_property(self, "transcript-columns",
+		gtk_builder_get_object(builder, "columns-adjustment"), "value",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+	g_object_bind_property(self, "undo-slots",
+		gtk_builder_get_object(builder, "undo-adjustment"), "value",
+		G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
+
+	/* Make sure the widget is returned with only one reference */
+	g_object_ref_sink(G_OBJECT(retval));
+	g_object_unref(builder);
+	return GTK_WIDGET(retval);
 }
