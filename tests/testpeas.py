@@ -1,14 +1,18 @@
+import os.path
 from gi.repository import Gtk, Peas, PeasGtk, Chimara
 c = Chimara.Glk()
 
 e = Peas.Engine.get_default()
-e.add_search_path('/Users/fliep/gtk/inst/lib/chimara', None)
+e.add_search_path(os.path.expanduser('~/gtk/inst/lib/chimara'),
+	os.path.expanduser('~/gtk/inst/lib/chimara/plugins'))
 
-for i in e.get_plugin_list():
-	print i.get_name()
+frotz_info = e.get_plugin_info('frotz')
+e.load_plugin(frotz_info)
 
 w = Gtk.Window()
-w.add(PeasGtk.PluginManager(e))
+m = PeasGtk.PluginManager(e)
+m.get_view().set_selected_plugin(frotz_info)
+w.add(m)
 w.connect('destroy', Gtk.main_quit)
 w.show_all()
 
