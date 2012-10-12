@@ -43,6 +43,27 @@ peas_register_types(PeasObjectModule *module)
 	peas_object_module_register_extension_type(module, PEAS_GTK_TYPE_CONFIGURABLE, CHIMARA_TYPE_FROTZ_PLUGIN);
 }
 
+GType
+chimara_frotz_debug_flags_get_type(void)
+{
+	static volatile size_t g_define_type_id__volatile = 0;
+
+	if(g_once_init_enter(&g_define_type_id__volatile)) {
+		static const GFlagsValue values[] = {
+			{ CHIMARA_FROTZ_DEBUG_NONE, "CHIMARA_FROTZ_DEBUG_NONE", "none" },
+			{ CHIMARA_FROTZ_DEBUG_ATTRIBUTE_SETTING, "CHIMARA_FROTZ_DEBUG_ATTRIBUTE_SETTING", "attribute-setting" },
+			{ CHIMARA_FROTZ_DEBUG_ATTRIBUTE_TESTING, "CHIMARA_FROTZ_DEBUG_ATTRIBUTE_TESTING", "attribute-testing" },
+			{ CHIMARA_FROTZ_DEBUG_OBJECT_MOVEMENT, "CHIMARA_FROTZ_DEBUG_OBJECT_MOVEMENT", "object-movement" },
+			{ CHIMARA_FROTZ_DEBUG_OBJECT_LOCATING, "CHIMARA_FROTZ_DEBUG_OBJECT_LOCATING", "object-locating" },
+			{ 0, NULL, NULL }
+		};
+		GType g_define_type_id = g_flags_register_static(g_intern_static_string("ChimaraFrotzDebugFlags"), values);
+		g_once_init_leave(&g_define_type_id__volatile, g_define_type_id);
+	}
+
+	return g_define_type_id__volatile;
+}
+
 static void
 chimara_frotz_plugin_init(ChimaraFrotzPlugin *self)
 {
@@ -61,7 +82,7 @@ chimara_frotz_plugin_set_property(GObject *self, unsigned prop_id, const GValue 
 	switch(prop_id) {
 		case PROP_DEBUG_MESSAGES:
 		{
-			unsigned flags = g_value_get_uint(value);
+			unsigned flags = g_value_get_flags(value);
 			option_attribute_assignment = PROCESS_FLAG(CHIMARA_FROTZ_DEBUG_ATTRIBUTE_SETTING);
 			option_attribute_testing = PROCESS_FLAG(CHIMARA_FROTZ_DEBUG_ATTRIBUTE_TESTING);
 			option_object_movement = PROCESS_FLAG(CHIMARA_FROTZ_DEBUG_OBJECT_MOVEMENT);
@@ -124,7 +145,7 @@ chimara_frotz_plugin_get_property(GObject *self, unsigned prop_id, GValue *value
 				| option_attribute_testing << 1
 				| option_object_movement << 2
 				| option_object_locating << 3;
-			g_value_set_uint(value, flags);
+			g_value_set_flags(value, flags);
 			break;
 		}
 		case PROP_IGNORE_ERRORS:
@@ -176,12 +197,11 @@ chimara_frotz_plugin_class_init(ChimaraFrotzPluginClass *klass)
 	 * Set of flags to control which debugging messages, if any, Frotz prints
 	 * while interpreting the story. See #ChimaraFrotzDebugFlags.
 	 */
-	/* TODO: register a flags type and use g_param_spec_flags() */
 	g_object_class_install_property(object_class, PROP_DEBUG_MESSAGES,
-		g_param_spec_uint("debug-messages", _("Kinds of debugging messages"),
+		g_param_spec_flags("debug-messages", _("Kinds of debugging messages"),
 			_("Control which kinds of debugging messages to print"),
-			0, 255, CHIMARA_FROTZ_DEBUG_NONE,
 			G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
+			CHIMARA_TYPE_FROTZ_DEBUG_FLAGS, CHIMARA_FROTZ_DEBUG_NONE,
 	/**
 	 * ChimaraFrotzPlugin:ignore-errors:
 	 *
@@ -325,7 +345,7 @@ static gboolean
 debug_message_flags_transform_to(GBinding *binding, const GValue *source, GValue *target, gpointer data)
 {
 	int bit_shift = GPOINTER_TO_INT(data);
-	unsigned flags = g_value_get_uint(source);
+	unsigned flags = g_value_get_flags(source);
 	g_value_set_boolean(target, flags & (1 << bit_shift));
 	return TRUE; /* success */
 }
@@ -335,7 +355,7 @@ static gboolean
 debug_message_flags_transform_from(GBinding *binding, const GValue *source, GValue *target, gpointer data)
 {
 	int bit_shift = GPOINTER_TO_INT(data);
-	unsigned flags = g_value_get_uint(target);
+	unsigned flags = g_value_get_flags(target);
 	int new_value = g_value_get_boolean(source)? 1 : 0;
 	g_value_set_uint(target, flags & (new_value << bit_shift));
 	return TRUE; /* success */
