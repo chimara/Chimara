@@ -89,10 +89,10 @@ Chimara_1_0_gir_SCANNERFLAGS = \
 Chimara_1_0_gir_EXPORT_PACKAGES = chimara
 INTROSPECTION_GIRS += Chimara-1.0.gir
 
-girdir = $(datadir)/gir-1.0
+girdir = @INTROSPECTION_GIRDIR@
 gir_DATA = $(INTROSPECTION_GIRS)
 
-typelibdir = $(libdir)/girepository-1.0
+typelibdir = @INTROSPECTION_TYPELIBDIR@
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
