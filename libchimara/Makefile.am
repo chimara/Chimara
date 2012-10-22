@@ -70,7 +70,13 @@ CLEANFILES =
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+# The '--shared-library' incantation is because, for some reason, the typelib
+# only stores the filename without a pathname (see, in gobject-introspection,
+# _g_typelib_do_dlopen() in gitypelib.c around line 2100.) This is a regression
+# in either gobject-introspection or g-ir-compiler, but I can't pinpoint it.
+INTROSPECTION_COMPILER_ARGS = \
+	--includedir=$(srcdir) \
+	--shared-library=$(libdir)/libchimara.so.0
 
 if HAVE_INTROSPECTION
 introspection_sources = \
