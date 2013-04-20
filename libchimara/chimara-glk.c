@@ -1137,19 +1137,21 @@ free_startup_data(struct StartupData *startup)
 	while(i < startup->args.argc)
 		g_free(startup->args.argv[i++]);
 	g_free(startup->args.argv);
+	g_free(startup);
 }
 
-/* glk_enter() is the actual function called in the new thread in which glk_main() runs.  */
+/* glk_enter() is the actual function called in the new thread in which
+glk_main() runs. Takes ownership of @startup and will free it. */
 static gpointer
 glk_enter(struct StartupData *startup)
 {
 	extern GPrivate *glk_data_key;
 	g_private_set(glk_data_key, startup->glk_data);
-	
+
 	/* Acquire the Glk thread's references to the input queues */
 	g_async_queue_ref(startup->glk_data->char_input_queue);
 	g_async_queue_ref(startup->glk_data->line_input_queue);
-	
+
 	/* Run startup function */
 	if(startup->glkunix_startup_code) {
 		startup->glk_data->in_startup = TRUE;
@@ -1161,18 +1163,17 @@ glk_enter(struct StartupData *startup)
 			return NULL;
 		}
 	}
-	
+
 	/* Run main function */
 	glk_main_t glk_main = startup->glk_main;
-	
+
 	/* COMPAT: avoid usage of slices */
-	g_free(startup);
-    g_signal_emit_by_name(startup->glk_data->self, "started");
+	g_signal_emit_by_name(startup->glk_data->self, "started");
 	glk_main();
 	free_startup_data(startup);
 	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
 	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
-	return NULL; 
+	return NULL;
 }
 
 /**
