@@ -154,6 +154,14 @@
         <col id="1">accelfunctest.ulx</col>
       </row>
       <row>
+        <col id="0" translatable="yes">ActionExtension</col>
+        <col id="1">actionextension.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ActionExtension (Z5)</col>
+        <col id="1">actionextension.z5</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">ArrayLimitTest</col>
         <col id="1">arraylimittest.ulx</col>
       </row>
@@ -174,18 +182,26 @@
         <col id="1">dictflagtest.z5</col>
       </row>
       <row>
+        <col id="0" translatable="yes">ExtBinaryFile</col>
+        <col id="1">extbinaryfile.ulx</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">ExternalFile</col>
         <col id="1">externalfile.ulx</col>
       </row>
-	  <row>
+      <row>
         <col id="0" translatable="yes">FloatConstTest</col>
         <col id="1">floatconsttest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">FloatParseTest</col>
+        <col id="1">floatparsetest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">InputEventText</col>
         <col id="1">inputeventtext.ulx</col>
       </row>
-	  <row>
+      <row>
         <col id="0" translatable="yes">InputFeatureTest</col>
         <col id="1">inputfeaturetest.ulx</col>
       </row>
@@ -202,8 +218,20 @@
         <col id="1">memstreamtest.ulx</col>
       </row>
       <row>
+        <col id="0" translatable="yes">ReadThreeArgTest (Z5)</col>
+        <col id="1">readthreeargtest.z5</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ResizeMemStreamTest</col>
+        <col id="1">resizememstreamtest.ulx</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">ResStreamTest</col>
         <col id="1">resstreamtest.gblorb</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">SelectVariantTest</col>
+        <col id="1">selectvarianttest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">UniCaseTest</col>
