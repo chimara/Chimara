@@ -172,9 +172,6 @@ chimara_if_init(ChimaraIF *self)
 	priv->interpreter = CHIMARA_IF_INTERPRETER_NONE;
 	priv->flags = CHIMARA_IF_TYPO_CORRECTION;
 	priv->interpreter_number = CHIMARA_IF_ZMACHINE_DEFAULT;
-	priv->random_seed_set = FALSE;
-	priv->graphics_file = NULL;
-	priv->input = NULL;
 	priv->response = g_string_new("");
 
 	/* Connect to signals of ChimaraGlk parent */
