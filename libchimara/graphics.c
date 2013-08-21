@@ -56,11 +56,11 @@ load_image_from_blorb(giblorb_result_t resource, glui32 image, gint width, gint 
 	g_free(buffer);
 
 	/* Wait for the PixbufLoader to finish loading the image */
-	g_mutex_lock(glk_data->resource_lock);
+	g_mutex_lock(&glk_data->resource_lock);
 	while(!image_loaded) {
-		g_cond_wait(glk_data->resource_loaded, glk_data->resource_lock);
+		g_cond_wait(&glk_data->resource_loaded, &glk_data->resource_lock);
 	}
-	g_mutex_unlock(glk_data->resource_lock);
+	g_mutex_unlock(&glk_data->resource_lock);
 
 	info->pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
 	g_object_ref(info->pixbuf);
@@ -148,12 +148,12 @@ on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	g_mutex_lock(glk_data->resource_lock);
+	g_mutex_lock(&glk_data->resource_lock);
 	info->width = width;
 	info->height = height;
 	size_determined = TRUE;
-	g_cond_broadcast(glk_data->resource_info_available);
-	g_mutex_unlock(glk_data->resource_lock);
+	g_cond_broadcast(&glk_data->resource_info_available);
+	g_mutex_unlock(&glk_data->resource_lock);
 }
 
 void
@@ -163,10 +163,10 @@ on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 
-	g_mutex_lock(glk_data->resource_lock);
+	g_mutex_lock(&glk_data->resource_lock);
 	image_loaded = TRUE;
-	g_cond_broadcast(glk_data->resource_loaded);
-	g_mutex_unlock(glk_data->resource_lock);
+	g_cond_broadcast(&glk_data->resource_loaded);
+	g_mutex_unlock(&glk_data->resource_lock);
 
 	gdk_threads_leave();
 }

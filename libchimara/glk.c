@@ -74,15 +74,15 @@ glk_exit(void)
 		glk_put_string("\n");
 		flush_window_buffer(largewin);
 	}
-	
-	g_mutex_lock(glk_data->shutdown_lock);
+
+	g_mutex_lock(&glk_data->shutdown_lock);
 	for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL)) {
 		if(win->type == wintype_TextGrid || win->type == wintype_TextBuffer)
 			g_signal_handler_unblock(win->widget, win->shutdown_keypress_handler);
 	}
-	g_cond_wait(glk_data->shutdown_key_pressed, glk_data->shutdown_lock);
-	g_mutex_unlock(glk_data->shutdown_lock);
-	
+	g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
+	g_mutex_unlock(&glk_data->shutdown_lock);
+
 	shutdown_glk_post();
 
 	g_signal_emit_by_name(glk_data->self, "stopped");

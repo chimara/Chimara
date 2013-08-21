@@ -441,10 +441,10 @@ on_shutdown_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
 		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
 	
 	/* Signal the Glk library that it can shut everything down now */
-	g_mutex_lock(priv->shutdown_lock);
-	g_cond_signal(priv->shutdown_key_pressed);
-	g_mutex_unlock(priv->shutdown_lock);
-	
+	g_mutex_lock(&priv->shutdown_lock);
+	g_cond_signal(&priv->shutdown_key_pressed);
+	g_mutex_unlock(&priv->shutdown_lock);
+
 	return TRUE; /* block the event */
 }
 

@@ -58,13 +58,13 @@ void
 check_for_abort(void)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	g_mutex_lock(glk_data->abort_lock);
+	g_mutex_lock(&glk_data->abort_lock);
 	if(glk_data->abort_signalled)
 	{
-		g_mutex_unlock(glk_data->abort_lock);
+		g_mutex_unlock(&glk_data->abort_lock);
 		abort_glk();
 	}
-	g_mutex_unlock(glk_data->abort_lock);
+	g_mutex_unlock(&glk_data->abort_lock);
 }
 
 /* Internal function: shut down all requests and anything not necessary while
@@ -113,10 +113,10 @@ shutdown_glk_pre(void)
 		;
 	
 	/* Wait for any pending window rearrange */
-	g_mutex_lock(glk_data->arrange_lock);
+	g_mutex_lock(&glk_data->arrange_lock);
 	if(glk_data->needs_rearrange)
-		g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-	g_mutex_unlock(glk_data->arrange_lock);
+		g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+	g_mutex_unlock(&glk_data->arrange_lock);
 }
 
 /* Internal function: do any Glk-thread cleanup for shutting down the Glk library. */
@@ -141,7 +141,7 @@ shutdown_glk_post(void)
 		glk_schannel_destroy(sch);
 	
 	/* Empty the event queue */
-	g_mutex_lock(glk_data->event_lock);
+	g_mutex_lock(&glk_data->event_lock);
 	g_queue_foreach(glk_data->event_queue, (GFunc)g_free, NULL);
 
 	/* COMPAT: g_queue_clear could be used here, but only appeared in 2.14 */
@@ -150,19 +150,19 @@ shutdown_glk_post(void)
 	glk_data->event_queue->head = glk_data->event_queue->tail = NULL;
 	glk_data->event_queue->length = 0;
 
-	g_mutex_unlock(glk_data->event_lock);
-	
+	g_mutex_unlock(&glk_data->event_lock);
+
 	/* Reset the abort signaling mechanism */
-	g_mutex_lock(glk_data->abort_lock);
+	g_mutex_lock(&glk_data->abort_lock);
 	glk_data->abort_signalled = FALSE;
-	g_mutex_unlock(glk_data->abort_lock);
-	
+	g_mutex_unlock(&glk_data->abort_lock);
+
 	/* Reset arrangement mechanism */
-	g_mutex_lock(glk_data->arrange_lock);
+	g_mutex_lock(&glk_data->arrange_lock);
 	glk_data->needs_rearrange = FALSE;
 	glk_data->ignore_next_arrange_event = FALSE;
-	g_mutex_unlock(glk_data->arrange_lock);
-	
+	g_mutex_unlock(&glk_data->arrange_lock);
+
 	/* Unref input queues (they are not destroyed because the main thread stil holds a ref */
 	g_async_queue_unref(glk_data->char_input_queue);
 	g_async_queue_unref(glk_data->line_input_queue);

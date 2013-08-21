@@ -27,14 +27,14 @@ event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
 	g_get_current_time(&timeout);
 	g_time_val_add(&timeout, EVENT_TIMEOUT_MICROSECONDS);
 
-	g_mutex_lock(priv->event_lock);
+	g_mutex_lock(&priv->event_lock);
 
 	/* Wait for room in the event queue */
 	while( g_queue_get_length(priv->event_queue) >= EVENT_QUEUE_MAX_LENGTH )
-		if( !g_cond_timed_wait(priv->event_queue_not_full, priv->event_lock, &timeout) ) 
+		if( !g_cond_timed_wait(&priv->event_queue_not_full, &priv->event_lock, &timeout) ) 
 		{
 			/* Drop the event after 3 seconds */
-			g_mutex_unlock(priv->event_lock);
+			g_mutex_unlock(&priv->event_lock);
 			return;
 		}
 
@@ -46,9 +46,9 @@ event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
 	g_queue_push_head(priv->event_queue, event);
 
 	/* Signal that there is an event */
-	g_cond_signal(priv->event_queue_not_empty);
+	g_cond_signal(&priv->event_queue_not_empty);
 
-	g_mutex_unlock(priv->event_lock);
+	g_mutex_unlock(&priv->event_lock);
 }
 
 /* Helper function: Wait for an event in the event queue. If it is a forced
@@ -59,22 +59,22 @@ static void
 get_appropriate_event(event_t *event)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
-	g_mutex_lock(glk_data->event_lock);
+
+	g_mutex_lock(&glk_data->event_lock);
 
 	event_t *retrieved_event = NULL;
 
 	/* Wait for an event */
 	if( g_queue_is_empty(glk_data->event_queue) )
-		g_cond_wait(glk_data->event_queue_not_empty, glk_data->event_lock);
+		g_cond_wait(&glk_data->event_queue_not_empty, &glk_data->event_lock);
 
 	retrieved_event = g_queue_pop_tail(glk_data->event_queue);
 
 	/* Signal that the event queue is no longer full */
-	g_cond_signal(glk_data->event_queue_not_full);
-	
-	g_mutex_unlock(glk_data->event_lock);
-	
+	g_cond_signal(&glk_data->event_queue_not_full);
+
+	g_mutex_unlock(&glk_data->event_lock);
+
 	if(retrieved_event->type == evtype_ForcedCharInput)
 	{
 		/* Check for forced character input in the queue */
@@ -90,10 +90,10 @@ get_appropriate_event(event_t *event)
 		else
 		{
 			get_appropriate_event(event);
-			g_mutex_lock(glk_data->event_lock);
+			g_mutex_lock(&glk_data->event_lock);
 			g_queue_push_tail(glk_data->event_queue, retrieved_event);
-			g_cond_signal(glk_data->event_queue_not_empty);
-			g_mutex_unlock(glk_data->event_lock);
+			g_cond_signal(&glk_data->event_queue_not_empty);
+			g_mutex_unlock(&glk_data->event_lock);
 		}
 	}
 	else if(retrieved_event->type == evtype_ForcedLineInput)
@@ -111,10 +111,10 @@ get_appropriate_event(event_t *event)
 		else
 		{
 			get_appropriate_event(event);
-			g_mutex_lock(glk_data->event_lock);
+			g_mutex_lock(&glk_data->event_lock);
 			g_queue_push_tail(glk_data->event_queue, retrieved_event);
-			g_cond_signal(glk_data->event_queue_not_empty);
-			g_mutex_unlock(glk_data->event_lock);
+			g_cond_signal(&glk_data->event_queue_not_empty);
+			g_mutex_unlock(&glk_data->event_lock);
 		}
 	}
 	else
@@ -242,9 +242,9 @@ glk_select_poll(event_t *event)
 	event->win = NULL;
 	event->val1 = 0;
 	event->val2 = 0;
-	
-	g_mutex_lock(glk_data->event_lock);
-	
+
+	g_mutex_lock(&glk_data->event_lock);
+
 	if( !g_queue_is_empty(glk_data->event_queue) )
 	{
 		GList *link;
@@ -257,14 +257,14 @@ glk_select_poll(event_t *event)
 				memcpy(event, link->data, sizeof(event_t));
 				g_free(link->data);
 				g_queue_delete_link(glk_data->event_queue, link);
-				g_cond_signal(glk_data->event_queue_not_full);
+				g_cond_signal(&glk_data->event_queue_not_full);
 				break;
 			}
 		}
 	}
-	
-	g_mutex_unlock(glk_data->event_lock);
-	
+
+	g_mutex_unlock(&glk_data->event_lock);
+
 	/* Check for interrupt */
 	glk_tick();
 
