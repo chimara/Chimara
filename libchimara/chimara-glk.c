@@ -158,46 +158,24 @@ chimara_glk_init(ChimaraGlk *self)
     
     priv->self = self;
     priv->interactive = TRUE;
-    priv->protect = FALSE;
 	priv->styles = g_new0(StyleSet,1);
 	priv->glk_styles = g_new0(StyleSet,1);
 	priv->final_message = g_strdup("[ The game has finished ]");
-	priv->running = FALSE;
-    priv->program = NULL;
-    priv->thread = NULL;
     priv->event_queue = g_queue_new();
     priv->event_lock = g_mutex_new();
     priv->event_queue_not_empty = g_cond_new();
     priv->event_queue_not_full = g_cond_new();
     priv->abort_lock = g_mutex_new();
-    priv->abort_signalled = FALSE;
 	priv->shutdown_lock = g_mutex_new();
 	priv->shutdown_key_pressed = g_cond_new();
 	priv->arrange_lock = g_mutex_new();
 	priv->rearranged = g_cond_new();
-	priv->needs_rearrange = FALSE;
-	priv->ignore_next_arrange_event = FALSE;
 	priv->char_input_queue = g_async_queue_new();
 	priv->line_input_queue = g_async_queue_new();
 	/* FIXME Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
-	priv->resource_map = NULL;
 	priv->resource_lock = g_mutex_new();
 	priv->resource_loaded = g_cond_new();
 	priv->resource_info_available = g_cond_new();
-	priv->resource_load_callback = NULL;
-	priv->resource_load_callback_data = NULL;
-	priv->image_cache = NULL;
-	priv->program_name = NULL;
-	priv->program_info = NULL;
-	priv->story_name = NULL;
-	priv->interrupt_handler = NULL;
-    priv->root_window = NULL;
-    priv->fileref_list = NULL;
-    priv->current_stream = NULL;
-    priv->stream_list = NULL;
-	priv->timer_id = 0;
-	priv->in_startup = FALSE;
-	priv->current_dir = NULL;
 
 	style_init(self);
 }
