@@ -683,10 +683,10 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	}
 
 	/* Set the window as a child of the Glk widget, don't trigger an arrange event */
-	g_mutex_lock(glk_data->arrange_lock);
+	g_mutex_lock(&glk_data->arrange_lock);
 	glk_data->needs_rearrange = TRUE;
 	glk_data->ignore_next_arrange_event = TRUE;
-	g_mutex_unlock(glk_data->arrange_lock);
+	g_mutex_unlock(&glk_data->arrange_lock);
 	gtk_widget_set_parent(win->frame, GTK_WIDGET(glk_data->self));
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 	
@@ -880,10 +880,10 @@ glk_window_close(winid_t win, stream_result_t *result)
 	window_close_common(win, FALSE);
 
 	/* Schedule a redraw */
-	g_mutex_lock(glk_data->arrange_lock);
+	g_mutex_lock(&glk_data->arrange_lock);
 	glk_data->needs_rearrange = TRUE;
 	glk_data->ignore_next_arrange_event = TRUE;
-	g_mutex_unlock(glk_data->arrange_lock);
+	g_mutex_unlock(&glk_data->arrange_lock);
 	gtk_widget_queue_resize( GTK_WIDGET(glk_data->self) );
 	gdk_threads_leave();
 }
@@ -946,11 +946,11 @@ glk_window_clear(winid_t win)
 		    /* fill the buffer with blanks */
 		{
 			/* Wait for the window's size to be updated */
-			g_mutex_lock(glk_data->arrange_lock);
+			g_mutex_lock(&glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
-				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-			g_mutex_unlock(glk_data->arrange_lock);
-			
+				g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+			g_mutex_unlock(&glk_data->arrange_lock);
+
 		    gdk_threads_enter();
 		    
             /* Manually put newlines at the end of each row of characters in the buffer; manual newlines make resizing the window's grid easier. */
@@ -998,10 +998,10 @@ glk_window_clear(winid_t win)
 			GtkAllocation allocation;
 
 			/* Wait for the window's size to be updated */
-			g_mutex_lock(glk_data->arrange_lock);
+			g_mutex_lock(&glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
-				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-			g_mutex_unlock(glk_data->arrange_lock);
+				g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+			g_mutex_unlock(&glk_data->arrange_lock);
 
 			gdk_threads_enter();
 			gtk_widget_get_allocation(win->widget, &allocation);
@@ -1142,11 +1142,11 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             
         case wintype_TextGrid:
 			/* Wait until the window's size is current */
-			g_mutex_lock(glk_data->arrange_lock);
+			g_mutex_lock(&glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
-				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-			g_mutex_unlock(glk_data->arrange_lock);
-			
+				g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+			g_mutex_unlock(&glk_data->arrange_lock);
+
 			gdk_threads_enter();
 			gtk_widget_get_allocation(win->widget, &allocation);
 			/* Cache the width and height */
@@ -1161,12 +1161,12 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             break;
             
         case wintype_TextBuffer:
-            /* Wait until the window's size is current */
-			g_mutex_lock(glk_data->arrange_lock);
+			/* Wait until the window's size is current */
+			g_mutex_lock(&glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
-				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-			g_mutex_unlock(glk_data->arrange_lock);
-			
+				g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+			g_mutex_unlock(&glk_data->arrange_lock);
+
             gdk_threads_enter();
             gtk_widget_get_allocation(win->widget, &allocation);
             if(widthptr != NULL)
@@ -1178,11 +1178,11 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             break;
 
 		case wintype_Graphics:
-			g_mutex_lock(glk_data->arrange_lock);
+			g_mutex_lock(&glk_data->arrange_lock);
 			if(glk_data->needs_rearrange)
-				g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-			g_mutex_unlock(glk_data->arrange_lock);
-			
+				g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+			g_mutex_unlock(&glk_data->arrange_lock);
+
             gdk_threads_enter();
             gtk_widget_get_allocation(win->widget, &allocation);
             if(widthptr != NULL)
@@ -1285,10 +1285,10 @@ glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keyw
 
 	/* Tell GTK to rearrange the windows */
 	gdk_threads_enter();
-	g_mutex_lock(glk_data->arrange_lock);
+	g_mutex_lock(&glk_data->arrange_lock);
 	glk_data->needs_rearrange = TRUE;
 	glk_data->ignore_next_arrange_event = TRUE;
-	g_mutex_unlock(glk_data->arrange_lock);
+	g_mutex_unlock(&glk_data->arrange_lock);
 	gtk_widget_queue_resize(GTK_WIDGET(glk_data->self));
 	gdk_threads_leave();
 }
@@ -1357,10 +1357,10 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
 	
 	/* Wait until the window's size is current */
-	g_mutex_lock(glk_data->arrange_lock);
+	g_mutex_lock(&glk_data->arrange_lock);
 	if(glk_data->needs_rearrange)
-		g_cond_wait(glk_data->rearranged, glk_data->arrange_lock);
-	g_mutex_unlock(glk_data->arrange_lock);
+		g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
+	g_mutex_unlock(&glk_data->arrange_lock);
 
 	/* Don't do anything if the window is shrunk down to nothing */
 	if(win->width == 0 || win->height == 0)

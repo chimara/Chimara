@@ -39,33 +39,35 @@ struct _ChimaraGlkPrivate {
 	/* *** Threading data *** */
 	/* Whether program is running */
 	gboolean running;
+	/* Whether widget has been finalized */
+	gboolean after_finalize;
     /* Glk program loaded in widget */
     GModule *program;
     /* Thread in which Glk program is run */
     GThread *thread;
     /* Event queue and threading stuff */
     GQueue *event_queue;
-    GMutex *event_lock;
-    GCond *event_queue_not_empty;
-    GCond *event_queue_not_full;
+	GMutex event_lock;
+	GCond event_queue_not_empty;
+	GCond event_queue_not_full;
     /* Abort mechanism */
-    GMutex *abort_lock;
+	GMutex abort_lock;
     gboolean abort_signalled;
 	/* Key press after shutdown mechanism */
-	GMutex *shutdown_lock;
-	GCond *shutdown_key_pressed;
+	GMutex shutdown_lock;
+	GCond shutdown_key_pressed;
 	/* Window arrangement locks */
-	GMutex *arrange_lock;
-	GCond *rearranged;
+	GMutex arrange_lock;
+	GCond rearranged;
 	gboolean needs_rearrange;
 	gboolean ignore_next_arrange_event;
 	/* Input queues */
 	GAsyncQueue *char_input_queue;
 	GAsyncQueue *line_input_queue;
 	/* Resource loading locks */
-	GMutex *resource_lock;
-	GCond *resource_loaded;
-	GCond *resource_info_available;
+	GMutex resource_lock;
+	GCond resource_loaded;
+	GCond resource_info_available;
 	guint32 resource_available;
 
 	/* *** Glk library data *** */

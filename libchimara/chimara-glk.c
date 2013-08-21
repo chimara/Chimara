@@ -163,20 +163,22 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->pager_attr_list = pango_attr_list_new();
 	priv->final_message = g_strdup("[ The game has finished ]");
     priv->event_queue = g_queue_new();
-    priv->event_lock = g_mutex_new();
-    priv->event_queue_not_empty = g_cond_new();
-    priv->event_queue_not_full = g_cond_new();
-    priv->abort_lock = g_mutex_new();
-	priv->shutdown_lock = g_mutex_new();
-	priv->shutdown_key_pressed = g_cond_new();
-	priv->arrange_lock = g_mutex_new();
-	priv->rearranged = g_cond_new();
 	priv->char_input_queue = g_async_queue_new();
 	priv->line_input_queue = g_async_queue_new();
 	/* FIXME Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
-	priv->resource_lock = g_mutex_new();
-	priv->resource_loaded = g_cond_new();
-	priv->resource_info_available = g_cond_new();
+
+	g_mutex_init(&priv->event_lock);
+	g_mutex_init(&priv->abort_lock);
+	g_mutex_init(&priv->shutdown_lock);
+	g_mutex_init(&priv->arrange_lock);
+	g_mutex_init(&priv->resource_lock);
+
+	g_cond_init(&priv->event_queue_not_empty);
+	g_cond_init(&priv->event_queue_not_full);
+	g_cond_init(&priv->shutdown_key_pressed);
+	g_cond_init(&priv->rearranged);
+	g_cond_init(&priv->resource_loaded);
+	g_cond_init(&priv->resource_info_available);
 
 	style_init(self);
 }
@@ -240,6 +242,7 @@ chimara_glk_finalize(GObject *object)
 {
     ChimaraGlk *self = CHIMARA_GLK(object);
 	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	priv->after_finalize = TRUE;
 
 	/* Free widget properties */
 	g_free(priv->final_message);
@@ -251,36 +254,38 @@ chimara_glk_finalize(GObject *object)
 	pango_attr_list_unref(priv->pager_attr_list);
 	
     /* Free the event queue */
-    g_mutex_lock(priv->event_lock);
+    g_mutex_lock(&priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
 	g_queue_free(priv->event_queue);
-	g_cond_free(priv->event_queue_not_empty);
-	g_cond_free(priv->event_queue_not_full);
+	g_cond_clear(&priv->event_queue_not_empty);
+	g_cond_clear(&priv->event_queue_not_full);
 	priv->event_queue = NULL;
-	g_mutex_unlock(priv->event_lock);
-	g_mutex_free(priv->event_lock);
+	g_mutex_unlock(&priv->event_lock);
+	g_mutex_clear(&priv->event_lock);
+
     /* Free the abort signaling mechanism */
-	g_mutex_lock(priv->abort_lock);
+	g_mutex_lock(&priv->abort_lock);
 	/* Make sure no other thread is busy with this */
-	g_mutex_unlock(priv->abort_lock);
-	g_mutex_free(priv->abort_lock);
-	priv->abort_lock = NULL;
+	g_mutex_unlock(&priv->abort_lock);
+	g_mutex_clear(&priv->abort_lock);
+
 	/* Free the shutdown keypress signaling mechanism */
-	g_mutex_lock(priv->shutdown_lock);
-	g_cond_free(priv->shutdown_key_pressed);
-	g_mutex_unlock(priv->shutdown_lock);
-	priv->shutdown_lock = NULL;
+	g_mutex_lock(&priv->shutdown_lock);
+	g_cond_clear(&priv->shutdown_key_pressed);
+	g_mutex_unlock(&priv->shutdown_lock);
+	g_mutex_clear(&priv->shutdown_lock);
+
 	/* Free the window arrangement signaling */
-	g_mutex_lock(priv->arrange_lock);
-	g_cond_free(priv->rearranged);
-	g_mutex_unlock(priv->arrange_lock);
-	g_mutex_free(priv->arrange_lock);
-	priv->arrange_lock = NULL;
-	g_mutex_lock(priv->resource_lock);
-	g_cond_free(priv->resource_loaded);
-	g_cond_free(priv->resource_info_available);
-	g_mutex_unlock(priv->resource_lock);
-	g_mutex_free(priv->resource_lock);
+	g_mutex_lock(&priv->arrange_lock);
+	g_cond_clear(&priv->rearranged);
+	g_mutex_unlock(&priv->arrange_lock);
+	g_mutex_clear(&priv->arrange_lock);
+
+	g_mutex_lock(&priv->resource_lock);
+	g_cond_clear(&priv->resource_loaded);
+	g_cond_clear(&priv->resource_info_available);
+	g_mutex_unlock(&priv->resource_lock);
+	g_mutex_clear(&priv->resource_lock);
 	g_slist_foreach(priv->image_cache, (GFunc)clear_image_cache, NULL);
 	g_slist_free(priv->image_cache);
 	/* Unref input queues (this should destroy them since any Glk thread has stopped by now */
@@ -626,7 +631,7 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		
 		/* arrange points to a window that contains all text grid and graphics
 		 windows which have been resized */
-		g_mutex_lock(priv->arrange_lock);
+		g_mutex_lock(&priv->arrange_lock);
 		if(!priv->ignore_next_arrange_event)
 		{
 			if(arrange)
@@ -635,8 +640,8 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		else
 			priv->ignore_next_arrange_event = FALSE;
 		priv->needs_rearrange = FALSE;
-		g_cond_signal(priv->rearranged);
-		g_mutex_unlock(priv->arrange_lock);
+		g_cond_signal(&priv->rearranged);
+		g_mutex_unlock(&priv->arrange_lock);
 	}
 }
 
@@ -1346,16 +1351,16 @@ chimara_glk_stop(ChimaraGlk *glk)
     if(!priv->running)
     	return;
     
-	if(priv->abort_lock) {
-		g_mutex_lock(priv->abort_lock);
+	if(!priv->after_finalize) {
+		g_mutex_lock(&priv->abort_lock);
 		priv->abort_signalled = TRUE;
-		g_mutex_unlock(priv->abort_lock);
+		g_mutex_unlock(&priv->abort_lock);
 		/* Stop blocking on the event queue condition */
 		event_throw(glk, evtype_Abort, NULL, 0, 0);
 		/* Stop blocking on the shutdown key press condition */
-		g_mutex_lock(priv->shutdown_lock);
-		g_cond_signal(priv->shutdown_key_pressed);
-		g_mutex_unlock(priv->shutdown_lock);
+		g_mutex_lock(&priv->shutdown_lock);
+		g_cond_signal(&priv->shutdown_key_pressed);
+		g_mutex_unlock(&priv->shutdown_lock);
 	}
 }
 
@@ -1585,10 +1590,10 @@ chimara_glk_update_style(ChimaraGlk *glk)
 	style_update(glk);
 
 	/* Schedule a redraw */
-	g_mutex_lock(priv->arrange_lock);
+	g_mutex_lock(&priv->arrange_lock);
 	priv->needs_rearrange = TRUE;
 	priv->ignore_next_arrange_event = TRUE;
-	g_mutex_unlock(priv->arrange_lock);
+	g_mutex_unlock(&priv->arrange_lock);
 	gtk_widget_queue_resize( GTK_WIDGET(priv->self) );
 }
 
