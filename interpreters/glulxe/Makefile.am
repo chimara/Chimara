@@ -4,6 +4,7 @@ glulxe_la_SOURCES = accel.c exec.c files.c funcs.c gestalt.c gestalt.h glkop.c \
     serial.c string.c unixstrt.c vm.c float.c
 glulxe_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara -DOS_UNIX
 glulxe_la_CFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused \
+    -Wno-strict-aliasing -Wno-maybe-uninitialized \
     $(AM_CFLAGS)
 glulxe_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
