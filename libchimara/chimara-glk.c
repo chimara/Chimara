@@ -154,9 +154,8 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->glk_styles = g_new0(StyleSet,1);
 	priv->final_message = g_strdup("[ The game has finished ]");
     priv->event_queue = g_queue_new();
-	priv->char_input_queue = g_async_queue_new();
-	priv->line_input_queue = g_async_queue_new();
-	/* FIXME Should be g_async_queue_new_full(g_free); but only in GTK >= 2.16 */
+	priv->char_input_queue = g_async_queue_new_full(g_free);
+	priv->line_input_queue = g_async_queue_new_full(g_free);
 
 	g_mutex_init(&priv->event_lock);
 	g_mutex_init(&priv->abort_lock);
@@ -1112,7 +1111,7 @@ free_startup_data(struct StartupData *startup)
 	while(i < startup->args.argc)
 		g_free(startup->args.argv[i++]);
 	g_free(startup->args.argv);
-	g_free(startup);
+	g_slice_free(struct StartupData, startup);
 }
 
 /* glk_enter() is the actual function called in the new thread in which
@@ -1142,7 +1141,6 @@ glk_enter(struct StartupData *startup)
 	/* Run main function */
 	glk_main_t glk_main = startup->glk_main;
 
-	/* COMPAT: avoid usage of slices */
 	g_signal_emit_by_name(startup->glk_data->self, "started");
 	glk_main();
 	free_startup_data(startup);
@@ -1185,9 +1183,8 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
     
     ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
 
-	/* COMPAT: avoid usage of slices */
-	struct StartupData *startup = g_new0(struct StartupData,1);
-	
+	struct StartupData *startup = g_slice_new0(struct StartupData);
+
     g_assert( g_module_supported() );
 	/* If there is already a module loaded, free it first -- you see, we want to
 	 * keep modules loaded as long as possible to avoid crashes in stack unwinding */
