@@ -27,9 +27,8 @@ AC_SUBST(LT_VERSION_INFO)
 
 ### REQUIREMENTS ##############################################################
 # Recommended GTK version: at least 2.12
-# Recommended Glib version: at least 2.16
 GTK_REQUIRED_VERSION=2.6
-GLIB_REQUIRED_VERSION=2.6
+GLIB_REQUIRED_VERSION=2.32
 GTK_DOC_REQUIRED_VERSION=1.12
 AC_SUBST(GTK_REQUIRED_VERSION)
 AC_SUBST(GLIB_REQUIRED_VERSION)
