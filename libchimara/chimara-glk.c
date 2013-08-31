@@ -51,18 +51,12 @@
  * url="http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html">
  * Libtool manual</ulink>).
  *
- * You need to initialize multithreading in any program you use a #ChimaraGlk
- * widget in. This means including the following incantation at the beginning
- * of your program:
- * |[
- * if(!g_thread_supported())
- *     g_thread_init(NULL);
- * gdk_threads_init();
- * ]|
- * This initialization must take place <emphasis>before</emphasis> the call to
- * gtk_init(). In addition to this, you must also protect your call to 
- * gtk_main() by calling gdk_threads_enter() right before it, and 
- * gdk_threads_leave() right after it.
+ * You need to initialize GDK threading in any program you use a #ChimaraGlk
+ * widget in.
+ * This means calling gdk_threads_init() at the beginning of your program,
+ * <emphasis>before</emphasis> the call to gtk_init().
+ * In addition to this, you must also protect your call to gtk_main() by calling
+ * gdk_threads_enter() right before it, and gdk_threads_leave() right after it.
  *
  * The following sample program shows how to initialize and construct a simple 
  * GTK window that runs a Glk program:
@@ -79,8 +73,6 @@
  *     gchar *plugin_argv[] = { "plugin.so", "-option" };
  *
  *     /<!---->* Initialize threads and GTK *<!---->/
- *     if(!g_thread_supported())
- *         g_thread_init(NULL);
  *     gdk_threads_init();
  *     gtk_init(&argc, &argv);
  *     

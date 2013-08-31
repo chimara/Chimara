@@ -8,7 +8,7 @@
 static gboolean chimara_initialized = FALSE;
 
 /* This function is called at every entry point of the library, to set up
-threads and gettext. It is NOT called from Glk functions. */
+gettext and GStreamer. It is NOT called from Glk functions. */
 void
 chimara_init(void)
 {
@@ -17,13 +17,6 @@ chimara_init(void)
 		/* Setup gettext */
 		bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 		bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-		
-		/* Make sure threads have been initialized */
-		if(!g_thread_supported())
-			g_error(_("In order to use the Chimara library, you must initialize"
-				" the thread system by calling g_threads_init() and "
-				"gdk_threads_init() BEFORE the initial call to gtk_init() in "
-				"your main program."));
 
 #ifdef GSTREAMER_SOUND
 		/* Make sure GStreamer has been initialized if it hasn't been already;
