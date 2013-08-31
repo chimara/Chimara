@@ -10,14 +10,14 @@
 #include <glib/gi18n-lib.h>
 
 #include "chimara-glk-private.h"
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /* Internal function: create a stream with a specified rock value */
 strid_t
 stream_new_common(glui32 rock)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	strid_t str = g_new0(struct glk_stream_struct, 1);
 	str->magic = MAGIC_STREAM;
 	str->rock = rock;
@@ -36,7 +36,7 @@ stream_new_common(glui32 rock)
 void
 stream_close_common(strid_t str, stream_result_t *result)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(glk_data->unregister_obj)
 	{
@@ -85,7 +85,7 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
 {
 	VALID_STREAM_OR_NULL(str, return NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
 	
 	if(str == NULL)
@@ -131,8 +131,8 @@ glk_stream_set_current(strid_t str)
 {
 	VALID_STREAM_OR_NULL(str, return);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	if(str != NULL && str->file_mode == filemode_Read)
 	{
 		ILLEGAL("Cannot set current stream to non output stream");
@@ -152,7 +152,7 @@ glk_stream_set_current(strid_t str)
 strid_t
 glk_stream_get_current()
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	return glk_data->current_stream;
 }
 
@@ -167,7 +167,7 @@ glk_stream_get_current()
 void
 glk_put_char(unsigned char ch)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_char_stream(glk_data->current_stream, ch);
 }
@@ -183,7 +183,7 @@ glk_put_char(unsigned char ch)
 void
 glk_put_char_uni(glui32 ch)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_char_stream_uni(glk_data->current_stream, ch);
 }
@@ -203,7 +203,7 @@ glk_put_char_uni(glui32 ch)
 void
 glk_put_string(char *s)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_string_stream(glk_data->current_stream, s);
 }
@@ -219,7 +219,7 @@ glk_put_string(char *s)
 void
 glk_put_string_uni(glui32 *s)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_string_stream_uni(glk_data->current_stream, s);
 }
@@ -240,7 +240,7 @@ glk_put_string_uni(glui32 *s)
 void
 glk_put_buffer(char *buf, glui32 len)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_buffer_stream(glk_data->current_stream, buf, len);
 }
@@ -256,7 +256,7 @@ glk_put_buffer(char *buf, glui32 len)
 void
 glk_put_buffer_uni(glui32 *buf, glui32 len)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	VALID_STREAM(glk_data->current_stream, return);
 	glk_put_buffer_stream_uni(glk_data->current_stream, buf, len);
 }
@@ -292,7 +292,7 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 
 	if(buf && buflen) 
 	{
-		ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+		ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 		str->buffer = buf;
 		str->buflen = buflen;
 		if(glk_data->register_arr) 
@@ -331,7 +331,7 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 
 	if(buf && buflen) 
 	{
-		ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+		ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 		str->ubuffer = buf;
 		str->buflen = buflen;
 		if(glk_data->register_arr) 
@@ -637,7 +637,7 @@ glk_stream_close(strid_t str, stream_result_t *result)
 			
 		case STREAM_TYPE_MEMORY:
 		{
-			ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+			ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 			if(glk_data->unregister_arr) 
 			{
 				if(str->unicode)

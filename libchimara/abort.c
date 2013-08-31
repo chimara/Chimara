@@ -6,7 +6,7 @@
 #include "chimara-glk-private.h"
 #include "window.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * glk_set_interrupt_handler:
@@ -31,7 +31,7 @@ extern GPrivate *glk_data_key;
 void
 glk_set_interrupt_handler(void (*func)(void))
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	glk_data->interrupt_handler = func;
 }
 
@@ -40,7 +40,7 @@ user's interrupt handler. */
 static void
 abort_glk(void)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	if(glk_data->interrupt_handler)
 		(*(glk_data->interrupt_handler))();
 	shutdown_glk_pre();
@@ -57,7 +57,7 @@ abort_glk(void)
 void
 check_for_abort(void)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_mutex_lock(&glk_data->abort_lock);
 	if(glk_data->abort_signalled)
 	{
@@ -72,8 +72,8 @@ check_for_abort(void)
 void
 shutdown_glk_pre(void)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	/* Stop any timers */
 	glk_request_timer_events(0);
 	
@@ -123,8 +123,8 @@ shutdown_glk_pre(void)
 void
 shutdown_glk_post(void)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	/* Free all opaque objects; can't iterate normally, because the objects are
 	 being removed from the global iteration lists */
 	if(glk_data->root_window)

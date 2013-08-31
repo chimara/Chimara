@@ -34,10 +34,6 @@ chimara_init(void)
 		/*if( !gst_is_initialized() )*/
 			gst_init(NULL, NULL);
 #endif
-
-		/* Initialize thread-private data */
-		extern GPrivate *glk_data_key;
-		glk_data_key = g_private_new(NULL);
 	}
 }
 

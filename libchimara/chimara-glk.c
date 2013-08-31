@@ -1128,8 +1128,8 @@ glk_main() runs. Takes ownership of @startup and will free it. */
 static gpointer
 glk_enter(struct StartupData *startup)
 {
-	extern GPrivate *glk_data_key;
-	g_private_set(glk_data_key, startup->glk_data);
+	extern GPrivate glk_data_key;
+	g_private_set(&glk_data_key, startup->glk_data);
 
 	/* Acquire the Glk thread's references to the input queues */
 	g_async_queue_ref(startup->glk_data->char_input_queue);

@@ -1,6 +1,6 @@
 #include "timer.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * glk_request_timer_events:
@@ -46,8 +46,8 @@ extern GPrivate *glk_data_key;
 void
 glk_request_timer_events(glui32 millisecs)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	// Stop any existing timer
 	if(glk_data->timer_id != 0) {
 		g_source_remove(glk_data->timer_id);

@@ -15,7 +15,7 @@
 
 #define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 #ifdef GSTREAMER_SOUND
 /* Stop any currently playing sound on this channel, and remove any
@@ -221,7 +221,7 @@ schanid_t
 glk_schannel_create_ext(glui32 rock, glui32 volume)
 {
 #ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	schanid_t s = g_new0(struct glk_schannel_struct, 1);
 	s->magic = MAGIC_SCHANNEL;
@@ -294,7 +294,7 @@ glk_schannel_destroy(schanid_t chan)
 	VALID_SCHANNEL(chan, return);
 
 #ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
 		WARNING_S(_("Could not set GstElement state to"), "NULL");
@@ -336,7 +336,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 	VALID_SCHANNEL_OR_NULL(chan, return NULL);
 
 #ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
 	
 	if(chan == NULL)
@@ -443,7 +443,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
 #ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GInputStream *stream;
 
 	/* Stop the previous sound */
@@ -557,7 +557,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 		VALID_SCHANNEL(chanarray[count], return 0);
 
 #ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GInputStream *stream;
 
 	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
@@ -894,7 +894,7 @@ void
 glk_sound_load_hint(glui32 snd, glui32 flag)
 {
 #ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	giblorb_result_t resource;
 	giblorb_err_t result;
 

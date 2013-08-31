@@ -8,7 +8,7 @@
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 #define EVENT_TIMEOUT_MICROSECONDS (3000000)
 
@@ -56,7 +56,7 @@ event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
 static void
 get_appropriate_event(event_t *event)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	g_mutex_lock(&glk_data->event_lock);
 
@@ -152,7 +152,7 @@ glk_select(event_t *event)
 			flush_window_buffer(win);
 	}
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	get_appropriate_event(event);
 
@@ -234,8 +234,8 @@ glk_select_poll(event_t *event)
 {
 	g_return_if_fail(event != NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	event->type = evtype_None;
 	event->win = NULL;
 	event->val1 = 0;

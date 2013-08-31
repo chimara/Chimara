@@ -5,7 +5,7 @@
 #include "fileref.h"
 #include "schannel.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * gidispatch_set_object_registry:
@@ -70,7 +70,7 @@ extern GPrivate *glk_data_key;
 void 
 gidispatch_set_object_registry(gidispatch_rock_t (*regi)(void *obj, glui32 objclass), void (*unregi)(void *obj, glui32 objclass, gidispatch_rock_t objrock))
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	winid_t win;
     strid_t str;
     frefid_t fref;
@@ -188,7 +188,7 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
 void 
 gidispatch_set_retained_registry(gidispatch_rock_t (*regi)(void *array, glui32 len, char *typecode), void (*unregi)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock))
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	glk_data->register_arr = regi;
 	glk_data->unregister_arr = unregi;
 }

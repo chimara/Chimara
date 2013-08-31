@@ -10,7 +10,7 @@
 #include "chimara-glk-private.h"
 #include "gi_dispa.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /* Internal function: create a fileref using the given parameters. If @basename
 is NULL, compute a basename from @filename. */
@@ -19,8 +19,8 @@ fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 or
 {
 	g_return_val_if_fail(filename != NULL, NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	frefid_t f = g_new0(struct glk_fileref_struct, 1);
 	f->magic = MAGIC_FILEREF;
 	f->rock = rock;
@@ -45,8 +45,8 @@ fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 or
 static void
 fileref_close_common(frefid_t fref)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	glk_data->fileref_list = g_list_delete_link(glk_data->fileref_list, fref->fileref_list);
 
 	if(glk_data->unregister_obj)
@@ -78,7 +78,7 @@ glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 {
 	VALID_FILEREF_OR_NULL(fref, return NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
 	
 	if(fref == NULL)
@@ -225,8 +225,8 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	for each usage */
 	GtkWidget *chooser;
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	gdk_threads_enter();
 
 	switch(fmode)
@@ -432,8 +432,8 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 {
 	g_return_val_if_fail(name != NULL && strlen(name) > 0, NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	/* Do any string-munging here to remove illegal Latin-1 characters from 
 	filename. On ext3, the only illegal characters are '/' and '\0', but the Glk
 	spec calls for removing any other tricky characters. */

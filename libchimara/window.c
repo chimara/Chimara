@@ -5,12 +5,12 @@
 #include "gi_dispa.h"
 #include "pager.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 static winid_t
 window_new_common(glui32 rock)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	winid_t win = g_new0(struct glk_window_struct, 1);
 	
 	win->magic = MAGIC_WINDOW;
@@ -52,7 +52,7 @@ window_new_common(glui32 rock)
 static void
 window_close_common(winid_t win, gboolean destroy_node)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(glk_data->unregister_obj) 
 	{
@@ -100,8 +100,8 @@ winid_t
 glk_window_iterate(winid_t win, glui32 *rockptr)
 {
 	VALID_WINDOW_OR_NULL(win, return NULL);
-	
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GNode *retnode;
 	
 	if(win == NULL)
@@ -216,7 +216,7 @@ glk_window_get_sibling(winid_t win)
 winid_t
 glk_window_get_root()
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	if(glk_data->root_window == NULL)
 		return NULL;
 	return (winid_t)glk_data->root_window->data;
@@ -466,8 +466,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 	if(method != (method & (winmethod_DirMask | winmethod_DivisionMask | winmethod_BorderMask)))
 		WARNING("Unrecognized bits in method constant");
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	if(split == NULL && glk_data->root_window != NULL)
 	{
 		ILLEGAL("Tried to open a new root window, but there is already a root window");
@@ -828,8 +828,8 @@ glk_window_close(winid_t win, stream_result_t *result)
 {
 	VALID_WINDOW(win, return);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	gdk_threads_enter(); /* Prevent redraw while we're trashing the window */
 	
 	/* If any pair windows have this window or its children as a key window,
@@ -941,8 +941,8 @@ glk_window_clear(winid_t win)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	switch(win->type)
 	{
 		case wintype_Blank:
@@ -1136,8 +1136,8 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 	VALID_WINDOW(win, return);
 
 	GtkAllocation allocation;
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
     switch(win->type)
     {
         case wintype_Blank:
@@ -1284,8 +1284,8 @@ glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keyw
 	g_return_if_fail(method == (method & (winmethod_DirMask | winmethod_DivisionMask)));
 	g_return_if_fail(!(((method & winmethod_DivisionMask) == winmethod_Proportional) && size > 100));
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	win->split_method = method;
 	win->constraint_size = size;
 	if(keywin)
@@ -1362,8 +1362,8 @@ glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 
 	flush_window_buffer(win);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	/* Wait until the window's size is current */
 	g_mutex_lock(&glk_data->arrange_lock);
 	if(glk_data->needs_rearrange)
