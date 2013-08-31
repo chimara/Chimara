@@ -1297,8 +1297,8 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	g_object_notify(G_OBJECT(glk), "program-name");
 	
     /* Run in a separate thread */
-	priv->thread = g_thread_create((GThreadFunc)glk_enter, startup, TRUE, error);
-	
+	priv->thread = g_thread_try_new("glk", (GThreadFunc)glk_enter, startup, error);
+
 	return !(priv->thread == NULL);
 }
 
