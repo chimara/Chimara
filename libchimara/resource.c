@@ -1,7 +1,7 @@
 #include "resource.h"
 #include "stream.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * giblorb_set_resource_map:
@@ -20,7 +20,7 @@ extern GPrivate *glk_data_key;
 giblorb_err_t
 giblorb_set_resource_map(strid_t file)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	giblorb_map_t *newmap; /* create map allocates memory */
 	giblorb_err_t error = giblorb_create_map(file, &newmap);
 
@@ -53,8 +53,8 @@ giblorb_set_resource_map(strid_t file)
 giblorb_map_t*
 giblorb_get_resource_map()
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	if(glk_data->resource_map == NULL) {
 		WARNING("Resource map not set yet.\n");
 	}

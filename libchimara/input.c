@@ -5,7 +5,7 @@
 #include "chimara-glk-private.h"
 #include "garglk.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /* Forward declarations */
 static int finish_text_buffer_line_input(winid_t win, gboolean emit_signal);
@@ -41,7 +41,7 @@ request_char_event_common(winid_t win, gboolean unicode)
 	gdk_threads_leave();
 
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_signal_emit_by_name(glk_data->self, "waiting");
 }
 
@@ -247,7 +247,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 
 	cancel_old_input_request(win);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	/* Register the buffer */
 	if(glk_data->register_arr)
@@ -320,7 +320,7 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	g_return_if_fail(initlen <= maxlen);
 
 	cancel_old_input_request(win);
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	/* Register the buffer */
 	if(glk_data->register_arr)
@@ -404,7 +404,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	}
 	gdk_threads_leave();
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	if(glk_data->unregister_arr)
 	{
 		if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
@@ -916,7 +916,7 @@ keyval_to_glk_keycode(guint keyval, gboolean unicode)
 void
 force_char_input_from_queue(winid_t win, event_t *event)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	guint keyval = GPOINTER_TO_UINT(g_async_queue_pop(glk_data->char_input_queue));
 
 	glk_cancel_char_event(win);
@@ -936,7 +936,7 @@ force_char_input_from_queue(winid_t win, event_t *event)
 void
 force_line_input_from_queue(winid_t win, event_t *event)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	const gchar *text = g_async_queue_pop(glk_data->line_input_queue);
 	glui32 chars_written = 0;
 

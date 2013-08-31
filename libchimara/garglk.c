@@ -8,7 +8,7 @@
 #include "style.h"
 #include "garglk.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * garglk_fileref_get_name:
@@ -40,7 +40,7 @@ garglk_fileref_get_name(frefid_t fref)
 void 
 garglk_set_program_name(const char *name)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	glk_data->program_name = g_strdup(name);
 	g_object_notify(G_OBJECT(glk_data->self), "program-name");
 }
@@ -64,7 +64,7 @@ garglk_set_program_name(const char *name)
 void 
 garglk_set_program_info(const char *info)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	glk_data->program_info = g_strdup(info);
 	g_object_notify(G_OBJECT(glk_data->self), "program-info");
 }
@@ -83,7 +83,7 @@ garglk_set_program_info(const char *info)
 void 
 garglk_set_story_name(const char *name)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	glk_data->story_name = g_strdup(name);
 	g_object_notify(G_OBJECT(glk_data->self), "story-name");
 }
@@ -118,7 +118,7 @@ garglk_set_story_title(const char *title)
 void 
 garglk_unput_string(char *str)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 
 	WARNING(_("Not implemented"));
@@ -135,7 +135,7 @@ garglk_unput_string(char *str)
 void 
 garglk_unput_string_uni(glui32 *str)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	
 	WARNING(_("Not implemented"));
@@ -293,7 +293,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 void 
 garglk_set_zcolors(glui32 fg, glui32 bg)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 
 	garglk_set_zcolors_stream(glk_data->current_stream, fg, bg);
@@ -389,7 +389,7 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 void 
 garglk_set_reversevideo(glui32 reverse)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	g_return_if_fail(glk_data->current_stream->window != NULL);
 

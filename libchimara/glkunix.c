@@ -7,7 +7,7 @@
 #include "fileref.h"
 #include "stream.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * glkunix_stream_open_pathname_gen:
@@ -27,7 +27,7 @@ extern GPrivate *glk_data_key;
 strid_t
 glkunix_stream_open_pathname_gen(char *pathname, glui32 writemode, glui32 textmode, glui32 rock)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!glk_data->in_startup)
 		ILLEGAL("glkunix_stream_open_pathname_gen() may only be called from "
@@ -58,7 +58,7 @@ glkunix_stream_open_pathname_gen(char *pathname, glui32 writemode, glui32 textmo
 strid_t
 glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!glk_data->in_startup)
 		ILLEGAL("glkunix_stream_open_pathname() may only be called from "
@@ -89,8 +89,8 @@ glkunix_set_base_file(char *filename)
 	g_return_if_fail(filename);
 	g_return_if_fail(strlen(filename) > 0);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
-	
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
 	gchar *dirname = g_path_get_dirname(filename);
 	if(!g_file_test(dirname, G_FILE_TEST_IS_DIR))
 	{

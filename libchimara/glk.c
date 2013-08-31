@@ -7,7 +7,7 @@
 #include "gi_blorb.h"
 #include "window.h"
 
-G_GNUC_INTERNAL GPrivate *glk_data_key = NULL;
+G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
 
 /**
  * glk_exit:
@@ -43,7 +43,7 @@ G_GNUC_INTERNAL GPrivate *glk_data_key = NULL;
 void
 glk_exit(void)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	
 	shutdown_glk_pre();
 	

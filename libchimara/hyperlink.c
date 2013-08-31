@@ -4,7 +4,7 @@
 #include "chimara-glk-private.h"
 #include "magic.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 /**
  * glk_set_hyperlink:
@@ -16,7 +16,7 @@ extern GPrivate *glk_data_key;
 void 
 glk_set_hyperlink(glui32 linkval)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	glk_set_hyperlink_stream(glk_data->current_stream, linkval);
 }

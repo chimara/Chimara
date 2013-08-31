@@ -8,7 +8,7 @@
 #include "stream.h"
 #include "strio.h"
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 
 static gboolean style_accept(GScanner *scanner, GTokenType token);
 static gboolean style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk);
@@ -34,7 +34,7 @@ static void style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTa
 void
 glk_set_style(glui32 styl)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	glk_set_style_stream(glk_data->current_stream, styl);
 }
@@ -127,7 +127,7 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 void
 style_init_more_prompt(winid_t win)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	win->pager_layout = gtk_widget_create_pango_layout(win->widget, "More");
 	pango_layout_set_attributes(win->pager_layout, glk_data->pager_attr_list);
@@ -139,7 +139,7 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	/* Place the default text tags in the textbuffer's tag table */
 	g_hash_table_foreach(glk_data->styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
@@ -157,8 +157,8 @@ void
 style_init_textgrid(GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
-	
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	/* Place the default text tags in the textbuffer's tag table */
 	g_hash_table_foreach(glk_data->styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
@@ -661,7 +661,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 {
 	g_return_if_fail(tag != NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GObject *tag_object = G_OBJECT(tag);
 
 	gint reverse_color = GPOINTER_TO_INT( g_object_get_data(tag_object, "reverse-color") );
@@ -821,7 +821,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 
 	g_return_val_if_fail(tag != NULL, 0);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	switch(hint) {
 	case stylehint_Indentation:
@@ -916,7 +916,7 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 	g_printf("glk_stylehint_set(wintype=%d, styl=%d, hint=%d, val=%d)\n", wintype, styl, hint, val);
 #endif
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	GtkTextTag *to_change;
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
@@ -951,7 +951,7 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 	g_printf("glk_stylehint_clear(wintype=%d, styl=%d, hint=%d)\n", wintype, styl, hint);
 #endif
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GtkTextTag *tag;
 
 	switch(wintype) {
@@ -1077,7 +1077,7 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 	g_printf("glk_style_measure(win->rock=%d, styl=%d, hint=%d, result=...)\n", win->rock, styl, hint);
 #endif
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GtkTextTag *tag;
 
 	switch(win->type) {
@@ -1103,7 +1103,7 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 PangoFontDescription *
 get_current_font(guint32 wintype)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GHashTable *styles, *glk_styles;
 	PangoFontDescription *font;
 

@@ -4,7 +4,7 @@
 
 #define BUFFER_SIZE (1024)
 
-extern GPrivate *glk_data_key;
+extern GPrivate glk_data_key;
 void on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info);
 void on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data);
 glui32 draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2);
@@ -15,7 +15,7 @@ static gboolean size_determined;
 static struct image_info*
 load_image_from_blorb(giblorb_result_t resource, glui32 image, gint width, gint height)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GError *pixbuf_error = NULL;
 	guchar *buffer;
 
@@ -97,7 +97,7 @@ load_image_from_file(const gchar *filename, glui32 image, gint width, gint heigh
 static struct image_info*
 load_image_in_cache(glui32 image, gint width, gint height)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	struct image_info *info = NULL;
 	
 	/* Lookup the proper resource */
@@ -146,7 +146,7 @@ load_image_in_cache(glui32 image, gint width, gint height)
 void
 on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	g_mutex_lock(&glk_data->resource_lock);
 	info->width = width;
@@ -161,7 +161,7 @@ on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 {
 	gdk_threads_enter();
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	g_mutex_lock(&glk_data->resource_lock);
 	image_loaded = TRUE;
@@ -182,7 +182,7 @@ clear_image_cache(struct image_info *data, gpointer user_data)
 static struct image_info*
 image_cache_find(struct image_info* to_find)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GSList *link = glk_data->image_cache;
 
 	gdk_threads_enter();
@@ -351,7 +351,7 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 	VALID_WINDOW(win, return FALSE);
 	g_return_val_if_fail(win->type == wintype_Graphics || win->type == wintype_TextBuffer, FALSE);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(glk_data_key);
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	struct image_info *to_find = g_new0(struct image_info, 1);
 	struct image_info *info;
 	struct image_info *scaled_info;
