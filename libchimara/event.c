@@ -23,17 +23,15 @@ event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
 	if(!priv->event_queue)
 		return;
 
-	GTimeVal timeout;
-	g_get_current_time(&timeout);
-	g_time_val_add(&timeout, EVENT_TIMEOUT_MICROSECONDS);
+	gint64 timeout = g_get_monotonic_time() + EVENT_TIMEOUT_MICROSECONDS;
 
 	g_mutex_lock(&priv->event_lock);
 
 	/* Wait for room in the event queue */
 	while( g_queue_get_length(priv->event_queue) >= EVENT_QUEUE_MAX_LENGTH )
-		if( !g_cond_timed_wait(&priv->event_queue_not_full, &priv->event_lock, &timeout) ) 
+		if( !g_cond_wait_until(&priv->event_queue_not_full, &priv->event_lock, timeout) )
 		{
-			/* Drop the event after 3 seconds */
+			/* Drop the event if the event queue is still not emptying */
 			g_mutex_unlock(&priv->event_lock);
 			return;
 		}
