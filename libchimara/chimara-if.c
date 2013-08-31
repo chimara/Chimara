@@ -278,12 +278,6 @@ chimara_if_finalize(GObject *object)
 }
 
 static void
-chimara_if_command(ChimaraIF *self, gchar *input, gchar *response)
-{
-	/* Default signal handler */
-}
-
-static void
 chimara_if_class_init(ChimaraIFClass *klass)
 {
 	/* Override methods of parent classes */
@@ -293,7 +287,6 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	object_class->finalize = chimara_if_finalize;
 
 	/* Signals */
-	klass->command = chimara_if_command;
 	/**
 	 * ChimaraIF::command:
 	 * @self: The widget that received the signal

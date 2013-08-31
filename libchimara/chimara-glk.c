@@ -622,36 +622,6 @@ chimara_glk_started(ChimaraGlk *self)
 }
 
 static void
-chimara_glk_waiting(ChimaraGlk *self)
-{
-	/* Default signal handler */
-}
-
-static void
-chimara_glk_char_input(ChimaraGlk *self, guint window_rock, guint keysym)
-{
-	/* Default signal handler */
-}
-
-static void
-chimara_glk_line_input(ChimaraGlk *self, guint window_rock, gchar *text)
-{
-	/* Default signal handler */
-}
-
-static void
-chimara_glk_text_buffer_output(ChimaraGlk *self, guint window_rock, gchar *text)
-{
-	/* Default signal handler */
-}
-
-static void
-chimara_glk_iliad_screen_update(ChimaraGlk *self, gboolean typing)
-{
-	/* Default signal handler */
-}
-
-static void
 chimara_glk_class_init(ChimaraGlkClass *klass)
 {
     /* Override methods of parent classes */
@@ -674,11 +644,6 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     /* Signals */
     klass->stopped = chimara_glk_stopped;
     klass->started = chimara_glk_started;
-    klass->waiting = chimara_glk_waiting;
-    klass->char_input = chimara_glk_char_input;
-    klass->line_input = chimara_glk_line_input;
-    klass->text_buffer_output = chimara_glk_text_buffer_output;
-    klass->iliad_screen_update = chimara_glk_iliad_screen_update;
 
     /**
      * ChimaraGlk::stopped:
