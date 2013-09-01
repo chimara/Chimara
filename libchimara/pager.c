@@ -136,16 +136,17 @@ pager_on_expose(GtkTextView *textview, GdkEventExpose *event, winid_t win)
 	gint promptwidth, promptheight;
 	pango_layout_get_pixel_size(win->pager_layout, &promptwidth, &promptheight);
 
-	gint winx, winy, winwidth, winheight;
+	int winx, winy;
 	gdk_window_get_position(event->window, &winx, &winy);
-	gdk_drawable_get_size(GDK_DRAWABLE(event->window), &winwidth, &winheight);
+	int winwidth = gdk_window_get_width(event->window);
+	int winheight = gdk_window_get_height(event->window);
 
 	/* Draw the 'more' tag */
-	GdkGC *context = gdk_gc_new(GDK_DRAWABLE(event->window));
-	gdk_draw_layout(event->window, context, 
-		winx + winwidth - promptwidth, 
-		winy + winheight - promptheight, 
-		win->pager_layout);
+	cairo_t *cr = gdk_cairo_create(event->window);
+	cairo_move_to(cr,
+		winx + winwidth - promptwidth,
+		winy + winheight - promptheight);
+	pango_cairo_show_layout(cr, win->pager_layout);
 
 	return FALSE; /* Propagate event further */
 }
