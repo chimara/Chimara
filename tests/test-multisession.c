@@ -33,8 +33,8 @@ main(int argc, char **argv)
 	GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_size_request(window, 800, 500);
 	g_signal_connect(window, "delete_event", G_CALLBACK(on_delete_event), NULL);
-	
-	GtkWidget *hpaned = gtk_hpaned_new();
+
+	GtkWidget *hpaned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_paned_set_position(GTK_PANED(hpaned), 400);
 	
 	GtkWidget *frotz = chimara_glk_new();

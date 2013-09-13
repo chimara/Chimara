@@ -305,17 +305,23 @@ on_toggle_underline(GtkToggleButton *button, ChimaraGlk *glk) {
 void
 on_foreground_color_set(GtkColorButton *button, ChimaraGlk *glk)
 {
-	GdkColor color;
-    gtk_color_button_get_color(button, &color);
-	g_object_set(current_tag, "foreground-gdk", &color, "foreground-set", TRUE, NULL);
+	GdkRGBA color;
+	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(button), &color);
+	g_object_set(current_tag,
+		"foreground-rgba", &color,
+		"foreground-set", TRUE,
+		NULL);
 }
 
 void
 on_background_color_set(GtkColorButton *button, ChimaraGlk *glk)
 {
-	GdkColor color;
-    gtk_color_button_get_color(button, &color);
-	g_object_set(current_tag, "background-gdk", &color, "background-set", TRUE, NULL);
+	GdkRGBA color;
+	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(button), &color);
+	g_object_set(current_tag,
+		"background-rgba", &color,
+		"background-set", TRUE,
+		NULL);
 }
 
 void

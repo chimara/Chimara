@@ -41,10 +41,14 @@ main(int argc, char *argv[])
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
     g_signal_connect(window, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
-    vbox = gtk_vbox_new(FALSE, 6);
+	vbox = gtk_grid_new();
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(vbox), GTK_ORIENTATION_VERTICAL);
+	gtk_grid_set_row_spacing(GTK_GRID(vbox), 6);
     glk = chimara_if_new();
+	gtk_widget_set_hexpand(glk, TRUE);
+	gtk_widget_set_vexpand(glk, TRUE);
     //g_signal_connect(glk, "command", G_CALLBACK(on_command), window);
-    hbox = gtk_hbutton_box_new();
+	hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     stop = gtk_button_new_with_label("Stop");
     g_signal_connect(stop, "clicked", G_CALLBACK(on_stop), glk);
     go = gtk_button_new_with_label("Go");
@@ -52,8 +56,8 @@ main(int argc, char *argv[])
 
     gtk_box_pack_start(GTK_BOX(hbox), stop, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), go, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), glk, TRUE, TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(vbox), hbox);
+	gtk_container_add(GTK_CONTAINER(vbox), glk);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
     
