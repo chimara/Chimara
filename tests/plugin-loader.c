@@ -40,6 +40,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include <config.h>
 #include <libchimara/chimara-glk.h>
 
 /* Global pointers to widgets */
@@ -77,6 +78,43 @@ resource_load(ChimaraResourceType usage, guint32 resnum)
 	return g_strdup_printf("%s%d", resstr, resnum);
 }
 
+static GFile *
+libname_from_la_file(char *la_filename)
+{
+	GFile *la_file = g_file_new_for_commandline_arg(la_filename);
+	GFile *parentdir = g_file_get_parent(la_file);
+	GFile *objdir = g_file_get_child(parentdir, LT_OBJDIR);
+	g_object_unref(parentdir);
+
+	GFileInputStream *istream = g_file_read(la_file, NULL, NULL);
+	if(istream == NULL)
+		return NULL;
+	GDataInputStream *stream = g_data_input_stream_new( G_INPUT_STREAM(istream) );
+
+	char *line;
+	char *dlname = NULL;
+	while( (line = g_data_input_stream_read_line(stream, NULL, NULL, NULL)) ) {
+		if( g_str_has_prefix(line, "dlname=") ) {
+			dlname = g_strdup( line + strlen("dlname='") );
+			*(strrchr(dlname, '\'')) = '\0';
+			g_free(line);
+			break;
+		}
+		g_free(line);
+	}
+	if(dlname == NULL)
+		return NULL;
+
+	g_input_stream_close(G_INPUT_STREAM (stream), NULL, NULL);
+
+	GFile *libfile = g_file_get_child(objdir, dlname);
+	g_free(dlname);
+
+	g_object_unref(la_file);
+	g_object_unref(objdir);
+	return libfile;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -97,10 +135,18 @@ main(int argc, char *argv[])
 	if(argc < 2)
 		g_error("Must provide a plugin\n");
 
+    GFile *plugin_file;
+    if( g_str_has_suffix(argv[1], ".la") )
+        plugin_file = libname_from_la_file(argv[1]);
+    else
+        plugin_file = g_file_new_for_commandline_arg(argv[1]);
+
 	chimara_glk_set_resource_load_callback(CHIMARA_GLK(glk), (ChimaraResourceLoadFunc)resource_load, NULL, NULL);
-	
-    if( !chimara_glk_run(CHIMARA_GLK(glk), argv[1], argc - 1, argv + 1, &error) )
+
+    if( !chimara_glk_run_file(CHIMARA_GLK(glk), plugin_file,
+        argc - 1, argv + 1, &error) )
    		g_error("Error starting Glk library: %s\n", error->message);
+    g_object_unref(plugin_file);
 
     gdk_threads_enter();
 	gtk_main();
