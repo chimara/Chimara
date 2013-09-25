@@ -171,6 +171,7 @@ interpreters/glulxe/Makefile
 interpreters/git/Makefile
 interpreters/bocfel/Makefile
 tests/Makefile
+tests/unit/Makefile
 player/Makefile
 player/config.py
 docs/Makefile
