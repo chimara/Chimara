@@ -1,3 +1,5 @@
+SUBDIRS = unit
+
 AM_CFLAGS = -Wall
 AM_CPPFLAGS = -I$(top_srcdir)
 

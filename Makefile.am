@@ -31,7 +31,7 @@ macros_ignore = codeset gettext glibc2 glibc21 gtk-doc iconv intdiv0 intl \
 MAINTAINERCLEANFILES = ABOUT-NLS INSTALL aclocal.m4 compile config.guess \
 	config.h.in config.rpath config.sub depcomp gtk-doc.make install-sh \
 	intltool-extract.in intltool-merge.in intltool-update.in ltmain.sh missing \
-	ylwrap autom4te.cache \
+	ylwrap autom4te.cache test-driver \
 	$(addprefix 'm4/',$(addsuffix '.m4', $(macros_ignore)))
 
 ACLOCAL_AMFLAGS = -I m4
