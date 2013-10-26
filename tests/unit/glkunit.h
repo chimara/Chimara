@@ -15,7 +15,10 @@
 
 #define SUCCEED _BEGIN return 1; _END
 #define ASSERT(expr) _ASSERT(expr, "%s", #expr)
-#define ASSERT_EQUAL(expected, actual) _ASSERT((expected) == (actual), "%s == %s", #expected, #actual);
+/* This macro is meant for int-like things that can print with %d */
+#define ASSERT_EQUAL(expected, actual) _ASSERT((expected) == (actual), \
+    "%s == %s (expected %d, was %d)", \
+    #actual, #expected, expected, actual);
 
 struct TestDescription {
     char *name;
