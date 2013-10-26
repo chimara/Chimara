@@ -33,9 +33,9 @@ typedef struct {
 	void(* stopped) (ChimaraGlk *self);
 	void(* started) (ChimaraGlk *self);
 	void(* waiting) (ChimaraGlk *self);
-	void(* char_input) (ChimaraGlk *self, guint32 window_rock, guint keysym);
-	void(* line_input) (ChimaraGlk *self, guint32 window_rock, gchar *text);
-	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, gchar *text);
+	void(* char_input) (ChimaraGlk *self, guint32 window_rock, char *string_id, unsigned keysym);
+	void(* line_input) (ChimaraGlk *self, guint32 window_rock, char *string_id, char *text);
+	void(* text_buffer_output) (ChimaraGlk *self, guint32 window_rock, char *string_id, char *text);
 	void(* iliad_screen_update) (ChimaraGlk *self, gboolean typing);
 } ChimaraGlkClass;
 

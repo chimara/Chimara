@@ -131,7 +131,7 @@ chimara_if_stopped(ChimaraGlk *glk)
 }
 
 static void
-chimara_if_char_input(ChimaraGlk *glk, guint32 win_rock, guint keysym)
+chimara_if_char_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, unsigned keysym)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
 	g_assert(priv->input == NULL);
@@ -142,7 +142,7 @@ chimara_if_char_input(ChimaraGlk *glk, guint32 win_rock, guint keysym)
 }
 
 static void
-chimara_if_line_input(ChimaraGlk *glk, guint32 win_rock, gchar *input)
+chimara_if_line_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *input)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
 	g_assert(priv->input == NULL);
@@ -150,7 +150,7 @@ chimara_if_line_input(ChimaraGlk *glk, guint32 win_rock, gchar *input)
 }
 
 static void
-chimara_if_text_buffer_output(ChimaraGlk *glk, guint32 win_rock, gchar *output)
+chimara_if_text_buffer_output(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *output)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
 	g_string_append(priv->response, output);
