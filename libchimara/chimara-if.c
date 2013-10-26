@@ -71,10 +71,16 @@ typedef struct _ChimaraIFPrivate {
 	gint random_seed;
 	gboolean random_seed_set;
 	gchar *graphics_file;
-	/* Holding buffers for input and response */
-	gchar *input;
-	GString *response;
+	/* Holding buffers for inputs and responses */
+	GHashTable *active_inputs;
+	GSList *window_librock_list;
 } ChimaraIFPrivate;
+
+typedef struct {
+	char *input;
+	GString *response;
+	gboolean active;
+} InputResponse;
 
 #define CHIMARA_IF_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_IF, ChimaraIFPrivate))
 #define CHIMARA_IF_USE_PRIVATE(o, n) ChimaraIFPrivate *n = CHIMARA_IF_PRIVATE(o)
@@ -101,21 +107,62 @@ static guint chimara_if_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE(ChimaraIF, chimara_if, CHIMARA_TYPE_GLK);
 
+static InputResponse *
+input_response_new(void)
+{
+	InputResponse *retval = g_slice_new0(InputResponse);
+	retval->response = g_string_new("");
+	return retval;
+}
+
+static void
+input_response_destroy(InputResponse *inp)
+{
+	g_free(inp->input);
+	g_string_free(inp->response, TRUE);
+	g_slice_free(InputResponse, inp);
+}
+
+static InputResponse *
+ensure_input_response_object(ChimaraIFPrivate *priv, char *string_id)
+{
+	InputResponse *retval = g_hash_table_lookup(priv->active_inputs, string_id);
+	if(retval == NULL)
+	{
+		char *new_key = g_strdup(string_id);
+		priv->window_librock_list = g_slist_prepend(priv->window_librock_list, new_key);
+		retval = input_response_new();
+		g_hash_table_insert(priv->active_inputs, new_key, retval);
+	}
+	return retval;
+}
+
+static void
+emit_command_signal_on_active_inputs(char *window_librock, ChimaraGlk *glk)
+{
+	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	InputResponse *inp = g_hash_table_lookup(priv->active_inputs, window_librock);
+	if(!inp->active)
+		return;
+
+	char *response = g_strdup(inp->response->str);
+	g_string_truncate(inp->response, 0);
+
+	gdk_threads_enter();
+	g_signal_emit_by_name(glk, "command", inp->input, response);
+	gdk_threads_leave();
+
+	g_free(inp->input);
+	g_free(response);
+	inp->input = NULL;
+	inp->active = FALSE;
+}
+
 static void
 chimara_if_waiting(ChimaraGlk *glk)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
-
-	gchar *response = g_string_free(priv->response, FALSE);
-	priv->response = g_string_new("");
-
-	gdk_threads_enter();
-	g_signal_emit_by_name(glk, "command", priv->input, response);
-	gdk_threads_leave();
-
-	g_free(priv->input);
-	g_free(response);
-	priv->input = NULL;
+	g_slist_foreach(priv->window_librock_list, (GFunc)emit_command_signal_on_active_inputs, glk);
 }
 
 static void
@@ -123,8 +170,8 @@ chimara_if_stopped(ChimaraGlk *glk)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
 
-	if(priv->input || priv->response->len > 0)
-		chimara_if_waiting(glk); /* Send one last command signal */
+	/* Send one last command signal for any active inputs */
+	g_slist_foreach(priv->window_librock_list, (GFunc)emit_command_signal_on_active_inputs, glk);
 
 	priv->format = CHIMARA_IF_FORMAT_NONE;
 	priv->interpreter = CHIMARA_IF_INTERPRETER_NONE;
@@ -134,26 +181,32 @@ static void
 chimara_if_char_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, unsigned keysym)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
-	g_assert(priv->input == NULL);
+	InputResponse *inp = ensure_input_response_object(priv, string_id);
+	g_assert(!inp->active);
 
 	gchar outbuf[6];
 	gint outbuflen = g_unichar_to_utf8(gdk_keyval_to_unicode(keysym), outbuf);
-	priv->input = g_strndup(outbuf, outbuflen);
+	inp->input = g_strndup(outbuf, outbuflen);
+	inp->active = TRUE;
 }
 
 static void
 chimara_if_line_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *input)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
-	g_assert(priv->input == NULL);
-	priv->input = g_strdup(input);
+	InputResponse *inp = ensure_input_response_object(priv, string_id);
+	g_assert(!inp->active);
+	inp->input = g_strdup(input);
+	inp->active = TRUE;
 }
 
 static void
 chimara_if_text_buffer_output(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *output)
 {
 	CHIMARA_IF_USE_PRIVATE(glk, priv);
-	g_string_append(priv->response, output);
+	InputResponse *inp = ensure_input_response_object(priv, string_id);
+	g_string_append(inp->response, output);
+	inp->active = TRUE;
 }
 
 static void
@@ -172,7 +225,8 @@ chimara_if_init(ChimaraIF *self)
 	priv->interpreter = CHIMARA_IF_INTERPRETER_NONE;
 	priv->flags = CHIMARA_IF_TYPO_CORRECTION;
 	priv->interpreter_number = CHIMARA_IF_ZMACHINE_DEFAULT;
-	priv->response = g_string_new("");
+	priv->active_inputs = g_hash_table_new_full(g_str_hash, g_str_equal,
+		(GDestroyNotify)g_free, (GDestroyNotify)input_response_destroy);
 
 	/* Connect to signals of ChimaraGlk parent */
 	g_signal_connect(self, "stopped", G_CALLBACK(chimara_if_stopped), NULL);
@@ -274,6 +328,8 @@ chimara_if_finalize(GObject *object)
 {
 	CHIMARA_IF_USE_PRIVATE(object, priv);
 	g_free(priv->graphics_file);
+	g_hash_table_destroy(priv->active_inputs);
+	g_slist_free(priv->window_librock_list); /* values are already freed in hashtable */
     G_OBJECT_CLASS(chimara_if_parent_class)->finalize(object);
 }
 
