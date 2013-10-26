@@ -19,6 +19,9 @@
 #define ASSERT_EQUAL(expected, actual) _ASSERT((expected) == (actual), \
     "%s == %s (expected %d, was %d)", \
     #actual, #expected, expected, actual);
+#define ASSERT_NOT_EQUAL(unexpected, actual) _ASSERT((unexpected) != (actual), \
+    "%s != %s (expected not to be %d but was)", \
+    #actual, #unexpected, unexpected);
 
 struct TestDescription {
     char *name;
