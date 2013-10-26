@@ -77,7 +77,7 @@ flush_window_buffer(winid_t win)
 
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
-		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->buffer->str);
+		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->librock, win->buffer->str);
 	}
 		break;
 

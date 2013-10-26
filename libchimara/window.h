@@ -32,6 +32,7 @@ struct glk_window_struct
 {
 	/*< private >*/
 	glui32 magic, rock;
+	char *librock; /* "library rock" - unique string identifier */
 	gidispatch_rock_t disprock;
 	/* Pointer to the node in the global tree that contains this window */
 	GNode *window_node;

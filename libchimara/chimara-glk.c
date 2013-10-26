@@ -741,46 +741,64 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 	/**
 	 * ChimaraGlk::char-input:
-	 * @glk: The widget that received the signal
+	 * @self: The widget that received the signal
 	 * @window_rock: The rock value of the window that received character input
 	 * (see <link linkend="chimara-Rocks">Rocks</link>)
-	 * @keysym: The key that was typed, in the form of a key symbol from 
+	 * @window_id_string: A string value uniquely identifying the window that
+	 * received character input
+	 * @keysym: The key that was typed, in the form of a key symbol from
 	 * <filename class="headerfile">gdk/gdkkeysyms.h</filename>
-	 * 
+	 *
 	 * Emitted when a Glk window receives character input.
+	 * The @window_rock can be used to identify the window.
+	 * However, rock values in Glk are allowed to be identical for different
+	 * windows, so Chimara also provides a string value with which the window
+	 * can be uniquely identified.
 	 */
 	chimara_glk_signals[CHAR_INPUT] = g_signal_new("char-input",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, char_input), NULL, NULL,
-		_chimara_marshal_VOID__UINT_UINT,
-		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
+		_chimara_marshal_VOID__UINT_STRING_UINT,
+		G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_UINT);
 	/**
 	 * ChimaraGlk::line-input:
-	 * @glk: The widget that received the signal
+	 * @self: The widget that received the signal
 	 * @window_rock: The rock value of the window that received line input (see
 	 * <link linkend="chimara-Rocks">Rocks</link>)
+	 * @window_id_string: A string value uniquely identifying the window that
+	 * received the input
 	 * @text: The text that was typed
-	 * 
+	 *
 	 * Emitted when a Glk window receives line input.
+	 * The @window_rock can be used to identify the window.
+	 * However, rock values in Glk are allowed to be identical for different
+	 * windows, so Chimara also provides a string value with which the window
+	 * can be uniquely identified.
 	 */
 	chimara_glk_signals[LINE_INPUT] = g_signal_new("line-input",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, line_input), NULL, NULL,
-		_chimara_marshal_VOID__UINT_STRING,
-		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
+		_chimara_marshal_VOID__UINT_STRING_STRING,
+		G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING);
 	/**
 	 * ChimaraGlk::text-buffer-output:
-	 * @glk: The widget that received the signal
+	 * @self: The widget that received the signal
 	 * @window_rock: The rock value of the window that was printed to (see <link
 	 * linkend="chimara-Rocks">Rocks</link>)
-	 * 
+	 * @window_id_string: A string value uniquely identifying the window that
+	 * was printed to
+	 *
 	 * Emitted when text is printed to a text buffer window.
+	 * The @window_rock can be used to identify the window.
+	 * However, rock values in Glk are allowed to be identical for different
+	 * windows, so Chimara also provides a string value with which the window
+	 * can be uniquely identified.
 	 */
 	chimara_glk_signals[TEXT_BUFFER_OUTPUT] = g_signal_new("text-buffer-output",
 		G_OBJECT_CLASS_TYPE(klass), 0,
 		G_STRUCT_OFFSET(ChimaraGlkClass, text_buffer_output), NULL, NULL,
-		_chimara_marshal_VOID__UINT_STRING,
-		G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_STRING);
+		_chimara_marshal_VOID__UINT_STRING_STRING,
+		G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING);
 	/**
 	 * ChimaraGlk::iliad-screen-update:
 	 * @self: The widget that received the signal

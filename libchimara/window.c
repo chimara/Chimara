@@ -15,6 +15,7 @@ window_new_common(glui32 rock)
 	
 	win->magic = MAGIC_WINDOW;
 	win->rock = rock;
+	win->librock = g_strdup_printf("%p", win);
 	if(glk_data->register_obj)
 		win->disprock = (*glk_data->register_obj)(win, gidisp_Class_Window);
 	
@@ -64,7 +65,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 		g_node_destroy(win->window_node);
 	
 	win->magic = MAGIC_FREE;
-	
+
+	g_free(win->librock);
 	g_list_foreach(win->history, (GFunc)g_free, NULL);
 	g_list_free(win->history);
 	g_slist_free(win->extra_line_terminators);

@@ -466,7 +466,7 @@ on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
 	g_assert(glk);
 	event_throw(glk, evtype_CharInput, win, keycode, 0);
-	g_signal_emit_by_name(glk, "char-input", win->rock, event->keyval);
+	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, event->keyval);
 
 	/* Only one keypress will be handled */
 	win->input_request_type = INPUT_REQUEST_NONE;
@@ -687,7 +687,7 @@ finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 	{
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
-		g_signal_emit_by_name(glk, "line-input", win->rock, inserted_text);
+		g_signal_emit_by_name(glk, "line-input", win->rock, win->librock, inserted_text);
 	}
 
 	/* Add the text to the window input history */
@@ -742,7 +742,7 @@ finish_text_grid_line_input(winid_t win, gboolean emit_signal)
     {
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
-		g_signal_emit_by_name(glk, "line-input", win->rock, text);
+		g_signal_emit_by_name(glk, "line-input", win->rock, win->librock, text);
     }
 
 	/* Add the text to the window input history */
@@ -924,7 +924,7 @@ force_char_input_from_queue(winid_t win, event_t *event)
 	gdk_threads_enter();
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 	g_assert(glk);
-	g_signal_emit_by_name(glk, "char-input", win->rock, keyval);
+	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, keyval);
 	gdk_threads_leave();
 
 	event->type = evtype_CharInput;
