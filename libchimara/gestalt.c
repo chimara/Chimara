@@ -126,13 +126,13 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_ResourceStream:
 			return 1;
 
-		/* Capabilities supported if compiled with GStreamer */
+		/* Capabilities supported if compiled with sound support */
 		case gestalt_Sound:
 		case gestalt_SoundVolume:
 		case gestalt_SoundNotify:
 		case gestalt_SoundMusic:
 		case gestalt_Sound2:
-#ifdef GSTREAMER_SOUND
+#ifdef HAVE_SOUND
 			return 1;
 #else
 			return 0;

@@ -2,9 +2,9 @@
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 #include <libchimara/glk.h>
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 #include "magic.h"
 #include "schannel.h"
 #include "chimara-glk-private.h"
@@ -15,9 +15,16 @@
 
 #define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
 
+#ifdef GSTREAMER_0_10_SOUND
+#define OGG_MIMETYPE "application/ogg"
+#endif
+#ifdef GSTREAMER_1_0_SOUND
+#define OGG_MIMETYPE "audio/ogg"
+#endif
+
 extern GPrivate glk_data_key;
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 /* Stop any currently playing sound on this channel, and remove any
  format-specific GStreamer elements from the channel. */
 static void
@@ -121,7 +128,7 @@ static void
 on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t s)
 {
 	gchar *type = gst_caps_to_string(caps);
-	if(strcmp(type, "application/ogg") == 0) {
+	if(strcmp(type, OGG_MIMETYPE) == 0) {
 		s->demux = gst_element_factory_make("oggdemux", NULL);
 		s->decode = gst_element_factory_make("vorbisdec", NULL);
 		if(!s->demux || !s->decode) {
@@ -166,7 +173,7 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 finally:
 	g_free(type);
 }
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 
 /**
  * glk_schannel_create:
@@ -220,7 +227,7 @@ glk_schannel_create(glui32 rock)
 schanid_t
 glk_schannel_create_ext(glui32 rock, glui32 volume)
 {
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	schanid_t s = g_new0(struct glk_schannel_struct, 1);
@@ -278,7 +285,7 @@ fail:
 	return NULL;
 #else
 	return NULL;
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -293,7 +300,7 @@ glk_schannel_destroy(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
@@ -313,7 +320,7 @@ glk_schannel_destroy(schanid_t chan)
 	
 	chan->magic = MAGIC_FREE;
 	g_free(chan);
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -335,7 +342,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 {
 	VALID_SCHANNEL_OR_NULL(chan, return NULL);
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
 	
@@ -352,7 +359,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 	return retval;
 #else
 	return NULL;
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -442,7 +449,7 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GInputStream *stream;
 
@@ -511,7 +518,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	return 1;
 #else
 	return 0;
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -556,7 +563,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 	for(count = 0; count < chancount; count++)
 		VALID_SCHANNEL(chanarray[count], return 0);
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GInputStream *stream;
 
@@ -638,7 +645,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 	return successes;
 #else
 	return 0;
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -652,7 +659,7 @@ void
 glk_schannel_stop(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	clean_up_after_playing_sound(chan);
 #endif
 }
@@ -680,6 +687,7 @@ glk_schannel_pause(schanid_t chan)
 	/* Mark the channel as paused even if there is no sound playing yet */
 	chan->paused = TRUE;
 
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING(_("Could not get GstElement state"));
@@ -692,6 +700,7 @@ glk_schannel_pause(schanid_t chan)
 		WARNING_S(_("Could not set GstElement state to"), "PAUSED");
 		return;
 	}
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -719,6 +728,7 @@ glk_schannel_unpause(schanid_t chan)
 	/* Mark the channel as not paused in any case */
 	chan->paused = FALSE;
 
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING(_("Could not get GstElement state"));
@@ -731,6 +741,7 @@ glk_schannel_unpause(schanid_t chan)
 		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
 		return;
 	}
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -775,7 +786,7 @@ volume_glk_to_gstreamer(glui32 volume_glk)
 	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
 }
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 static gboolean
 volume_change_timeout(schanid_t chan)
 {
@@ -806,7 +817,7 @@ volume_change_timeout(schanid_t chan)
 
 	return TRUE;
 }
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 
 /**
  * glk_schannel_set_volume_ext:
@@ -847,7 +858,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	VALID_SCHANNEL(chan, return);
 	/* Silently ignore out-of-range volume values */
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	/* Interrupt a previous volume change */
 	if(chan->volume_timer_id > 0)
 		g_source_remove(chan->volume_timer_id);
@@ -874,7 +885,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 
 	/* Set up a timer for the volume */
 	chan->volume_timer_id = g_timeout_add(VOLUME_TIMER_RESOLUTION, (GSourceFunc)volume_change_timeout, chan);
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -893,7 +904,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 void 
 glk_sound_load_hint(glui32 snd, glui32 flag)
 {
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	giblorb_result_t resource;
 	giblorb_err_t result;
@@ -925,5 +936,5 @@ glk_sound_load_hint(glui32 snd, glui32 flag)
 			return;
 		}
 	}
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }

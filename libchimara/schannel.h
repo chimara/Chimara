@@ -6,7 +6,7 @@
 #include "glk.h"
 #include "gi_dispa.h"
 #include "chimara-glk.h"
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
 #endif
 
@@ -34,7 +34,7 @@ struct glk_schannel_struct
 	guint volume_timer_id;
 	glui32 volume_notify;
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	/* Each sound channel is represented as a GStreamer pipeline.  */
 	GstElement *pipeline, *source, *typefind, *demux, *decode, *convert, *filter, *sink;
 #endif
