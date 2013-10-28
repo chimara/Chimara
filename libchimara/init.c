@@ -1,7 +1,7 @@
 #include <config.h>
 #include <glib.h>
 #include <glib/gi18n-lib.h>
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
 #endif
 
@@ -18,13 +18,12 @@ chimara_init(void)
 		bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 		bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 		/* Make sure GStreamer has been initialized if it hasn't been already;
 		in particular, if you want your program to parse GStreamer command line
 		options then you should do it yourself, before gtk_init(). */
-		
-		/* SUCKY DEBIAN: gst_is_initialized() supported from 0.10.30 onward */
-		/*if( !gst_is_initialized() )*/
+
+		if( !gst_is_initialized() )
 			gst_init(NULL, NULL);
 #endif
 	}

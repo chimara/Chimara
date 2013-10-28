@@ -2,9 +2,9 @@
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 #include <libchimara/glk.h>
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 #include "magic.h"
 #include "schannel.h"
 #include "chimara-glk-private.h"
@@ -15,9 +15,16 @@
 
 #define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
 
+#ifdef GSTREAMER_0_10_SOUND
+#define OGG_MIMETYPE "application/ogg"
+#endif
+#ifdef GSTREAMER_1_0_SOUND
+#define OGG_MIMETYPE "audio/ogg"
+#endif
+
 extern GPrivate glk_data_key;
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 /* Stop any currently playing sound on this channel, and remove any
  format-specific GStreamer elements from the channel. */
 static void
@@ -121,7 +128,7 @@ static void
 on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t s)
 {
 	gchar *type = gst_caps_to_string(caps);
-	if(strcmp(type, "application/ogg") == 0) {
+	if(strcmp(type, OGG_MIMETYPE) == 0) {
 		s->demux = gst_element_factory_make("oggdemux", NULL);
 		s->decode = gst_element_factory_make("vorbisdec", NULL);
 		if(!s->demux || !s->decode) {
@@ -163,10 +170,53 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 		WARNING_S(_("Unexpected audio type in blorb"), type);
 	}
 
+	/* This is necessary in case this handler occurs in the middle of a state
+	change */
+	gst_element_sync_state_with_parent(s->decode);
+	if(s->demux != NULL)
+		gst_element_sync_state_with_parent(s->demux);
+
 finally:
 	g_free(type);
 }
-#endif /* GSTREAMER_SOUND */
+
+/* Load a sound resource into a GInputStream, by whatever method */
+static GInputStream *
+load_resource_into_giostream(glui32 snd)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	GInputStream *retval;
+
+	if(glk_data->resource_map == NULL) {
+		if(glk_data->resource_load_callback == NULL) {
+			WARNING(_("No resource map has been loaded yet."));
+			return NULL;
+		}
+		char *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, snd, glk_data->resource_load_callback_data);
+		if(filename == NULL) {
+			WARNING(_("Error loading resource from alternative location."));
+			return NULL;
+		}
+
+		GError *err = NULL;
+		GFile *file = g_file_new_for_path(filename);
+		retval = G_INPUT_STREAM(g_file_read(file, NULL, &err));
+		if(retval == NULL)
+			IO_WARNING(_("Error loading resource from file"), filename, err->message);
+		g_free(filename);
+		g_object_unref(file);
+	} else {
+		giblorb_result_t resource;
+		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
+		if(result != giblorb_err_None) {
+			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			return NULL;
+		}
+		retval = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+	}
+	return retval;
+}
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 
 /**
  * glk_schannel_create:
@@ -220,7 +270,7 @@ glk_schannel_create(glui32 rock)
 schanid_t
 glk_schannel_create_ext(glui32 rock, glui32 volume)
 {
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	schanid_t s = g_new0(struct glk_schannel_struct, 1);
@@ -278,7 +328,7 @@ fail:
 	return NULL;
 #else
 	return NULL;
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -293,7 +343,7 @@ glk_schannel_destroy(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
@@ -313,7 +363,7 @@ glk_schannel_destroy(schanid_t chan)
 	
 	chan->magic = MAGIC_FREE;
 	g_free(chan);
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -335,7 +385,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 {
 	VALID_SCHANNEL_OR_NULL(chan, return NULL);
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
 	
@@ -352,7 +402,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 	return retval;
 #else
 	return NULL;
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -442,10 +492,7 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-#ifdef GSTREAMER_SOUND
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	GInputStream *stream;
-
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	/* Stop the previous sound */
 	clean_up_after_playing_sound(chan);
 
@@ -455,38 +502,9 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		return 1;
 	}
 
-	/* Load the sound into a GInputStream, by whatever method */
-	if(!glk_data->resource_map) {
-		if(!glk_data->resource_load_callback) {
-			WARNING(_("No resource map has been loaded yet."));
-			return 0;
-		}
-		gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, snd, glk_data->resource_load_callback_data);
-		if(!filename) {
-			WARNING(_("Error loading resource from alternative location."));
-			return 0;
-		}
-
-		GError *err = NULL;
-		GFile *file = g_file_new_for_path(filename);
-		stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
-		if(!stream) {
-			IO_WARNING(_("Error loading resource from file"), filename, err->message);
-			g_free(filename);
-			g_object_unref(file);
-			return 0;
-		}
-		g_free(filename);
-		g_object_unref(file);
-	} else {
-		giblorb_result_t resource;
-		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
-		if(result != giblorb_err_None) {
-			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
-			return 0;
-		}
-		stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
-	}
+	GInputStream *stream = load_resource_into_giostream(snd);
+	if(stream == NULL)
+		return 0;
 
 	chan->source = gst_element_factory_make("giostreamsrc", NULL);
 	g_object_set(chan->source, "stream", stream, NULL);
@@ -511,7 +529,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	return 1;
 #else
 	return 0;
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -556,10 +574,8 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 	for(count = 0; count < chancount; count++)
 		VALID_SCHANNEL(chanarray[count], return 0);
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	GInputStream *stream;
-
 	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
 		WARNING(_("No resource map has been loaded yet."));
 		return 0;
@@ -573,36 +589,10 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 		/* Stop the previous sound */
 		clean_up_after_playing_sound(chanarray[count]);
 
-		/* Load the sound into a GInputStream, by whatever method */
-		if(!glk_data->resource_map) {
-			gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, sndarray[count], glk_data->resource_load_callback_data);
-			if(!filename) {
-				WARNING(_("Error loading resource from alternative location."));
-				skiparray[count] = TRUE;
-				continue;
-			}
-
-			GError *err = NULL;
-			GFile *file = g_file_new_for_path(filename);
-			stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
-			if(!stream) {
-				IO_WARNING(_("Error loading resource from file"), filename, err->message);
-				g_free(filename);
-				g_object_unref(file);
-				skiparray[count] = TRUE;
-				continue;
-			}
-			g_free(filename);
-			g_object_unref(file);
-		} else {
-			giblorb_result_t resource;
-			giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, sndarray[count]);
-			if(result != giblorb_err_None) {
-				WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
-				skiparray[count] = TRUE;
-				continue;
-			}
-			stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+		GInputStream *stream = load_resource_into_giostream(sndarray[count]);
+		if(stream == NULL) {
+			skiparray[count] = TRUE;
+			continue;
 		}
 
 		chanarray[count]->source = gst_element_factory_make("giostreamsrc", NULL);
@@ -638,7 +628,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 	return successes;
 #else
 	return 0;
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -652,7 +642,7 @@ void
 glk_schannel_stop(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	clean_up_after_playing_sound(chan);
 #endif
 }
@@ -680,6 +670,7 @@ glk_schannel_pause(schanid_t chan)
 	/* Mark the channel as paused even if there is no sound playing yet */
 	chan->paused = TRUE;
 
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING(_("Could not get GstElement state"));
@@ -692,6 +683,7 @@ glk_schannel_pause(schanid_t chan)
 		WARNING_S(_("Could not set GstElement state to"), "PAUSED");
 		return;
 	}
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -719,6 +711,7 @@ glk_schannel_unpause(schanid_t chan)
 	/* Mark the channel as not paused in any case */
 	chan->paused = FALSE;
 
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING(_("Could not get GstElement state"));
@@ -731,6 +724,7 @@ glk_schannel_unpause(schanid_t chan)
 		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
 		return;
 	}
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -775,7 +769,7 @@ volume_glk_to_gstreamer(glui32 volume_glk)
 	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
 }
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 static gboolean
 volume_change_timeout(schanid_t chan)
 {
@@ -806,7 +800,7 @@ volume_change_timeout(schanid_t chan)
 
 	return TRUE;
 }
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 
 /**
  * glk_schannel_set_volume_ext:
@@ -847,7 +841,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	VALID_SCHANNEL(chan, return);
 	/* Silently ignore out-of-range volume values */
 
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	/* Interrupt a previous volume change */
 	if(chan->volume_timer_id > 0)
 		g_source_remove(chan->volume_timer_id);
@@ -874,7 +868,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 
 	/* Set up a timer for the volume */
 	chan->volume_timer_id = g_timeout_add(VOLUME_TIMER_RESOLUTION, (GSourceFunc)volume_change_timeout, chan);
-#endif
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 
 /**
@@ -893,7 +887,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 void 
 glk_sound_load_hint(glui32 snd, glui32 flag)
 {
-#ifdef GSTREAMER_SOUND
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	giblorb_result_t resource;
 	giblorb_err_t result;
@@ -925,5 +919,5 @@ glk_sound_load_hint(glui32 snd, glui32 flag)
 			return;
 		}
 	}
-#endif /* GSTREAMER_SOUND */
+#endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
