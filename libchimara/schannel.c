@@ -170,6 +170,12 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 		WARNING_S(_("Unexpected audio type in blorb"), type);
 	}
 
+	/* This is necessary in case this handler occurs in the middle of a state
+	change */
+	gst_element_sync_state_with_parent(s->decode);
+	if(s->demux != NULL)
+		gst_element_sync_state_with_parent(s->demux);
+
 finally:
 	g_free(type);
 }
