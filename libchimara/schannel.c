@@ -179,6 +179,43 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 finally:
 	g_free(type);
 }
+
+/* Load a sound resource into a GInputStream, by whatever method */
+static GInputStream *
+load_resource_into_giostream(glui32 snd)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	GInputStream *retval;
+
+	if(glk_data->resource_map == NULL) {
+		if(glk_data->resource_load_callback == NULL) {
+			WARNING(_("No resource map has been loaded yet."));
+			return NULL;
+		}
+		char *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, snd, glk_data->resource_load_callback_data);
+		if(filename == NULL) {
+			WARNING(_("Error loading resource from alternative location."));
+			return NULL;
+		}
+
+		GError *err = NULL;
+		GFile *file = g_file_new_for_path(filename);
+		retval = G_INPUT_STREAM(g_file_read(file, NULL, &err));
+		if(retval == NULL)
+			IO_WARNING(_("Error loading resource from file"), filename, err->message);
+		g_free(filename);
+		g_object_unref(file);
+	} else {
+		giblorb_result_t resource;
+		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
+		if(result != giblorb_err_None) {
+			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			return NULL;
+		}
+		retval = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+	}
+	return retval;
+}
 #endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 
 /**
@@ -456,9 +493,6 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	GInputStream *stream;
-
 	/* Stop the previous sound */
 	clean_up_after_playing_sound(chan);
 
@@ -468,38 +502,9 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 		return 1;
 	}
 
-	/* Load the sound into a GInputStream, by whatever method */
-	if(!glk_data->resource_map) {
-		if(!glk_data->resource_load_callback) {
-			WARNING(_("No resource map has been loaded yet."));
-			return 0;
-		}
-		gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, snd, glk_data->resource_load_callback_data);
-		if(!filename) {
-			WARNING(_("Error loading resource from alternative location."));
-			return 0;
-		}
-
-		GError *err = NULL;
-		GFile *file = g_file_new_for_path(filename);
-		stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
-		if(!stream) {
-			IO_WARNING(_("Error loading resource from file"), filename, err->message);
-			g_free(filename);
-			g_object_unref(file);
-			return 0;
-		}
-		g_free(filename);
-		g_object_unref(file);
-	} else {
-		giblorb_result_t resource;
-		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
-		if(result != giblorb_err_None) {
-			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
-			return 0;
-		}
-		stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
-	}
+	GInputStream *stream = load_resource_into_giostream(snd);
+	if(stream == NULL)
+		return 0;
 
 	chan->source = gst_element_factory_make("giostreamsrc", NULL);
 	g_object_set(chan->source, "stream", stream, NULL);
@@ -571,8 +576,6 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	GInputStream *stream;
-
 	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
 		WARNING(_("No resource map has been loaded yet."));
 		return 0;
@@ -586,36 +589,10 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 		/* Stop the previous sound */
 		clean_up_after_playing_sound(chanarray[count]);
 
-		/* Load the sound into a GInputStream, by whatever method */
-		if(!glk_data->resource_map) {
-			gchar *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, sndarray[count], glk_data->resource_load_callback_data);
-			if(!filename) {
-				WARNING(_("Error loading resource from alternative location."));
-				skiparray[count] = TRUE;
-				continue;
-			}
-
-			GError *err = NULL;
-			GFile *file = g_file_new_for_path(filename);
-			stream = G_INPUT_STREAM(g_file_read(file, NULL, &err));
-			if(!stream) {
-				IO_WARNING(_("Error loading resource from file"), filename, err->message);
-				g_free(filename);
-				g_object_unref(file);
-				skiparray[count] = TRUE;
-				continue;
-			}
-			g_free(filename);
-			g_object_unref(file);
-		} else {
-			giblorb_result_t resource;
-			giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, sndarray[count]);
-			if(result != giblorb_err_None) {
-				WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
-				skiparray[count] = TRUE;
-				continue;
-			}
-			stream = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
+		GInputStream *stream = load_resource_into_giostream(sndarray[count]);
+		if(stream == NULL) {
+			skiparray[count] = TRUE;
+			continue;
 		}
 
 		chanarray[count]->source = gst_element_factory_make("giostreamsrc", NULL);
