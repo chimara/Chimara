@@ -179,7 +179,7 @@ gstreamer0.10-plugins-good, gstreamer0.10-plugins-bad])])],
 		[AC_MSG_ERROR([AM_GST_ELEMENT_CHECK not found. Install the development package
 for GStreamer 0.10 and rerun autogen.sh.])])
 	],
-	[gstreamer1.0], [dnl aiffparse is currently broken in Fedora 19
+	[gstreamer1.0], [
 		have_all_elements=yes
 		m4_ifdef([GST_ELEMENT_CHECK], [
 			m4_map_args_w([
@@ -190,6 +190,7 @@ for GStreamer 0.10 and rerun autogen.sh.])])
 				oggdemux
 				vorbisdec
 				autoaudiosink
+				aiffparse
 				modplug],
 				[GST_ELEMENT_CHECK(], [, [1.0], [], [have_all_elements=no])])
 			AS_IF([test "x$have_all_elements" = "xno"],
