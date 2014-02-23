@@ -763,13 +763,13 @@ glk_schannel_set_volume(schanid_t chan, glui32 vol)
 	glk_schannel_set_volume_ext(chan, vol, 0, 0);
 }
 
+#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 static double
 volume_glk_to_gstreamer(glui32 volume_glk)
 {
 	return CLAMP(((double)volume_glk / 0x10000), 0.0, 10.0);
 }
 
-#if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 static gboolean
 volume_change_timeout(schanid_t chan)
 {
