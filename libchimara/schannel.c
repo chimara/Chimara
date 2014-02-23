@@ -155,7 +155,8 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 			WARNING(_("Could not link GStreamer elements"));
 			goto finally;
 		}
-	} else if(strcmp(type, "audio/x-mod") == 0) {
+	} else if(g_str_has_prefix(type, "audio/x-mod")) {
+		/* "audio/x-mod, type=(string)s3m" has been observed */
 		s->decode = gst_element_factory_make("modplug", NULL);
 		if(!s->decode) {
 			WARNING(_("Could not create 'modplug' GStreamer element"));
