@@ -1378,6 +1378,7 @@ chimara_glk_unload_plugin(ChimaraGlk *glk)
     CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	if( priv->program && !g_module_close(priv->program) )
 		g_warning( "Error closing module :%s", g_module_error() );
+	priv->program = NULL;
 }
 
 /**
