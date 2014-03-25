@@ -242,8 +242,6 @@ style_init(ChimaraGlk *glk)
 	
 	GHashTable *default_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *default_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
-	GHashTable *glk_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
-	GHashTable *glk_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GtkTextTag *tag;
 
 	/* Initialise the default styles for a text grid */
@@ -351,6 +349,20 @@ style_init(ChimaraGlk *glk)
 	priv->styles->text_grid = default_text_grid_styles;
 	priv->styles->text_buffer = default_text_buffer_styles;
 
+	style_reset_glk(glk);
+}
+
+/* Reset the style hints set from the Glk program to be blank. Call this when
+starting a new game so that style hints from the previous game don't carry
+over. */
+void
+style_reset_glk(ChimaraGlk *glk)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
+	GHashTable *glk_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GHashTable *glk_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
+	GtkTextTag *tag;
 
 	/* Initialize the GLK styles to empty tags */
 	int i;

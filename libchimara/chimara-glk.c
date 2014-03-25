@@ -1268,7 +1268,10 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	/* Set the program name */
 	priv->program_name = g_path_get_basename(plugin);
 	g_object_notify(G_OBJECT(glk), "program-name");
-	
+
+	/* Set Glk styles to defaults */
+	style_reset_glk(glk);
+
     /* Run in a separate thread */
 	priv->thread = g_thread_try_new("glk", (GThreadFunc)glk_enter, startup, error);
 
