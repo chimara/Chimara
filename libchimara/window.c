@@ -539,7 +539,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 			GtkWidget *textview = gtk_text_view_new();
 			GtkWidget *pager = gtk_button_new_with_label("More");
-			GtkWidget *image = gtk_image_new_from_stock(GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_BUTTON);
+			GtkWidget *image = gtk_image_new_from_icon_name("go-down", GTK_ICON_SIZE_BUTTON);
 			GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 
 			gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );

@@ -234,16 +234,16 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		case filemode_Read:
 			chooser = gtk_file_chooser_dialog_new("Select a file to open", NULL,
 				GTK_FILE_CHOOSER_ACTION_OPEN,
-				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				_("_Cancel"), GTK_RESPONSE_CANCEL,
+				_("_Open"), GTK_RESPONSE_ACCEPT,
 				NULL);
 			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_OPEN);
 			break;
 		case filemode_Write:
 			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
 				GTK_FILE_CHOOSER_ACTION_SAVE,
-				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				_("_Cancel"), GTK_RESPONSE_CANCEL,
+				_("_Save"), GTK_RESPONSE_ACCEPT,
 				NULL);
 			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
 			gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(chooser), TRUE);
@@ -252,8 +252,8 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		case filemode_WriteAppend:
 			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
 				GTK_FILE_CHOOSER_ACTION_SAVE,
-				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				_("_Cancel"), GTK_RESPONSE_CANCEL,
+				_("_Save"), GTK_RESPONSE_ACCEPT,
 				NULL);
 			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
 			break;
