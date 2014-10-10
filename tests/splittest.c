@@ -34,14 +34,10 @@ void print_two_rows(winid_t win)
 	
 	glk_set_window(win);
 	glk_window_clear(win);
-	
-	glui32 x = width / 2 - 3;
-	glui32 y = (height - 1) / 2;
-	if(x < 0) 
-		x = 0;
-	if(y < 0)
-		y = 0;
-	
+
+	glui32 x = (width >= 6)? width / 2 - 3 : 0;
+	glui32 y = (height > 0)? (height - 1) / 2 : 0;
+
 	glk_window_move_cursor(win, x, y);
 	glk_put_string("C: 2");
 	glk_window_move_cursor(win, x + 3, y + 1);
