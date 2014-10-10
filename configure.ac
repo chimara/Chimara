@@ -154,6 +154,9 @@ PKG_CHECK_MODULES([TEST], [
 ])
 
 # GStreamer plugins needed to run library
+m4_pattern_allow([AM_GST_ELEMENT_CHECK])
+dnl In the case that gstreamer-0.10 isn't installed, AM_GST_ELEMENT_CHECK will
+dnl be flagged as an undefined Automake macro
 AS_CASE([$with_sound],
 	[gstreamer0.10], [
 		have_all_elements=yes
