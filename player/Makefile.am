@@ -3,10 +3,16 @@ AM_CPPFLAGS = -I$(top_srcdir)
 
 PLUGIN_LIBTOOL_FLAGS=-module -avoid-version -export-symbols-regex "^glk_main$$"
 
-dist_pkgdata_DATA = chimara.ui chimara.menus style.css
+dist_pkgdata_DATA = chimara.ui style.css
 bin_PROGRAMS = chimara
 
-chimara_SOURCES = main.c callbacks.c preferences.c preferences.h error.c error.h
+chimara_SOURCES = \
+	actions.c actions.h \
+	callbacks.c callbacks.h \
+	error.c error.h \
+	main.c \
+	preferences.c preferences.h \
+	$(NULL)
 chimara_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \

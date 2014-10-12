@@ -110,7 +110,7 @@ search_for_graphics_file(const char *filename, ChimaraIF *glk)
 }
 
 void
-on_open_activate(GtkAction *action, ChimaraGlk *glk) 
+on_open_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
 	
@@ -169,12 +169,24 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 }
 
 void
+on_open_recent_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
+{
+	extern GtkWidget *recentwindow;
+
+	gtk_dialog_run(GTK_DIALOG(recentwindow));
+	gtk_widget_hide(recentwindow);
+}
+
+void
 on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
 {
 	GError *error = NULL;
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
 	gchar *uri = gtk_recent_chooser_get_current_uri(chooser);
 	gchar *filename;
+
+	gtk_widget_hide(GTK_WIDGET(chooser));
+
 	if(!(filename = g_filename_from_uri(uri, NULL, &error))) {
 		error_dialog(window, error, _("Could not open game file '%s': "), uri);
 		goto finally;
@@ -201,19 +213,20 @@ finally:
 }
 
 void
-on_stop_activate(GtkAction *action, ChimaraGlk *glk)
+on_stop_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
 	chimara_glk_stop(glk);
 }
 
-void 
-on_quit_chimara_activate(GtkAction *action, ChimaraGlk *glk) 
+void
+on_quit_chimara_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
-	gtk_main_quit();
+	GtkWidget *toplevel = gtk_widget_get_toplevel(GTK_WIDGET(glk));
+	gtk_widget_destroy(toplevel);
 }
 
 void
-on_copy_activate(GtkAction *action, ChimaraGlk *glk)
+on_copy_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
 	GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
 	GtkWidget *focus = gtk_window_get_focus(toplevel);
@@ -223,7 +236,7 @@ on_copy_activate(GtkAction *action, ChimaraGlk *glk)
 }
 
 void
-on_paste_activate(GtkAction *action, ChimaraGlk *glk)
+on_paste_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
 	GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
 	GtkWidget *focus = gtk_window_get_focus(toplevel);
@@ -233,64 +246,46 @@ on_paste_activate(GtkAction *action, ChimaraGlk *glk)
 }
 
 void
-on_preferences_activate(GtkAction *action, ChimaraGlk *glk)
+on_preferences_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
 	extern GtkWidget *prefswindow;
 	gtk_window_present(GTK_WINDOW(prefswindow));
 }
 
 void
-on_toolbar_toggled(GtkToggleAction *action, ChimaraGlk *glk)
-{
-	extern GtkWidget *toolbar;
-	
-	if(gtk_toggle_action_get_active(action))
-		gtk_widget_show(toolbar);
-	else
-		gtk_widget_hide(toolbar);
-}
-
-void
-on_undo_activate(GtkAction *action, ChimaraGlk *glk)
+on_undo_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk)
 {
 	chimara_glk_feed_line_input(glk, "undo");
 }
 
-void 
-on_save_activate(GtkAction *action, ChimaraGlk *glk) 
+void
+on_save_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk)
 {
 	chimara_glk_feed_line_input(glk, "save");
 }
 
-void 
-on_restore_activate(GtkAction *action, ChimaraGlk *glk) 
+void
+on_restore_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk)
 {
 	chimara_glk_feed_line_input(glk, "restore");
 }
 
-void 
-on_restart_activate(GtkAction *action, ChimaraGlk *glk) 
+void
+on_restart_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk)
 {
 	chimara_glk_feed_line_input(glk, "restart");
 }
 
-void 
-on_quit_activate(GtkAction *action, ChimaraGlk *glk) 
+void
+on_quit_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk)
 {
 	chimara_glk_feed_line_input(glk, "quit");
 }
 
 void
-on_about_activate(GtkAction *action, ChimaraGlk *glk)
+on_about_activate(GtkAction *action, GVariant *value, ChimaraGlk *glk)
 {
 	extern GtkWidget *aboutwindow;
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(aboutwindow), PACKAGE_VERSION);
 	gtk_window_present(GTK_WINDOW(aboutwindow));
-}
-
-gboolean 
-on_window_delete_event(GtkWidget *widget, GdkEvent *event, ChimaraGlk *glk) 
-{
-	gtk_main_quit();
-	return TRUE;
 }

@@ -1,165 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="3.0"/>
   <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkActionGroup" id="actiongroup">
-    <child>
-      <object class="GtkAction" id="game">
-        <property name="label">_Game</property>
-        <property name="short_label" translatable="yes">_Game</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="open">
-        <property name="label">_Open...</property>
-        <property name="short_label">_Open</property>
-        <property name="tooltip">Quit the current game and load a new one</property>
-        <property name="stock_id">gtk-media-play</property>
-        <signal name="activate" handler="on_open_activate" swapped="no"/>
-      </object>
-      <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
-    </child>
-    <child>
-      <object class="GtkAction" id="restore">
-        <property name="label">_Restore...</property>
-        <property name="short_label">_Restore</property>
-        <property name="tooltip">Restore a previously saved game</property>
-        <property name="stock_id">gtk-open</property>
-        <signal name="activate" handler="on_restore_activate" swapped="no"/>
-      </object>
-      <accelerator key="r" modifiers="GDK_CONTROL_MASK"/>
-    </child>
-    <child>
-      <object class="GtkAction" id="save">
-        <property name="label">_Save</property>
-        <property name="short_label" translatable="yes">_Save</property>
-        <property name="tooltip">Save the game</property>
-        <property name="stock_id">gtk-save</property>
-        <signal name="activate" handler="on_save_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="quit_chimara">
-        <property name="label">_Quit Chimara</property>
-        <property name="short_label" translatable="yes">_Quit Chimara</property>
-        <property name="tooltip">Leave the program</property>
-        <property name="stock_id">gtk-quit</property>
-        <signal name="activate" handler="on_quit_chimara_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="command">
-        <property name="label">_Command</property>
-        <property name="short_label" translatable="yes">_Command</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="edit">
-        <property name="label">_Edit</property>
-        <property name="short_label" translatable="yes">_Edit</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="stop">
-        <property name="label">_Stop Game</property>
-        <property name="short_label">_Stop</property>
-        <property name="tooltip">Immediately stop the running game</property>
-        <property name="stock_id">gtk-stop</property>
-        <signal name="activate" handler="on_stop_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkRecentAction" id="recent">
-        <property name="label">Open _Recent</property>
-        <property name="short_label" translatable="yes">Open _Recent</property>
-        <property name="limit">10</property>
-        <property name="sort_type">mru</property>
-        <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="undo">
-        <property name="label">_Undo</property>
-        <property name="short_label" translatable="yes">_Undo</property>
-        <property name="tooltip">Attempt to undo the last move (the game may not allow this)</property>
-        <property name="stock_id">gtk-undo</property>
-        <signal name="activate" handler="on_undo_activate" swapped="no"/>
-      </object>
-      <accelerator key="z" modifiers="GDK_CONTROL_MASK"/>
-    </child>
-    <child>
-      <object class="GtkAction" id="restart">
-        <property name="label">Res_tart</property>
-        <property name="short_label" translatable="yes">Res_tart</property>
-        <property name="tooltip">Tell the game to restart</property>
-        <property name="stock_id">gtk-media-rewind</property>
-        <signal name="activate" handler="on_restart_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="quit">
-        <property name="label">_Quit</property>
-        <property name="short_label" translatable="yes">_Quit</property>
-        <property name="tooltip">Try to quit the game</property>
-        <property name="stock_id">gtk-media-stop</property>
-        <signal name="activate" handler="on_quit_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="copy">
-        <property name="label">_Copy</property>
-        <property name="short_label" translatable="yes">_Copy</property>
-        <property name="tooltip">Copy the selection</property>
-        <property name="stock_id">gtk-copy</property>
-        <signal name="activate" handler="on_copy_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="paste">
-        <property name="label">_Paste</property>
-        <property name="short_label" translatable="yes">_Paste</property>
-        <property name="tooltip">Paste the clipboard</property>
-        <property name="stock_id">gtk-paste</property>
-        <signal name="activate" handler="on_paste_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="preferences">
-        <property name="label">P_references</property>
-        <property name="short_label" translatable="yes">P_references</property>
-        <property name="tooltip">Configure the application</property>
-        <property name="stock_id">gtk-preferences</property>
-        <signal name="activate" handler="on_preferences_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="help">
-        <property name="label">_Help</property>
-        <property name="short_label" translatable="yes">_Help</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="about">
-        <property name="label">_About...</property>
-        <property name="short_label">_About</property>
-        <property name="tooltip">About this application</property>
-        <property name="stock_id">gtk-about</property>
-        <signal name="activate" handler="on_about_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAction" id="view">
-        <property name="label" translatable="yes">_View</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkToggleAction" id="toolbar">
-        <property name="label" translatable="yes">_Toolbar</property>
-        <property name="tooltip" translatable="yes">Show a toolbar at the top of the window</property>
-        <signal name="toggled" handler="on_toolbar_toggled" swapped="no"/>
-      </object>
-    </child>
-  </object>
   <object class="GtkAboutDialog" id="aboutwindow">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -231,12 +73,11 @@ Philip Chimento</property>
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkWindow" id="chimara">
+  <object class="GtkApplicationWindow" id="chimara">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Chimara</property>
     <property name="default_width">600</property>
     <property name="default_height">800</property>
-    <signal name="delete-event" handler="on_window_delete_event" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox">
         <property name="visible">True</property>
@@ -254,6 +95,50 @@ Philip Chimento</property>
       <!-- column-name Interpreter -->
       <column type="gchararray"/>
     </columns>
+  </object>
+  <object class="GtkRecentFilter" id="recentfilter">
+    <patterns>
+      <pattern>*.z[1-8]</pattern>
+      <pattern>*.[zg]lb</pattern>
+      <pattern>*.[zg]blorb</pattern>
+      <pattern>*.ulx</pattern>
+      <pattern>*.blb</pattern>
+      <pattern>*.blorb</pattern>
+    </patterns>
+  </object>
+  <object class="GtkRecentChooserDialog" id="recentwindow">
+    <property name="can_focus">False</property>
+    <property name="type_hint">dialog</property>
+    <property name="title" translatable="yes">Recently played games</property>
+    <property name="transient_for">chimara</property>
+    <property name="filter">recentfilter</property>
+    <property name="limit">10</property>
+    <property name="sort_type">mru</property>
+    <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="recentwindow-internal-box">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="recentwindow-internal-action-area">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
   <object class="GtkDialog" id="prefswindow">
     <property name="can_focus">False</property>
@@ -978,4 +863,159 @@ Philip Chimento</property>
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkToolbar" id="toolbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="no_show_all">True</property>
+    <child>
+      <object class="GtkToolButton" id="toolbar-open">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Quit the current game and load a new one</property>
+        <property name="action_name">win.open</property>
+        <property name="label">_Open</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">media-playback-start-symbolic</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem" id="toolbar-separator">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="toolbar-restore">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Restore a previously saved game</property>
+        <property name="action_name">win.restore</property>
+        <property name="label">_Restore</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">document-open-symbolic</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="toolbar-save">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Save the game</property>
+        <property name="action_name">win.save</property>
+        <property name="label">_Save</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">document-save-symbolic</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+  </object>
+  <menu id="menubar">
+    <submenu>
+      <attribute name="label" translatable="yes">_Game</attribute>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Open…</attribute>
+          <attribute name="action">win.open</attribute>
+          <attribute name="accel">&lt;primary&gt;o</attribute>
+          <attribute name="icon">media-playback-start-symbolic</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">Open _Recent</attribute>
+          <attribute name="action">win.open-recent</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Stop Game</attribute>
+          <attribute name="action">win.stop</attribute>
+          <attribute name="icon">media-playback-stop-symbolic</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Quit Chimara</attribute>
+          <attribute name="action">app.quit</attribute>
+          <attribute name="icon">application-exit-symbolic</attribute>
+        </item>
+      </section>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Edit</attribute>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Copy</attribute>
+          <attribute name="action">win.copy</attribute>
+          <attribute name="icon">edit-copy-symbolic</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Paste</attribute>
+          <attribute name="action">win.paste</attribute>
+          <attribute name="icon">edit-paste-symbolic</attribute>
+        </item>
+      </section>
+      <item>
+        <attribute name="label" translatable="yes">P_references</attribute>
+        <attribute name="action">app.preferences</attribute>
+        <attribute name="icon">preferences-system-symbolic</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_View</attribute>
+      <item>
+        <attribute name="label" translatable="yes">_Toolbar</attribute>
+        <attribute name="action">win.toolbar</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Command</attribute>
+      <item>
+        <attribute name="label" translatable="yes">_Undo</attribute>
+        <attribute name="action">win.undo</attribute>
+        <attribute name="accel">&lt;primary&gt;z</attribute>
+        <attribute name="icon">edit-undo-symbolic</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Save…</attribute>
+        <attribute name="action">win.save</attribute>
+        <attribute name="accel">&lt;primary&gt;s</attribute>
+        <attribute name="icon">document-save-symbolic</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Restore…</attribute>
+        <attribute name="action">win.restore</attribute>
+        <attribute name="accel">&lt;primary&gt;r</attribute>
+        <attribute name="icon">document-open-symbolic</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Res_tart</attribute>
+        <attribute name="action">win.restart</attribute>
+        <attribute name="icon">media-skip-backward-symbolic</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">win.quit</attribute>
+        <attribute name="icon">media-playback-stop-symbolic</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Help</attribute>
+      <item>
+        <attribute name="label" translatable="yes">_About…</attribute>
+        <attribute name="action">app.about</attribute>
+        <attribute name="icon">help-about-symbolic</attribute>
+      </item>
+    </submenu>
+  </menu>
 </interface>

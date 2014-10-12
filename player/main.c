@@ -41,11 +41,12 @@
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>
 
+#include "actions.h"
 #include "error.h"
 #include "preferences.h"
 
-/* Static global pointers to widgets */
-static GtkUIManager *uimanager = NULL;
+/* Static global pointers */
+static GtkApplication *app = NULL;
 static GtkWidget *window = NULL;
 static GtkWidget *glk = NULL;
 
@@ -53,7 +54,7 @@ static GtkWidget *glk = NULL;
 GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
-GtkWidget *toolbar = NULL;
+GtkWidget *recentwindow = NULL;
 GSettings *prefs_settings = NULL;
 GSettings *state_settings = NULL;
 
@@ -109,37 +110,7 @@ create_window(void)
 	window = GTK_WIDGET(load_object("chimara"));
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
-	GtkActionGroup *actiongroup = GTK_ACTION_GROUP(load_object("actiongroup"));
-
-	/* Set the default value of the "View/Toolbar" menu item upon creation of a
-	 new window to the "show-toolbar-default" setting, but bind the setting
-	 one-way only - we don't want toolbars to disappear suddenly */
-	GtkToggleAction *toolbar_action = GTK_TOGGLE_ACTION(load_object("toolbar"));
-	gtk_toggle_action_set_active(toolbar_action, g_settings_get_boolean(state_settings, "show-toolbar-default"));
-	g_settings_bind(state_settings, "show-toolbar-default", toolbar_action, "active", G_SETTINGS_BIND_SET);
-
-	const gchar **ptr;
-	GtkRecentFilter *filter = gtk_recent_filter_new();
-	/* TODO: Use mimetypes and construct the filter dynamically depending on 
-	what plugins are installed */
-	const gchar *patterns[] = {
-		"*.z[1-8]", "*.[zg]lb", "*.[zg]blorb", "*.ulx", "*.blb", "*.blorb", NULL
-	};
-
-	for(ptr = patterns; *ptr; ptr++)
-		gtk_recent_filter_add_pattern(filter, *ptr);
-	GtkRecentChooser *recent = GTK_RECENT_CHOOSER(load_object("recent"));
-	gtk_recent_chooser_add_filter(recent, filter);
-
-	uimanager = gtk_ui_manager_new();
-	if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_DATA_DIR "/chimara.menus", &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_ui_manager_add_ui_from_file(uimanager, PACKAGE_SRC_DIR "/chimara.menus", &error) )
-#endif /* DEBUG */
-			return FALSE;
-	}
+	recentwindow = GTK_WIDGET(load_object("recentwindow"));
 
 	glk = chimara_if_new();
 	g_object_set(glk,
@@ -164,23 +135,31 @@ create_window(void)
 	if(vbox == NULL)
 		return FALSE;
 
-	gtk_ui_manager_insert_action_group(uimanager, actiongroup, 0);
-	GtkWidget *menubar = gtk_ui_manager_get_widget(uimanager, "/menubar");
-	toolbar = gtk_ui_manager_get_widget(uimanager, "/toolbar");
-	gtk_widget_set_no_show_all(toolbar, TRUE);
-	if(gtk_toggle_action_get_active(toolbar_action))
+	create_app_actions(G_ACTION_MAP(app), glk);
+	create_window_actions(G_ACTION_MAP(window), glk);
+
+	GtkWidget *toolbar = GTK_WIDGET(gtk_builder_get_object(builder, "toolbar"));
+
+	/* Set the default value of the "View/Toolbar" menu item upon creation of a
+	 new window to the "show-toolbar-default" setting, but bind the setting
+	 one-way only - we don't want toolbars to disappear suddenly */
+	GPropertyAction *toolbar_action = g_property_action_new("toolbar", toolbar, "visible");
+	g_action_map_add_action(G_ACTION_MAP(window), G_ACTION(toolbar_action));
+	if (g_settings_get_boolean(state_settings, "show-toolbar-default"))
 		gtk_widget_show(toolbar);
 	else
 		gtk_widget_hide(toolbar);
+	g_settings_bind(state_settings, "show-toolbar-default",
+		toolbar, "visible", G_SETTINGS_BIND_SET);
 
-	/* Connect the accelerators */
-	GtkAccelGroup *accels = gtk_ui_manager_get_accel_group(uimanager);
-	gtk_window_add_accel_group(GTK_WINDOW(window), accels);
+	GMenuModel *menumodel = G_MENU_MODEL(gtk_builder_get_object(builder, "menubar"));
+	GtkWidget *menubar = gtk_menu_bar_new_from_model(menumodel);
+	g_object_unref(menumodel);
 
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
 	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
 	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
-	
+
 	gtk_builder_connect_signals(builder, glk);
 	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);
 	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
@@ -191,11 +170,36 @@ create_window(void)
 	return TRUE;
 }
 
-int
-main(int argc, char *argv[])
+static void
+on_activate(GApplication *gapp)
+{
+	gtk_application_add_window(app, GTK_WINDOW(window));
+	gtk_widget_show_all(window);
+	gtk_window_present(GTK_WINDOW(window));
+}
+
+static void
+on_open(GApplication *gapp, GFile **files, int n_files, char *hint)
 {
 	GError *error = NULL;
 
+	if(n_files == 2) {
+		char *graphics_file_path = g_file_get_path(files[1]);
+		g_object_set(glk, "graphics-file", graphics_file_path, NULL);
+		g_free(graphics_file_path);
+	}
+	if(n_files >= 1) {
+		if( !chimara_if_run_game_file(CHIMARA_IF(glk), files[0], &error) ) {
+			error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
+			g_application_quit(gapp);
+		}
+	}
+	on_activate(gapp);
+}
+
+int
+main(int argc, char *argv[])
+{
 #ifdef ENABLE_NLS
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
@@ -223,30 +227,22 @@ main(int argc, char *argv[])
 	state_settings = g_settings_new_with_backend("org.chimara-if.player.state", backend);
 	g_free(keyfile);
 
+	app = gtk_application_new("org.chimara-if.player", G_APPLICATION_HANDLES_OPEN);
+	g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
+	g_signal_connect(app, "open", G_CALLBACK(on_open), NULL);
+
 	if( !create_window() ) {
 		error_dialog(NULL, NULL, "Error while building interface.");
 		return 1;
 	}
-	gtk_widget_show_all(window);
 
-	g_object_unref( G_OBJECT(uimanager) );
-
-	if(argc == 3) {
-		g_object_set(glk, "graphics-file", argv[2], NULL);
-	}
-	if(argc >= 2) {
-		if( !chimara_if_run_game(CHIMARA_IF(glk), argv[1], &error) ) {
-	   		error_dialog(GTK_WINDOW(window), error, "Error starting Glk library: ");
-			return 1;
-		}
-	}
-
-	gtk_main();
+	int status = g_application_run(G_APPLICATION(app), argc, argv);
+	g_object_unref(app);
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
 
 	g_object_unref( G_OBJECT(builder) );
 
-	return 0;
+	return status;
 }
