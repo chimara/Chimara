@@ -57,7 +57,7 @@ confirm_open_new_game(ChimaraGlk *glk)
 		    _("Are you sure you want to open a new game?"));
 		gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
 		    _("If you open a new game, you will quit the one you are currently playing."));
-		gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_OPEN, GTK_RESPONSE_OK);
+		gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Open"), GTK_RESPONSE_OK);
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
 		
@@ -120,8 +120,8 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 	GtkWidget *dialog = gtk_file_chooser_dialog_new(_("Open Game"),
 	    window,
 	    GTK_FILE_CHOOSER_ACTION_OPEN,
-	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+	    _("_Cancel"), GTK_RESPONSE_CANCEL,
+	    _("_Open"), GTK_RESPONSE_ACCEPT,
 	    NULL);
 
 	/* Get last opened path */

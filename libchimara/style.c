@@ -16,7 +16,7 @@ static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_t
 static void style_copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table);
 static void text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list);
 GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
-static void style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_tag, GdkColor **foreground, GdkColor **background);
+static void style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_tag, GdkRGBA **foreground, GdkRGBA **background);
 
 /**
  * glk_set_style:
@@ -611,41 +611,24 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 	return TRUE;
 }
 
-/* Internal function: parses a glk color to a GdkColor */
+/* Internal function: parses a glk color to a GdkRGBA */
 void
-glkcolor_to_gdkcolor(glui32 val, GdkColor *color)
+glkcolor_to_gdkrgba(glui32 val, GdkRGBA *color)
 {
-	color->red = 256 * ((val & 0xff0000) >> 16);
-	color->green = 256 * ((val & 0x00ff00) >> 8);
-	color->blue = 256 * (val & 0x0000ff);
+	color->red = ((val & 0xff0000) >> 16) / 255.0;
+	color->green = ((val & 0x00ff00) >> 8) / 255.0;
+	color->blue = (val & 0x0000ff) / 255.0;
+	color->alpha = 1.0;
 }
 
-/* Internal function: parses a glk color to a hex string */
-gchar*
-glkcolor_to_hex(glui32 val)
-{
-	return g_strdup_printf("%04X%04X%04X",
-		256 * ((val & 0xff0000) >> 16),
-		256 * ((val & 0x00ff00) >> 8),
-		256 * (val & 0x0000ff)
-	);
-}
-
-/* Internal function: parses a gdk color to a hex string */
-gchar*
-gdkcolor_to_hex(GdkColor *color)
-{
-	return g_strdup_printf("%04X%04X%04X",
-		color->red, color->green, color->blue
-	);
-}
-
-/* Internal function: parses a GdkColor to a glk color */
+/* Internal function: parses a GdkRGBA to a glk color */
 static glui32
-gdkcolor_to_glkcolor(GdkColor *color)
+gdkrgba_to_glkcolor(GdkRGBA *color)
 {
 	g_return_val_if_fail(color != NULL, 0);
-	return (glui32) color->pixel;
+	return (glui32) ((int)(color->red * 255) << 16
+	               | (int)(color->green * 255) << 8
+	               | (int)(color->blue * 255));
 }
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
@@ -660,7 +643,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 	gint reverse_color = GPOINTER_TO_INT( g_object_get_data(tag_object, "reverse-color") );
 
 	int i = 0;
-	GdkColor color;
+	GdkRGBA color;
 	switch(hint) {
 	case stylehint_Indentation:
 		g_object_set(tag_object, "left-margin", 5*val, "left-margin-set", TRUE, NULL);
@@ -738,22 +721,22 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 		break;
 
 	case stylehint_TextColor:
-		glkcolor_to_gdkcolor(val, &color);
+		glkcolor_to_gdkrgba(val, &color);
 
 		if(!reverse_color)
-			g_object_set(tag_object, "foreground-gdk", &color, "foreground-set", TRUE, NULL);
+			g_object_set(tag_object, "foreground-rgba", &color, "foreground-set", TRUE, NULL);
 		else
-			g_object_set(tag_object, "background-gdk", &color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "background-rgba", &color, "background-set", TRUE, NULL);
 
 		break;
 
 	case stylehint_BackColor:
-		glkcolor_to_gdkcolor(val, &color);
+		glkcolor_to_gdkrgba(val, &color);
 
 		if(!reverse_color)
-			g_object_set(tag_object, "background-gdk", &color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "background-rgba", &color, "background-set", TRUE, NULL);
 		else
-			g_object_set(tag_object, "foreground-gdk", &color, "background-set", TRUE, NULL);
+			g_object_set(tag_object, "foreground-rgba", &color, "background-set", TRUE, NULL);
 
 		break;
 
@@ -763,11 +746,11 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 		
 		// If all fails, use black/white
 		// FIXME: Use system theme here
-		GdkColor foreground, background;
-		gdk_color_parse("black", &foreground);
-		gdk_color_parse("white", &background);
-		GdkColor *current_foreground = &foreground;
-		GdkColor *current_background = &background;
+		GdkRGBA foreground, background;
+		gdk_rgba_parse(&foreground, "black");
+		gdk_rgba_parse(&background, "white");
+		GdkRGBA *current_foreground = &foreground;
+		GdkRGBA *current_background = &background;
 
 		if(wintype == wintype_TextBuffer) {
 			GtkTextTag* default_tag = g_hash_table_lookup(glk_data->styles->text_buffer, "default");
@@ -782,15 +765,15 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 
 		if(val) {
 			/* Flip the fore- and background colors */
-			GdkColor *temp = current_foreground;
+			GdkRGBA *temp = current_foreground;
 			current_foreground = current_background;
 			current_background = temp;
 		}
 
 		g_object_set(tag,
-			"foreground-gdk", current_foreground,
+			"foreground-rgba", current_foreground,
 			"foreground-set", TRUE,
-			"background-gdk", current_background,
+			"background-rgba", current_background,
 			"background-set", TRUE,
 			NULL
 		);
@@ -810,7 +793,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 {
 	gint intval;
 	gdouble doubleval;
-	GdkColor *colval;
+	GdkRGBA *colval;
 
 	g_return_val_if_fail(tag != NULL, 0);
 
@@ -870,12 +853,12 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 	}
 
 	case stylehint_TextColor:
-		g_object_get(tag, "foreground-gdk", &colval, NULL);
-		return gdkcolor_to_glkcolor(colval);
+		g_object_get(tag, "foreground-rgba", &colval, NULL);
+		return gdkrgba_to_glkcolor(colval);
 
 	case stylehint_BackColor:
-		g_object_get(tag, "background-gdk", &colval, NULL);
-		return gdkcolor_to_glkcolor(colval);
+		g_object_get(tag, "background-rgba", &colval, NULL);
+		return gdkrgba_to_glkcolor(colval);
 
 	case stylehint_ReverseColor:
 		return GPOINTER_TO_INT( g_object_get_data(G_OBJECT(tag), "reverse_color") );
@@ -1145,20 +1128,20 @@ static void
 text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 {
 	gboolean set;
-	GdkColor *foreground, *background;
+	GdkRGBA *foreground, *background;
 	gchar *string;
 	PangoFontDescription *font_desc;
 	gboolean strikethrough;
 	PangoUnderline underline;
 
-	g_object_get(tag, "foreground-set", &set, "foreground-gdk", &foreground, NULL);
+	g_object_get(tag, "foreground-set", &set, "foreground-rgba", &foreground, NULL);
 	if(set) {
 		pango_attr_list_insert(
 			list,
 			pango_attr_foreground_new(foreground->red, foreground->green, foreground->blue)
 		);
 	}
-	g_object_get(tag, "background-set", &set, "background-gdk", &background, NULL);
+	g_object_get(tag, "background-set", &set, "background-rgba", &background, NULL);
 	if(set) {
 		pango_attr_list_insert(
 			list,
@@ -1202,7 +1185,7 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 /* Determine the current colors used to render the text for a given stream. 
  * This can be set in a number of places */
 static void
-style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_tag, GdkColor **foreground, GdkColor **background)
+style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_tag, GdkRGBA **foreground, GdkRGBA **background)
 {
 	gboolean foreground_set = FALSE;
 	gboolean background_set = FALSE;
@@ -1212,32 +1195,32 @@ style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_t
 	reverse_color = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(default_tag), "reverse-color") );
 	g_object_get(default_tag, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
 	if(foreground_set)
-		g_object_get(default_tag, "foreground-gdk", reverse_color ? background:foreground, NULL);
+		g_object_get(default_tag, "foreground-rgba", reverse_color ? background : foreground, NULL);
 	if(background_set)
-		g_object_get(default_tag, "background-gdk", reverse_color ? foreground:background, NULL);
+		g_object_get(default_tag, "background-rgba", reverse_color ? foreground : background, NULL);
 
 	// Player defined color
 	reverse_color = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(tag), "reverse-color") );
 	g_object_get(tag, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
 	if(foreground_set)
-		g_object_get(tag, "foreground-gdk", reverse_color ? background:foreground, NULL);
+		g_object_get(tag, "foreground-rgba", reverse_color ? background : foreground, NULL);
 	if(background_set)
-		g_object_get(tag, "background-gdk", reverse_color ? foreground:background, NULL);
+		g_object_get(tag, "background-rgba", reverse_color ? foreground : background, NULL);
 
 	// GLK defined color
 	reverse_color = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(glk_tag), "reverse-color") );
 	g_object_get(glk_tag, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
 	if(foreground_set)
-		g_object_get(glk_tag, "foreground-gdk", reverse_color ? background:foreground, NULL);
+		g_object_get(glk_tag, "foreground-rgba", reverse_color ? background : foreground, NULL);
 	if(background_set)
-		g_object_get(glk_tag, "background-gdk", reverse_color ? foreground:background, NULL);
+		g_object_get(glk_tag, "background-rgba", reverse_color ? foreground : background, NULL);
 
 }
 
 /* Determine the current colors used to render the text for a given stream. 
  * This can be set in a number of places */
 void
-style_stream_colors(strid_t str, GdkColor **foreground, GdkColor **background)
+style_stream_colors(strid_t str, GdkRGBA **foreground, GdkRGBA **background)
 {
 	VALID_STREAM(str, return);
 	g_return_if_fail(str->window != NULL);
@@ -1257,9 +1240,9 @@ style_stream_colors(strid_t str, GdkColor **foreground, GdkColor **background)
 	if(str->window->zcolor) {
 		g_object_get(str->window->zcolor, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
 		if(foreground_set)
-			g_object_get(str->window->zcolor, "foreground-gdk", foreground, NULL);
+			g_object_get(str->window->zcolor, "foreground-rgba", foreground, NULL);
 		if(background_set)
-			g_object_get(str->window->zcolor, "background-gdk", background, NULL);
+			g_object_get(str->window->zcolor, "background-rgba", background, NULL);
 	}
 }
 
