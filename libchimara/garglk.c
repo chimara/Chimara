@@ -169,9 +169,9 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window->widget) );
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
-	GdkColor fore, back;
-	GdkColor *fore_pointer = NULL;
-	GdkColor *back_pointer = NULL;
+	GdkRGBA fore, back;
+	GdkRGBA *fore_pointer = NULL;
+	GdkRGBA *back_pointer = NULL;
 	gchar *fore_name;
 	gchar *back_name;
 
@@ -187,9 +187,9 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	{
 		if(window->zcolor) {
 			// Get the current foreground color
-			GdkColor *current_color;
-			g_object_get(window->zcolor, "foreground-gdk", &current_color, NULL);
-			fore_name = gdk_color_to_string(current_color);
+			GdkRGBA *current_color;
+			g_object_get(window->zcolor, "foreground-rgba", &current_color, NULL);
+			fore_name = gdk_rgba_to_string(current_color);
 
 			// Copy the color and use it
 			fore.red = current_color->red;
@@ -202,9 +202,9 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 		break;
 	}
 	default:
-		glkcolor_to_gdkcolor(fg, &fore);
+		glkcolor_to_gdkrgba(fg, &fore);
 		fore_pointer = &fore;
-		fore_name = gdk_color_to_string(&fore);
+		fore_name = gdk_rgba_to_string(&fore);
 	}
 
 	switch(bg) {
@@ -219,9 +219,9 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	{
 		if(window->zcolor) {
 			// Get the current background color
-			GdkColor *current_color;
-			g_object_get(window->zcolor, "background-gdk", &current_color, NULL);
-			back_name = gdk_color_to_string(current_color);
+			GdkRGBA *current_color;
+			g_object_get(window->zcolor, "background-rgba", &current_color, NULL);
+			back_name = gdk_rgba_to_string(current_color);
 
 			// Copy the color and use it
 			back.red = current_color->red;
@@ -234,9 +234,9 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 		break;
 	}
 	default:
-		glkcolor_to_gdkcolor(bg, &back);
+		glkcolor_to_gdkrgba(bg, &back);
 		back_pointer = &back;
-		back_name = gdk_color_to_string(&back);
+		back_name = gdk_rgba_to_string(&back);
 	}
 
 	if(fore_pointer == NULL && back_pointer == NULL) {
@@ -255,9 +255,9 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 			tag = gtk_text_buffer_create_tag(
 				buffer,
 				name,
-				"foreground-gdk", fore_pointer,
+				"foreground-rgba", fore_pointer,
 				"foreground-set", fore_pointer != NULL,
-				"background-gdk", back_pointer,
+				"background-rgba", back_pointer,
 				"background-set", back_pointer != NULL,
 				NULL
 			);
@@ -325,26 +325,26 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	
 	// If all fails, use black/white
 	// FIXME: Use system theme here
-	GdkColor foreground, background;
-   	gdk_color_parse("black", &foreground);
-   	gdk_color_parse("white", &background);
-	GdkColor *current_foreground = &foreground;
-	GdkColor *current_background = &background;
+	GdkRGBA foreground, background;
+	gdk_rgba_parse(&foreground, "black");
+	gdk_rgba_parse(&background, "white");
+	GdkRGBA *current_foreground = &foreground;
+	GdkRGBA *current_background = &background;
 
 	gdk_threads_enter();
 
 	style_stream_colors(str, &current_foreground, &current_background);
 
 	if(reverse) {
-		GdkColor *temp = current_foreground;
+		GdkRGBA *temp = current_foreground;
 		current_foreground = current_background;
 		current_background = temp;
 	}
 
 	// Name the color
-	char *foreground_name = gdk_color_to_string(current_foreground);
-	char *background_name = gdk_color_to_string(current_background);
-	char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, foreground_name, background_name);
+	char *foreground_name = gdk_rgba_to_string(current_foreground);
+	char *background_name = gdk_rgba_to_string(current_background);
+	char *name = g_strdup_printf("zcolor:%s/%s", foreground_name, background_name);
 	g_free(foreground_name);
 	g_free(background_name);
 
@@ -356,9 +356,9 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 		tag = gtk_text_buffer_create_tag(
 			buffer,
 			name,
-			"foreground-gdk", current_foreground,
+			"foreground-rgba", current_foreground,
 			"foreground-set", TRUE,
-			"background-gdk", current_background,
+			"background-rgba", current_background,
 			"background-set", TRUE,
 			NULL
 		);
@@ -370,7 +370,7 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 
 	// Update the background of the gtktextview to correspond with the current background color
 	if(current_background != NULL) {
-		gtk_widget_modify_base(str->window->widget, GTK_STATE_NORMAL, current_background);
+		gtk_widget_override_background_color(str->window->widget, GTK_STATE_FLAG_NORMAL, current_background);
 	}
 
 	gdk_threads_leave();
