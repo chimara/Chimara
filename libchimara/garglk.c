@@ -8,6 +8,8 @@
 #include "style.h"
 #include "garglk.h"
 
+#define ZCOLOR_NAME_TEMPLATE "zcolor:%s/%s"
+
 extern GPrivate glk_data_key;
 
 /**
@@ -187,7 +189,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 			// Get the current foreground color
 			GdkColor *current_color;
 			g_object_get(window->zcolor, "foreground-gdk", &current_color, NULL);
-			fore_name = gdkcolor_to_hex(current_color);
+			fore_name = gdk_color_to_string(current_color);
 
 			// Copy the color and use it
 			fore.red = current_color->red;
@@ -202,7 +204,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	default:
 		glkcolor_to_gdkcolor(fg, &fore);
 		fore_pointer = &fore;
-		fore_name = glkcolor_to_hex(fg);
+		fore_name = gdk_color_to_string(&fore);
 	}
 
 	switch(bg) {
@@ -219,7 +221,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 			// Get the current background color
 			GdkColor *current_color;
 			g_object_get(window->zcolor, "background-gdk", &current_color, NULL);
-			back_name = gdkcolor_to_hex(current_color);
+			back_name = gdk_color_to_string(current_color);
 
 			// Copy the color and use it
 			back.red = current_color->red;
@@ -234,14 +236,14 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	default:
 		glkcolor_to_gdkcolor(bg, &back);
 		back_pointer = &back;
-		back_name = glkcolor_to_hex(bg);
+		back_name = gdk_color_to_string(&back);
 	}
 
 	if(fore_pointer == NULL && back_pointer == NULL) {
 		// NULL value means to ignore the zcolor property altogether
 		window->zcolor = NULL;
 	} else {
-		char *name = g_strdup_printf("zcolor:#%s/#%s", fore_name, back_name);
+		char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, fore_name, back_name);
 		g_free(fore_name);
 		g_free(back_name);
 
@@ -340,15 +342,11 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	}
 
 	// Name the color
-	gchar *name = g_strdup_printf(
-		"zcolor:#%04X%04X%04X/#%04X%04X%04X",
-		current_foreground->red,
-		current_foreground->green,
-		current_foreground->blue,
-		current_background->red,
-		current_background->green,
-		current_background->blue
-	);
+	char *foreground_name = gdk_color_to_string(current_foreground);
+	char *background_name = gdk_color_to_string(current_background);
+	char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, foreground_name, background_name);
+	g_free(foreground_name);
+	g_free(background_name);
 
 	// Create a tag for the new colors if it doesn't exist yet
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(str->window->widget) );	

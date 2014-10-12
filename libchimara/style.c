@@ -620,26 +620,6 @@ glkcolor_to_gdkcolor(glui32 val, GdkColor *color)
 	color->blue = 256 * (val & 0x0000ff);
 }
 
-/* Internal function: parses a glk color to a hex string */
-gchar*
-glkcolor_to_hex(glui32 val)
-{
-	return g_strdup_printf("%04X%04X%04X",
-		256 * ((val & 0xff0000) >> 16),
-		256 * ((val & 0x00ff00) >> 8),
-		256 * (val & 0x0000ff)
-	);
-}
-
-/* Internal function: parses a gdk color to a hex string */
-gchar*
-gdkcolor_to_hex(GdkColor *color)
-{
-	return g_strdup_printf("%04X%04X%04X",
-		color->red, color->green, color->blue
-	);
-}
-
 /* Internal function: parses a GdkColor to a glk color */
 static glui32
 gdkcolor_to_glkcolor(GdkColor *color)
