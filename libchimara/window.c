@@ -509,8 +509,8 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		    		
 			/* Create the styles available to the window stream */
 			style_init_textgrid(textbuffer);
-			gtk_widget_modify_font( textview, get_current_font(wintype) );
-		    
+			gtk_widget_override_font( textview, get_current_font(wintype) );
+
 		    win->widget = textview;
 		    win->frame = textview;
 			
@@ -567,7 +567,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 
 			/* Create the styles available to the window stream */
 			style_init_textbuffer(textbuffer);
-			gtk_widget_modify_font( textview, get_current_font(wintype) );
+			gtk_widget_override_font( textview, get_current_font(wintype) );
 
 			/* Determine the size of a "0" character in pixels */
 			PangoLayout *zero = gtk_widget_create_pango_layout(textview, "0");
