@@ -146,7 +146,8 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 	gtk_widget_override_font(win->input_entry, font_desc);
 	pango_font_description_free(font_desc);
 
-	/* Make the entry as small as possible to fit with the text */
+	/* Set the color of the entry, and make it as small as possible in order to
+	fit with the text */
 	gtk_entry_set_has_frame(GTK_ENTRY(win->input_entry), FALSE);
 	GtkStyleContext *entry_style = gtk_widget_get_style_context(win->input_entry);
 #ifdef GTK_STYLE_CLASS_FLAT /* COMPAT: available in 3.14 */
@@ -155,6 +156,8 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 	GtkCssProvider *css_provider = gtk_css_provider_new();
 	gtk_css_provider_load_from_data(css_provider,
 		".entry {"
+		"    background-image: none;"
+		"    background-color: #d3d7cf;"
 		"    border: 0 none;"
 		"    border-radius: 0;"
 		"    outline: 0 none;"
@@ -168,11 +171,6 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     /* Insert pre-entered text if needed */
     if(insert)
     	gtk_entry_set_text(GTK_ENTRY(win->input_entry), inserttext);
-
-    /* Set background color of entry (TODO: implement as property) */
-	GdkRGBA background;
-	gdk_rgba_parse(&background, "grey");
-	gtk_widget_override_background_color(win->input_entry, GTK_STATE_FLAG_NORMAL, &background);
 
     g_signal_connect(win->input_entry, "activate", G_CALLBACK(on_input_entry_activate), win);
     g_signal_connect(win->input_entry, "key-press-event", G_CALLBACK(on_input_entry_key_press_event), win);
