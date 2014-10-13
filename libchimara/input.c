@@ -137,15 +137,6 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     win->input_anchor = gtk_text_buffer_create_child_anchor(buffer, &start_iter);
     win->input_entry = gtk_entry_new();
 
-	/* Set the entry's font to match that of the window */
-	PangoFontDescription *font_desc;
-	GtkStyleContext *style = gtk_widget_get_style_context(win->widget);  /* Don't free */
-	gtk_style_context_get(style, GTK_STATE_FLAG_NORMAL,
-		GTK_STYLE_PROPERTY_FONT, &font_desc,
-		NULL);
-	gtk_widget_override_font(win->input_entry, font_desc);
-	pango_font_description_free(font_desc);
-
 	/* Set the color of the entry, and make it as small as possible in order to
 	fit with the text */
 	gtk_entry_set_has_frame(GTK_ENTRY(win->input_entry), FALSE);
