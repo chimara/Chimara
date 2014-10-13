@@ -148,9 +148,20 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
 
 	/* Make the entry as small as possible to fit with the text */
 	gtk_entry_set_has_frame(GTK_ENTRY(win->input_entry), FALSE);
-	GtkBorder border = { 0, 0, 0, 0 };
-
-	gtk_entry_set_inner_border(GTK_ENTRY(win->input_entry), &border);
+	GtkStyleContext *entry_style = gtk_widget_get_style_context(win->input_entry);
+#ifdef GTK_STYLE_CLASS_FLAT /* COMPAT: available in 3.14 */
+	gtk_style_context_add_class(entry_style, GTK_STYLE_CLASS_FLAT);
+#endif /* GTK_STYLE_CLASS_FLAT */
+	GtkCssProvider *css_provider = gtk_css_provider_new();
+	gtk_css_provider_load_from_data(css_provider,
+		".entry {"
+		"    border: 0 none;"
+		"    border-radius: 0;"
+		"    outline: 0 none;"
+		"    margin: 0;"
+		"    padding: 0;"
+		"}", -1, NULL);
+	gtk_style_context_add_provider(entry_style, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     gtk_entry_set_max_length(GTK_ENTRY(win->input_entry), win->input_length);
     gtk_entry_set_width_chars(GTK_ENTRY(win->input_entry), win->input_length);
 
