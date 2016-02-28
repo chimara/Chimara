@@ -12,7 +12,7 @@ AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
 # Put m4 macros in their own directory
 AC_CONFIG_MACRO_DIR([m4])
 # Initialize Automake
-AM_INIT_AUTOMAKE([-Wall -Wno-portability])
+AM_INIT_AUTOMAKE([-Wall -Wno-portability info-in-builddir])
 # Configure with --enable-silent-rules to cut down on clutter
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
