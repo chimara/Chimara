@@ -46,7 +46,6 @@ AC_PROG_YACC                 # Building nitfol requires yacc
 AC_PROG_INSTALL              # Install
 LT_INIT([dlopen])            # Libtool 2.2.6 and up
 LT_PREREQ([2.2.6])
-AM_GNU_GETTEXT([external])   # Gettext, link to system libintl
 IT_PROG_INTLTOOL([0.40.0])   # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
 GTK_DOC_CHECK($GTK_DOC_REQUIRED_VERSION) 
@@ -66,7 +65,8 @@ AC_TYPE_UINT32_T
 
 ### INTERNATIONALIZATION ######################################################
 
-AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT([external])  # Gettext, link to system libintl
+AM_GNU_GETTEXT_VERSION([0.19.2])  # Supports Glade, Desktop files
 GETTEXT_PACKAGE=chimara
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
