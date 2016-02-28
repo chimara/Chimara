@@ -22,16 +22,20 @@ EXTRA_DIST = \
 
 DISTCLEANFILES = chimara.pc chimara-plugin.pc chimara.spec
 
-macros_ignore = codeset gettext glibc2 glibc21 gtk-doc iconv intdiv0 intl \
-	intldir intlmacosx intmax inttypes_h inttypes-pri lcmessage lib-ld \
-	lib-link lib-prefix libtool lock longlong lt~obsolete ltoptions ltsugar \
-	ltversion nls po printf-posix progtest size_max stdint_h uintmax_t \
-	visibility wchar_t wint_t xsize
+macros_ignore = \
+	codeset extern-inline fcntl-o gettext glibc2 glibc21 gtk-doc iconv intdiv0 \
+	intl intldir intlmacosx intmax inttypes_h inttypes-pri lcmessage lib-ld \
+	lib-link lib-prefix lock longlong nls po printf-posix progtest size_max \
+	stdint_h threadlib uintmax_t visibility wchar_t wint_t xsize \
+	$(NULL)
 
-MAINTAINERCLEANFILES = ABOUT-NLS INSTALL aclocal.m4 compile config.guess \
-	config.h.in config.rpath config.sub depcomp gtk-doc.make install-sh \
-	ltmain.sh missing ylwrap autom4te.cache test-driver \
-	$(addprefix 'm4/',$(addsuffix '.m4', $(macros_ignore)))
+MAINTAINERCLEANFILES = \
+	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \
+	$(GITIGNORE_MAINTAINERCLEANFILES_MAKEFILE_IN) \
+	$(GITIGNORE_MAINTAINERCLEANFILES_M4_LIBTOOL) \
+	ABOUT-NLS INSTALL config.rpath gtk-doc.make \
+	$(addprefix 'm4/',$(addsuffix '.m4', $(macros_ignore))) \
+	$(NULL)
 
 ACLOCAL_AMFLAGS = -I m4
 
