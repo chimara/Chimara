@@ -11,8 +11,3 @@ gtkdocize --copy --flavour no-tmpl || exit 1
 echo "Regenerating autotools files"
 autoreconf --force --install || exit 1
 
-### INTLTOOL ########################################################
-# Run after autopoint
-echo "Setting up Intltool"
-intltoolize --copy --force --automake || exit 1
-

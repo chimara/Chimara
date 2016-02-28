@@ -21,7 +21,7 @@ Requires(post): info
 Requires(preun): info
 BuildRequires:  bison
 # byacc is allowed instead of bison, but stoopid RPM doesn't let you specify alternative pkgs
-BuildRequires:  perl gettext libtool pkgconfig intltool
+BuildRequires:  perl gettext libtool pkgconfig
 BuildRequires:  gtk-doc >= @GTK_DOC_REQUIRED_VERSION@
 BuildRequires:  glib2-devel >= @GLIB_REQUIRED_VERSION@
 BuildRequires:  gtk2-devel >= @GTK_REQUIRED_VERSION@

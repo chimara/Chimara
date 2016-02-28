@@ -46,7 +46,6 @@ AC_PROG_YACC                 # Building nitfol requires yacc
 AC_PROG_INSTALL              # Install
 LT_INIT([dlopen])            # Libtool 2.2.6 and up
 LT_PREREQ([2.2.6])
-IT_PROG_INTLTOOL([0.40.0])   # Intltool
 PKG_PROG_PKG_CONFIG          # pkg_config
 GTK_DOC_CHECK($GTK_DOC_REQUIRED_VERSION) 
 GLIB_GSETTINGS               # GSettings
