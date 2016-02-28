@@ -1,0 +1,50 @@
+.page-header {
+	background-image: url('../images/chimara.svg');
+	background-repeat: no-repeat;
+	background-position: top left;
+	height: 185px;
+	margin-top: 20px;
+	position: relative;  /* For the position: absolute below */
+}
+
+.page-header h1 {
+	position: absolute;
+	left: 120px;
+	bottom: 0px;
+}
+
+.outline {
+	text-shadow: -1px 0 white, 0 -1px white, 1px 0 white, 0 1px white;
+}
+
+footer {
+	margin-top: 20px;
+}
+
+.carousel-caption, .badge, .list-group, .panel-heading, footer {
+	font-family: "PT Sans", Tahoma, sans-serif;
+}
+
+.carousel-caption {
+	background-color: rgba(0, 0, 0, 0.3);
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+h2 {
+	margin-top: 1.5em;
+}
+
+#heading-screenshots {
+	margin-top: 3em;
+}
+
+.list-group-item-heading {
+	font-weight: bold;
+	color: #a40000;
+}
+
+.list-group-item-text {
+	font-size: 90%;
+}
