@@ -96,6 +96,7 @@ content_files = version.xml \
 	glk-sound-resources.sgml \
 	glk-porting.sgml \
 	dispatch.sgml \
+	dispatch-selectors.sgml \
 	blorb.sgml \
 	blorb-library.sgml
 
