@@ -1,6 +1,6 @@
 #include <time.h>
 #include <sys/time.h>
-#include <strings.h> /* for bzero() */
+#include <string.h>
 #include <glib.h>
 #include "glk.h"
 
@@ -33,7 +33,7 @@ gli_date_to_tm(glkdate_t *date, struct tm *tm)
 {
     glsi32 microsec;
 
-    bzero(tm, sizeof(tm));
+    memset(tm, 0, sizeof(struct tm));
     tm->tm_year = date->year - 1900;
     tm->tm_mon = date->month - 1;
     tm->tm_mday = date->day;
