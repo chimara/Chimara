@@ -112,7 +112,16 @@ if BUILDING_VAPI
 chimara.vapi: $(INTROSPECTION_GIRS)
 	$(AM_V_GEN)$(VAPIGEN) --library=chimara --pkg gtk+-3.0 Chimara-1.0.gir && \
 	touch $@
+else
+chimara.vapi: $(INTROSPECTION_GIRS)
+	touch $@
+	@echo "WARNING: chimara.vapi not generated; install vala-tools if you"
+	@echo "want to be able to run distcheck or make release tarballs."
+dist-hook:
+	@echo "WARNING: install vala-tools if you want to be able to run"
+	@echo "distcheck or make release tarballs."
+	exit 1
 endif
 
-MAINTAINERCLEANFILES = chimara.vapi
+DISTCLEANFILES = chimara.vapi
 -include $(top_srcdir)/git.mk
