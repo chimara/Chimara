@@ -1,9 +1,9 @@
-#GRAPHICS = no_graph.c no_graph.h
-GRAPHICS = graphics.c graphics.h
+#GRAPHICS = no_graph.c
+GRAPHICS = graphics.c
 BLORB = blorb.c 
 # BLORB = no_blorb.c
-# SOUND = no_snd.c no_snd.h
-SOUND = sound.c sound.h
+# SOUND = no_snd.c
+SOUND = sound.c
 
 dist_noinst_SCRIPTS = copying.awk opt2glkc.pl y2help.pl
 
@@ -16,9 +16,10 @@ nitfol_la_SOURCES = automap.c automap.h binary.h copying.h debug.c debug.h \
 	op_save.c op_save.h op_table.c op_table.h op_v6.c op_v6.h portfunc.c \
 	portfunc.h quetzal.c quetzal.h solve.c solve.h stack.c stack.h struct.c \
 	struct.h tokenise.c tokenise.h undo.c undo.h z_io.c z_io.h zscii.c zscii.h \
-	$(GRAPHICS) \
+	$(GRAPHICS) no_graph.h graphics.h \
 	$(BLORB) \
-	$(SOUND)
+	$(SOUND) no_snd.h sound.h \
+	$(NULL)
 nodist_nitfol_la_SOURCES = copying.c dbg_help.h startunix.c
 nitfol_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara \
 	-DSMART_TOKENISER -DUSE_INLINE
@@ -51,7 +52,7 @@ options.texi: nitfol.opt opt2glkc.pl
 startunix.c: nitfol.opt opt2glkc.pl
 	$(AM_V_GEN)$(PERL) $(srcdir)/opt2glkc.pl -unix $(srcdir)/nitfol.opt
 
-EXTRA_DIST = nitfol.opt crashme.inf test.inf 
+EXTRA_DIST = nitfol.opt crashme.inf test.inf no_blorb.c no_graph.c no_snd.c
 
 nitfoldocdir = $(datadir)/doc/$(PACKAGE)/nitfol
 dist_nitfoldoc_DATA = ChangeLog COPYING INSTALL README
