@@ -18,11 +18,11 @@
  * resources
  *
  * Most platforms have some provision for interrupting a program &mdash;
- * <keycombo action="simul"><keycap function="command">command</keycap>
- * <keycap>period</keycap></keycombo> on the Macintosh, <keycombo 
- * action="simul"><keycap function="control">control</keycap><keycap>C</keycap>
- * </keycombo> in Unix, possibly a window manager item, or other possibilities.
- * This can happen at any time, including while execution is nested inside one 
+ * <keycombo action="simul"><keycap function="command">command</keycap><keycap>period</keycap></keycombo>
+ * on the Macintosh,
+ * <keycombo action="simul"><keycap function="control">control</keycap><keycap>C</keycap></keycombo>
+ * in Unix, possibly a window manager item, or other possibilities.
+ * This can happen at any time, including while execution is nested inside one
  * of your own functions, or inside a Glk library function.
  *
  * If you need to clean up critical resources, you can specify an interrupt
@@ -152,8 +152,8 @@
  * This is how you deal with opaque objects from a C program. If you are using
  * Glk through a virtual machine, matters will probably be different. Opaque
  * objects may be represented as integers, or as VM objects of some sort.
- * </para></note></para>
- * <para>
+ * </para></note>
+ *
  * <refsect2 id="chimara-Rocks"><!-- Indeed it does. -->
  * <title>Rocks</title>
  * <para>
@@ -248,12 +248,11 @@
  * 
  * If you use the basic text API, the character code which is returned can be
  * any value from 0 to 255. The printable character codes have already been
- * described. The remaining codes are typically control codes: <keycombo  
- * action="simul"><keycap function="control">control</keycap>
- * <keycap>A</keycap></keycombo> to <keycombo action="simul"><keycap 
- * function="control">control</keycap><keycap>Z</keycap></keycombo> and a few
- * others.
- * 
+ * described. The remaining codes are typically control codes:
+ * <keycombo action="simul"><keycap function="control">control</keycap><keycap>A</keycap></keycombo> to
+ * <keycombo action="simul"><keycap function="control">control</keycap><keycap>Z</keycap></keycombo>
+ * and a few others.
+ *
  * There are also a number of special codes, representing special keyboard
  * keys, which can be returned from a char-input event. These are represented
  * as 32-bit integers, starting with 4294967295 (0xFFFFFFFF) and working down.
@@ -3106,9 +3105,8 @@
  * linkend="chimara-Table-of-Selectors">Table of Selectors</link>. @arglist is
  * the list of arguments, and @numargs is the length of the list.
  * 
- * The arguments are all stored as #gluniversal_t objects. 
- * </para><refsect3 id="chimara-Basic-Dispatch-Types"><title>Basic Dispatch
- * Types</title><para>
+ * The arguments are all stored as #gluniversal_t
+ * objects.</para><refsect3 id="chimara-Basic-Dispatch-Types"><title>Basic Dispatch Types</title><para>
  * Numeric arguments are passed in the obvious way &mdash; one argument per
  * #gluniversal_t, with the @uint or @sint field set to the numeric value.
  * Characters and strings are also passed in this way &mdash; #char<!---->s in
@@ -3118,9 +3116,8 @@
  * handle all opaque pointer types.)
  * 
  * However, pointers (other than C strings), arrays, and structures complicate
- * life. So do return values.
- * </para></refsect3>
- * <refsect3 id="chimara-References"><title>References</title><para>
+ * life. So do return
+ * values.</para></refsect3><refsect3 id="chimara-References"><title>References</title><para>
  * A reference to a numeric type or object reference &mdash; that is,
  * <code>#glui32*</code>, <code>#winid_t*</code>, and so on &mdash; takes
  * <emphasis>one or two</emphasis> #gluniversal_t objects. The first is a flag
@@ -3202,9 +3199,8 @@
  * ]|
  * 
  * As you see, the length of @arglist depends on how many of the reference
- * arguments are %NULL.
- * </para></refsect3>
- * <refsect3 id="chimara-Structures"><title>Structures</title><para>
+ * arguments are
+ * %NULL.</para></refsect3><refsect3 id="chimara-Structures"><title>Structures</title><para>
  * A structure pointer is represented by a single @ptrflag, possibly followed by
  * a sequence of #gluniversal_t objects (one for each field of the structure.)
  * Again, if the structure pointer is non-%NULL, the @ptrflag should be %TRUE
@@ -3232,8 +3228,7 @@
  *   <code>arglist[0].ptrflag</code> to %FALSE, and using a one-element @arglist
  *   instead of five-element. But it's illegal to pass %NULL to glk_select(). So
  *   you cannot actually do this.
- * </para></note></para></refsect3>
- * <refsect3 id="chimara-Arrays"><title>Arrays</title><para>
+ * </para></note></refsect3><refsect3 id="chimara-Arrays"><title>Arrays</title>
  * In the Glk API, an array argument is always followed by a numeric argument
  * giving the array's length. These two C arguments are a single logical
  * argument, which is represented by <emphasis>one or three</emphasis>
@@ -3266,8 +3261,7 @@
  * <note><para>
  *   glk_put_buffer() does not modify the array passed to it, so there is no
  *   need to copy the characters out.
- * </para></note></para></refsect3>
- * <refsect3 id="chimara-Return-Values"><title>Return Values</title><para>
+ * </para></note></refsect3><refsect3 id="chimara-Return-Values"><title>Return Values</title>
  * The return value of a function is not treated specially. It is simply
  * considered to be a pass-out reference argument which may not be %NULL. It
  * comes after all the other arguments of the function.

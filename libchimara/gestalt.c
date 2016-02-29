@@ -44,8 +44,8 @@ glk_gestalt(glui32 sel, glui32 val)
  *
  * The critical point is that if the Glk library has never heard of the selector
  * @sel, it will return 0. It is <emphasis>always</emphasis> safe to call 
- * <code>#glk_gestalt(x, y)</code> (or <code>#glk_gestalt_ext(x, y, %NULL, 
- * 0)</code>). Even if you are using an old library, which was compiled before
+ * <code>#glk_gestalt(x, y)</code> (or <code>#glk_gestalt_ext(x, y, %NULL, 0)</code>).
+ * Even if you are using an old library, which was compiled before
  * the given capability was imagined, you can test for the capability by calling
  * glk_gestalt(); the library will correctly indicate that it does not support
  * it, by returning 0.
