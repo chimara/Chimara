@@ -65,7 +65,7 @@ AC_TYPE_UINT32_T
 ### INTERNATIONALIZATION ######################################################
 
 AM_GNU_GETTEXT([external])  # Gettext, link to system libintl
-AM_GNU_GETTEXT_VERSION([0.19.2])  # Supports Glade, Desktop files
+AM_GNU_GETTEXT_VERSION([0.18.3])  # Supports Glade files
 GETTEXT_PACKAGE=chimara
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
