@@ -4,9 +4,9 @@
 #include <glib.h>
 #include "glk.h"
 
-/* FIXME: GDateTime was introduced in GLib 2.26, which is not standard on all
- platforms yet. Therefore, we adapt Andrew Plotkin's implementation for now, and
- will replace it with the (presumably) more portable GLib facilities later. */
+/* Adapted from Andrew Plotkin's implementation in CheapGlk. Using GDateTime is
+not recommended, as it cannot handle leap seconds and so cannot conform to the
+spec. */
 
 /* Copy a POSIX tm structure to a glkdate. */
 static void
