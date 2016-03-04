@@ -6,7 +6,7 @@ AC_PREREQ([2.64]) # Newest feature: m4_map_args_w
 # Initialize Autoconf
 # Args: (human-readable package name, package version, bug report address, 
 # tarballname)
-AC_INIT([chimara], [0.9])
+AC_INIT([chimara], [0.9.1])
 # Sanity check to make sure we are running Autoconf from the right directory
 AC_CONFIG_SRCDIR(libchimara/chimara-glk.c)
 # Put m4 macros in their own directory
