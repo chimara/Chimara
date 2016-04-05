@@ -3,6 +3,12 @@
 import sys
 import os.path
 import argparse
+
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
+gi.require_version('Chimara', '1.0')
+
 from gi.repository import Gdk
 Gdk.threads_init()
 from gi.repository import GObject, GLib, Gdk, Gio, Gtk, Chimara
