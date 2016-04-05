@@ -128,6 +128,19 @@ AS_IF([test "x$with_sound" != "xno"],
 AC_PATH_PROG([VAPIGEN], [vapigen], [notfound])
 AM_CONDITIONAL(BUILDING_VAPI, $TEST "x$VAPIGEN" != xnotfound)
 
+### WHETHER TO RUN TESTS IN VIRTUAL X SERVER ###################################
+# Requires xvfb
+AC_ARG_WITH([xvfb-tests],
+	AS_HELP_STRING([--with-xvfb-tests],
+		[Use xvfb to run tests, e.g. on build servers @<:@default=no@:>@]))
+AS_IF([test "x$with_xvfb_tests" != "xno"],
+	[AC_PATH_PROG([XVFB], [xvfb-run], [notfound])])
+AS_IF([test "x$XVFB" != "xnotfound"],
+	[AC_SUBST([XVFB_RUN], ["$XVFB "])],  dnl can add other xvfb-run args here
+	[AS_IF([test "x$with_vfb_tests" = "yes"],
+		[AC_MSG_ERROR([XVFB tests requested, but xvfb-run not found])])])
+
+
 ### CHECK FOR LIBRARIES #######################################################
 
 # Libraries needed to build Chimara library
