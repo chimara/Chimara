@@ -1,0 +1,19 @@
+---
+sudo: required
+dist: trusty
+language: c
+script: ./autogen.sh && ./configure --enable-gtk-doc --with-xvfb-tests && make all check distcheck
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq xvfb gtk-doc-tools texinfo texlive valac libgirepository1.0-dev libgtk-3-dev libpango1.0-dev libgstreamer1.0-dev gstreamer1.0-tools gstreamer1.0-plugins-bad gstreamer1.0-plugins-good
+  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gettext/autopoint_0.19.4-1ubuntu3_all.deb
+  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gettext/gettext_0.19.4-1ubuntu3_amd64.deb
+  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gcc-4.9/libgomp1_4.9.2-10ubuntu13_amd64.deb
+  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gcc-4.9/gcc-4.9-base_4.9.2-10ubuntu13_amd64.deb
+  - sudo dpkg -i gcc-4.9-base_4.9.2-10ubuntu13_amd64.deb libgomp1_4.9.2-10ubuntu13_amd64.deb gettext_0.19.4-1ubuntu3_amd64.deb autopoint_0.19.4-1ubuntu3_all.deb
+compiler:
+  - clang
+  - gcc
+after_failure:
+  - test -f tests/unit/test-suite.log && cat tests/unit/test-suite.log
+  - test -f chimara-*/_build/tests/unit/test-suite.log && cat chimara-*/_build/tests/unit/test-suite.log
