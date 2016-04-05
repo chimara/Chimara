@@ -17,7 +17,7 @@ datetime_la_LDFLAGS = $(TEST_PLUGIN_LIBTOOL_FLAGS)
 TESTS = datetime.la
 TEST_EXTENSIONS = .la
 LA_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) $(top_srcdir)/tap-driver.sh
-LA_LOG_COMPILER = $(builddir)/../plugin-loader
+LA_LOG_COMPILER = $(builddir)/../glkunit-runner
 
 CLEANFILES = \
 	test-suite.log \

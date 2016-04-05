@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "glk.h"
 #include "glkunit.h"
 
@@ -23,7 +22,5 @@ glk_main(void)
         }
         printf("ok %d %s\n", tested + 1, test->name);
     }
-    /* Not supposed to use exit() in Glk, but we don't want to pause until the
-    window is closed */
-    exit(0);
+    glk_exit();
 }
