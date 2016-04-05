@@ -75,12 +75,17 @@ glk_exit(void)
 		flush_window_buffer(largewin);
 	}
 
+	/* Wait for a keypress if any text grid or buffer windows are open */
+	gboolean should_wait = FALSE;
 	g_mutex_lock(&glk_data->shutdown_lock);
 	for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL)) {
-		if(win->type == wintype_TextGrid || win->type == wintype_TextBuffer)
+		if(win->type == wintype_TextGrid || win->type == wintype_TextBuffer) {
 			g_signal_handler_unblock(win->widget, win->shutdown_keypress_handler);
+			should_wait = TRUE;
+		}
 	}
-	g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
+	if (should_wait)
+		g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
 	g_mutex_unlock(&glk_data->shutdown_lock);
 
 	shutdown_glk_post();
