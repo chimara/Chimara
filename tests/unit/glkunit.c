@@ -9,20 +9,21 @@ void
 glk_main(void)
 {
     struct TestDescription *test = tests;
-    int tested = 0, succeeded = 0, failed = 0;
-    while(test->name != NULL) {
-        tested++;
-        /* Use stdio.h to print to stdout, Glk can't do that */
-        printf("  Testing %s... ", test->name);
-        if( test->testfunc() ) {
-            succeeded++;
-            printf("PASS\n");
-        } else {
+    int total, tested, failed = 0;
+
+    /* Print test plan. Use stdio.h to print to stdout, Glk can't do that */
+    for(total = 0; tests[total].name != NULL; total++)
+        ;  /* count tests for test plan*/
+    printf("1..%d\n", total);
+
+    for(tested = 0; tested < total; tested++, test++) {
+        if( !test->testfunc() ) {
+            printf("not ");
             failed++;
-            printf("FAIL\n");
         }
-        test++;
+        printf("ok %d %s\n", tested + 1, test->name);
     }
-    printf("%d tests run, %d failures\n", tested, failed);
-    exit(failed > 0);
+    /* Not supposed to use exit() in Glk, but we don't want to pause until the
+    window is closed */
+    exit(0);
 }

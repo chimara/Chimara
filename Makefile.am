@@ -33,7 +33,7 @@ MAINTAINERCLEANFILES = \
 	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \
 	$(GITIGNORE_MAINTAINERCLEANFILES_MAKEFILE_IN) \
 	$(GITIGNORE_MAINTAINERCLEANFILES_M4_LIBTOOL) \
-	ABOUT-NLS INSTALL config.rpath gtk-doc.make \
+	ABOUT-NLS INSTALL config.rpath gtk-doc.make tap-driver.sh \
 	$(addprefix 'm4/',$(addsuffix '.m4', $(macros_ignore))) \
 	$(NULL)
 

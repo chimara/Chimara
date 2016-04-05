@@ -54,6 +54,7 @@ AC_PROG_AWK
 AC_PATH_PROG([PERL], [perl]) # Perl
 AC_PATH_PROG([TEST], [test]) # Test
 AC_PATH_PROG([ECHO], [echo]) # Echo
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
 ### TYPES #####################################################################
 
