@@ -811,7 +811,7 @@ chimara_if_get_format(ChimaraIF *self)
 ChimaraIFInterpreter
 chimara_if_get_interpreter(ChimaraIF *self)
 {
-	g_return_val_if_fail(self && CHIMARA_IS_IF(self), CHIMARA_IF_FORMAT_NONE);
+	g_return_val_if_fail(self && CHIMARA_IS_IF(self), CHIMARA_IF_INTERPRETER_NONE);
 	CHIMARA_IF_USE_PRIVATE(self, priv);
 	return priv->interpreter;
 }
