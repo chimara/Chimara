@@ -344,7 +344,7 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	// Name the color
 	char *foreground_name = gdk_rgba_to_string(current_foreground);
 	char *background_name = gdk_rgba_to_string(current_background);
-	char *name = g_strdup_printf("zcolor:%s/%s", foreground_name, background_name);
+	char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, foreground_name, background_name);
 	g_free(foreground_name);
 	g_free(background_name);
 
