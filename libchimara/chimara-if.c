@@ -148,9 +148,7 @@ emit_command_signal_on_active_inputs(char *window_librock, ChimaraGlk *glk)
 	char *response = g_strdup(inp->response->str);
 	g_string_truncate(inp->response, 0);
 
-	gdk_threads_enter();
 	g_signal_emit_by_name(glk, "command", inp->input, response);
-	gdk_threads_leave();
 
 	g_free(inp->input);
 	g_free(response);
