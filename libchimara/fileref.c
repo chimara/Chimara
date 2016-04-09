@@ -229,10 +229,12 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 
 	gdk_threads_enter();
 
+	GtkWindow *toplevel = GTK_WINDOW( gtk_widget_get_toplevel( GTK_WIDGET(glk_data->self) ) );
+
 	switch(fmode)
 	{
 		case filemode_Read:
-			chooser = gtk_file_chooser_dialog_new("Select a file to open", NULL,
+			chooser = gtk_file_chooser_dialog_new("Select a file to open", toplevel,
 				GTK_FILE_CHOOSER_ACTION_OPEN,
 				_("_Cancel"), GTK_RESPONSE_CANCEL,
 				_("_Open"), GTK_RESPONSE_ACCEPT,
@@ -240,7 +242,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_OPEN);
 			break;
 		case filemode_Write:
-			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
+			chooser = gtk_file_chooser_dialog_new("Select a file to save to", toplevel,
 				GTK_FILE_CHOOSER_ACTION_SAVE,
 				_("_Cancel"), GTK_RESPONSE_CANCEL,
 				_("_Save"), GTK_RESPONSE_ACCEPT,
@@ -250,7 +252,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			break;
 		case filemode_ReadWrite:
 		case filemode_WriteAppend:
-			chooser = gtk_file_chooser_dialog_new("Select a file to save to", NULL,
+			chooser = gtk_file_chooser_dialog_new("Select a file to save to", toplevel,
 				GTK_FILE_CHOOSER_ACTION_SAVE,
 				_("_Cancel"), GTK_RESPONSE_CANCEL,
 				_("_Save"), GTK_RESPONSE_ACCEPT,
