@@ -57,42 +57,46 @@ glk_set_hyperlink_stream(strid_t str, glui32 linkval)
 {
 	g_return_if_fail(str != NULL);
 	g_return_if_fail(str->type == STREAM_TYPE_WINDOW);
-	g_return_if_fail(str->window != NULL);
-	g_return_if_fail(str->window->type == wintype_TextBuffer || str->window->type == wintype_TextGrid);
 
-	flush_window_buffer(str->window);
+	winid_t win = str->window;
+
+	g_return_if_fail(win != NULL);
+	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
+
+	flush_window_buffer(win);
 
 	if(linkval == 0) {
 		/* Turn off hyperlink mode */
 		str->hyperlink_mode = FALSE;
-		str->window->current_hyperlink = NULL;
+		win->current_hyperlink = NULL;
 		return;
 	}
 
 	/* Check whether a tag with the needed value already exists */
-	hyperlink_t *new_hyperlink = g_hash_table_lookup(str->window->hyperlinks, &linkval);
+	hyperlink_t *new_hyperlink = g_hash_table_lookup(win->hyperlinks, &linkval);
 	if(new_hyperlink == NULL) {
 		/* Create a new hyperlink with the requested value */
 		new_hyperlink = g_new0(struct hyperlink, 1);
 		new_hyperlink->value = linkval;
+
 		new_hyperlink->tag = gtk_text_tag_new(NULL);
 		new_hyperlink->event_handler = g_signal_connect( new_hyperlink->tag, "event", G_CALLBACK(on_hyperlink_clicked), new_hyperlink );
-		if(!str->window->hyperlink_event_requested)
+		if(!win->hyperlink_event_requested)
 			g_signal_handler_block(new_hyperlink->tag, new_hyperlink->event_handler);
-		new_hyperlink->window = str->window;
+		new_hyperlink->window = win;
 
 		/* Add the new tag to the tag table of the textbuffer */
-		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(str->window->widget) );
+		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(textbuffer);
 		gtk_text_tag_table_add(tags, new_hyperlink->tag);
 
 		gint *linkval_pointer = g_new0(gint, 1);
 		*linkval_pointer = linkval;
-		g_hash_table_insert(str->window->hyperlinks, linkval_pointer, new_hyperlink);
+		g_hash_table_insert(win->hyperlinks, linkval_pointer, new_hyperlink);
 	}
 
 	str->hyperlink_mode = TRUE;
-	str->window->current_hyperlink = new_hyperlink;
+	win->current_hyperlink = new_hyperlink;
 }
 
 /* Internal function used to iterate over all the hyperlinks, unblocking the event handler */
