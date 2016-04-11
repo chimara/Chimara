@@ -21,7 +21,7 @@ fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 or
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
-	frefid_t f = g_new0(struct glk_fileref_struct, 1);
+	frefid_t f = g_slice_new0(struct glk_fileref_struct);
 	f->magic = MAGIC_FILEREF;
 	f->rock = rock;
 	if(glk_data->register_obj)
@@ -59,7 +59,7 @@ fileref_close_common(frefid_t fref)
 	g_free(fref->basename);
 	
 	fref->magic = MAGIC_FREE;
-	g_free(fref);
+	g_slice_free(struct glk_fileref_struct, fref);
 }
 
 /**

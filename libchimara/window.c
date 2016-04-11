@@ -11,7 +11,7 @@ static winid_t
 window_new_common(glui32 rock)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	winid_t win = g_new0(struct glk_window_struct, 1);
+	winid_t win = g_slice_new0(struct glk_window_struct);
 	
 	win->magic = MAGIC_WINDOW;
 	win->rock = rock;
@@ -79,7 +79,7 @@ window_close_common(winid_t win, gboolean destroy_node)
 	if(win->backing_store)
 		cairo_surface_destroy(win->backing_store);
 
-	g_free(win);
+	g_slice_free(struct glk_window_struct, win);
 }
 
 /**

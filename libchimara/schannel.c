@@ -274,7 +274,7 @@ glk_schannel_create_ext(glui32 rock, glui32 volume)
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
-	schanid_t s = g_new0(struct glk_schannel_struct, 1);
+	schanid_t s = g_slice_new0(struct glk_schannel_struct);
 	s->magic = MAGIC_SCHANNEL;
 	s->rock = rock;
 	if(glk_data->register_obj)
@@ -363,7 +363,7 @@ glk_schannel_destroy(schanid_t chan)
 		gst_object_unref(chan->pipeline);
 	
 	chan->magic = MAGIC_FREE;
-	g_free(chan);
+	g_slice_free(struct glk_schannel_struct, chan);
 #endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
 }
 

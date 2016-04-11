@@ -18,7 +18,7 @@ stream_new_common(glui32 rock)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
-	strid_t str = g_new0(struct glk_stream_struct, 1);
+	strid_t str = g_slice_new0(struct glk_stream_struct);
 	str->magic = MAGIC_STREAM;
 	str->rock = rock;
 	if(glk_data->register_obj)
@@ -66,7 +66,7 @@ stream_close_common(strid_t str, stream_result_t *result)
 		glk_data->current_stream = NULL;
 	
 	str->magic = MAGIC_FREE;
-	g_free(str);
+	g_slice_free(struct glk_stream_struct, str);
 }
 
 /**
