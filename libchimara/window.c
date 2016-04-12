@@ -300,11 +300,15 @@ glk_window_get_root()
  * 
  * So to create a text buffer window which takes the top 40% of the original
  * window's space, you would execute
- * |[ newwin = glk_window_open(win, winmethod_Above | winmethod_Proportional, 40, wintype_TextBuffer, 0); ]|
+ * |[
+ * newwin = glk_window_open(win, winmethod_Above | winmethod_Proportional, 40, wintype_TextBuffer, 0);
+ * ]|
  *
  * To create a text grid which is always five lines high, at the bottom of the
  * original window, you would do
- * |[ newwin = glk_window_open(win, winmethod_Below | winmethod_Fixed, 5, wintype_TextGrid, 0); ]|
+ * |[
+ * newwin = glk_window_open(win, winmethod_Below | winmethod_Fixed, 5, wintype_TextGrid, 0);
+ * ]|
  * 
  * Note that the meaning of the @size argument depends on the @method argument.
  * If the method is %winmethod_Fixed, it also depends on the @wintype argument.
@@ -1032,9 +1036,13 @@ glk_window_clear(winid_t win)
  *
  * Sets the current stream to @win's window stream. If @win is %NULL, it is
  * equivalent to
- * |[ glk_stream_set_current(NULL); ]|
+ * |[
+ * glk_stream_set_current(NULL);
+ * ]|
  * If @win is not %NULL, it is equivalent to
- * |[ glk_stream_set_current(glk_window_get_stream(win)); ]|
+ * |[
+ * glk_stream_set_current(glk_window_get_stream(win));
+ * ]|
  * See <link linkend="chimara-Streams">Streams</link>.
  */
 void
@@ -1234,8 +1242,10 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * fixed size of 3 rows.
  * 
  * If you later wanted to expand D, you could do
- * |[ glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, 5, NULL); ]|
- * That expands D to five rows. Note that, since O2's key window is already set 
+ * |[
+ * glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, 5, NULL);
+ * ]|
+ * That expands D to five rows. Note that, since O2's key window is already set
  * to D, it is not necessary to provide the @keywin argument; you can pass %NULL
  * to mean <quote>leave the key window unchanged.</quote>
  * 
@@ -1243,20 +1253,28 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * <emphasis>must</emphasis> be a descendant of that pair window. In the current
  * example, you could change O2's key window to be A, but not B. The key window
  * also cannot be a pair window itself.
- * 
- * |[ glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, 3, NULL); ]|
- * This changes the constraint to be on the <emphasis>lower</emphasis> child of 
+ *
+ * |[
+ * glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, 3, NULL);
+ * ]|
+ * This changes the constraint to be on the <emphasis>lower</emphasis> child of
  * O2, which is A. The key window is still D; so A would then be three rows high
  * as measured in D's font, and D would get the rest of O2's space. That may not
  * be what you want. To set A to be three rows high as measured in A's font, you
  * would do
- * |[ glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, 3, a); ]|
- * 
+ * |[
+ * glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, 3, a);
+ * ]|
+ *
  * Or you could change O2 to a proportional split:
- * |[ glk_window_set_arrangement(o2, winmethod_Below | winmethod_Proportional, 30, NULL); ]|
+ * |[
+ * glk_window_set_arrangement(o2, winmethod_Below | winmethod_Proportional, 30, NULL);
+ * ]|
  * or
- * |[ glk_window_set_arrangement(o2, winmethod_Above | winmethod_Proportional, 70, NULL); ]|
- * These do exactly the same thing, since 30&percnt; above is the same as 
+ * |[
+ * glk_window_set_arrangement(o2, winmethod_Above | winmethod_Proportional, 70, NULL);
+ * ]|
+ * These do exactly the same thing, since 30&percnt; above is the same as
  * 70&percnt; below. You don't need to specify a key window with a proportional
  * split, so the @keywin argument is %NULL. (You could actually specify either A
  * or D as the key window, but it wouldn't affect the result.)

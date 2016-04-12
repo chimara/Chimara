@@ -1271,9 +1271,9 @@
  * used by the Glk library. There is a sample 
  * <quote><filename>glkstart.c</filename></quote> file included in this package;
  * you should modify it to your needs.
- * 
- * |[ extern glkunix_argumentlist_t glkunix_arguments[]; ]|
- *  
+ * |[
+ * extern glkunix_argumentlist_t glkunix_arguments[];
+ * ]|
  * The <code>glkunix_arguments[]</code> array is a list of command-line 
  * arguments that your program can accept. The library will sort these out of 
  * the command line and pass them on to your code.
@@ -1539,11 +1539,15 @@
  *   the small-thorn character (&thorn;), it will wind up as -2. (The same is
  *   true of a <quote><type>char</type></quote> variable, if your compiler
  *   treats <quote><type>char</type></quote> as signed!) If you then call
- *   |[ res = glk_gestalt(gestalt_CharOutput, ch); ]|
+ *   |[
+ *   res = glk_gestalt(gestalt_CharOutput, ch);
+ *   ]|
  *   then (by the definition of C/C++) <code>ch</code> will be sign-extended to
  *   0xFFFFFFFE, which is not a legitimate character, even in Unicode. You
  *   should write
- *   |[ res = glk_gestalt(gestalt_CharOutput, (unsigned char)ch); ]|
+ *   |[
+ *   res = glk_gestalt(gestalt_CharOutput, (unsigned char)ch);
+ *   ]|
  *   instead.
  * </para></note>
  * <note><para>
@@ -1590,7 +1594,9 @@
  *
  * You can test whether mouse input is supported with the %gestalt_MouseInput 
  * selector.
- * |[ res = glk_gestalt(gestalt_MouseInput, windowtype); ]|
+ * |[
+ * res = glk_gestalt(gestalt_MouseInput, windowtype);
+ * ]|
  * This will return %TRUE (1) if windows of the given type support mouse input.
  * If this returns %FALSE (0), it is still legal to call
  * glk_request_mouse_event(), but it will have no effect, and you will never get
@@ -1601,7 +1607,9 @@
  * gestalt_Timer:
  *
  * You can test whether the library supports timer events:
- * |[ res = glk_gestalt(gestalt_Timer, 0); ]|
+ * |[
+ * res = glk_gestalt(gestalt_Timer, 0);
+ * ]|
  * This returns %TRUE (1) if timer events are supported, and %FALSE (0) if they 
  * are not.
  */
@@ -1674,7 +1682,9 @@
  *
  * You can test whether the library supports setting the volume of sound 
  * channels: 
- * |[ res = glk_gestalt(gestalt_SoundVolume, 0); ]|
+ * |[
+ * res = glk_gestalt(gestalt_SoundVolume, 0);
+ * ]|
  * This selector returns 1 if the glk_schannel_set_volume() function works. If 
  * it returns zero, glk_schannel_set_volume() has no effect.
  *
@@ -1685,7 +1695,9 @@
  * gestalt_SoundNotify:
  *
  * You can test whether the library supports sound notification events:
- * |[ res = glk_gestalt(gestalt_SoundNotify, 0); ]| 
+ * |[
+ * res = glk_gestalt(gestalt_SoundNotify, 0);
+ * ]|
  * This selector returns 1 if the library supports sound notification events. If
  * it returns zero, you will never get such events.
  *
@@ -1713,7 +1725,9 @@
  *
  * You can test whether hyperlinks are supported with the 
  * %gestalt_HyperlinkInput selector:
- * |[ res = glk_gestalt(gestalt_HyperlinkInput, windowtype); ]|
+ * |[
+ * res = glk_gestalt(gestalt_HyperlinkInput, windowtype);
+ * ]|
  * This will return %TRUE (1) if windows of the given type support hyperlinks.
  * If this returns %FALSE (0), it is still legal to call glk_set_hyperlink() and
  * glk_request_hyperlink_event(), but they will have no effect, and you will
@@ -1724,7 +1738,9 @@
  * gestalt_SoundMusic:
  *
  * You can test whether music resources are supported:
- * |[ res = glk_gestalt(gestalt_SoundMusic, 0); ]|
+ * |[
+ * res = glk_gestalt(gestalt_SoundMusic, 0);
+ * ]|
  * This returns 1 if the library is capable of playing music sound resources. If 
  * it returns 0, only sampled sounds can be played.
  * <note><para>
@@ -3921,7 +3937,9 @@
  * After the library parses the command line, it does various occult rituals of
  * initialization, and then calls glkunix_startup_code().
  *
- * |[ int glkunix_startup_code(glkunix_startup_t *data); ]|
+ * |[
+ * int glkunix_startup_code(glkunix_startup_t *data);
+ * ]|
  *
  * This should return %TRUE if everything initializes properly. If it returns
  * %FALSE, the library will shut down without ever calling your glk_main() 
