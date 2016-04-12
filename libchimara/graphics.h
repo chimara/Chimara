@@ -19,4 +19,7 @@ gboolean on_graphics_configure(GtkWidget *widget, GdkEventConfigure *event, wini
 gboolean on_graphics_draw(GtkWidget *widget, cairo_t *cr, winid_t win);
 void clear_image_cache(struct image_info *data, gpointer user_data);
 
+G_GNUC_INTERNAL void glkcairo_set_source_glkcolor(cairo_t *cr, glui32 val);
+G_GNUC_INTERNAL void ui_graphics_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height);
+
 #endif

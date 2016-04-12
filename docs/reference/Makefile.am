@@ -47,7 +47,7 @@ EXTRA_HFILES =
 IGNORE_HFILES = chimara-glk-private.h chimara-marshallers.h \
 	abort.h charset.h event.h fileref.h graphics.h hyperlink.h init.h input.h \
 	magic.h mouse.h pager.h resource.h schannel.h stream.h strio.h style.h \
-	timer.h window.h
+	timer.h ui-message.h window.h
 
 # Images to copy into HTML directory.
 HTML_IMAGES = \

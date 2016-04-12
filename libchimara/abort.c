@@ -3,6 +3,7 @@
 #include "abort.h"
 #include "chimara-glk-private.h"
 #include "strio.h"
+#include "ui-message.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
@@ -112,10 +113,7 @@ shutdown_glk_pre(void)
 		;
 	
 	/* Wait for any pending window rearrange */
-	g_mutex_lock(&glk_data->arrange_lock);
-	if(glk_data->needs_rearrange)
-		g_cond_wait(&glk_data->rearranged, &glk_data->arrange_lock);
-	g_mutex_unlock(&glk_data->arrange_lock);
+	ui_message_queue_and_await(ui_message_new(UI_MESSAGE_SYNC_ARRANGE, NULL));
 }
 
 /* Internal function: do any Glk-thread cleanup for shutting down the Glk library. */
@@ -138,7 +136,10 @@ shutdown_glk_post(void)
 	schanid_t sch;
 	while( (sch = glk_schannel_iterate(NULL, NULL)) )
 		glk_schannel_destroy(sch);
-	
+
+	/* Shut down the UI message queue */
+	ui_message_queue_and_await(ui_message_new(UI_MESSAGE_SHUTDOWN, NULL));
+
 	/* Empty the event queue */
 	g_mutex_lock(&glk_data->event_lock);
 	g_queue_foreach(glk_data->event_queue, (GFunc)g_free, NULL);
@@ -149,12 +150,6 @@ shutdown_glk_post(void)
 	g_mutex_lock(&glk_data->abort_lock);
 	glk_data->abort_signalled = FALSE;
 	g_mutex_unlock(&glk_data->abort_lock);
-
-	/* Reset arrangement mechanism */
-	g_mutex_lock(&glk_data->arrange_lock);
-	glk_data->needs_rearrange = FALSE;
-	glk_data->ignore_next_arrange_event = FALSE;
-	g_mutex_unlock(&glk_data->arrange_lock);
 
 	/* Unref input queues (they are not destroyed because the main thread stil holds a ref */
 	g_async_queue_unref(glk_data->char_input_queue);

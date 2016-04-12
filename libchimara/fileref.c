@@ -11,6 +11,7 @@
 #include "glk.h"
 #include "gi_dispa.h"
 #include "magic.h"
+#include "ui-message.h"
 
 extern GPrivate glk_data_key;
 
@@ -223,13 +224,26 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 {
 	/* TODO: Remember current working directory and last used filename
 	for each usage */
-	GtkWidget *chooser;
-
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
-	gdk_threads_enter();
+	UiMessage *msg = ui_message_new(UI_MESSAGE_FILE_PROMPT, NULL);
+	msg->uintval1 = usage;
+	msg->uintval2 = fmode;
+	msg->strval = g_strdup(glk_data->current_dir);
+	char *filename = ui_message_queue_and_await_string(msg);
 
-	GtkWindow *toplevel = GTK_WINDOW( gtk_widget_get_toplevel( GTK_WIDGET(glk_data->self) ) );
+	frefid_t f = fileref_new(filename, NULL, rock, usage, fmode);
+	g_free(filename);
+	return f;
+}
+
+/* Prompts the user for a file to open or save to.
+ * Called as a result of glk_fileref_create_by_prompt(). */
+char *
+ui_prompt_for_file(ChimaraGlk *glk, unsigned usage, unsigned fmode, const char *current_dir)
+{
+	GtkWindow *toplevel = GTK_WINDOW( gtk_widget_get_toplevel( GTK_WIDGET(glk) ) );
+	GtkWidget *chooser;
 
 	switch(fmode)
 	{
@@ -261,7 +275,6 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			break;
 		default:
 			ILLEGAL_PARAM("Unknown file mode: %u", fmode);
-			gdk_threads_leave();
 			return NULL;
 	}
 	
@@ -287,7 +300,6 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 			break;
 		default:
 			ILLEGAL_PARAM("Unknown file usage: %u", usage);
-			gdk_threads_leave();
 			return NULL;
 	}
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
@@ -307,22 +319,18 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	gtk_file_filter_add_pattern(filter, "*");
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
 
-	if(glk_data->current_dir)
-		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), glk_data->current_dir);
-	
+	if(current_dir)
+		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), current_dir);
+
 	if(gtk_dialog_run( GTK_DIALOG(chooser) ) != GTK_RESPONSE_ACCEPT)
 	{
 		gtk_widget_destroy(chooser);
-		gdk_threads_leave();
 		return NULL;
 	}
 	gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(chooser) );
-	frefid_t f = fileref_new(filename, NULL, rock, usage, fmode);
-	g_free(filename);
 	gtk_widget_destroy(chooser);
 
-	gdk_threads_leave();
-	return f;
+	return filename;
 }
 
 /**

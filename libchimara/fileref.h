@@ -3,6 +3,7 @@
 
 #include <glib.h>
 
+#include "chimara-glk.h"
 #include "glk.h"
 #include "gi_dispa.h"
 
@@ -24,4 +25,7 @@ struct glk_fileref_struct
 };
 
 G_GNUC_INTERNAL frefid_t fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 orig_filemode);
+
+G_GNUC_INTERNAL char *ui_prompt_for_file(ChimaraGlk *glk, unsigned usage, unsigned fmode, const char *current_dir);
+
 #endif

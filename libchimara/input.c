@@ -8,14 +8,12 @@
 #include "magic.h"
 #include "input.h"
 #include "pager.h"
-#include "strio.h"
+#include "ui-message.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
 
 /* Forward declarations */
-static int finish_text_buffer_line_input(winid_t win, gboolean emit_signal);
-static int finish_text_grid_line_input(winid_t win, gboolean emit_signal);
 static void cancel_old_input_request(winid_t win);
 
 /* Internal function: code common to both flavors of char event request */
@@ -27,8 +25,14 @@ request_char_event_common(winid_t win, gboolean unicode)
 
 	cancel_old_input_request(win);
 
-	flush_window_buffer(win);
+	UiMessage *msg = ui_message_new(UI_MESSAGE_REQUEST_CHAR_INPUT, win);
+	msg->boolval = unicode;
+	ui_message_queue(msg);
+}
 
+void
+ui_window_request_char_input(ChimaraGlk *glk, winid_t win, gboolean unicode)
+{
 	if(win->type == wintype_TextBuffer) {
 		/* Move the input_position mark to the end of the window_buffer */
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
@@ -42,13 +46,10 @@ request_char_event_common(winid_t win, gboolean unicode)
 	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
 	g_signal_handler_unblock( win->widget, win->char_input_keypress_handler );
 
-	gdk_threads_enter();
 	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
-	gdk_threads_leave();
 
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	g_signal_emit_by_name(glk_data->self, "waiting");
+	g_signal_emit_by_name(glk, "waiting");
 }
 
 /**
@@ -95,23 +96,13 @@ glk_cancel_char_event(winid_t win)
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
-	if(win->input_request_type == INPUT_REQUEST_CHARACTER || win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE)
-	{
-		win->input_request_type = INPUT_REQUEST_NONE;
-		g_signal_handler_block( win->widget, win->char_input_keypress_handler );
-	}
+	ui_message_queue(ui_message_new(UI_MESSAGE_CANCEL_CHAR_INPUT, win));
 }
 
 /* Internal function: Request either latin-1 or unicode line input, in a text grid window. */
 static void
-text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
+ui_grid_request_line_event(winid_t win, glui32 maxlen, gboolean insert, const char *inserttext)
 {
-	/* All outstanding printing _must_ be finished before putting an input entry
-	 into the buffer */
-	flush_window_buffer(win);
-
-	gdk_threads_enter();
-
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
     GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
@@ -123,7 +114,9 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     /* Odd; the Glk spec says the maximum input length is
     windowwidth - 1 - cursorposition. I say no, because if cursorposition is
     zero, then the input should fill the whole line. FIXME??? */
+	g_mutex_lock(&win->lock);
     win->input_length = MIN(win->width - cursorpos, win->line_input_buffer_max_len);
+	g_mutex_unlock(&win->lock);
     end_iter = start_iter;
     gtk_text_iter_set_line_offset(&end_iter, cursorpos + win->input_length);
 
@@ -177,18 +170,12 @@ text_grid_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert,
     gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
 
 	gtk_widget_grab_focus(win->input_entry);
-
-	gdk_threads_leave();
 }
 
 /* Internal function: Request either latin-1 or unicode line input, in a text buffer window. */
-static void
-text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean insert, gchar *inserttext)
+void
+ui_buffer_request_line_event(winid_t win, glui32 maxlen, gboolean insert, const char *inserttext)
 {
-	flush_window_buffer(win);
-
-	gdk_threads_enter();
-
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
     /* Move the input_position mark to the end of the window_buffer */
@@ -221,8 +208,6 @@ text_buffer_request_line_event_common(winid_t win, glui32 maxlen, gboolean inser
 
 	g_signal_handler_unblock(buffer, win->insert_text_handler);
 	gtk_widget_grab_focus(win->widget);
-
-	gdk_threads_leave();
 }
 
 /**
@@ -273,20 +258,30 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	win->current_extra_line_terminators = g_slist_copy(win->extra_line_terminators);
 
 	gchar *inserttext = (initlen > 0)? g_strndup(buf, initlen) : g_strdup("");
+
+	UiMessage *msg = ui_message_new(UI_MESSAGE_REQUEST_LINE_INPUT, win);
+	msg->uintval1 = maxlen;
+	msg->boolval = initlen > 0;
+	msg->strval = inserttext;
+	ui_message_queue(msg);
+}
+
+void
+ui_window_request_line_input(ChimaraGlk *glk, winid_t win, glui32 maxlen, gboolean insert, const char *inserttext)
+{
 	switch(win->type)
 	{
 	    case wintype_TextBuffer:
-	        text_buffer_request_line_event_common(win, maxlen, (initlen > 0), inserttext);
+			ui_buffer_request_line_event(win, maxlen, insert, inserttext);
 	        break;
 	    case wintype_TextGrid:
-	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), inserttext);
+			ui_grid_request_line_event(win, maxlen, insert, inserttext);
 	        break;
     }
-	g_free(inserttext);
 	g_signal_handler_unblock(win->widget, win->line_input_keypress_handler);
 
 	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	g_signal_emit_by_name(glk_data->self, "waiting");
+	g_signal_emit_by_name(glk, "waiting");
 }
 
 /**
@@ -354,20 +349,11 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
 	else
 		utf8 = g_strdup("");
 
-    switch(win->type)
-	{
-	    case wintype_TextBuffer:
-	        text_buffer_request_line_event_common(win, maxlen, (initlen > 0), utf8);
-	        break;
-	    case wintype_TextGrid:
-	        text_grid_request_line_event_common(win, maxlen, (initlen > 0), utf8);
-	        break;
-    }
-    g_signal_handler_unblock(win->widget, win->line_input_keypress_handler);
-	g_free(utf8);
-
-	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	g_signal_emit_by_name(glk_data->self, "waiting");
+	UiMessage *msg = ui_message_new(UI_MESSAGE_REQUEST_LINE_INPUT, win);
+	msg->uintval1 = maxlen;
+	msg->boolval = initlen > 0;
+	msg->strval = utf8;
+	ui_message_queue(msg);
 }
 
 /**
@@ -402,20 +388,8 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	if(win->input_request_type != INPUT_REQUEST_LINE && win->input_request_type != INPUT_REQUEST_LINE_UNICODE)
 		return;
 
-	g_signal_handler_block( win->widget, win->line_input_keypress_handler );
-
-	int chars_written = 0;
-
-	gdk_threads_enter();
-	if(win->type == wintype_TextGrid) {
-		chars_written = finish_text_grid_line_input(win, FALSE);
-	} else if(win->type == wintype_TextBuffer) {
-		gtk_text_view_set_editable( GTK_TEXT_VIEW(win->widget), FALSE );
-		GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		g_signal_handler_block(window_buffer, win->insert_text_handler);
-		chars_written = finish_text_buffer_line_input(win, FALSE);
-	}
-	gdk_threads_leave();
+	UiMessage *msg = ui_message_new(UI_MESSAGE_CANCEL_LINE_INPUT, win);
+	int chars_written = ui_message_queue_and_await(msg);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	if(glk_data->unregister_arr)
@@ -590,7 +564,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 				/* Make the window uneditable again and retrieve the text that was input */
 				gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
 
-				int chars_written = finish_text_buffer_line_input(win, TRUE);
+				int chars_written = ui_buffer_finish_line_input(win, TRUE);
 				ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 				event_throw(glk, evtype_LineInput, win, chars_written, 0);
 				return TRUE;
@@ -671,8 +645,8 @@ write_to_window_buffer(winid_t win, const gchar *inserted_text)
 
 /* Internal function: Retrieves the input of a TextBuffer window and stores it in the window buffer.
  * Returns the number of characters written, suitable for inclusion in a line input event. */
-static int
-finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
+int
+ui_buffer_finish_line_input(winid_t win, gboolean emit_signal)
 {
 	VALID_WINDOW(win, return 0);
 	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
@@ -721,8 +695,8 @@ finish_text_buffer_line_input(winid_t win, gboolean emit_signal)
 
 /* Internal function: Retrieves the input of a TextGrid window and stores it in the window buffer.
  * Returns the number of characters written, suitable for inclusion in a line input event. */
-static int
-finish_text_grid_line_input(winid_t win, gboolean emit_signal)
+int
+ui_grid_finish_line_input(winid_t win, gboolean emit_signal)
 {
 	VALID_WINDOW(win, return 0);
 	g_return_val_if_fail(win->type == wintype_TextGrid, 0);
@@ -805,7 +779,7 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 {
 	g_signal_handler_block(win->widget, win->line_input_keypress_handler);
 
-	int chars_written = finish_text_grid_line_input(win, TRUE);
+	int chars_written = ui_grid_finish_line_input(win, TRUE);
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 	event_throw(glk, evtype_LineInput, win, chars_written, 0);
 }
@@ -934,11 +908,9 @@ force_char_input_from_queue(winid_t win, event_t *event)
 
 	glk_cancel_char_event(win);
 
-	gdk_threads_enter();
-	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, keyval);
-	gdk_threads_leave();
+	UiMessage *msg = ui_message_new(UI_MESSAGE_FORCE_CHAR_INPUT, win);
+	msg->uintval1 = keyval;
+	ui_message_queue(msg);
 
 	event->type = evtype_CharInput;
 	event->win = win;
@@ -951,9 +923,21 @@ force_line_input_from_queue(winid_t win, event_t *event)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	const gchar *text = g_async_queue_pop(glk_data->line_input_queue);
-	glui32 chars_written = 0;
 
-	gdk_threads_enter();
+	UiMessage *msg = ui_message_new(UI_MESSAGE_FORCE_LINE_INPUT, win);
+	msg->strval = g_strdup(text);
+	glui32 chars_written = ui_message_queue_and_await(msg);
+
+	event->type = evtype_LineInput;
+	event->win = win;
+	event->val1 = chars_written;
+	event->val2 = 0;
+}
+
+int
+ui_window_force_line_input(winid_t win, const char *text)
+{
+	int chars_written = 0;
 	if(win->type == wintype_TextBuffer)
 	{
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
@@ -980,7 +964,7 @@ force_line_input_from_queue(winid_t win, event_t *event)
 			gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", "glk-input", NULL);
 		}
 
-		chars_written = finish_text_buffer_line_input(win, TRUE);
+		chars_written = ui_buffer_finish_line_input(win, TRUE);
 	}
 	else if(win->type == wintype_TextGrid)
 	{
@@ -989,14 +973,9 @@ force_line_input_from_queue(winid_t win, event_t *event)
 
 		/* Insert the forced input into the window */
 		gtk_entry_set_text(GTK_ENTRY(win->input_entry), text);
-		chars_written = finish_text_grid_line_input(win, TRUE);
+		chars_written = ui_grid_finish_line_input(win, TRUE);
 	}
-	gdk_threads_leave();
-
-	event->type = evtype_LineInput;
-	event->win = win;
-	event->val1 = chars_written;
-	event->val2 = 0;
+	return (int)chars_written;
 }
 
 /*** Internal function: cancels any pending input requests on the window and presents a warning if not INPUT_REQUEST_NONE ***/

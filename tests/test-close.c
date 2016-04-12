@@ -32,8 +32,6 @@ main(int argc, char *argv[])
 {
     GtkWidget *window, *vbox, *hbox, *stop, *go, *glk;
 
-    /* Initialize threads and GTK */
-    gdk_threads_init();
     gtk_init(&argc, &argv);
     
     /* Construct the window and its contents. We quit the GTK main loop
@@ -67,11 +65,8 @@ main(int argc, char *argv[])
     
     /* Start the plugin */
     g_assert(chimara_if_run_game(CHIMARA_IF(glk), "unicodetest.ulx", NULL));
-    
-    /* Start the GTK main loop */
-    gdk_threads_enter();
+
     gtk_main();
-    gdk_threads_leave();
 
     /* After the GTK main loop exits, signal the Glk program to shut down if
      * it is still running, and wait for it to exit. */

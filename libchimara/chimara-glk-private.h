@@ -38,6 +38,9 @@ struct _ChimaraGlkPrivate {
 	gchar *final_message;
 	/* Image cache */
 	GSList *image_cache;
+	/* Size allocate flags */
+	gboolean needs_rearrange;
+	gboolean ignore_next_arrange_event;
 
 	/* *** Threading data *** */
 	/* Whether program is running */
@@ -48,6 +51,9 @@ struct _ChimaraGlkPrivate {
     GModule *program;
     /* Thread in which Glk program is run */
     GThread *thread;
+	/* Pipe through which to schedule updates to the UI */
+	unsigned ui_message_handler_id;
+	GAsyncQueue *ui_message_queue;
     /* Event queue and threading stuff */
     GQueue *event_queue;
 	GMutex event_lock;
@@ -59,11 +65,8 @@ struct _ChimaraGlkPrivate {
 	/* Key press after shutdown mechanism */
 	GMutex shutdown_lock;
 	GCond shutdown_key_pressed;
-	/* Window arrangement locks */
+	/* Window arrangement lock */
 	GMutex arrange_lock;
-	GCond rearranged;
-	gboolean needs_rearrange;
-	gboolean ignore_next_arrange_event;
 	/* Input queues */
 	GAsyncQueue *char_input_queue;
 	GAsyncQueue *line_input_queue;

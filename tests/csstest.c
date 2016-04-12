@@ -21,7 +21,6 @@ style2(GtkButton *button, GtkStyleProvider *funky_provider)
 int
 main(int argc, char **argv)
 {
-	gdk_threads_init();
 	gtk_init(&argc, &argv);
 
 	/* Create widgets */
@@ -93,9 +92,7 @@ main(int argc, char **argv)
 	char *plugin_argv[] = { "styletest" };
 	chimara_glk_run(CHIMARA_GLK(glk), ".libs/styletest.so", 1, plugin_argv, NULL);
 
-	gdk_threads_enter();
 	gtk_main();
-	gdk_threads_leave();
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));

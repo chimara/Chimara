@@ -10,6 +10,7 @@
 #include "magic.h"
 #include "resource.h"
 #include "stream.h"
+#include "ui-message.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
@@ -398,16 +399,9 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	/* If they opened a file in write mode but didn't specifically get
 	permission to do so, complain if the file already exists */
 	if(fileref->orig_filemode == filemode_Read && fmode != filemode_Read) {
-		gdk_threads_enter();
-
-		GtkWidget *dialog = gtk_message_dialog_new(NULL, 0,
-			GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-			"File '%s' already exists. Overwrite?", fileref->filename);
-		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
-		gtk_widget_destroy(dialog);
-
-		gdk_threads_leave();
-
+		UiMessage *msg = ui_message_new(UI_MESSAGE_CONFIRM_FILE_OVERWRITE, NULL);
+		msg->strval = g_strdup(fileref->filename);
+		int response = ui_message_queue_and_await(msg);
 		if(response != GTK_RESPONSE_YES) {
 			if(fclose(fp) != 0)
 				IO_WARNING( "Error closing file", fileref->filename, g_strerror(errno) );

@@ -75,7 +75,6 @@ main(int argc, char *argv[])
 {
 	GError *error = NULL;
 
-	gdk_threads_init();
 	gtk_init(&argc, &argv);
 
 	create_window();
@@ -97,9 +96,7 @@ main(int argc, char *argv[])
    		g_error("Error starting Glk library: %s\n", error->message);
     g_object_unref(plugin_file);
 
-    gdk_threads_enter();
 	gtk_main();
-	gdk_threads_leave();
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));

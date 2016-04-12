@@ -18,13 +18,42 @@ enum InputRequestType
 struct glk_window_struct
 {
 	/*< private >*/
+
+	/* The following fields are constant and must not be changed after creating
+	the window */
 	glui32 magic, rock;
 	char *librock; /* "library rock" - unique string identifier */
 	gidispatch_rock_t disprock;
-	/* Pointer to the node in the global tree that contains this window */
-	GNode *window_node;
-	/* Window parameters */
 	glui32 type;
+
+	/* The following fields should only be accessed by the Glk thread */
+	/* Streams associated with the window */
+	strid_t window_stream;  /* returned by get_window_stream() */
+	strid_t echo_stream;    /* returned by get_echo_stream() */
+
+	/* These fields may be accessed by both the Glk thread and the UI thread. Any
+	access must be protected by locking the @lock mutex. */
+
+	GMutex lock;
+	/* Width and height of the window, in characters */
+	glui32 width;     /* returned by get_size(), needed in ui_window_print_string() */
+	glui32 height;    /* ditto */
+	/* Width and height of the window's size units, in pixels */
+	int unit_width;   /* ditto */
+	int unit_height;  /* ditto */
+
+	/* The window tree may be accessed by both the Glk thread and the UI thread,
+	but must be protected by locking the library's arrange_lock. */
+
+	/* Pointer to the node in the global tree that contains this window */
+	GNode *window_node;      /* returned by get_parent(), get_sibling(), etc. */
+	/* Window split data (pair windows only) */
+	winid_t key_window;      /* returned by get_arrangement(), needed in size_allocate() */
+	glui32 split_method;     /* ditto */
+	glui32 constraint_size;  /* ditto */
+
+	/* Below here, the fields should only be accessed by the UI thread */
+
 	/* "widget" is the actual widget with the window's functionality */
 	GtkWidget *widget;
 	/* "frame" is the widget that is the child of the ChimaraGlk container, such 
@@ -34,19 +63,6 @@ struct glk_window_struct
 	widgets that are neither "widget" nor "frame" */
 	GtkWidget *scrolledwindow;
 	GtkWidget *pager;
-	/* Width and height of the window's size units, in pixels */
-	int unit_width;
-	int unit_height;
-	/* Streams associated with the window */
-	strid_t window_stream;
-	strid_t echo_stream;
-	/* Width and height of the window, in characters (text grids only) */
-	glui32 width;
-	glui32 height;
-	/* Window split data (pair windows only) */
-	winid_t key_window;
-	glui32 split_method;
-	glui32 constraint_size;
 	/* Input request stuff */
 	enum InputRequestType input_request_type;
 	gchar *line_input_buffer;
@@ -76,10 +92,12 @@ struct glk_window_struct
 	gulong size_allocate_handler;
 	gulong pager_keypress_handler;
 	gulong pager_adjustment_handler;
-	/* Window buffer */
+	/* Window buffer (text buffers and grids only) */
 	GString *buffer;
 	GtkTextTag *zcolor;
 	GtkTextTag *zcolor_reversed;
+	char *style_tagname;  /* Name of the current style */
+	char *glk_style_tagname;  /* Name of the current glk style override */
 	/* Hyperlinks */
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;

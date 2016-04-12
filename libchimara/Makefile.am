@@ -35,7 +35,13 @@ libchimara_la_SOURCES = \
 	strio.c strio.h \
 	style.c style.h \
 	timer.c timer.h \
-	window.c window.h
+	ui-buffer.c ui-buffer.h \
+	ui-graphics.c ui-graphics.h \
+	ui-grid.c ui-grid.h \
+	ui-message.c ui-message.h \
+	ui-window.c ui-window.h \
+	window.c window.h \
+	$(NULL)
 libchimara_la_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DG_LOG_DOMAIN=\"Chimara\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \

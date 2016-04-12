@@ -19,11 +19,8 @@
  * an appropriate interpreter plugin and runs it. Interpreter options are set by
  * setting properties on the widget.
  *
- * Using it in a GTK program is similar to using #ChimaraGlk (which see). 
- * Threads must be initialized before using #ChimaraIF and the call to 
- * gtk_main() must be bracketed between gdk_threads_enter() and 
- * gdk_threads_leave(). Use chimara_if_run_game() to start playing an
- * interactive fiction game.
+ * Using it in a GTK program is similar to using #ChimaraGlk (which see).
+ * Use chimara_if_run_game() to start playing an interactive fiction game.
  */
 
 static gboolean supported_formats[CHIMARA_IF_NUM_FORMATS][CHIMARA_IF_NUM_INTERPRETERS] = {

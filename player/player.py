@@ -9,9 +9,7 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 gi.require_version('Chimara', '1.0')
 
-from gi.repository import Gdk
-Gdk.threads_init()
-from gi.repository import GObject, GLib, Gdk, Gio, Gtk, Chimara
+from gi.repository import GObject, GLib, Gio, Gtk, Chimara
 import config
 
 if config.ENABLE_NLS:
@@ -361,9 +359,7 @@ if __name__ == '__main__':
                     errmsg=e.message))
             sys.exit(1)
 
-    Gdk.threads_enter()
     Gtk.main()
-    Gdk.threads_leave()
 
     player.glk.stop()
     player.glk.wait()

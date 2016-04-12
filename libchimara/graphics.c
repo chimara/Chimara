@@ -5,6 +5,7 @@
 #include "magic.h"
 #include "resource.h"
 #include "strio.h"
+#include "ui-message.h"
 #include "window.h"
 
 #define BUFFER_SIZE (1024)
@@ -309,7 +310,22 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 			return FALSE;
 	}
 
-	return draw_image_common(win, info->pixbuf, val1, val2);
+	UiMessage *msg;
+	if(win->type == wintype_Graphics) {
+		msg = ui_message_new(UI_MESSAGE_GRAPHICS_DRAW_IMAGE, win);
+		msg->ptrval = info->pixbuf;
+		msg->x = val1;
+		msg->y = val2;
+	} else {
+		msg = ui_message_new(UI_MESSAGE_BUFFER_DRAW_IMAGE, win);
+		msg->ptrval = info->pixbuf;
+		msg->uintval1 = val1;
+	}
+	ui_message_queue(msg);
+
+	/* There is currently no way for the drawing not to succeed, so we don't
+	have to wait for an answer from the UI thread */
+	return TRUE;
 }
 
 /**
@@ -374,66 +390,21 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 		info = scaled_info;
 	}
 
-	return draw_image_common(win, info->pixbuf, val1, val2);
-}
-
-/* Internal function: draws a pixbuf to a graphics window or text buffer */
-glui32
-draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2)
-{
-	switch(win->type) {
-	case wintype_Graphics:
-	{
-		gdk_threads_enter();
-
-		cairo_t *cr = cairo_create(win->backing_store);
-		gdk_cairo_set_source_pixbuf(cr, pixbuf, val1, val2);
-		cairo_paint(cr);
-		cairo_destroy(cr);
-
-		/* Update the screen */
-		gtk_widget_queue_draw(win->widget);
-
-		gdk_threads_leave();
+	UiMessage *msg;
+	if(win->type == wintype_Graphics) {
+		msg = ui_message_new(UI_MESSAGE_GRAPHICS_DRAW_IMAGE, win);
+		msg->ptrval = info->pixbuf;
+		msg->x = val1;
+		msg->y = val2;
+	} else {
+		msg = ui_message_new(UI_MESSAGE_BUFFER_DRAW_IMAGE, win);
+		msg->ptrval = info->pixbuf;
+		msg->uintval1 = val1;
 	}
-		break;
+	ui_message_queue(msg);
 
-	case wintype_TextBuffer:
-	{
-		flush_window_buffer(win);
-
-		gdk_threads_enter();
-
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextIter end, start;
-		gtk_text_buffer_get_end_iter(buffer, &end);
-
-		gtk_text_buffer_insert_pixbuf(buffer, &end, pixbuf);
-		start = end;
-		gtk_text_iter_forward_char(&end);
-
-		gint height = 0;
-		switch(val1) {
-		case imagealign_InlineDown:
-			height -= win->unit_height;
-			break;
-		case imagealign_InlineCenter:
-			height = -win->unit_height / 2;
-			break;
-		case imagealign_InlineUp:
-		default:
-			height = 0;
-		}
-
-		if(height != 0) {
-			GtkTextTag *tag = gtk_text_buffer_create_tag(buffer, NULL, "rise", PANGO_SCALE * (-height), NULL);
-			gtk_text_buffer_apply_tag(buffer, tag, &start, &end);
-		}
-
-		gdk_threads_leave();
-	}
-		break;
-	}
+	/* There is currently no way for the drawing not to succeed, so we don't
+	have to wait for an answer from the UI thread */
 	return TRUE;
 }
 
@@ -469,7 +440,7 @@ glk_window_set_background_color(winid_t win, glui32 color)
 	win->background_color = color;
 }
 
-static void
+void
 glkcairo_set_source_glkcolor(cairo_t *cr, glui32 val)
 {
 	double r, g, b;
@@ -498,16 +469,24 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_Graphics);
 
-	gdk_threads_enter();
+	UiMessage *msg = ui_message_new(UI_MESSAGE_GRAPHICS_FILL_RECT, win);
+	msg->uintval1 = color;
+	msg->x = left;
+	msg->y = top;
+	msg->uintval2 = width;
+	msg->uintval2 = height;
+	ui_message_queue(msg);
+}
 
+void
+ui_graphics_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height)
+{
 	cairo_t *cr = cairo_create(win->backing_store);
 	glkcairo_set_source_glkcolor(cr, color);
 	cairo_rectangle(cr, (double)left, (double)top, (double)width, (double)height);
 	cairo_fill(cr);
 	gtk_widget_queue_draw(win->widget);
 	cairo_destroy(cr);
-
-	gdk_threads_leave();
 }
 
 /**

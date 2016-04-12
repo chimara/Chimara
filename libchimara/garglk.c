@@ -7,11 +7,14 @@
 #include "magic.h"
 #include "stream.h"
 #include "style.h"
+#include "ui-message.h"
 #include "window.h"
 
 #define ZCOLOR_NAME_TEMPLATE "zcolor:%s/%s"
 
 extern GPrivate glk_data_key;
+
+void ui_window_set_reverse_video(winid_t win, gboolean reverse);
 
 /**
  * garglk_fileref_get_name:
@@ -164,12 +167,21 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	g_debug("garglk_set_zcolors_stream(str->rock=%d, fg=%08X, bg=%08X)", str->rock, fg, bg);
 
 	VALID_STREAM(str, return);
+	g_return_if_fail(str->window != NULL);
 
-	winid_t win = str->window;
-	g_return_if_fail(win != NULL);
+	UiMessage *msg = ui_message_new(UI_MESSAGE_SET_ZCOLORS, str->window);
+	msg->uintval1 = fg;
+	msg->uintval2 = bg;
+	ui_message_queue(msg);
+}
 
-	gdk_threads_enter();
-
+/* Sets the foreground and background of the text buffer or text grid window
+ * @window to the Z-machine colors @fg and @bg, respectively.
+ * Called as a result of garglk_set_zcolors_stream() and
+ * garglk_set_zcolors(). */
+void
+ui_window_set_zcolors(winid_t win, unsigned fg, unsigned bg)
+{
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 	GdkRGBA fore, back;
@@ -272,15 +284,10 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 		// Update the reversed version if necessary
 		if(win->zcolor_reversed) {
 			int reversed = GPOINTER_TO_INT( g_object_get_data( G_OBJECT(win->zcolor_reversed), "reverse-color" ) );
-
-			gdk_threads_leave();
-			garglk_set_reversevideo_stream(str, reversed != 0);
-			gdk_threads_enter();
+			ui_window_set_reverse_video(win, reversed != 0);
 		}
 	
 	}
-
-	gdk_threads_leave();
 }
 
 /**
@@ -324,6 +331,19 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	g_return_if_fail(win != NULL);
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
+	UiMessage *msg = ui_message_new(UI_MESSAGE_SET_REVERSE_VIDEO, win);
+	msg->boolval = reverse;
+	ui_message_queue(msg);
+}
+
+/* Sets reverse video on the text buffer or text grid window @win if @reverse is
+ * TRUE.
+ * If @reverse is FALSE, sets the colors back to normal.
+ * Called as a result of garglk_set_reversevideo_stream() and
+ * garglk_set_reversevideo(). */
+void
+ui_window_set_reverse_video(winid_t win, gboolean reverse)
+{
 	// Determine the current colors
 	
 	// If all fails, use black/white
@@ -334,9 +354,7 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	GdkRGBA *current_foreground = &foreground;
 	GdkRGBA *current_background = &background;
 
-	gdk_threads_enter();
-
-	style_stream_colors(str, &current_foreground, &current_background);
+	ui_style_get_window_colors(win, &current_foreground, &current_background);
 
 	if(reverse) {
 		GdkRGBA *temp = current_foreground;
@@ -375,8 +393,6 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	if(current_background != NULL) {
 		gtk_widget_override_background_color(win->widget, GTK_STATE_FLAG_NORMAL, current_background);
 	}
-
-	gdk_threads_leave();
 }
 
 /**

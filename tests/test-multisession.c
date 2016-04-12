@@ -26,7 +26,6 @@ on_delete_event(void)
 int
 main(int argc, char **argv)
 {
-	gdk_threads_init();
 	gtk_init(&argc, &argv);
 
 	GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -60,11 +59,9 @@ main(int argc, char **argv)
 		return 1;
 	if(!chimara_glk_run(CHIMARA_GLK(nitfol), "../interpreters/nitfol/.libs/nitfol.so", argc, argv, NULL))
 		return 1;
-	
-    gdk_threads_enter();
+
 	gtk_main();
-	gdk_threads_leave();
-	
+
 	chimara_glk_stop(CHIMARA_GLK(frotz));
 	chimara_glk_stop(CHIMARA_GLK(nitfol));
 

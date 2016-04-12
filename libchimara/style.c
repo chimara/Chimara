@@ -6,7 +6,7 @@
 #include "hyperlink.h"
 #include "magic.h"
 #include "stream.h"
-#include "strio.h"
+#include "ui-message.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
@@ -16,7 +16,7 @@ static gboolean style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk);
 static gboolean style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag);
 static void style_copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table);
 static void text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list);
-GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
+static GtkTextTag* gtk_text_tag_copy(GtkTextTag *tag);
 static void style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_tag, GdkRGBA **foreground, GdkRGBA **background);
 
 /**
@@ -54,24 +54,24 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 	if(str->window == NULL)
 		return;
 
-	flush_window_buffer(str->window);
-	str->style = (gchar*) chimara_glk_get_tag_name(styl);
-	str->glk_style = (gchar*) chimara_glk_get_glk_tag_name(styl);
+	UiMessage *msg = ui_message_new(UI_MESSAGE_SET_STYLE, str->window);
+	msg->uintval1 = styl;
+	ui_message_queue(msg);
 }
 
 /* Internal function: call this to initialize the default styles to a textbuffer. */
 void
-style_init_textbuffer(GtkTextBuffer *buffer)
+ui_style_init_text_buffer(ChimaraGlk *glk, GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
 	/* Place the default text tags in the textbuffer's tag table */
-	g_hash_table_foreach(glk_data->styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	g_hash_table_foreach(priv->styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 
 	/* Copy the override text tags to the textbuffers's tag table */
-	g_hash_table_foreach(glk_data->glk_styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	g_hash_table_foreach(priv->glk_styles->text_buffer, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 
 	/* Assign the 'default' tag the lowest priority */
 	gtk_text_tag_set_priority( gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(buffer), "default"), 0 );
@@ -80,17 +80,17 @@ style_init_textbuffer(GtkTextBuffer *buffer)
 
 /* Internal function: call this to initialize the default styles to a textgrid. */
 void
-style_init_textgrid(GtkTextBuffer *buffer)
+ui_style_init_text_grid(ChimaraGlk *glk, GtkTextBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
 	/* Place the default text tags in the textbuffer's tag table */
-	g_hash_table_foreach(glk_data->styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	g_hash_table_foreach(priv->styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 
 	/* Copy the current text tags to the textbuffers's tag table */
-	g_hash_table_foreach(glk_data->glk_styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
+	g_hash_table_foreach(priv->glk_styles->text_grid, style_copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(buffer));
 
 	/* Assign the 'default' tag the lowest priority */
 	gtk_text_tag_set_priority( gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(buffer), "default"), 0 );
@@ -108,7 +108,7 @@ style_copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table)
 }
 
 /* Internal function that copies a text tag */
-GtkTextTag *
+static GtkTextTag *
 gtk_text_tag_copy(GtkTextTag *tag)
 {
 	GtkTextTag *copy;
@@ -423,12 +423,12 @@ gdkrgba_to_glkcolor(GdkRGBA *color)
 }
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
-static void
-apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
+void
+ui_style_apply_hint_to_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, unsigned styl, unsigned hint, int val)
 {
 	g_return_if_fail(tag != NULL);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	GObject *tag_object = G_OBJECT(tag);
 
 	gint reverse_color = GPOINTER_TO_INT( g_object_get_data(tag_object, "reverse-color") );
@@ -504,7 +504,7 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 			break;
 		}
 
-		GtkTextTag *font_tag = g_hash_table_lookup(glk_data->styles->text_buffer, val? "default" : "preformatted");
+		GtkTextTag *font_tag = g_hash_table_lookup(priv->styles->text_buffer, val? "default" : "preformatted");
 		g_object_get(font_tag, "family", &font_family, "family-set", &family_set, NULL);
 		g_object_set(tag_object, "family", font_family, "family-set", family_set, NULL);
 		g_free(font_family);
@@ -544,13 +544,13 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 		GdkRGBA *current_background = &background;
 
 		if(wintype == wintype_TextBuffer) {
-			GtkTextTag* default_tag = g_hash_table_lookup(glk_data->styles->text_buffer, "default");
-			GtkTextTag* base_tag = g_hash_table_lookup(glk_data->styles->text_buffer, chimara_glk_get_tag_name(styl));
+			GtkTextTag* default_tag = g_hash_table_lookup(priv->styles->text_buffer, "default");
+			GtkTextTag* base_tag = g_hash_table_lookup(priv->styles->text_buffer, chimara_glk_get_tag_name(styl));
 			style_cascade_colors(base_tag, tag, default_tag, &current_foreground, &current_background);
 		}
 		else if(wintype == wintype_TextGrid) {
-			GtkTextTag* default_tag = g_hash_table_lookup(glk_data->styles->text_grid, "default");
-			GtkTextTag* base_tag = g_hash_table_lookup(glk_data->styles->text_grid, chimara_glk_get_tag_name(styl));
+			GtkTextTag* default_tag = g_hash_table_lookup(priv->styles->text_grid, "default");
+			GtkTextTag* base_tag = g_hash_table_lookup(priv->styles->text_grid, chimara_glk_get_tag_name(styl));
 			style_cascade_colors(base_tag, tag, default_tag, &current_foreground, &current_background);
 		}
 
@@ -579,8 +579,8 @@ apply_stylehint_to_tag(GtkTextTag *tag, glui32 wintype, glui32 styl, glui32 hint
 }
 
 /* Internal function: queries a text tag for the value of a given style hint */
-static gint
-query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
+int
+ui_style_query_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, unsigned hint)
 {
 	gint intval;
 	gdouble doubleval;
@@ -588,7 +588,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 
 	g_return_val_if_fail(tag != NULL, 0);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
 	switch(hint) {
 	case stylehint_Indentation:
@@ -633,7 +633,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 	{
 		gchar *font_family, *query_font_family;
 		GtkTextTag *font_tag = g_hash_table_lookup(
-		    wintype == wintype_TextBuffer? glk_data->styles->text_buffer : glk_data->styles->text_grid,
+		    wintype == wintype_TextBuffer? priv->styles->text_buffer : priv->styles->text_grid,
 		    "preformatted");
 		g_object_get(font_tag, "family", &font_family, NULL);
 		g_object_get(tag, "family", &query_font_family, NULL);
@@ -681,17 +681,34 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {
 	g_debug("glk_stylehint_set(wintype=%d, styl=%d, hint=%d, val=%d)", wintype, styl, hint, val);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	if(wintype != wintype_TextGrid && wintype != wintype_TextBuffer && wintype != wintype_AllTypes)
+		return;
+
+	UiMessage *msg = ui_message_new(UI_MESSAGE_SET_STYLEHINT, NULL);
+	msg->uintval1 = wintype;
+	msg->uintval2 = styl;
+	msg->uintval3 = hint;
+	msg->intval = val;
+	ui_message_queue(msg);
+}
+
+/* Sets a style hint @hint to @val on the global style @styl for windows of type
+ * @wintype.
+ * Called as a result of glk_stylehint_set(). */
+void
+ui_style_set_hint(ChimaraGlk *glk, unsigned wintype, unsigned styl, unsigned hint, int val)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
 	GtkTextTag *to_change;
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
-		to_change = g_hash_table_lookup( glk_data->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
-		apply_stylehint_to_tag(to_change, wintype_TextBuffer, styl, hint, val);
+		to_change = g_hash_table_lookup( priv->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
+		ui_style_apply_hint_to_tag(glk, to_change, wintype_TextBuffer, styl, hint, val);
 	}
 
 	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
-		to_change = g_hash_table_lookup( glk_data->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
-		apply_stylehint_to_tag(to_change, wintype_TextGrid, styl, hint, val);
+		to_change = g_hash_table_lookup( priv->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
+		ui_style_apply_hint_to_tag(glk, to_change, wintype_TextGrid, styl, hint, val);
 	}
 }
 
@@ -714,20 +731,39 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 {
 	g_debug("glk_stylehint_clear(wintype=%d, styl=%d, hint=%d)", wintype, styl, hint);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	if(wintype != wintype_TextGrid && wintype != wintype_TextBuffer && wintype != wintype_AllTypes)
+		return;
+
+	UiMessage *msg = ui_message_new(UI_MESSAGE_CLEAR_STYLEHINT, NULL);
+	msg->uintval1 = wintype;
+	msg->uintval2 = styl;
+	msg->uintval3 = hint;
+	ui_message_queue(msg);
+}
+
+/* Removes a style hint @hint from the global style @styl for windows of type
+ * @wintype.
+ * Called as a result of glk_stylehint_clear(). */
+void
+ui_style_clear_hint(ChimaraGlk *glk, unsigned wintype, unsigned styl, unsigned hint)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
 	GtkTextTag *tag;
 
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
-		tag = g_hash_table_lookup( glk_data->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
+		tag = g_hash_table_lookup( priv->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
 		if(tag) {
-			glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
+			glsi32 val = ui_style_query_tag(glk, tag, wintype_TextBuffer, hint);
+			ui_style_apply_hint_to_tag(glk, tag, wintype_TextBuffer, styl, hint, val);
 		}
 	}
 
 	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
-		tag = g_hash_table_lookup( glk_data->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
+		tag = g_hash_table_lookup( priv->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
 		if(tag) {
-			glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
+			glsi32 val = ui_style_query_tag(glk, tag, wintype_TextGrid, hint);
+			ui_style_apply_hint_to_tag(glk, tag, wintype_TextGrid, styl, hint, val);
 		}
 	}
 }
@@ -833,24 +869,47 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 {
 	g_debug("glk_style_measure(win->rock=%d, styl=%d, hint=%d, result=...)", win->rock, styl, hint);
 
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	/* This function is planned for deprecation in a future version of the Glk
+	spec where more CSS-like styling is implemented. See for more information:
+	http://ifwiki.org/index.php/New_Glk_styles */
+
+	UiMessage *msg = ui_message_new(UI_MESSAGE_MEASURE_STYLE, win);
+	msg->uintval1 = styl;
+	msg->uintval2 = hint;
+	gint64 response = ui_message_queue_and_await(msg);
+	if(response & ((gint64)1 << 32))
+		return FALSE;
+	if(result)
+		*result = response;
+	return TRUE;
+}
+
+/* Queries the current value of style hint @hint for global style @styl on text
+ * grid or text buffer window @win.
+ * Returns the style hint value in the lower 32 bits of the return value, or
+ * 1 << 32 if no value could be found.
+ * Called as a result of glk_style_measure(). */
+gint64
+ui_window_measure_style(winid_t win, ChimaraGlk *glk, unsigned styl, unsigned hint)
+{
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
 	GtkTextTag *tag;
+	int result;
 
 	switch(win->type) {
 	case wintype_TextBuffer:
-		tag = g_hash_table_lookup( glk_data->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
-		if(result)
-			*result = query_tag(tag, win->type, hint);
+		tag = g_hash_table_lookup( priv->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
+		result = ui_style_query_tag(glk, tag, win->type, hint);
 		break;
 	case wintype_TextGrid:
-		tag = g_hash_table_lookup( glk_data->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
-		if(result)
-			*result = query_tag(tag, win->type, hint);
+		tag = g_hash_table_lookup( priv->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
+		result = ui_style_query_tag(glk, tag, win->type, hint);
 	default:
-		return FALSE;
+		return (gint64)1 << 32;
 	}
 
-	return TRUE;
+	return result; /* Must fit within 32 bits */
 }
 
 /* Internal function returning the current default font for a window type
@@ -858,21 +917,21 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
  * wintype_TextBuffer are supported for now. Free return value with
  * pango_font_description_free(). */
 PangoFontDescription *
-get_current_font(guint32 wintype)
+ui_style_get_current_font(ChimaraGlk *glk, unsigned wintype)
 {
-	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	GHashTable *styles, *glk_styles;
 	PangoFontDescription *font;
 
 	switch(wintype) {
 	case wintype_TextGrid:
-		styles = glk_data->styles->text_grid;
-		glk_styles = glk_data->glk_styles->text_grid;
+		styles = priv->styles->text_grid;
+		glk_styles = priv->glk_styles->text_grid;
 		font = pango_font_description_from_string("Monospace");
 		break;
 	case wintype_TextBuffer:
-		styles = glk_data->styles->text_buffer;
-		glk_styles = glk_data->glk_styles->text_buffer;
+		styles = priv->styles->text_buffer;
+		glk_styles = priv->glk_styles->text_buffer;
 		font = pango_font_description_from_string("Serif");
 		break;
 	default:
@@ -998,32 +1057,31 @@ style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_t
 
 }
 
-/* Determine the current colors used to render the text for a given stream. 
+/* Determine the current colors used to render the text for a given window.
  * This can be set in a number of places */
 void
-style_stream_colors(strid_t str, GdkRGBA **foreground, GdkRGBA **background)
+ui_style_get_window_colors(winid_t win, GdkRGBA **foreground, GdkRGBA **background)
 {
-	VALID_STREAM(str, return);
-	g_return_if_fail(str->window != NULL);
-	g_return_if_fail(str->window->type != wintype_TextBuffer || str->window->type != wintype_TextGrid);
-	
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(str->window->widget) );	
+	VALID_WINDOW(win, return);
+	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 	GtkTextTag* default_tag = gtk_text_tag_table_lookup(tags, "default");
-	GtkTextTag* tag = gtk_text_tag_table_lookup(tags, str->style);
-	GtkTextTag* glk_tag = gtk_text_tag_table_lookup(tags, str->glk_style);
+	GtkTextTag *tag = gtk_text_tag_table_lookup(tags, win->style_tagname);
+	GtkTextTag *glk_tag = gtk_text_tag_table_lookup(tags, win->glk_style_tagname);
 
 	style_cascade_colors(tag, glk_tag, default_tag, foreground, background);
 
 	gboolean foreground_set, background_set;
 
 	// Windows can have zcolors defined
-	if(str->window->zcolor) {
-		g_object_get(str->window->zcolor, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
+	if(win->zcolor) {
+		g_object_get(win->zcolor, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
 		if(foreground_set)
-			g_object_get(str->window->zcolor, "foreground-rgba", foreground, NULL);
+			g_object_get(win->zcolor, "foreground-rgba", foreground, NULL);
 		if(background_set)
-			g_object_get(str->window->zcolor, "background-rgba", background, NULL);
+			g_object_get(win->zcolor, "background-rgba", background, NULL);
 	}
 }
 
@@ -1037,8 +1095,8 @@ style_apply(winid_t win, GtkTextIter *start, GtkTextIter *end)
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 
 	GtkTextTag *default_tag = gtk_text_tag_table_lookup(tags, "default");
-	GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->style);
-	GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->window_stream->glk_style);
+	GtkTextTag *style_tag = gtk_text_tag_table_lookup(tags, win->style_tagname);
+	GtkTextTag *glk_style_tag = gtk_text_tag_table_lookup(tags, win->glk_style_tagname);
 
 	// Player's style overrides
 	gtk_text_buffer_apply_tag(buffer, style_tag, start, end);

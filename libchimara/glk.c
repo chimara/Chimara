@@ -1,9 +1,10 @@
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #include "abort.h"
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
 #include "strio.h"
+#include "ui-message.h"
 #include "window.h"
 
 G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
@@ -145,11 +146,6 @@ void
 glk_tick()
 {
 	check_for_abort();
-	
-	/* Do one iteration of the main loop if there are any events */
-	gdk_threads_enter();
-	if(gtk_events_pending())
-		gtk_main_iteration();
-	gdk_threads_leave();
+	g_thread_yield();
 }
 

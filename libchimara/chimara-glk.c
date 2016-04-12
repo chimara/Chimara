@@ -20,6 +20,7 @@
 #include "init.h"
 #include "magic.h"
 #include "style.h"
+#include "ui-message.h"
 #include "window.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
@@ -46,13 +47,6 @@
  * plugin file to open (see the relevant section of the [Libtool
  * manual](http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html)).
  *
- * You need to initialize GDK threading in any program you use a #ChimaraGlk
- * widget in.
- * This means calling gdk_threads_init() at the beginning of your program,
- * <emphasis>before</emphasis> the call to gtk_init().
- * In addition to this, you must also protect your call to gtk_main() by calling
- * gdk_threads_enter() right before it, and gdk_threads_leave() right after it.
- *
  * The following sample program shows how to initialize and construct a simple 
  * GTK window that runs a Glk program:
  * |[<!--language="C"-->
@@ -67,8 +61,6 @@
  *     GError *error = NULL;
  *     gchar *plugin_argv[] = { "plugin.so", "-option" };
  *
- *     // Initialize threads and GTK
- *     gdk_threads_init();
  *     gtk_init(&argc, &argv);
  *
  *     // Construct the window and its contents. We quit the GTK main loop
@@ -88,10 +80,7 @@
  *     if(!chimara_glk_run(CHIMARA_GLK(glk), "./plugin.so", 2, plugin_argv, &error))
  *         g_error("Error starting Glk library: %s\n", error->message);
  *
- *     // Start the GTK main loop
- *     gdk_threads_enter();
  *     gtk_main();
- *     gdk_threads_leave();
  *
  *     // After the GTK main loop exits, signal the Glk program to shut down if
  *     // it is still running, and wait for it to exit.
@@ -325,6 +314,7 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->styles = g_new0(StyleSet,1);
 	priv->glk_styles = g_new0(StyleSet,1);
 	priv->final_message = g_strdup("[ The game has finished ]");
+	priv->ui_message_queue = g_async_queue_new_full((GDestroyNotify)ui_message_free);
     priv->event_queue = g_queue_new();
 	priv->char_input_queue = g_async_queue_new_full(g_free);
 	priv->line_input_queue = g_async_queue_new_full(g_free);
@@ -338,7 +328,6 @@ chimara_glk_init(ChimaraGlk *self)
 	g_cond_init(&priv->event_queue_not_empty);
 	g_cond_init(&priv->event_queue_not_full);
 	g_cond_init(&priv->shutdown_key_pressed);
-	g_cond_init(&priv->rearranged);
 	g_cond_init(&priv->resource_loaded);
 	g_cond_init(&priv->resource_info_available);
 
@@ -414,6 +403,8 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->glk_styles->text_buffer);
 	g_hash_table_destroy(priv->glk_styles->text_grid);
 
+	g_async_queue_unref(priv->ui_message_queue);
+
     /* Free the event queue */
     g_mutex_lock(&priv->event_lock);
 	g_queue_foreach(priv->event_queue, (GFunc)g_free, NULL);
@@ -438,7 +429,6 @@ chimara_glk_finalize(GObject *object)
 
 	/* Free the window arrangement signaling */
 	g_mutex_lock(&priv->arrange_lock);
-	g_cond_clear(&priv->rearranged);
 	g_mutex_unlock(&priv->arrange_lock);
 	g_mutex_clear(&priv->arrange_lock);
 
@@ -501,12 +491,15 @@ chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
 
 /* Recursively give the Glk windows their allocated space. Returns a window
  containing all children of this window that must be redrawn, or NULL if there 
- are no children that require redrawing. */
+ are no children that require redrawing. Must be called with priv->arrange_lock
+ held. */
 static winid_t
 allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 {
 	if(win->type == wintype_Pair)
 	{
+		g_mutex_lock(&win->lock);
+
 		glui32 division = win->split_method & winmethod_DivisionMask;
 		glui32 direction = win->split_method & winmethod_DirMask;
 		unsigned border = ((win->split_method & winmethod_BorderMask) == winmethod_NoBorder)? 0 : spacing;
@@ -568,7 +561,9 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 					break;
 			}
 		}
-		
+
+		g_mutex_unlock(&win->lock);
+
 		/* Fill in the rest of the size requisitions according to the child specified above */
 		switch(direction)
 		{
@@ -617,6 +612,9 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		 bottom or right area is filled with blanks. */
 		GtkAllocation widget_allocation;
 		gtk_widget_get_allocation(win->widget, &widget_allocation);
+
+		g_mutex_lock(&win->lock);
+
 		glui32 new_width = (glui32)(widget_allocation.width / win->unit_width);
 		glui32 new_height = (glui32)(widget_allocation.height / win->unit_height);
 
@@ -703,11 +701,18 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		gboolean arrange = !(win->width == new_width && win->height == new_height);
 		win->width = new_width;
 		win->height = new_height;
+
+		g_mutex_unlock(&win->lock);
+
 		return arrange? win : NULL;
 	}
 	
 	/* For non-pair, non-text-grid windows, just give them the size */
 	gtk_widget_size_allocate(win->frame, allocation);
+	g_mutex_lock(&win->lock);
+	win->width = allocation->width;
+	win->height = allocation->height;
+	g_mutex_unlock(&win->lock);
 	return NULL;
 }
 
@@ -725,11 +730,13 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 
     if(priv->root_window) {
 		GtkAllocation child = *allocation;
+		g_mutex_lock(&priv->arrange_lock);
 		winid_t arrange = allocate_recurse(priv->root_window->data, &child, priv->spacing);
+		g_mutex_unlock(&priv->arrange_lock);
+		priv->needs_rearrange = FALSE;
 
 		/* arrange points to a window that contains all text grid and graphics
 		 windows which have been resized */
-		g_mutex_lock(&priv->arrange_lock);
 		if(!priv->ignore_next_arrange_event)
 		{
 			if(arrange)
@@ -737,13 +744,11 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		}
 		else
 			priv->ignore_next_arrange_event = FALSE;
-		priv->needs_rearrange = FALSE;
-		g_cond_signal(&priv->rearranged);
-		g_mutex_unlock(&priv->arrange_lock);
 	}
 }
 
-/* Recursively invoke callback() on the GtkWidget of each non-pair window in the tree */
+/* Recursively invoke callback() on the GtkWidget of each non-pair window in the
+tree. Must be called with priv->arrange_lock held. */
 static void
 forall_recurse(winid_t win, GtkCallback callback, gpointer callback_data)
 {
@@ -768,9 +773,11 @@ chimara_glk_forall(GtkContainer *container, gboolean include_internals, GtkCallb
 	/* All the children are "internal" */
 	if(!include_internals)
 		return;
-	
+
+	g_mutex_lock(&priv->arrange_lock);
     if(priv->root_window)
 		forall_recurse(priv->root_window->data, callback, callback_data);
+	g_mutex_unlock(&priv->arrange_lock);
 }
 
 static void
@@ -1390,6 +1397,13 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	/* Set Glk styles to defaults */
 	chimara_glk_reset_glk_styles(glk);
 
+	/* Reset arrangement mechanism */
+	priv->needs_rearrange = FALSE;
+	priv->ignore_next_arrange_event = FALSE;
+
+	/* Start listening for UI messages */
+	priv->ui_message_handler_id = gdk_threads_add_idle((GSourceFunc)ui_message_process_queue, glk);
+
     /* Run in a separate thread */
 	priv->thread = g_thread_try_new("glk", (GThreadFunc)glk_enter, startup, error);
 
@@ -1473,10 +1487,11 @@ chimara_glk_wait(ChimaraGlk *glk)
     /* Don't do anything if not running a program */
     if(!priv->running)
     	return;
-	/* Unlock GDK mutex, because the Glk program might need to use it for shutdown */
-	gdk_threads_leave();
+
+	/* Empty UI message queue first, so that the Glk thread isn't waiting on any
+	UI operations; then it's safe to wait for the Glk thread to finish */
+	ui_message_drain_queue(glk);
     g_thread_join(priv->thread);
-	gdk_threads_enter();
 }
 
 /**

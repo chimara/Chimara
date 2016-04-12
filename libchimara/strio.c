@@ -9,6 +9,8 @@
 #include "magic.h"
 #include "stream.h"
 #include "style.h"
+#include "ui-message.h"
+#include "ui-window.h"
 #include "window.h"
 
 /* Internal function: ensure that an fseek() is called on a file pointer in
@@ -49,19 +51,49 @@ write_utf8_to_window_buffer(winid_t win, gchar *s)
 }
 
 /* Internal function: flush a window's text buffer to the screen. */
-void
-flush_window_buffer(winid_t win)
+static UiMessage *
+flush_window_buffer_internal(winid_t win)
 {
 	g_debug("%s", win->buffer->str);
 
 	if(win->type != wintype_TextBuffer && win->type != wintype_TextGrid)
-		return;
+		return NULL;
 
 	if(win->buffer->len == 0)
-		return;
+		return NULL;
 
-	gdk_threads_enter();
+	UiMessage *msg = ui_message_new(UI_MESSAGE_PRINT_STRING, win);
+	msg->strval = g_strdup(win->buffer->str);
+	g_string_truncate(win->buffer, 0);
+	return msg;
+}
 
+/* Queue up a message to print whatever's in @win's text buffer to the screen,
+but don't wait until the flush happens. Call this from the Glk thread, for
+example, to make sure the current buffer contents are printed before changing
+the stream style. */
+void
+queue_flush_window_buffer(winid_t win)
+{
+	UiMessage *msg = flush_window_buffer_internal(win);
+	if (msg)
+		ui_message_queue(msg);
+}
+
+/* Queue up a message to print whatever's in @win's text buffer to the screen,
+and wait for the queue to catch up. Call this from the Glk thread, for
+example, to catch up on all outstanding messages, e.g. in glk_select(). */
+void
+flush_window_buffer(winid_t win)
+{
+	UiMessage *msg = flush_window_buffer_internal(win);
+	if (msg)
+		ui_message_queue_and_await(msg);
+}
+
+void
+ui_window_print_string(winid_t win, const char *text)
+{
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 
 	switch(win->type) {
@@ -72,20 +104,20 @@ flush_window_buffer(winid_t win)
 		gint start_offset;
 
 		start_offset = gtk_text_iter_get_offset(&end);
-		gtk_text_buffer_insert(buffer, &end, win->buffer->str, -1);
+		gtk_text_buffer_insert(buffer, &end, text, -1);
 		gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
 		style_apply(win, &start, &end);
 
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 		g_assert(glk);
-		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->librock, win->buffer->str);
+		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->librock, text);
 	}
 		break;
 
 	case wintype_TextGrid:
 	{
 		/* Number of characters to insert */
-		glong length = win->buffer->len;
+		long length = strlen(text);
 		glong chars_left = length;
 		
 		GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
@@ -95,6 +127,8 @@ flush_window_buffer(winid_t win)
 		gint start_offset;
 
 		gtk_text_buffer_get_iter_at_mark(buffer, &insert, cursor);
+
+		g_mutex_lock(&win->lock);
 
 		while(chars_left > 0 && !gtk_text_iter_is_end(&insert))
 		{
@@ -110,7 +144,7 @@ flush_window_buffer(winid_t win)
 			gtk_text_buffer_delete(buffer, &insert, &end);
 
 			start_offset = gtk_text_iter_get_offset(&insert);
-			gtk_text_buffer_insert(buffer, &insert, win->buffer->str + (length - chars_left), MIN(chars_left, available_space));
+			gtk_text_buffer_insert(buffer, &insert, text + (length - chars_left), MIN(chars_left, available_space));
 			gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
 			style_apply(win, &start, &insert);
 			
@@ -120,14 +154,12 @@ flush_window_buffer(winid_t win)
 				gtk_text_iter_forward_line(&insert);
 		}
 
+		g_mutex_unlock(&win->lock);
+
 		gtk_text_buffer_move_mark(buffer, cursor, &insert);
 	}
 		break;
 	}
-
-	gdk_threads_leave();
-
-	g_string_truncate(win->buffer, 0);
 }
 
 /* Internal function: write a Latin-1 buffer with length to a stream. */
@@ -159,21 +191,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 							if(utf8[i] == '\n') {
 								utf8[i] = '\0';
 								write_utf8_to_window_buffer(str->window, line);
-								flush_window_buffer(str->window);
-
-								/* Move cursor position forward to the next line */
-								gdk_threads_enter();
-								GtkTextIter cursor_pos;
-								GtkTextView *textview = GTK_TEXT_VIEW(str->window->widget);
-								GtkTextBuffer *buffer = gtk_text_view_get_buffer(textview);
-								GtkTextMark *cursor_mark = gtk_text_buffer_get_mark(buffer, "cursor_position");
-
-							    gtk_text_buffer_get_iter_at_mark( buffer, &cursor_pos, cursor_mark);
-								gtk_text_view_forward_display_line(textview, &cursor_pos);
-								gtk_text_view_backward_display_line_start(textview, &cursor_pos);
-								gtk_text_buffer_move_mark(buffer, cursor_mark, &cursor_pos);
-								gdk_threads_leave();
-
+								ui_message_queue(ui_message_new(UI_MESSAGE_GRID_NEWLINE, str->window));
 								line = utf8 + (i < len-1 ? (i+1):(len-1));
 							}
 						}

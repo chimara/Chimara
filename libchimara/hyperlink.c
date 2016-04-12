@@ -6,6 +6,7 @@
 #include "magic.h"
 #include "stream.h"
 #include "strio.h"
+#include "ui-message.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
@@ -67,11 +68,21 @@ glk_set_hyperlink_stream(strid_t str, glui32 linkval)
 	g_return_if_fail(win != NULL);
 	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
-	flush_window_buffer(win);
+	str->hyperlink_mode = (linkval != 0);
 
+	UiMessage *msg = ui_message_new(UI_MESSAGE_SET_HYPERLINK, win);
+	msg->uintval1 = linkval;
+	ui_message_queue(msg);
+}
+
+/* Sets the text grid or text buffer window @win to output hyperlink text which
+ * returns @linkval when clicked.
+ * Called as a result of glk_set_hyperlink_stream() and glk_set_hyperlink(). */
+void
+ui_window_set_hyperlink(winid_t win, unsigned linkval)
+{
 	if(linkval == 0) {
 		/* Turn off hyperlink mode */
-		str->hyperlink_mode = FALSE;
 		win->current_hyperlink = NULL;
 		return;
 	}
@@ -99,7 +110,6 @@ glk_set_hyperlink_stream(strid_t str, glui32 linkval)
 		g_hash_table_insert(win->hyperlinks, linkval_pointer, new_hyperlink);
 	}
 
-	str->hyperlink_mode = TRUE;
 	win->current_hyperlink = new_hyperlink;
 }
 
@@ -148,6 +158,12 @@ glk_request_hyperlink_event(winid_t win)
 	g_return_if_fail(win != NULL);
 	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
+	ui_message_queue(ui_message_new(UI_MESSAGE_REQUEST_HYPERLINK_INPUT, win));
+}
+
+void
+ui_window_request_hyperlink_input(winid_t win)
+{
 	if(win->hyperlink_event_requested) {
 		WARNING("Tried to request a hyperlink event on a window that already had a hyperlink request");
 		return;
@@ -172,6 +188,12 @@ glk_cancel_hyperlink_event(winid_t win)
 	g_return_if_fail(win != NULL);
 	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
+	ui_message_queue(ui_message_new(UI_MESSAGE_CANCEL_HYPERLINK_INPUT, win));
+}
+
+void
+ui_window_cancel_hyperlink_input(winid_t win)
+{
 	if(!win->hyperlink_event_requested) {
 		WARNING("Tried to cancel a nonexistent hyperlink request");
 		return;

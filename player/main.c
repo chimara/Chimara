@@ -202,7 +202,6 @@ main(int argc, char *argv[])
 	textdomain(GETTEXT_PACKAGE);
 #endif
 
-	gdk_threads_init();
 	gtk_init(&argc, &argv);
 
 	/* Create configuration dir ~/.chimara */
@@ -242,9 +241,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-    gdk_threads_enter();
 	gtk_main();
-	gdk_threads_leave();
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
