@@ -16,12 +16,6 @@ enum StreamType
 	STREAM_TYPE_RESOURCE
 };
 
-/**
- * glk_stream_struct:
- *
- * This is an opaque structure (see <link linkend="chimara-Opaque-Structures">
- * Opaque Structures</link> and should not be accessed directly.
- */
 struct glk_stream_struct
 {
 	/*< private >*/

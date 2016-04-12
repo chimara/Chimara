@@ -5,12 +5,6 @@
 #include "glk.h"
 #include "gi_dispa.h"
 
-/**
- * glk_fileref_struct:
- *
- * This is an opaque structure (see <link linkend="chimara-Opaque-Structures">
- * Opaque Structures</link> and should not be accessed directly.
- */
 struct glk_fileref_struct
 {
 	/*< private >*/
