@@ -201,7 +201,7 @@
  * |[
  * obj = glk_CLASS_iterate(NULL, NULL);
  * while (obj) {
- *    /* ...do something with obj... *<!-- -->/
+ *    // ...do something with obj...
  *    obj = glk_CLASS_iterate(obj, NULL);
  * }
  * ]|
