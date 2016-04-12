@@ -37,7 +37,7 @@ garglk_fileref_get_name(frefid_t fref)
  * running Glk program, in case it wants to display this information somewhere
  * &mdash; for example, in the title bar of a window. A typical use of this
  * function would be:
- * |[
+ * |[<!--language="C"-->
  * garglk_set_program_name("SuperGlkFrotz 0.1");
  * ]|
  */
@@ -57,7 +57,7 @@ garglk_set_program_name(const char *name)
  * about the currently running Glk program, in case it wants to display this
  * information somewhere &mdash; for example, in an About box. A typical use of
  * this function would be:
- * |[
+ * |[<!--language="C"-->
  * garglk_set_program_info("SuperGlkFrotz, version 0.1\n"
  *     "Original Frotz by Stefan Jokisch\n"
  *     "Unix port by Jim Dunleavy and David Griffith\n"
@@ -82,7 +82,7 @@ garglk_set_program_info(const char *info)
  * loaded in the interpreter, in case it wants to display this information
  * anywhere &mdash; for example, in the title bar of a window. A typical use of
  * this function would be:
- * |[
+ * |[<!--language="C"-->
  * garglk_set_story_name("Lighan Ses Lion, el Zarf");
  * ]|
  */

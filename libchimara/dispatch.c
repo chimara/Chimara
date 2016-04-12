@@ -27,7 +27,7 @@ extern GPrivate glk_data_key;
  * Your program calls gidispatch_set_object_registry() early (before it begins
  * actually executing VM code.) You pass in two function pointers, matching the
  * following prototypes:
- * |[
+ * |[<!--language="C"-->
  * gidispatch_rock_t my_vm_reg_object(void *obj, glui32 objclass);
  * void my_vm_unreg_object(void *obj, glui32 objclass, gidispatch_rock_t objrock);
  * ]|
@@ -147,7 +147,7 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  * To allow this, the library implements gidispatch_set_retained_registry().
  * 
  * Again, you pass in two function pointers:
- * |[
+ * |[<!--language="C"-->
  * gidispatch_rock_t my_vm_reg_array(void *array, glui32 len, char *typecode);
  * void my_vm_unreg_array(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
  * ]|

@@ -40,7 +40,7 @@
  * On Linux systems, this is a file with a name like 
  * <filename>plugin.so</filename>. For portability, you can use libtool and 
  * automake:
- * |[
+ * |[<!--language="automake"-->
  * pkglib_LTLIBRARIES = plugin.la
  * plugin_la_SOURCES = plugin.c foo.c bar.c
  * plugin_la_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
@@ -60,7 +60,7 @@
  *
  * The following sample program shows how to initialize and construct a simple 
  * GTK window that runs a Glk program:
- * |[
+ * |[<!--language="C"-->
  * #include <glib.h>
  * #include <gtk/gtk.h>
  * #include <libchimara/chimara-glk.h>

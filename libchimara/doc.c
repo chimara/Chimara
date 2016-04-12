@@ -1271,7 +1271,7 @@
  * used by the Glk library. There is a sample 
  * <quote><filename>glkstart.c</filename></quote> file included in this package;
  * you should modify it to your needs.
- * |[
+ * |[<!--language="C"-->
  * extern glkunix_argumentlist_t glkunix_arguments[];
  * ]|
  * The <code>glkunix_arguments[]</code> array is a list of command-line 
@@ -1450,7 +1450,7 @@
  *
  * For an example of the gestalt mechanism, consider the selector
  * %gestalt_Version. If you do
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_Version, 0);
  * ]|
@@ -1466,7 +1466,7 @@
  * The current Glk specification version is 0.7.4, so this selector will return
  * 0x00000704.
  *
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt_ext(gestalt_Version, 0, NULL, 0);
  * ]|
@@ -1479,7 +1479,7 @@
  *
  * If you set <code>ch</code> to a character code, or a special code (from
  * 0xFFFFFFFF down), and call
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_CharInput, ch);
  * ]|
@@ -1492,7 +1492,7 @@
  * gestalt_LineInput:
  *
  * If you set <code>ch</code> to a character code, and call
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_LineInput, ch);
  * ]|
@@ -1507,7 +1507,7 @@
  * gestalt_CharOutput:
  *
  * If you set <code>ch</code> to a character code (Latin-1 or higher), and call
- * |[
+ * |[<!--language="C"-->
  * glui32 res, len;
  * res = glk_gestalt_ext(gestalt_CharOutput, ch, &amp;len, 1);
  * ]|
@@ -1594,7 +1594,7 @@
  *
  * You can test whether mouse input is supported with the %gestalt_MouseInput 
  * selector.
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_MouseInput, windowtype);
  * ]|
  * This will return %TRUE (1) if windows of the given type support mouse input.
@@ -1607,7 +1607,7 @@
  * gestalt_Timer:
  *
  * You can test whether the library supports timer events:
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_Timer, 0);
  * ]|
  * This returns %TRUE (1) if timer events are supported, and %FALSE (0) if they 
@@ -1619,7 +1619,7 @@
  * 
  * Before calling Glk graphics functions, you should use the following gestalt
  * selector:
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_Graphics, 0);
  * ]|
@@ -1647,7 +1647,7 @@
  * gestalt_Sound2:
  *
  * You can test whether the library supports sound:
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_Sound2, 0);
  * ]|
@@ -1661,7 +1661,7 @@
 /**
  * gestalt_Sound:
  *
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_Sound, 0);
  * ]|
@@ -1682,7 +1682,7 @@
  *
  * You can test whether the library supports setting the volume of sound 
  * channels: 
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_SoundVolume, 0);
  * ]|
  * This selector returns 1 if the glk_schannel_set_volume() function works. If 
@@ -1695,7 +1695,7 @@
  * gestalt_SoundNotify:
  *
  * You can test whether the library supports sound notification events:
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_SoundNotify, 0);
  * ]|
  * This selector returns 1 if the library supports sound notification events. If
@@ -1708,7 +1708,7 @@
  * gestalt_Hyperlinks:
  *
  * You can test whether the library supports hyperlinks:
- * |[ 
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_Hyperlinks, 0); 
  * ]|
@@ -1725,7 +1725,7 @@
  *
  * You can test whether hyperlinks are supported with the 
  * %gestalt_HyperlinkInput selector:
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_HyperlinkInput, windowtype);
  * ]|
  * This will return %TRUE (1) if windows of the given type support hyperlinks.
@@ -1738,7 +1738,7 @@
  * gestalt_SoundMusic:
  *
  * You can test whether music resources are supported:
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_SoundMusic, 0);
  * ]|
  * This returns 1 if the library is capable of playing music sound resources. If 
@@ -1773,7 +1773,7 @@
  * functions may or may not be available. Before calling them, you should use
  * the %gestalt_Unicode and %gestalt_UnicodeNorm gestalt selectors.
  *
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_Unicode, 0);
  * ]|
@@ -1803,7 +1803,7 @@
 /**
  * gestalt_UnicodeNorm:
  *
- * |[
+ * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_UnicodeNorm, 0);
  * ]|
@@ -1819,7 +1819,7 @@
 /**
  * gestalt_LineInputEcho:
  *
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_LineInputEcho, 0);
  * ]|
  *
@@ -1833,7 +1833,7 @@
 /**
  * gestalt_LineTerminators:
  *
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_LineTerminators, 0);
  * ]|
  *
@@ -1844,7 +1844,7 @@
 /**
  * gestalt_LineTerminatorKey:
  *
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_LineTerminatorKey, ch);
  * ]|
  *
@@ -1857,7 +1857,7 @@
 /**
  * gestalt_DateTime:
  *
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_DateTime, 0);
  * ]|
  *
@@ -1876,7 +1876,7 @@
 /**
  * gestalt_ResourceStream:
  *
- * |[
+ * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_ResourceStream, 0);
  * ]|
  *
@@ -3146,11 +3146,11 @@
  *
  * For example, consider a hypothetical function, with selector 
  * <code>0xABCD</code>:
- * |[ 
+ * |[<!--language="C"-->
  * void glk_glomp(glui32 num, winid_t win, glui32 *numref, strid_t *strref);
  * ]|
  * ...and the calls:
- * |[
+ * |[<!--language="C"-->
  * glui32 value;
  * winid_t mainwin;
  * strid_t gamefile;
@@ -3158,7 +3158,7 @@
  * ]|
  *
  * To perform this through gidispatch_call(), you would do the following:
- * |[
+ * |[<!--language="C"-->
  * gluniversal_t arglist[6];
  * arglist[0].uint = 5;
  * arglist[1].opaqueref = mainwin;
@@ -3177,7 +3177,7 @@
  * references or pass-in references; if so, you could skip copying in or out.
  *
  * For further examples:
- * |[
+ * |[<!--language="C"-->
  * glk_glomp(7, mainwin, NULL, NULL);
  * ...or...
  * gluniversal_t arglist[4];
@@ -3188,7 +3188,7 @@
  * gidispatch_call(0xABCD, 4, arglist);
  * ]|
  *
- * |[
+ * |[<!--language="C"-->
  * glk_glomp(13, NULL, NULL, &gamefile);
  * ...or...
  * gluniversal_t arglist[5];
@@ -3201,7 +3201,7 @@
  * gamefile = arglist[4].opaqueref;
  * ]|
  *
- * |[
+ * |[<!--language="C"-->
  * glk_glomp(17, NULL, &value, NULL);
  * ...or...
  * gluniversal_t arglist[5];
@@ -3224,7 +3224,7 @@
  * alone.
  * 
  * For example, the function glk_select() can be invoked as follows:
- * |[
+ * |[<!--language="C"-->
  * event_t ev;
  * gluniversal_t arglist[5];
  * arglist[0].ptrflag = TRUE;
@@ -3254,7 +3254,7 @@
  * if the @ptrflag is %NULL, the following two are omitted.
  * 
  * For example, the function glk_put_buffer() can be invoked as follows:
- * |[
+ * |[<!--language="C"-->
  * char buf[64];
  * glui32 len = 64;
  * glk_put_buffer(buf, len);
@@ -3283,7 +3283,7 @@
  * comes after all the other arguments of the function.
  * 
  * For example, the function glk_window_get_rock() can be invoked as follows:
- * |[
+ * |[<!--language="C"-->
  * glui32 rock;
  * winid_t win;
  * rock = glk_window_get_rock(win);
@@ -3913,14 +3913,14 @@
  *
  * If you don't care about command-line arguments, you must still define an
  * empty arguments list, as follows:
- * |[
+ * |[<!--language="C"-->
  * glkunix_argumentlist_t glkunix_arguments[] = {
  *     { NULL, glkunix_arg_End, NULL }
  * };
  * ]|
  * 
  * Here is a more complete sample list:
- * |[
+ * |[<!--language="C"-->
  * glkunix_argumentlist_t glkunix_arguments[] = {
  *     { "", glkunix_arg_ValueFollows, "filename: The game file to load." },
  *     { "-hum", glkunix_arg_ValueFollows, "-hum NUM: Hum some NUM." },
@@ -3937,7 +3937,7 @@
  * After the library parses the command line, it does various occult rituals of
  * initialization, and then calls glkunix_startup_code().
  *
- * |[
+ * |[<!--language="C"-->
  * int glkunix_startup_code(glkunix_startup_t *data);
  * ]|
  *

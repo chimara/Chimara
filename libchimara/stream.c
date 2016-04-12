@@ -194,7 +194,7 @@ glk_put_char_uni(glui32 ch)
  *
  * Prints a null-terminated string to the current stream. It is exactly
  * equivalent to
- * |[
+ * |[<!--language="C"-->
  * for (ptr = s; *ptr; ptr++)
  *     glk_put_char(*ptr);
  * ]|
@@ -231,7 +231,7 @@ glk_put_string_uni(glui32 *s)
  *
  * Prints a block of characters to the current stream. It is exactly equivalent
  * to:
- * |[
+ * |[<!--language="C"-->
  * for (i = 0; i < len; i++)
  *     glk_put_char(buf[i]);
  * ]|
