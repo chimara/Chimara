@@ -31,7 +31,6 @@ chimara_glk_is_char_input_pending
 chimara_glk_is_line_input_pending
 chimara_glk_get_tag
 chimara_glk_get_tag_names
-chimara_glk_update_style
 chimara_glk_set_resource_load_callback
 <SUBSECTION Standard>
 CHIMARA_GLK
