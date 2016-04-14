@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
@@ -30,7 +30,7 @@ Our recommendation comes through a series of practical compromises:
   </para></listitem>
   <listitem><para>
     Case-folding is a slightly different operation from lower-casing.
-	(Case-folding splits some combined characters, so that, for example, <quote>&szlig;</quote> can match both <quote>ss</quote> and <quote>SS</quote>.)
+	(Case-folding splits some combined characters, so that, for example, “&szlig;” can match both “ss” and “SS”.)
 	However, Glk does not currently offer a case-folding function.
 	We substitute glk_buffer_to_lower_case_uni().
   </para></listitem>

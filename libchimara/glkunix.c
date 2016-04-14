@@ -75,13 +75,13 @@ glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
  * glkunix_set_base_file:
  * @filename: A path to a file, in the system filename encoding.
  *
- * Sets the library's idea of the <quote>current directory</quote> for the 
- * executing program. The argument should be the name of a file (not a 
- * directory). When this is set, glk_fileref_create_by_name() will create files 
- * in the same directory as that file, and glk_fileref_create_by_prompt() will 
- * base default filenames off of the file. If this is not called, the library 
- * works in the Unix current working directory, and picks reasonable default 
- * defaults.
+ * Sets the library's idea of the “current directory” for the executing program.
+ * The argument should be the name of a file (not a directory).
+ * When this is set, glk_fileref_create_by_name() will create files in the same
+ * directory as that file, and glk_fileref_create_by_prompt() will base default
+ * filenames off of the file.
+ * If this is not called, the library works in the Unix current working
+ * directory, and picks reasonable default defaults.
  */
 void 
 glkunix_set_base_file(char *filename)

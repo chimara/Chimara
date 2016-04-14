@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
@@ -21,7 +21,9 @@ Doing that well would require API calls to parse command-line arguments of vario
 Instead, startup files and options are handled in an <emphasis>entirely platform-dependent</emphasis> manner. You, as the author of a Glk program, must describe how your program should behave. As your program is ported to various Glk libraries, each porter must decide how to implement that behavior on the platform in question. The library should store the options and files in global variables, where your <function>glk_main()</function> routine can read them.
 </para>
 <para>
-It is reasonable to modularize this code, and call it the <quote>startup code</quote>. But the startup code is not necessarily a single function, and it certainly does not have well-defined arguments such as an <code>(argc, argv)</code> list. You can consider that your startup behavior is divided into the messy part, which is nonportable and goes in the startup code, and the clean part, which is entirely Glk-portable and goes at the beginning of <function>glk_main()</function>.
+It is reasonable to modularize this code, and call it the “startup code”.
+But the startup code is not necessarily a single function, and it certainly does not have well-defined arguments such as an <code>(argc, argv)</code> list.
+You can consider that your startup behavior is divided into the messy part, which is nonportable and goes in the startup code, and the clean part, which is entirely Glk-portable and goes at the beginning of <function>glk_main()</function>.
 </para>
 <para>
 This is not as much of a mess as it sounds. Many programs, and almost all IF programs, follow one of a few simple models.
@@ -37,7 +39,11 @@ Any Glk library will be able to support these two models, probably through compi
 For one notable case, the Mac Glk library has two possible behaviors when compiled with the game-file model. If the player double-clicks a game file, the library calls <function>glk_main()</function> immediately. If the player double-clicks the application icon, the library allows the player to wait, perhaps adjusting preferences; it only calls <function>glk_main()</function> after the game file is selected through a file dialog.
 </para></note>
 <note><para>
-In fact, if life were this simple, it would be worth adding these models to the Glk API somehow. Unfortunately, it's not. Consider AGT: the <quote>game file</quote> is actually about ten separate files with related filenames, in the same directory. Glk does not contain API calls to do precise file and pathname manipulation; it is too complicated an area to support. So this situation must be handled non-portably.
+In fact, if life were this simple, it would be worth adding these models to the Glk API somehow.
+Unfortunately, it's not.
+Consider AGT: the “game file” is actually about ten separate files with related filenames, in the same directory.
+Glk does not contain API calls to do precise file and pathname manipulation; it is too complicated an area to support.
+So this situation must be handled non-portably.
 </para></note>
 <para>
 More complicated models are also possible. You might want to accept files through GUI events at any time, not just at startup. This could be handled by defining a new Glk event type, and having the library send such an event when a platform-native icon-click is detected. You would then have to decide how the situation should be handled in a command-line Glk library. But that is inherent in your task as a program author.
@@ -135,7 +141,9 @@ If the I/O API is a subset of the capabilities of Glk, it can be implemented as 
 The other approach is to use Glk as the virtual machine's own I/O API, and provide it directly to the game author. The Glulx virtual machine is built this way. This is inherently more powerful, since it allows access to all of Glk, instead of a subset. As Glk is designed to be easily expandable, and will gain new (optional) capabilities over time, this approach also allows a VM to gain capabilities over time without much upheaval.
 </para>
 <note><para>
-To a certain extent, Glk was designed for this use more than any other. For example, this is why all Glk function arguments are either pointers or 32-bit integers, and why all Glk API structures are effectively arrays of same. It is also why the iterator functions exist; a VM's entire memory space may be reset by an <quote>undo</quote> or <quote>restore</quote> command, and it would then have to, ah, take inventory of its streams and windows and filerefs.
+To a certain extent, Glk was designed for this use more than any other.
+For example, this is why all Glk function arguments are either pointers or 32-bit integers, and why all Glk API structures are effectively arrays of same.
+It is also why the iterator functions exist; a VM's entire memory space may be reset by an “undo” or “restore” command, and it would then have to, ah, take inventory of its streams and windows and filerefs.
 </para></note>
 <note><para>
 This is also another reason why Glk provides file API calls. A VM can provide Glk as the game author's entire access to the file system, as well as the author's entire access to the display system. The VM will then be simpler, more modular, not as tied into the native OS &mdash; all that good stuff.
@@ -147,7 +155,10 @@ The Society of C Pedants wishes me to point out that the structures in the Glk A
 The mechanics of this are tricky, because Glk has many API calls, and more will be added over time.
 </para>
 <para>
-In a VM with a limited number of opcodes, it may be best to allocate a single <quote>Glk</quote> opcode, with a variable number of arguments, the first of which is a function selector. (Glulx does this.) Allow at least 16 bits for this selector; there may be more than 256 Glk calls someday. (For a list of standard selectors for Glk calls, see <link linkend="chimara-Table-of-Selectors">Table of Selectors</link>.)
+In a VM with a limited number of opcodes, it may be best to allocate a single “Glk” opcode, with a variable number of arguments, the first of which is a function selector.
+(Glulx does this.)
+Allow at least 16 bits for this selector; there may be more than 256 Glk calls someday.
+(For a list of standard selectors for Glk calls, see <link linkend="chimara-Table-of-Selectors">Table of Selectors</link>.)
 </para>
 <para>
 In a VM with a large opcode space, you could reserve a 16-bit range of opcodes for Glk.

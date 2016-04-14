@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
@@ -24,7 +24,7 @@ Latin-1 is an 8-bit character encoding; it maps numeric codes in the range 0 to 
 Note that the basic Glk text API does not use UTF-8, or any other Unicode character form. Each character is represented by a single byte &mdash; even characters in the 128..255 range.
 </para></note>
 <para>
-The extended, or <quote>Unicode</quote>, Glk functions deal entirely in 32-bit words. They take arrays of words, not bytes, as arguments. They can therefore cope with any Unicode code point. The extended functions have names ending in <quote><code>_uni</code></quote>.
+The extended, or “Unicode”, Glk functions deal entirely in 32-bit words. They take arrays of words, not bytes, as arguments. They can therefore cope with any Unicode code point. The extended functions have names ending in “<code>_uni</code>”.
 </para>
 <note><para>
 Since these functions deal in arrays of 32-bit words, they can be said to use the UTF-32 character encoding form. (But <emphasis>not</emphasis> the UTF-32 character encoding <emphasis>scheme</emphasis> &mdash; that's a stream of bytes which must be interpreted in big-endian or little-endian mode. Glk Unicode functions operate on long integers, not bytes.) UTF-32 is also known as UCS-4, according to the Unicode spec (appendix C.2), modulo some semantic requirements which we will not deal with here. For practical purposes, we can ignore the whole encoding issue, and assume that we are dealing with sequences of numeric code points.
@@ -34,7 +34,15 @@ Why not UTF-8? It is a reasonable bare-bones compression algorithm for Unicode c
 </para></note>
 <note>
 <para>
-What about bi-directional text? It's a good idea, and may show up in future versions of this document. It is not in this version because we want to get something simple implemented soon. For the moment, print out all text in reading order (not necessarily left-to-right) and hope for the best. Current suggestions include a <code>stylehint_Direction</code>, which the game can set to indicate that text in the given style should be laid out right-to-left. Top-to-bottom (or bottom-to-top) may be desirable too. The direction stylehints might only apply to full paragraphs (like justification stylehints); or they might apply to any text, thus requiring the library to lay out <quote>zig-zag</quote> blocks. The possibilities remain to be explored. Page layout is hard.
+What about bi-directional text?
+It's a good idea, and may show up in future versions of this document.
+It is not in this version because we want to get something simple implemented soon.
+For the moment, print out all text in reading order (not necessarily left-to-right) and hope for the best.
+Current suggestions include a <code>stylehint_Direction</code>, which the game can set to indicate that text in the given style should be laid out right-to-left.
+Top-to-bottom (or bottom-to-top) may be desirable too.
+The direction stylehints might only apply to full paragraphs (like justification stylehints); or they might apply to any text, thus requiring the library to lay out “zig-zag” blocks.
+The possibilities remain to be explored.
+Page layout is hard.
 </para>
 <para>
 Another possibility is to let the library determine the directionality of text from the character set. This is not impossible &mdash; MacOSX text widgets do it. It may be too difficult.

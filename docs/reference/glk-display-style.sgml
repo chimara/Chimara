@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
@@ -15,14 +15,15 @@
 <refsect1>
 <title>Description</title>
 <para>
-The way windows are displayed is, of course, entirely up to the Glk library; it depends on what is natural for the player's machine. The borders between windows may be black lines, 3-D bars, rows of <quote><computeroutput>&num;</computeroutput></quote> characters; there may even be no borders at all.
+The way windows are displayed is, of course, entirely up to the Glk library; it depends on what is natural for the player's machine.
+The borders between windows may be black lines, 3-D bars, rows of “<computeroutput>&num;</computeroutput>” characters; there may even be no borders at all.
 The library may not support the Border/NoBorder hint, in which case <emphasis>every</emphasis> pair of windows will have a visible border &mdash; or no border &mdash; between them.
 </para>
 <note><para>
 The Border/NoBorder was introduced in Glk 0.7.1.
 Prior to that, all games used the Border hint, and this remains the default.
 However, as noted, not all implementations display window borders.
-Therefore, for existing implementations, <quote>Border</quote> may be understood as <quote>your normal style of window display</quote>; <quote>NoBorder</quote> may be understood as <quote>suppress any interwindow borders you may have</quote>.
+Therefore, for existing implementations, “Border” may be understood as “your normal style of window display”; “NoBorder” may be understood as “suppress any interwindow borders you may have”.
 </para></note>
 <para>
 There may be decorations within the windows as well. A text buffer window will often have a scroll bar. The library (or player) may prefer wide margins around each text window. And so on.

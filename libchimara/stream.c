@@ -500,7 +500,7 @@ glk_stream_open_file_uni(frefid_t fileref, glui32 fmode, glui32 rock)
  *
  * <note><para>
  *   Note that there is no notion of file usage &mdash; the resource does not
- *   have to be specified as <quote>saved game</quote> or whatever.
+ *   have to be specified as “saved game” or whatever.
  * </para></note>
  *
  * If no resource chunk of the given number exists, the open function returns

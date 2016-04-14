@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
@@ -14,7 +14,8 @@
 </refnamediv>
 <refsect1>
 <para>
-There are currently no other event types defined by Glk. (The <quote>#evtype_None</quote> constant is a placeholder, and is never returned by glk_select().)
+There are currently no other event types defined by Glk.
+(The “#evtype_None” constant is a placeholder, and is never returned by glk_select().)
 </para>
 <para>
 It is possible that new event types will be defined in the future. 

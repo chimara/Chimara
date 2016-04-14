@@ -306,8 +306,7 @@ glk_date_to_time_utc(glkdate_t *date, glktimeval_t *time)
  * Time conversions.
  * <note><para>
  *   If implemented with the mktime() libc function, it should use the negative
- *   @tm_isdst flag to <quote>attempt to divine whether summer time is in
- *   effect</quote>.
+ *   @tm_isdst flag to “attempt to divine whether summer time is in effect”.
  * </para></note>
  */
 void

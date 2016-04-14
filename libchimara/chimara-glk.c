@@ -761,9 +761,10 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      * interactive, but in non-interactive mode, keyboard and mouse input are 
      * ignored and the Glk program is controlled by 
      * chimara_glk_feed_char_input() and chimara_glk_feed_line_input(). 
-     * <quote>More</quote> prompts when a lot of text is printed to a text 
-	 * buffer are also disabled. This is typically used when you wish to control
-	 * an interpreter program by feeding it a predefined list of commands.
+	 * “More” prompts when a lot of text is printed to a text buffer are also
+	 * disabled.
+	 * This is typically used when you wish to control an interpreter program by
+	 * feeding it a predefined list of commands.
      */
     g_object_class_install_property( object_class, PROP_INTERACTIVE, 
 		g_param_spec_boolean("interactive", _("Interactive"),
@@ -866,7 +867,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
  *
  * The error domain for errors from Chimara widgets.
  *
- * Returns: The string <quote>chimara-error-quark</quote> as a <link 
+ * Returns: The string “chimara-error-quark” as a <link
  * linkend="GQuark">GQuark</link>.
  */
 GQuark

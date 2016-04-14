@@ -267,7 +267,8 @@ glk_window_get_root()
  * </para></note>
  * 
  * The examples we've seen so far have the simplest kind of size control. (Yes,
- * this is <quote>below</quote>.) Every pair is a percentage split, with 
+ * this is “below”.)
+ * Every pair is a percentage split, with
  * <inlineequation>
  *   <alt>X</alt>
  *   <mathphrase>X</mathphrase>
@@ -312,14 +313,15 @@ glk_window_get_root()
  * 
  * Note that the meaning of the @size argument depends on the @method argument.
  * If the method is %winmethod_Fixed, it also depends on the @wintype argument.
- * The new window is then called the <quote>key window</quote> of this split,
- * because its window type determines how the split size is computed.
+ * The new window is then called the “key window” of this split, because its
+ * window type determines how the split size is computed.
  * 
  * <note><para>
  *   For %winmethod_Proportional splits, you can still call the new window the
- *   <quote>key window</quote>. But the key window is not important for
- *   proportional splits, because the size will always be computed as a simple
- *   ratio of the available space, not a fixed size of one child window.
+ *   “key window”.
+ *   But the key window is not important for proportional splits, because the
+ *   size will always be computed as a simple ratio of the available space, not
+ *   a fixed size of one child window.
  * </para></note>
  * 
  * This system is more or less peachy as long as all the constraints work out.
@@ -348,9 +350,11 @@ glk_window_get_root()
  * </imageobject></mediaobject></informalfigure>
  * 
  * The library figures: the topmost split, the original A/B split, is 50-50. So
- * B gets half the screen space, and the pair window next to it (the lower
- * <quote>O</quote>) gets the other half. Then it looks at the lower 
- * <quote>O</quote>. C gets two rows; A gets the rest. All done.
+ * B gets half the screen space, and the pair window next to it (the lower “O”)
+ * gets the other half.
+ * Then it looks at the lower “O”.
+ * C gets two rows; A gets the rest.
+ * All done.
  * 
  * Then the user maliciously starts squeezing the window down, in stages:
  * <informaltable xml:id="chimara-Figure-Squeezing-Window" frame="none">
@@ -1247,8 +1251,8 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * ]|
  * That expands D to five rows. Note that, since O2's key window is already set
  * to D, it is not necessary to provide the @keywin argument; you can pass %NULL
- * to mean <quote>leave the key window unchanged.</quote>
- * 
+ * to mean “leave the key window unchanged.”
+ *
  * If you do change the key window of a pair window, the new key window 
  * <emphasis>must</emphasis> be a descendant of that pair window. In the current
  * example, you could change O2's key window to be A, but not B. The key window
@@ -1355,10 +1359,11 @@ glk_window_get_arrangement(winid_t win, glui32 *methodptr, glui32 *sizeptr, wini
  * beginning of the next line.
  * 
  * If you move the cursor below the last line, or when the cursor reaches the
- * end of the last line, it goes <quote>off the screen</quote> and further
- * output has no effect. You must call glk_window_move_cursor() or
- * glk_window_clear() to move the cursor back into the visible region.
- * 
+ * end of the last line, it goes “off the screen” and further output has no
+ * effect.
+ * You must call glk_window_move_cursor() or glk_window_clear() to move the
+ * cursor back into the visible region.
+ *
  * <note><para>
  *  Note that the arguments of glk_window_move_cursor() are <type>unsigned 
  *  int</type>s. This is okay, since there are no negative positions. If you try
@@ -1370,8 +1375,8 @@ glk_window_get_arrangement(winid_t win, glui32 *methodptr, glui32 *sizeptr, wini
  *  Also note that the output cursor is not necessarily visible. In particular,
  *  when you are requesting line or character input in a grid window, you cannot
  *  rely on the cursor position to prompt the player where input is indicated.
- *  You should print some character prompt at that spot &mdash; a 
- *  <quote>&gt;</quote> character, for example.
+ *  You should print some character prompt at that spot &mdash; a “&gt;”
+ *  character, for example.
  * </para></note>
  */
 void

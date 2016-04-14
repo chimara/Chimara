@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
@@ -39,7 +39,8 @@ Glk can also serve as a nice interface for applications other than games &mdash;
 </sect1>
 <sect1 id="chimara-What-About-the-Virtual-Machine"><title>What About the Virtual Machine?</title>
 <para>
-You can think of Glk as an IF virtual machine, without the virtual machine part. The <quote>machine</quote> is just portable C code.
+You can think of Glk as an IF virtual machine, without the virtual machine part.
+The “machine” is just portable C code.
 </para>
 <para>
 An IF virtual machine has been designed specifically to go along with Glk. This VM, called Glulx, uses Glk as its interface; each Glk call corresponds to an input/output opcode of the VM.
@@ -71,11 +72,12 @@ Sections labeled like this are notes. They do not define anything; they clarify 
 </para></note>
 <note><title>WORK</title>
 <para>
-Notes with the label <quote>WORK</quote> are things which I have not yet fully resolved. Your comments requested and welcome.
+Notes with the label “WORK” are things which I have not yet fully resolved.
+Your comments requested and welcome.
 </para></note>
 <note><title>Chimara</title>
 <para>
-Notes labeled <quote>Chimara</quote> are specific to Chimara's implementation of the Glk API and are not part of the original Glk API specification.
+Notes labeled “Chimara” are specific to Chimara's implementation of the Glk API and are not part of the original Glk API specification.
 </para></note>
 <para>
 This document is written for the point of view of the game programmer &mdash; the person who wants to use the Glk library to print text, input text, and so on. By saying what the Glk library does, of course, this document also defines the task of the Glk programmer &mdash; the person who wants to port the Glk library to a new platform or operating system. If the Glk library guarantees something, the game programmer can rely on it, and the Glk programmer is required to support it. Contrariwise, if the library does not guarantee something, the Glk programmer may handle it however he likes, and the game programmer must not rely on it. If something is illegal, the game programmer must not do it, and the Glk programmer is not required to worry about it. 
@@ -90,10 +92,13 @@ warning message to standard error. It tries to recover as gracefully as possible
 so that the program can continue.
 </para></note>
 <para>
-Hereafter, <quote>Glk</quote> or <quote>the library</quote> refers to the Glk library, and <quote>the program</quote> is the game program (or whatever) which is using the Glk library to print text, input text, or whatever. <quote>You</quote> are the person writing the program. <quote>The player</quote> is the person who will use the program/Glk library combination to actually play a game. Or whatever.
+Hereafter, “Glk” or “the library” refers to the Glk library, and “the program” is the game program (or whatever) which is using the Glk library to print text, input text, or whatever.
+“You” are the person writing the program.
+“The player” is the person who will use the program/Glk library combination to actually play a game. Or whatever.
 </para>
 <para>
-The Glk API is declared in a C header file called <quote><filename class="headerfile">glk.h</filename></quote>. Please refer to that file when reading this one. 
+The Glk API is declared in a C header file called “<filename class="headerfile">glk.h</filename>”.
+Please refer to that file when reading this one.
 </para>
 </sect1>
 <sect1 id="chimara-Credits"><title>Credits</title>

@@ -241,10 +241,11 @@ image_cache_find(struct image_info* to_find)
  * <note><para>
  *   You should always use this function to measure the size of images when you 
  *   are creating your display. Do this even if you created the images, and you
- *   know how big they <quote>should</quote> be. This is because images may be 
- *   scaled in translating from one platform to another, or even from one 
- *   machine to another. A Glk library might display all images larger than 
- *   their original size, because of screen resolution or player preference. 
+ *   know how big they “should” be.
+ *   This is because images may be scaled in translating from one platform to
+ *   another, or even from one machine to another.
+ *   A Glk library might display all images larger than their original size,
+ *   because of screen resolution or player preference.
  *   Images will be scaled proportionally, but you still need to call 
  *   glk_image_get_info() to determine their absolute size.
  * </para></note>
@@ -542,9 +543,11 @@ glk_window_erase_rect(winid_t win, glsi32 left, glsi32 top, glui32 width, glui32
  * glk_window_flow_break:
  * @win: A window.
  *
- * You may wish to <quote>break</quote> the stream of text down below the 
- * current margin image. Since lines of text can be in any font and size, you 
- * cannot do this by counting newlines. Instead, use this function.
+ * You may wish to “break” the stream of text down below the current margin
+ * image.
+ * Since lines of text can be in any font and size, you cannot do this by
+ * counting newlines.
+ * Instead, use this function.
  *
  * If the current point in the text is indented around a margin-aligned image, 
  * this acts like the correct number of newlines to start a new line below the 

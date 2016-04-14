@@ -693,9 +693,9 @@ get_char_stream_common(strid_t str)
  * glk_get_char_stream:
  * @str: An input stream.
  *
- * Reads one character from the stream @str. (There is no notion of a
- * <quote>current input stream.</quote>) It is illegal for @str to be %NULL, or
- * an output-only stream.
+ * Reads one character from the stream @str.
+ * (There is no notion of a “current input stream.”)
+ * It is illegal for @str to be %NULL, or an output-only stream.
  *
  * The result will be between 0 and 255. As with all basic text functions, Glk
  * assumes the Latin-1 encoding. See <link 

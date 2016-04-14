@@ -196,13 +196,14 @@ glk_select(event_t *event)
  * linkend="chimara-Other-Events">Other Events</link>.
  * 
  * The second question is, what does it mean that glk_select_poll() returns 
- * <quote>almost immediately</quote>? In some Glk libraries, text that you send 
- * to a window is buffered; it does not actually appear until you request player
- * input with glk_select(). glk_select_poll() attends to this buffer-flushing 
- * task in the same way. (Although it does not do the <quote><computeroutput>Hit
- * any key to scroll down</computeroutput></quote> waiting which may be done in
- * glk_select(); that's a player-input task.)
- * 
+ * “almost immediately”?
+ * In some Glk libraries, text that you send to a window is buffered; it does
+ * not actually appear until you request player input with glk_select().
+ * glk_select_poll() attends to this buffer-flushing task in the same way.
+ * (Although it does not do the “<computeroutput>Hit any key to scroll
+ * down</computeroutput>” waiting which may be done in glk_select(); that's a
+ * player-input task.)
+ *
  * Similarly, on multitasking platforms, glk_select() may yield time to other
  * processes; and glk_select_poll() does this as well.
  * 

@@ -137,8 +137,8 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  * @unregi: Function to call whenever the Glk library releases ownership of an
  * array.
  *
- * A few Glk functions take an array and hold onto it. The memory is 
- * <quote>owned</quote> by the library until some future Glk call releases it.
+ * A few Glk functions take an array and hold onto it.
+ * The memory is “owned” by the library until some future Glk call releases it.
  * While the library retains the array, your program should not read, write,
  * move, or deallocate it. When the library releases it, the contents are in
  * their final form, and you can copy them out (if appropriate) and dispose of

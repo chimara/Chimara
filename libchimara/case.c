@@ -80,12 +80,13 @@ glk_char_to_upper(unsigned char ch)
  * 
  * <note><para>
  *   Unicode has some strange case cases. For example, a combined character
- *   that looks like <quote>ss</quote> might properly be upper-cased into 
- *   <emphasis>two</emphasis> <quote>S</quote> characters. Title-casing is even
- *   stranger; <quote>ss</quote> (at the beginning of a word) might be 
- *   title-cased into a different combined character that looks like 
- *   <quote>Ss</quote>. The glk_buffer_to_title_case_uni() function is actually
- *   title-casing the first character of the buffer. If it makes a difference.
+ *   that looks like “ss” might properly be upper-cased into
+ *   <emphasis>two</emphasis> “S” characters.
+ *   Title-casing is even stranger; “ss” (at the beginning of a word) might be
+ *   title-cased into a different combined character that looks like “Ss”.
+ *   The glk_buffer_to_title_case_uni() function is actually title-casing the
+ *   first character of the buffer.
+ *   If it makes a difference.
  * </para></note>
  *
  * Returns: The number of characters after conversion.
@@ -203,14 +204,15 @@ glk_buffer_to_title_case_uni(glui32 *buf, glui32 len, glui32 numchars, glui32 lo
  * @len: Available length of @buf.
  * @numchars: Number of characters in @buf.
  *
- * This transforms a string into its canonical decomposition
- * (<quote>Normalization Form D</quote>). Effectively, this takes apart
- * multipart characters into their individual parts. For example, it would
- * convert <quote>&egrave;</quote> (character 0xE8, an accented
- * <quote>e</quote>) into the two-character string containing <quote>e</quote>
- * followed by Unicode character 0x0300 (COMBINING GRAVE ACCENT). If a single
- * character has multiple accent marks, they are also rearranged into a standard
- * order.
+ * This transforms a string into its canonical decomposition (“Normalization
+ * Form D”).
+ * Effectively, this takes apart multipart characters into their individual
+ * parts.
+ * For example, it would convert “&egrave;” (character 0xE8, an accented “e”)
+ * into the two-character string containing “e” followed by Unicode character
+ * 0x0300 (COMBINING GRAVE ACCENT).
+ * If a single character has multiple accent marks, they are also rearranged
+ * into a standard order.
  *
  * Returns: The number of characters in @buf after decomposition.
  */
@@ -247,12 +249,12 @@ glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len, glui32 numchars)
  * @numchars: Number of characters in @buf.
  *
  * This transforms a string into its canonical decomposition and recomposition
- * (<quote>Normalization Form C</quote>). Effectively, this takes apart
- * multipart characters, and then puts them back together in a standard way. For
- * example, this would convert the two-character string containing
- * <quote>e</quote> followed by Unicode character 0x0300 (COMBINING GRAVE
- * ACCENT) into the one-character string <quote>&egrave;</quote> (character
- * 0xE8, an accented <quote>e</quote>).
+ * (“Normalization Form C”).
+ * Effectively, this takes apart multipart characters, and then puts them back
+ * together in a standard way.
+ * For example, this would convert the two-character string containing “e”
+ * followed by Unicode character 0x0300 (COMBINING GRAVE ACCENT) into the
+ * one-character string “&egrave;” (character 0xE8, an accented “e”).
  *
  * The <code>canon_normalize</code> function includes decomposition as part of
  * its implementation. You never have to call both functions on the same string.
@@ -272,13 +274,13 @@ glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len, glui32 numchars)
  *
  * <note><para>
  *   The Unicode spec also defines stronger forms of these functions, called
- *   <quote>compatibility decomposition and recomposition</quote>
- *   (<quote>Normalization Form KD</quote> and <quote>Normalization Form
- *   KC</quote>.) These do all of the accent-mangling described above, but they
- *   also transform many other obscure Unicode characters into more familiar
- *   forms. For example, they split ligatures apart into separate letters. They
- *   also convert Unicode display variations such as script letters, circled
- *   letters, and half-width letters into their common forms.
+ *   “compatibility decomposition and recomposition” (“Normalization Form KD”
+ *   and “Normalization Form KC”.)
+ *   These do all of the accent-mangling described above, but they also
+ *   transform many other obscure Unicode characters into more familiar forms.
+ *   For example, they split ligatures apart into separate letters.
+ *   They also convert Unicode display variations such as script letters,
+ *   circled letters, and half-width letters into their common forms.
  * </para></note>
  *
  * <note><para>

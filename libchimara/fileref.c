@@ -204,10 +204,11 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * open the file.
  *
  * <note><para>
- *   It is likely that the prompt or file tool will have a <quote>cancel</quote>
- *   option. If the player chooses this, glk_fileref_create_by_prompt() will
- *   return %NULL. This is a major reason why you should make sure the return
- *   value is valid before you use it.
+ *   It is likely that the prompt or file tool will have a “cancel” option.
+ *   If the player chooses this, glk_fileref_create_by_prompt() will return
+ *   %NULL.
+ *   This is a major reason why you should make sure the return value is valid
+ *   before you use it.
  * </para></note>
  *
  * The recommended file suffixes for files are <filename>.glkdata</filename> for
@@ -335,7 +336,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  * in a fixed location relevant to your program, and visible to the player.
  *
  * <note><para>
- *   This usually means <quote>in the same directory as your program.</quote>
+ *   This usually means “in the same directory as your program.”
  * </para></note>
  * <note><title>Chimara</title>
  * <para>
@@ -379,11 +380,11 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  * case. Avoid overly-long filenames.
  *
  * <note><para>
- *   The earlier Glk spec gave more stringent recommendations: <quote>No more
- *   than 8 characters, consisting entirely of upper-case letters and numbers,
- *   starting with a letter</quote>. The DOS era is safely contained, if not
- *   over, so this has been relaxed. The I7 manual recommends <quote>23
- *   characters or fewer</quote>.
+ *   The earlier Glk spec gave more stringent recommendations: “No more than 8
+ *   characters, consisting entirely of upper-case letters and numbers, starting
+ *   with a letter”.
+ *   The DOS era is safely contained, if not over, so this has been relaxed.
+ *   The I7 manual recommends “23 characters or fewer”.
  * </para></note>
  *
  * <note><para>

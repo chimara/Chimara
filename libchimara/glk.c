@@ -19,8 +19,8 @@ G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
  *
  * If you print some text to a window and then shut down your program, you can
  * assume that the player will be able to read it. Most likely the Glk library
- * will give a <quote><computeroutput>Hit any key to 
- * exit</computeroutput></quote> prompt. (There are other possiblities, however.
+ * will give a “<computeroutput>Hit any key to exit</computeroutput>” prompt.
+ * (There are other possiblities, however.
  * A terminal-window version of Glk might simply exit and leave the last screen
  * state visible in the terminal window.)
  *

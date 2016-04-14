@@ -137,9 +137,9 @@
  * should always test for this possibility.
  * 
  * %NULL is never the identifier of any object (window, stream, file reference,
- * or sound channel). The value %NULL is often used to indicate <quote>no
- * object</quote> or <quote>nothing</quote>, but it is not a valid reference. If
- * a Glk function takes an object reference as an argument, it is illegal to
+ * or sound channel). The value %NULL is often used to indicate “no object” or
+ * “nothing”, but it is not a valid reference.
+ * If a Glk function takes an object reference as an argument, it is illegal to
  * pass in %NULL unless the function definition says otherwise.
  * 
  * The <filename class="headerfile">glk.h</filename> file defines types
@@ -158,8 +158,9 @@
  * <title>Rocks</title>
  * <para>
  * Every one of these objects (window, stream, file reference, or sound channel)
- * has a <quote>rock</quote> value. This is simply a 32-bit integer value which
- * you provide, for your own purposes, when you create the object.
+ * has a “rock” value.
+ * This is simply a 32-bit integer value which you provide, for your own
+ * purposes, when you create the object.
  * </para>
  * <note><para>The library &mdash; so to speak &mdash; stuffs this value under a
  * rock for safe-keeping, and gives it back to you when you ask for it.
@@ -227,14 +228,14 @@
  * SECTION:glk-gestalt
  * @short_description: Testing Glk's capabilities
  *
- * The <quote>gestalt</quote> mechanism (cheerfully stolen from the Mac OS) is a
- * system by which the Glk API can be upgraded without making your life
- * impossible. New capabilities (graphics, sound, or so on) can be added without
- * changing the basic specification. The system also allows for 
- * <quote>optional</quote> capabilities &mdash; those which not all Glk library
- * implementations will support &mdash; and allows you to check for their
- * presence without trying to infer them from a version number.
- * 
+ * The “gestalt” mechanism (cheerfully stolen from the Mac OS) is a system by
+ * which the Glk API can be upgraded without making your life impossible.
+ * New capabilities (graphics, sound, or so on) can be added without changing
+ * the basic specification.
+ * The system also allows for “optional” capabilities &mdash; those which not
+ * all Glk library implementations will support &mdash; and allows you to check
+ * for their presence without trying to infer them from a version number.
+ *
  * The basic idea is that you can request information about the capabilities of
  * the API, by calling the gestalt functions.
  */
@@ -281,8 +282,8 @@
  *   <keycap>tab</keycap> and <keycombo action="simul"><keycap
  *   function="control">control</keycap><keycap>I</keycap></keycombo>. This is
  *   legal. The idea is, however, that if your program asks the player to
- *   <quote><computeroutput>press the <keycap function="tab">tab</keycap>
- *   key</computeroutput></quote>, you should check for a 
+ *   “<computeroutput>press the <keycap function="tab">tab</keycap>
+ *   key</computeroutput>”, you should check for a
  *   <keysym>%keycode_Tab</keysym> event as opposed to a <keycombo 
  *   action="simul"><keycap function="control">control</keycap>
  *   <keycap>I</keycap></keycombo> event.
@@ -311,8 +312,8 @@
  *   typable. This is because, in most libraries, it will be converted to
  *   <keysym>%keycode_Return</keysym>. Again, you should check for
  *   <keysym>%keycode_Return</keysym> if your program asks the player to 
- *   <quote><computeroutput>press the <keycap function="enter">return</keycap>
- *   key</computeroutput></quote>.
+ *   “<computeroutput>press the <keycap function="enter">return</keycap>
+ *   key</computeroutput>”.
  * </para></note>
  * 
  * <note><para>
@@ -338,9 +339,9 @@
  *   function="escape">escape</keycap><keycombo action="simul"><keycap
  *   function="control">control</keycap><keycap>A</keycap></keycombo>
  *   </keycombo>, and the player does not know this, the player will be lost
- *   when the game says <quote><computeroutput>Press the <keycap
+ *   when the game says “<computeroutput>Press the <keycap
  *   function="home">home</keycap> key to see the next 
- *   hint.</computeroutput></quote> It is better for the library to say that it
+ *   hint.</computeroutput>” It is better for the library to say that it
  *   cannot generate a <keysym>%keycode_Home</keysym> event; that way the game
  *   can detect the situation and ask the user to type <keycap>H</keycap>
  *   instead.
@@ -372,10 +373,10 @@
  *
  * Comparing Unicode strings is difficult, because there can be several ways to
  * represent a piece of text as a Unicode string. For example, the one-character
- * string <quote>&egrave;</quote> (an accented <quote>e</quote>) will be
- * displayed the same as the two-character string containing <quote>e</quote>
- * followed by Unicode character 0x0300 (COMBINING GRAVE ACCENT). These strings
- * should be considered equal.
+ * string “&egrave;” (an accented “e”) will be displayed the same as the
+ * two-character string containing “e” followed by Unicode character 0x0300
+ * (COMBINING GRAVE ACCENT).
+ * These strings should be considered equal.
  *
  * Therefore, a Glk program that accepts line input should convert its text to a
  * normalized form before parsing it. These functions offer those conversions.
@@ -413,8 +414,8 @@
  * Every window has an associated window stream; you print to the window by
  * printing to this stream. However, it is possible to attach a second stream to
  * a window. Any text printed to the window is also echoed to this second
- * stream, which is called the window's <quote>echo stream.</quote>
- * 
+ * stream, which is called the window's “echo stream.”
+ *
  * Effectively, any call to glk_put_char() (or the other output commands) which
  * is directed to the window's window stream, is replicated to the window's echo
  * stream. This also goes for the style commands such as glk_set_style().
@@ -440,8 +441,8 @@
  *
  * <note><para>
  *   Do not confuse the window's window stream with its echo stream. The window
- *   stream is <quote>owned</quote> by the window, and dies with it. The echo
- *   stream is merely temporarily associated with the window.
+ *   stream is “owned” by the window, and dies with it.
+ *   The echo stream is merely temporarily associated with the window.
  * </para></note>
  * 
  * If a stream is closed, and it is the echo stream of one or more windows,
@@ -525,9 +526,9 @@
  * <note><para>
  *   However, since different platforms will handle this issue differently, you
  *   should be careful how you instruct the player in your program. Do not tell
- *   the player to <quote>double-click</quote>, <quote>right-click</quote>, or
- *   <quote>control-click</quote> in a window. The preferred term is <quote>to
- *   touch the window</quote>, or a spot in the window.
+ *   the player to “double-click”, “right-click”, or “control-click” in a
+ *   window.
+ *   The preferred term is “to touch the window”, or a spot in the window.
  * </para></note>
  * <note><para>
  *   Goofy, but preferred.
@@ -626,11 +627,12 @@
  * The read-count is exactly one per glk_get_char_stream() call, as long as the
  * call returns an actual character (as opposed to an end-of-file token.) 
  *
- * Glk has a notion of the <quote>current (output) stream</quote>. If you print
- * text without specifying a stream, it goes to the current output stream. The
- * current output stream may be %NULL, meaning that there isn't one. It is
- * illegal to print text to stream %NULL, or to print to the current stream when
- * there isn't one.
+ * Glk has a notion of the “current (output) stream”.
+ * If you print text without specifying a stream, it goes to the current output
+ * stream.
+ * The current output stream may be %NULL, meaning that there isn't one.
+ * It is illegal to print text to stream %NULL, or to print to the current
+ * stream when there isn't one.
  *
  * If the stream which is the current stream is closed, the current stream
  * becomes %NULL. 
@@ -670,8 +672,8 @@
  * You can set the position of the read/write mark in a stream.
  *
  * <note><para>
- *   Which makes one wonder why they're called <quote>streams</quote> in the
- *   first place. Oh well.
+ *   Which makes one wonder why they're called “streams” in the first place.
+ *   Oh well.
  * </para></note>
  */
 
@@ -690,9 +692,8 @@
  * subset of the possible styles.
  *
  * <note><para>
- *  Note that every stream and window has its own idea of the <quote>current 
- *  style.</quote> Sending a style command to one window or stream does not
- *  affect any others.
+ *  Note that every stream and window has its own idea of the “current style.”
+ *  Sending a style command to one window or stream does not affect any others.
  * </para></note>
  * <note><para>
  *  Except for a window's echo stream; see <link 
@@ -715,15 +716,16 @@
  * 
  * <note><para>
  *  For example, %style_Header may well be centered text. If you print 
- *  <quote>Welcome to Victim (a short interactive mystery)</quote>, and only the
- *  word <quote>Victim</quote> is in the %style_Header, the center-justification
- *  attribute will be lost. Similarly, a block quote is usually indented on both
- *  sides, but indentation is only meaningful when applied to an entire line or
- *  paragraph, so block quotes should take up an entire paragraph. Contrariwise,
- *  %style_Emphasized need not be used on an entire paragraph. It is often used
- *  for single emphasized words in normal text, so you can expect that it will
- *  appear properly that way; it will be displayed in italics or underlining, 
- *  not center-justified or indented.
+ *  “Welcome to Victim (a short interactive mystery)”, and only the word
+ *  “Victim” is in the %style_Header, the center-justification attribute will be
+ *  lost.
+ *  Similarly, a block quote is usually indented on both sides, but indentation
+ *  is only meaningful when applied to an entire line or paragraph, so block
+ *  quotes should take up an entire paragraph.
+ *  Contrariwise, %style_Emphasized need not be used on an entire paragraph.
+ *  It is often used for single emphasized words in normal text, so you can
+ *  expect that it will appear properly that way; it will be displayed in
+ *  italics or underlining, not center-justified or indented.
  * </para></note> 
  * 
  * <note><para>
@@ -880,9 +882,8 @@
  *   If the running program is not associated with a Blorb file, the library may
  *   look for data files as actual files instead. These would be named
  *   <filename>DATA1</filename>, <filename>DATA2</filename>, etc, with a suffix
- *   distinguishing text and binary files. See <quote>Other Resource
- *   Arrangements</quote> in the Blorb spec: <ulink
- *   url="http://eblong.com/zarf/blorb/"></ulink>
+ *   distinguishing text and binary files. See “Other Resource Arrangements”
+ *   in the Blorb spec: <ulink url="http://eblong.com/zarf/blorb/"></ulink>
  * </para></note>
  * </para>
  * </refsect2>
@@ -1035,17 +1036,17 @@
  * window, @val1 gives the image alignment. The @val2 argument is currently
  * unused, and should always be zero.
  *
- * The two <quote>margin</quote> alignments require some care. To allow proper 
- * positioning, images using %imagealign_MarginLeft and %imagealign_MarginRight 
- * must be placed at the beginning of a line. That is, you may only call 
- * glk_image_draw() (with these two alignments) in a window, if you have just 
- * printed a newline to the window's stream, or if the window is entirely empty.
+ * The two “margin” alignments require some care.
+ * To allow proper positioning, images using %imagealign_MarginLeft and
+ * %imagealign_MarginRight must be placed at the beginning of a line.
+ * That is, you may only call glk_image_draw() (with these two alignments) in a
+ * window, if you have just printed a newline to the window's stream, or if the
+ * window is entirely empty.
  * If you margin-align an image in a line where text has already appeared, no 
  * image will appear at all.
- * 
- * Inline-aligned images count as <quote>text</quote> for the purpose of this 
- * rule.
- * 
+ *
+ * Inline-aligned images count as “text” for the purpose of this rule.
+ *
  * You may have images in both margins at the same time.
  * 
  * It is also legal to have more than one image in the same margin (left or 
@@ -1268,9 +1269,8 @@
  * When you compile a Glk program, you may define a function called 
  * <function>glkunix_startup_code&lpar;&rpar;</function>, and an array 
  * <code>glkunix_arguments[]</code>. These set up various Unix-specific options
- * used by the Glk library. There is a sample 
- * <quote><filename>glkstart.c</filename></quote> file included in this package;
- * you should modify it to your needs.
+ * used by the Glk library. There is a sample “<filename>glkstart.c</filename>”
+ * file included in this package; you should modify it to your needs.
  * |[<!--language="C"-->
  * extern glkunix_argumentlist_t glkunix_arguments[];
  * ]|
@@ -1535,10 +1535,11 @@
  *
  * <note><para>
  *   Make sure you do not get confused by signed byte values. If you set a
- *   <quote><type>signed char</type></quote> variable <code>ch</code> to 0xFE,
- *   the small-thorn character (&thorn;), it will wind up as -2. (The same is
- *   true of a <quote><type>char</type></quote> variable, if your compiler
- *   treats <quote><type>char</type></quote> as signed!) If you then call
+ *   “<type>signed char</type>” variable <code>ch</code> to 0xFE, the
+ *   small-thorn character (&thorn;), it will wind up as -2.
+ *   (The same is true of a “<type>char</type>” variable, if your compiler
+ *   treats “<type>char</type>” as signed!)
+ *   If you then call
  *   |[
  *   res = glk_gestalt(gestalt_CharOutput, ch);
  *   ]|
@@ -1556,7 +1557,7 @@
  *   two spaces in a fixed-width font. Future versions of this spec may 
  *   recognize these concepts by returning a <code>len</code> of 0 or 2 when
  *   %gestalt_CharOutput_ExactPrint is used. For the moment, we are adhering to 
- *   a policy of <quote>simple stuff first</quote>.
+ *   a policy of “simple stuff first”.
  * </para></note>
  */
  
@@ -1575,11 +1576,9 @@
  * library will print some approximation of the character. It will be more or 
  * less right, but it may not be precise, and it may not be distinguishable from
  * other, similar characters. (Examples: 
- * <quote><computeroutput>ae</computeroutput></quote> for the one-character
- * <quote>&aelig;</quote> ligature, 
- * <quote><computeroutput>e</computeroutput></quote> for 
- * <quote>&egrave;</quote>, <quote><computeroutput>|</computeroutput></quote> 
- * for a broken vertical bar (&brvbar;).)
+ * “<computeroutput>ae</computeroutput>” for the one-character “&aelig;”
+ * ligature, “<computeroutput>e</computeroutput>” for “&egrave;”,
+ * “<computeroutput>|</computeroutput>” for a broken vertical bar (&brvbar;).)
  */
  
 /**
@@ -1744,10 +1743,11 @@
  * This returns 1 if the library is capable of playing music sound resources. If 
  * it returns 0, only sampled sounds can be played.
  * <note><para>
- *   <quote>Music sound resources</quote> means MOD songs &mdash; the only music
- *   format that Blorb currently supports. The presence of this selector is, of 
- *   course, an ugly hack. It is a concession to the current state of the Glk 
- *   libraries, some of which can handle AIFF but not MOD sounds.
+ *   “Music sound resources” means MOD songs &mdash; the only music format that
+ *   Blorb currently supports.
+ *   The presence of this selector is, of course, an ugly hack.
+ *   It is a concession to the current state of the Glk libraries, some of which
+ *   can handle AIFF but not MOD sounds.
  * </para></note>
  *
  * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
@@ -2000,8 +2000,8 @@
  *   change size. For example, if the player changes the screen resolution, an
  *   arrangement event might be triggered. This might also happen if the player
  *   changes his display font to a different size; the windows would then be
- *   different <quote>sizes</quote> in the metric of rows and columns, which is
- *   the important metric and the only one you have access to.
+ *   different “sizes” in the metric of rows and columns, which is the important
+ *   metric and the only one you have access to.
  * </para></note>
  * 
  * Arrangement events, like timer events, can be returned by glk_select_poll().
@@ -2415,7 +2415,7 @@
  * The size of a text buffer window is necessarily imprecise. Calling
  * glk_window_get_size() will return the number of rows and columns that would
  * be available <emphasis>if</emphasis> the window was filled with 
- * <quote>0</quote> (zero) characters in the <quote>normal</quote> font.
+ * “0” (zero) characters in the “normal” font.
  * However, the window may use a non-fixed-width font, so that number of
  * characters in a line could vary. The window might even support 
  * variable-height text (say, if the player is using large text for emphasis);
@@ -2423,9 +2423,10 @@
  * 
  * Similarly, when you set a fixed-size split in the measurement system of a
  * text buffer, you are setting a window which can handle a fixed number of rows
- * (or columns) of <quote>0</quote> characters. The number of rows (or
- * characters) that will actually be displayed depends on font variances.
- * 
+ * (or columns) of “0” characters.
+ * The number of rows (or characters) that will actually be displayed depends on
+ * font variances.
+ *
  * A text buffer window supports both character and line input, but not mouse
  * input.
  * 
@@ -2487,9 +2488,10 @@
  * 
  * <note><para>
  *   Note that printing fancy characters may cause the cursor to advance more
- *   than one position per character. (For example, the <quote>&aelig;</quote>
- *   ligature may print as two characters.) See <link 
- *   linkend="chimara-Output">Output</link>, for how to test this situation.
+ *   than one position per character. (For example, the “&aelig;” ligature may
+ *   print as two characters.)
+ *   See <link linkend="chimara-Output">Output</link>, for how to test this
+ *   situation.
  * </para></note>
  * 
  * You can set the cursor position with glk_window_move_cursor().
@@ -3082,8 +3084,8 @@
  * The @id field is a selector &mdash; a numeric constant used to refer to the
  * function in question. @name is the function name, as it is given in the
  * <filename class="headerfile">glk.h</filename> file, but without the 
- * <quote><code>glk_</code></quote> prefix. And @fnptr is the address of the
- * function itself.
+ * “<code>glk_</code>” prefix.
+ * And @fnptr is the address of the function itself.
  *
  * <note><para>
  *   This is included because it might be useful, but it is not recommended. To
@@ -3897,8 +3899,8 @@
  * <varlistentry>
  *  <term>%glkunix_arg_NumberValue</term>
  *  <listitem><para>The argument must be followed by a number, which may be the 
- *  next argument or part of this one. (That is, either <quote><code>-width 
- *  20</code></quote> or <quote><code>-width20</code></quote> will be accepted.)
+ *  next argument or part of this one. (That is, either “<code>-width 20</code>”
+ *  or “<code>-width20</code>” will be accepted.)
  *  </para></listitem>
  * </varlistentry>
  * <varlistentry> 
@@ -3931,8 +3933,8 @@
  *     { NULL, glkunix_arg_End, NULL }
  * };
  * ]|
- * This would match the arguments <quote><code>thingfile -goo -wob8 -bom -hum 
- * song</code></quote>.
+ * This would match the arguments “<code>thingfile -goo -wob8 -bom -hum
+ * song</code>”.
  *
  * After the library parses the command line, it does various occult rituals of
  * initialization, and then calls glkunix_startup_code().
