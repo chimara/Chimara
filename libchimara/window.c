@@ -933,8 +933,7 @@ glk_window_close(winid_t win, stream_result_t *result)
  *  <term>Graphics</term>
  *  <listitem><para>
  *   Clears the entire window to its current background color. See <link
- *   linkend="chimara-The-Types-of-Windows&num;wintype-Graphics">Graphics 
- *   Windows</link>.
+ *   linkend="wintype-Graphics">Graphics Windows</link>.
  *  </para></listitem>
  * </varlistentry>
  * <varlistentry>
