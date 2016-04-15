@@ -244,9 +244,9 @@
  * SECTION:glk-character-input
  * @short_description: Waiting for a single keystroke
  *
- * You can request that the player hit a single key. See <link 
- * linkend="chimara-Character-Input-Events">Character Input Events</link>.
- * 
+ * You can request that the player hit a single key. See [Character Input
+ * Events][chimara-Character-Input-Events].
+ *
  * If you use the basic text API, the character code which is returned can be
  * any value from 0 to 255. The printable character codes have already been
  * described. The remaining codes are typically control codes:
@@ -461,10 +461,10 @@
  * SECTION:glk-events
  * @short_description: Waiting for events
  *
- * As described in <link linkend="chimara-Your-Programs-Main-Function">Your
- * Program's Main Function</link>, all player input is handed to your program by
- * the glk_select() call, in the form of events. You should write at least one
- * event loop to retrieve these events.
+ * As described in [Your Program's Main
+ * Function][chimara-Your-Programs-Main-Function], all player input is handed to
+ * your program by the glk_select() call, in the form of events.
+ * You should write at least one event loop to retrieve these events.
  */
 
 /**
@@ -581,8 +581,8 @@
  *
  * You do not need to worry about the origin of such streams; just read or write
  * them as usual. For information about how platform-specific streams come to
- * be, see <link linkend="chimara-Startup-Options">Startup Options</link>.
- * 
+ * be, see [Startup Options][chimara-Startup-Options].
+ *
  * A stream is opened with a particular file mode, see the 
  * <code>filemode_</code> constants below.
  *
@@ -609,10 +609,10 @@
  * </para></note>
  *
  * For information on opening streams, see the discussion of each specific type
- * of stream in <link linkend="chimara-The-Types-of-Streams">The Types of
- * Streams</link>. Remember that it is always possible that opening a stream
- * will fail, in which case the creation function will return %NULL.
- * 
+ * of stream in [The Types of Streams][chimara-The-Types-of-Streams].
+ * Remember that it is always possible that opening a stream will fail, in which
+ * case the creation function will return %NULL.
+ *
  * Each stream remembers two character counts, the number of characters printed
  * to and read from that stream. The write-count is exactly one per 
  * glk_put_char() call; it is figured before any platform-dependent character
@@ -901,9 +901,8 @@
  * @short_description: A platform-independent way to refer to disk files
  *
  * You deal with disk files using file references. Each fileref is an opaque C
- * structure pointer; see <link linkend="chimara-Opaque-Objects">Opaque 
- * Objects</link>.
- * 
+ * structure pointer; see [Opaque Objects][chimara-Opaque-Objects].
+ *
  * A file reference contains platform-specific information about the name and
  * location of the file, and possibly its type, if the platform has a notion of
  * file type. It also includes a flag indication whether the file is a text file
@@ -985,8 +984,9 @@
  * At present, images can only be drawn in graphics windows and text buffer 
  * windows. In fact, a library may not implement both of these possibilities.
  * You should test each with the %gestalt_DrawImage selector if you plan to use
- * it. See <link linkend="chimara-Testing-for-Graphics-Capabilities">Testing for
- * Graphics Capabilities</link>. 
+ * it.
+ * See [Testing for Graphics
+ * Capabilities][chimara-Testing-for-Graphics-Capabilities].
  */
 
 /**
@@ -996,9 +996,9 @@
  * A graphics window is a rectangular canvas of pixels, upon which you can draw
  * images. The contents are entirely under your control. You can draw as many
  * images as you like, at any positions &mdash; overlapping if you like. If the
- * window is resized, you are responsible for redrawing everything. See <link
- * linkend="wintype-Graphics">Graphics Windows</link>.
- * 
+ * window is resized, you are responsible for redrawing everything.
+ * See [Graphics Windows][wintype-Graphics].
+ *
  * <note><para>
  *   Note that graphics windows do not support a full set of object-drawing 
  *   commands, nor can you draw text in them. That may be available in a future 
@@ -1137,9 +1137,9 @@
  * or as a broken-out structure of time elements (year, month, day, hour,
  * minute, second).
  *
- * The system clock is not guaranteed to line up with timer events (see <link 
- * linkend="chimara-Timer-Events">Timer Events</link>). Timer events may be
- * delivered late according to the system clock.
+ * The system clock is not guaranteed to line up with timer events (see [Timer
+ * Events][chimara-Timer-Events]).
+ * Timer events may be delivered late according to the system clock.
  */
 
 /**
@@ -1224,11 +1224,13 @@
  * @short_description: How to use the Blorb layer in your program
  *
  * If you wish your program to load its resources from a Blorb file, you need to
- * find and open that file in your startup code. (See <link 
- * linkend="chimara-Startup-Options">Startup Options</link>.) Each platform will
- * have appropriate functions available for finding startup data. Be sure to
- * open the file in binary mode, not text mode. Once you have opened the file as
- * a Glk stream, pass it to giblorb_set_resource_map().
+ * find and open that file in your startup code.
+ * (See [Startup Options][chimara-Startup-Options].)
+ * Each platform will have appropriate functions available for finding startup
+ * data.
+ * Be sure to open the file in binary mode, not text mode.
+ * Once you have opened the file as a Glk stream, pass it to
+ * giblorb_set_resource_map().
  *
  * If you do not call giblorb_set_resource_map() in your startup code, or if it
  * fails, the library is left to its own devices for finding resources. Some
@@ -1484,8 +1486,8 @@
  * res = glk_gestalt(gestalt_CharInput, ch);
  * ]|
  * then <code>res</code> will be %TRUE (1) if that character can be typed by
- * the player in character input, and %FALSE (0) if not. See <link
- * linkend="chimara-Character-Input">Character Input</link>.
+ * the player in character input, and %FALSE (0) if not.
+ * See [Character Input][chimara-Character-Input].
  */
 
 /**
@@ -1499,8 +1501,8 @@
  * then <code>res</code> will be %TRUE (1) if that character can be typed by the
  * player in line input, and %FALSE (0) if not. Note that if <code>ch</code> is 
  * a nonprintable Latin-1 character (0 to 31, 127 to 159), then this is 
- * guaranteed to return %FALSE. See <link linkend="chimara-Line-Input">Line
- * Input</link>.
+ * guaranteed to return %FALSE.
+ * See [Line Input][chimara-Line-Input].
  */
 
 /**
@@ -1651,10 +1653,9 @@
  * res = glk_gestalt(gestalt_Sound2, 0);
  * ]|
  * This returns 1 if the overall suite of sound functions is available. This
- * includes all the functions defined in <link
- * linkend="chimara-glk-spec-sound">this chapter</link>. It also includes the
- * capabilities described below under %gestalt_SoundMusic, %gestalt_SoundVolume,
- * and %gestalt_SoundNotify.
+ * includes all the functions defined in [this chapter][chimara-glk-spec-sound].
+ * It also includes the capabilities described below under %gestalt_SoundMusic,
+ * %gestalt_SoundVolume, and %gestalt_SoundNotify.
  */
 
 /**
@@ -1862,8 +1863,7 @@
  * ]|
  *
  * This returns 1 if the overall suite of system clock functions, as described
- * in <link linkend="chimara-The-System-Clock">this chapter</link>, is
- * available.
+ * in [this chapter][chimara-The-System-Clock], is available.
  *
  * If this selector returns 0, you should not try to call these functions. They
  * may have no effect, or they may cause a run-time error.
@@ -1894,15 +1894,15 @@
 /**
  * evtype_Timer:
  *
- * An event that repeats at fixed intervals. See <link 
- * linkend="chimara-Timer-Events">Timer Events</link>.
+ * An event that repeats at fixed intervals.
+ * See [Timer Events][chimara-Timer-Events].
  */
  
 /**
  * evtype_CharInput:
  *
- * A keystroke event in a window. See <link 
- * linkend="chimara-Character-Input-Events">Character Input Events</link>.
+ * A keystroke event in a window.
+ * See [Character Input Events][chimara-Character-Input-Events].
  *
  * If a window has a pending request for character input, and the player hits a
  * key in that window, glk_select() will return an event whose type is
@@ -1912,16 +1912,18 @@
  * 
  * In the event structure, @win tells what window the event came from. @val1 
  * tells what character was entered; this will be a character code, or a special
- * keycode. (See <link linkend="chimara-Character-Input">Character 
- * Input</link>.) If you called glk_request_char_event(), @val1 will be in 
- * 0..255, or else a special keycode. In any case, @val2 will be 0.
+ * keycode.
+ * (See [Character Input][chimara-Character-Input].)
+ * If you called glk_request_char_event(), @val1 will be in 0..255, or else a
+ * special keycode.
+ * In any case, @val2 will be 0.
  */
 
 /**
  * evtype_LineInput:
  *
- * A full line of input completed in a window. See <link 
- * linkend="chimara-Line-Input-Events">Line Input Events</link>.
+ * A full line of input completed in a window.
+ * See [Line Input Events][chimara-Line-Input-Events].
  *
  * If a window has a pending request for line input, the player can generally
  * hit the <keycap>enter</keycap> key (in that window) to complete line input.
@@ -1956,8 +1958,8 @@
 /**
  * evtype_MouseInput:
  *
- * A mouse click in a window. See <link 
- * linkend="chimara-Mouse-Input-Events">Mouse Input Events</link>.
+ * A mouse click in a window.
+ * See [Mouse Input Events][chimara-Mouse-Input-Events].
  */
  
 /**
@@ -2039,8 +2041,8 @@
  * Redraw events can be returned by glk_select_poll(). But, like arrangement
  * events, this is platform-dependent. See %evtype_Arrange.
  *
- * For more about redraw events and how they affect graphics windows, see <link
- * linkend="wintype-Graphics">Graphics Windows</link>.
+ * For more about redraw events and how they affect graphics windows, see
+ * [Graphics Windows][wintype-Graphics].
  */
 
 /**
@@ -2049,8 +2051,8 @@
  * The completion of a sound being played in a sound channel.
  *
  * On platforms that support sound, you can request to receive an 
- * %evtype_SoundNotify event when a sound finishes playing. See <link
- * linkend="chimara-Playing-Sounds">Playing Sounds</link>.
+ * %evtype_SoundNotify event when a sound finishes playing.
+ * See [Playing Sounds][chimara-Playing-Sounds].
  */
  
 /**
@@ -2059,9 +2061,8 @@
  * The selection of a hyperlink in a window.
  * 
  * On platforms that support hyperlinks, you can request to receive an
- * %evtype_Hyperlink event when the player selects a link. See <link
- * linkend="chimara-Accepting-Hyperlink-Events">Accepting Hyperlink 
- * Events</link>.
+ * %evtype_Hyperlink event when the player selects a link.
+ * See [Accepting Hyperlink Events][chimara-Accepting-Hyperlink-Events].
  */
 
 /**
@@ -2070,8 +2071,8 @@
  * The completion of a gradual volume change in a sound channel.
  *
  * On platforms that support sound, you can request to receive an
- * %evtype_VolumeNotify event when a gradual volume change completes. See <link
- * linkend="chimara-Playing-Sounds">Playing Sounds</link>.
+ * %evtype_VolumeNotify event when a gradual volume change completes.
+ * See [Playing Sounds][chimara-Playing-Sounds].
  */
 
 /**
@@ -2334,9 +2335,9 @@
  * @writecount: Number of characters printed to the stream, including ones that
  * were thrown away.
  *
- * If you are interested in the character counts of a stream (see <link
- * linkend="chimara-Streams">Streams</link>), then you can pass a pointer to
- * #stream_result_t as an argument of glk_stream_close() or glk_window_close().
+ * If you are interested in the character counts of a stream (see
+ * [Streams][chimara-Streams]), then you can pass a pointer to #stream_result_t
+ * as an argument of glk_stream_close() or glk_window_close().
  * The structure will be filled with the stream's final character counts.
  */
 
@@ -2548,10 +2549,9 @@
  * number of columns and rows of the array.
  * 
  * Each graphics window has a background color, which is initially white. You
- * can change this; see <link 
- * linkend="chimara-Graphics-in-Graphics-Windows">Graphics in Graphics 
- * Windows</link>.
- * 
+ * can change this; see [Graphics in Graphics
+ * Windows][chimara-Graphics-in-Graphics-Windows].
+ *
  * When a graphics window is resized smaller, the bottom or right area is
  * thrown away, but the remaining area stays unchanged. When it is resized
  * larger, the new bottom or right area is filled with the background color.
@@ -2585,16 +2585,15 @@
  * </para></note>
  * 
  * For a description of the drawing functions that apply to graphics windows,
- * see <link linkend="chimara-Graphics-in-Graphics-Windows">Graphics in Graphics
- * Windows</link>.
- * 
+ * see [Graphics in Graphics Windows][chimara-Graphics-in-Graphics-Windows].
+ *
  * Graphics windows support no text input or output.
  * 
  * Not all libraries support graphics windows. You can test whether Glk graphics
  * are available using the gestalt system. In a C program, you can also test
- * whether the graphics functions are defined at compile-time. See <link 
- * linkend="chimara-Testing-for-Graphics-Capabilities">Testing for Graphics
- * Capabilities</link>. 
+ * whether the graphics functions are defined at compile-time.
+ * See [Testing for Graphics
+ * Capabilities][chimara-Testing-for-Graphics-Capabilities].
  *
  * <note><para>
  *   As with all windows, you should also test for %NULL when you create a
@@ -2990,9 +2989,8 @@
  * 
  * Returns the number of opaque object classes used by the library. You will
  * need to know this if you want to keep track of opaque objects as they are
- * created; see <link linkend="gidispatch-set-object-registry">Opaque Object
- * Registry</link>.
- * 
+ * created; see [Opaque Object Registry][gidispatch-set-object-registry].
+ *
  * As of Glk API 0.7.0, there are four classes: windows, streams, filerefs, and
  * sound channels (numbered 0, 1, 2, and 3 respectively.)
  *
@@ -3092,10 +3090,10 @@
  *   call an arbitrary Glk function, you should use gidispatch_call().
  * </para></note>
  *
- * See <link linkend="chimara-Table-of-Selectors">Table of Selectors</link> for
- * the selector definitions. See <link 
- * linkend="chimara-Dispatching">Dispatching</link> for more about calling Glk
- * functions by selector.
+ * See [Table of Selectors][chimara-Table-of-Selectors] for the selector
+ * definitions.
+ * See [Dispatching][chimara-Dispatching] for more about calling Glk functions
+ * by selector.
  */
  
 /**
@@ -3119,10 +3117,10 @@
  * @numargs: Length of @arglist.
  * @arglist: List of arguments to pass to the function.
  *
- * @funcnum is the function number to invoke; see <link 
- * linkend="chimara-Table-of-Selectors">Table of Selectors</link>. @arglist is
- * the list of arguments, and @numargs is the length of the list.
- * 
+ * @funcnum is the function number to invoke; see [Table of
+ * Selectors][chimara-Table-of-Selectors].
+ * @arglist is the list of arguments, and @numargs is the length of the list.
+ *
  * The arguments are all stored as #gluniversal_t
  * objects.</para><refsect3 id="chimara-Basic-Dispatch-Types"><title>Basic Dispatch Types</title><para>
  * Numeric arguments are passed in the obvious way &mdash; one argument per
@@ -3458,7 +3456,8 @@
  *   <note><para>
  *     Depending on the design of your program, you may wish to pass a pointer
  *     directly to your program's memory, or allocate an array and copy the
- *     contents in and out. See <link linkend="chimara-Arrays">Arrays</link>.
+ *     contents in and out.
+ *     See [Arrays][chimara-Arrays].
  *   </para></note></listitem>
  * </varlistentry>
  * <varlistentry>
@@ -3472,9 +3471,8 @@
  *   <note><para>
  *     For example, glk_stream_open_memory() retains the array that you pass it,
  *     and releases it when the stream is closed. The library can notify you
- *     automatically when arrays are retained and released; see <link
- *     linkend="gidispatch-set-retained-registry">Retained Array
- *     Registry</link>.
+ *     automatically when arrays are retained and released; see [Retained Array
+ *     Registry][gidispatch-set-retained-registry].
  *   </para></note></listitem>
  * </varlistentry>
  * </variablelist>

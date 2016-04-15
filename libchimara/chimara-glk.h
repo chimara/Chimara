@@ -54,10 +54,9 @@ typedef enum {
 
 /**
  * ChimaraError:
- * @CHIMARA_LOAD_MODULE_ERROR: There was an error opening the plugin containing 
- * the Glk program. The error message from <link 
- * linkend="g-module-error">g_module_error()</link> is appended to the <link
- * linkend="GError">GError</link> message.
+ * @CHIMARA_LOAD_MODULE_ERROR: There was an error opening the plugin containing
+ * the Glk program.
+ * The error message from g_module_error() is appended to the #GError message.
  * @CHIMARA_NO_GLK_MAIN: The plugin containing the Glk program did not export a 
  * glk_main() function.
  * @CHIMARA_PLUGIN_NOT_FOUND: An appropriate interpreter plugin for the 

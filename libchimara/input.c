@@ -1154,10 +1154,11 @@ is_valid_line_terminator(glui32 keycode)
  * It is possible to request that other keystrokes complete line input as well.
  * (This allows a game to intercept function keys or other special keys during
  * line input.) To do this, call glk_set_terminators_line_event(), and pass an
- * array of @count keycodes. These must all be special keycodes (see <link
- * linkend="chimara-Character-Input">Character Input</link>). Do not include
- * regular printable characters in the array, nor %keycode_Return (which
- * represents the default <keycap>enter</keycap> key and will always be
+ * array of @count keycodes.
+ * These must all be special keycodes (see [Character
+ * Input][chimara-Character-Input]).
+ * Do not include regular printable characters in the array, nor %keycode_Return
+ * (which represents the default <keycap>enter</keycap> key and will always be
  * recognized). To return to the default behavior, pass a %NULL or empty array.
  *
  * The glk_set_terminators_line_event() affects <emphasis>subsequent</emphasis>

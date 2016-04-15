@@ -682,7 +682,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * ChimaraGlk::char-input:
 	 * @self: The widget that received the signal
 	 * @window_rock: The rock value of the window that received character input
-	 * (see <link linkend="chimara-Rocks">Rocks</link>)
+	 * (see [Rocks][chimara-Rocks])
 	 * @window_id_string: A string value uniquely identifying the window that
 	 * received character input
 	 * @keysym: The key that was typed, in the form of a key symbol from
@@ -703,7 +703,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * ChimaraGlk::line-input:
 	 * @self: The widget that received the signal
 	 * @window_rock: The rock value of the window that received line input (see
-	 * <link linkend="chimara-Rocks">Rocks</link>)
+	 * [Rocks][chimara-Rocks])
 	 * @window_id_string: A string value uniquely identifying the window that
 	 * received the input
 	 * @text: The text that was typed
@@ -722,8 +722,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	/**
 	 * ChimaraGlk::text-buffer-output:
 	 * @self: The widget that received the signal
-	 * @window_rock: The rock value of the window that was printed to (see <link
-	 * linkend="chimara-Rocks">Rocks</link>)
+	 * @window_rock: The rock value of the window that was printed to (see
+	 * [Rocks][chimara-Rocks])
 	 * @window_id_string: A string value uniquely identifying the window that
 	 * was printed to
 	 *
@@ -867,8 +867,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
  *
  * The error domain for errors from Chimara widgets.
  *
- * Returns: The string “chimara-error-quark” as a <link
- * linkend="GQuark">GQuark</link>.
+ * Returns: The string “chimara-error-quark” as a #GQuark.
  */
 GQuark
 chimara_error_quark(void)
@@ -984,8 +983,7 @@ chimara_glk_set_css_to_default(ChimaraGlk *glk)
  * chimara_glk_set_css_from_file:
  * @glk: a #ChimaraGlk widget
  * @filename: path to a CSS file, or %NULL
- * @error: location to store a <link 
- * linkend="glib-Error-Reporting">GError</link>, or %NULL
+ * @error: location to store a #GError, or %NULL
  *
  * Sets the styles for text buffer and text grid windows according to the CSS
  * file @filename. Note that the styles are set cumulatively on top of whatever
@@ -1140,8 +1138,7 @@ glk_enter(struct StartupData *startup)
  * class="header">glk.h</filename>
  * @argc: Number of command line arguments in @argv
  * @argv: Array of command line arguments to pass to the plugin
- * @error: location to store a <link 
- * linkend="glib-Error-Reporting">GError</link>, or %NULL
+ * @error: location to store a #GError, or %NULL
  *
  * Opens a Glk program compiled as a plugin. Sorts out its command line
  * arguments from #glkunix_arguments, calls its startup function
@@ -1224,8 +1221,7 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
  * class="header">glk.h</filename>
  * @argc: Number of command line arguments in @argv
  * @argv: Array of command line arguments to pass to the plugin
- * @error: location to store a <link
- * linkend="glib-Error-Reporting">GError</link>, or %NULL
+ * @error: location to store a #GError, or %NULL
  *
  * Opens a Glk program compiled as a plugin, from a #GFile. See
  * chimara_glk_run() for details.

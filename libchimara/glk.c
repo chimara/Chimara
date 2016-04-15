@@ -113,8 +113,9 @@ glk_exit(void)
  * 
  * glk_tick() does not try to update the screen, or check for player input, or
  * any other interface task. For that, you should call glk_select() or 
- * glk_select_poll(). See <link linkend="chimara-Events">Events</link>.
- * 
+ * glk_select_poll().
+ * See [Events][chimara-Events].
+ *
  * <note>
  *   <para>Captious critics have pointed out that in the sample program
  *   <filename>model.c</filename>, I do not call glk_tick() at all. This is

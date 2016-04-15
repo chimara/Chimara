@@ -698,9 +698,9 @@ get_char_stream_common(strid_t str)
  * It is illegal for @str to be %NULL, or an output-only stream.
  *
  * The result will be between 0 and 255. As with all basic text functions, Glk
- * assumes the Latin-1 encoding. See <link 
- * linkend="chimara-Character-Encoding">Character Encoding</link>. If the end
- * of the stream has been reached, the result will be -1. 
+ * assumes the Latin-1 encoding.
+ * See [Character Encoding][chimara-Character-Encoding].
+ * If the end of the stream has been reached, the result will be -1.
  *
  * <note><para>
  *   Note that high-bit characters (128..255) are <emphasis>not</emphasis>
@@ -1409,7 +1409,8 @@ glk_stream_get_position(strid_t str)
  * In binary files, the mark position is exact &mdash; it corresponds with the
  * number of characters you have read or written. In text files, this mapping 
  * can vary, because of linefeed conventions or other character-set 
- * approximations. See <link linkend="chimara-Streams">Streams</link>.
+ * approximations.
+ * See [Streams][chimara-Streams].
  * glk_stream_set_position() and glk_stream_get_position() measure positions in
  * the platform's native encoding &mdash; after character cookery. Therefore,
  * in a text stream, it is safest to use glk_stream_set_position() only to move

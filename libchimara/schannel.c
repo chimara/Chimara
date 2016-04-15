@@ -262,9 +262,8 @@ glk_schannel_create(glui32 rock)
  * already set at a given level.
  *
  * Not all libraries support glk_schannel_create_ext(). You should test the
- * %gestalt_Sound2 selector before you rely on it; see <link
- * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound
- * Capabilities</link>.
+ * %gestalt_Sound2 selector before you rely on it; see [Testing for Sound
+ * Capabilities][chimara-Testing-for-Sound-Capabilities].
  *
  * Returns: A new sound channel, or %NULL.
  */
@@ -373,8 +372,8 @@ glk_schannel_destroy(schanid_t chan)
  * @rockptr: Return location for the next sound channel's rock, or %NULL.
  *
  * This function can be used to iterate through the list of all open channels.
- * See <link linkend="chimara-Iterating-Through-Opaque-Objects">Iterating 
- * Through Opaque Objects</link>.
+ * See [Iterating through Opaque
+ * Objects][chimara-Iterating-Through-Opaque-Objects].
  *
  * As that section describes, the order in which channels are returned is 
  * arbitrary.
@@ -410,8 +409,8 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
  * glk_schannel_get_rock:
  * @chan: A sound channel.
  * 
- * Retrieves the channel's rock value. See <link 
- * linkend="chimara-Rocks">Rocks</link>.
+ * Retrieves the channel's rock value.
+ * See [Rocks][chimara-Rocks].
  *
  * Returns: A rock value.
  */
@@ -478,9 +477,8 @@ glk_schannel_play(schanid_t chan, glui32 snd)
  * sound is playing, there will be no notification event.
  *
  * Not all libraries support sound notification. You should test the
- * %gestalt_Sound2 selector before you rely on it; see <link
- * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound 
- * Capabilities</link>.
+ * %gestalt_Sound2 selector before you rely on it; see [Testing for Sound
+ * Capabilities][chimara-Testing-for-Sound-Capabilities].
  *
  * Note that you can play a sound on a channel whose volume is zero. This has
  * no audible result, unless you later change the volume; but it produces
@@ -749,9 +747,8 @@ glk_schannel_unpause(schanid_t chan)
  * previous change is interrupted.
  *
  * Not all libraries support this function. You should test the
- * %gestalt_SoundVolume selector before you rely on it; see <link
- * linkend="chimara-Testing-for-Sound-Capabilities">Testing for Sound
- * Capabilities</link>.
+ * %gestalt_SoundVolume selector before you rely on it; see [Testing for Sound
+ * Capabilities][chimara-Testing-for-Sound-Capabilities].
  *
  * <note><title>Chimara</title>
  *   <para>Chimara supports volumes from 0 to 1000&percnt;, that is, values of

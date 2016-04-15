@@ -187,14 +187,14 @@ glk_select(event_t *event)
  * %evtype_LineInput, %evtype_MouseInput, or %evtype_Hyperlink events. It is
  * intended for you to test conditions which may have occurred while you are
  * computing, and not interfacing with the player. For example, time may pass
- * during slow computations; you can use glk_select_poll() to see if a 
- * %evtype_Timer event has occurred. (See <link 
- * linkend="chimara-Timer-Events">Timer Events</link>.)
- * 
+ * during slow computations; you can use glk_select_poll() to see if a
+ * %evtype_Timer event has occurred.
+ * (See [Timer Events][chimara-Timer-Events].)
+ *
  * At the moment, glk_select_poll() checks for %evtype_Timer, %evtype_Arrange,
- * %evtype_Redraw and %evtype_SoundNotify events. But see <link 
- * linkend="chimara-Other-Events">Other Events</link>.
- * 
+ * %evtype_Redraw and %evtype_SoundNotify events.
+ * But see [Other Events][chimara-Other-Events].
+ *
  * The second question is, what does it mean that glk_select_poll() returns 
  * “almost immediately”?
  * In some Glk libraries, text that you send to a window is buffered; it does

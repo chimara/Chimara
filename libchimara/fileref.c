@@ -67,9 +67,9 @@ fileref_close_common(frefid_t fref)
  * @fref: A file reference, or %NULL.
  * @rockptr: Return location for the next fileref's rock, or %NULL.
  *
- * Iterates through all the existing filerefs. See <link
- * linkend="chimara-Iterating-Through-Opaque-Objects">Iterating Through Opaque
- * Objects</link>.
+ * Iterates through all the existing filerefs.
+ * See [Iterating Through Opaque
+ * Objects][chimara-Iterating-Through-Opaque-Objects].
  *
  * Returns: the next file reference, or %NULL if there are no more.
  */
@@ -97,9 +97,9 @@ glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 /**
  * glk_fileref_get_rock:
  * @fref: A file reference.
- * 
- * Retrieves the file reference @fref's rock value. See <link 
- * linkend="chimara-Rocks">Rocks</link>.
+ *
+ * Retrieves the file reference @fref's rock value.
+ * See [Rocks][chimara-Rocks].
  *
  * Returns: A rock value.
  */
@@ -171,9 +171,9 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  *
  * <note><title>Chimara</title>
  * <para>
- * Chimara uses a <link 
- * linkend="GtkFileChooserDialog">GtkFileChooserDialog</link>. The default
- * starting location for the dialog may be set with glkunix_set_base_file().
+ * Chimara uses a #GtkFileChooserDialog.
+ * The default starting location for the dialog may be set with
+ * glkunix_set_base_file().
  * </para></note>
  *
  * @fmode must be one of these values:

@@ -278,18 +278,18 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
  * @win: A graphics or text buffer window.
  * @image: An image resource number.
  * @val1: The x coordinate at which to draw the image (if @win is a graphics 
- * window); or, an <link linkend="chimara-imagealign-InlineUp">image 
- * alignment</link> constant (if @win is a text window).
+ * window); or, an [image alignment][imagealign-InlineUp] constant (if @win is a
+ * text window).
  * @val2: The y coordinate at which to draw the image (if @win is a graphics
  * window); this parameter is ignored if @win is a text buffer window.
  *
  * This draws the given image resource in the given window. The position of the
  * image is given by @val1 and @val2, but their meaning varies depending on what
- * kind of window you are drawing in. See <link 
- * linkend="chimara-Graphics-in-Graphics-Windows">Graphics in Graphics 
- * Windows</link> and <link linkend="Graphics-in-Text-Buffer-Windows">Graphics 
- * in Text Buffer Windows</link>.
- * 
+ * kind of window you are drawing in.
+ * See [Graphics is Graphics Windows][chimara-Graphics-in-Graphics-Windows]
+ * and [Graphics in Text Buffer
+ * Windows][chimara-Graphics-in-Text-Buffer-Windows].
+ *
  * This function returns a flag indicating whether the drawing operation 
  * succeeded.
  * <note><para>
@@ -328,8 +328,8 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
  * @win: A graphics or text buffer window.
  * @image: An image resource number.
  * @val1: The x coordinate at which to draw the image (if @win is a graphics 
- * window); or, an <link linkend="chimara-imagealign-InlineUp">image 
- * alignment</link> constant (if @win is a text window).
+ * window); or, an [image alignment][imagealign-InlineUp] constant (if @win is a
+ * text window).
  * @val2: The y coordinate at which to draw the image (if @win is a graphics
  * window); this parameter is ignored if @win is a text buffer window.
  * @width: The width of the image.

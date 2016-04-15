@@ -74,9 +74,9 @@ stream_close_common(strid_t str, stream_result_t *result)
  * @str: A stream, or %NULL.
  * @rockptr: Return location for the next window's rock, or %NULL.
  *
- * Iterates through all the existing streams. See <link
- * linkend="chimara-Iterating-Through-Opaque-Objects">Iterating Through Opaque
- * Objects</link>.
+ * Iterates through all the existing streams.
+ * See [Iterating Through Opaque
+ * Objects][chimara-Iterating-Through-Opaque-Objects].
  *
  * Returns: the next stream, or %NULL if there are no more.
  */
@@ -105,9 +105,10 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
  * glk_stream_get_rock:
  * @str: A stream.
  * 
- * Retrieves the stream @str's rock value. See <link 
- * linkend="chimara-Rocks">Rocks</link>. Window streams always have rock 0; all
- * other streams return whatever rock you created them with.
+ * Retrieves the stream @str's rock value.
+ * See [Rocks][chimara-Rocks].
+ * Window streams always have rock 0; all other streams return whatever rock you
+ * created them with.
  *
  * Returns: A rock value.
  */
@@ -161,8 +162,8 @@ glk_stream_get_current()
  * @ch: A character in Latin-1 encoding.
  *
  * Prints one character to the current stream. As with all basic functions, the
- * character is assumed to be in the Latin-1 character encoding. See <link
- * linkend="chimara-Character-Encoding">Character Encoding</link>.
+ * character is assumed to be in the Latin-1 character encoding.
+ * See [Character Encoding][chimara-Character-Encoding].
  */
 void
 glk_put_char(unsigned char ch)
@@ -177,8 +178,8 @@ glk_put_char(unsigned char ch)
  * @ch: A Unicode code point.
  *
  * Prints one character to the current stream. The character is assumed to be a
- * Unicode code point. See <link linkend="chimara-Character-Encoding">Character
- * Encoding</link>.
+ * Unicode code point.
+ * See [Character Encoding][chimara-Character-Encoding].
  */
 void
 glk_put_char_uni(glui32 ch)
@@ -449,8 +450,8 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
  *
  * The file may be read or written in text or binary mode; this is determined
  * by the @fileref argument. Similarly, platform-dependent attributes such as
- * file type are determined by @fileref. See <link
- * linkend="chimara-File-References">File References</link>.
+ * file type are determined by @fileref.
+ * See [File References][chimara-File-References].
  *
  * When writing in binary mode, Unicode values (characters greater than 255)
  * cannot be written to the file. If you try, they will be stored as 0x3F
@@ -619,9 +620,9 @@ glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
  * If @str is the current output stream, the current output stream is set to
  * %NULL.
  *
- * You cannot close window streams; use glk_window_close() instead. See <link
- * linkend="chimara-Window-Opening-Closing-and-Constraints">Window Opening,
- * Closing, and Constraints</link>.
+ * You cannot close window streams; use glk_window_close() instead.
+ * See [Window Opening, Closing, and
+ * Constraints][chimara-Window-Opening-Closing-and-Constraints].
  */
 void 
 glk_stream_close(strid_t str, stream_result_t *result)

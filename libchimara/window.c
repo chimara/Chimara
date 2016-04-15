@@ -88,9 +88,9 @@ window_close_common(winid_t win, gboolean destroy_node)
  * @rockptr: Return location for the next window's rock, or %NULL.
  *
  * This function can be used to iterate through the list of all open windows
- * (including pair windows.) See <link 
- * linkend="chimara-Iterating-Through-Opaque-Objects">Iterating Through Opaque
- * Objects</link>.
+ * (including pair windows.)
+ * See [Iterating Through Opaque
+ * Objects][chimara-Iterating-Through-Opaque-Objects].
  *
  * As that section describes, the order in which windows are returned is
  * arbitrary. The root window is not necessarily first, nor is it necessarily
@@ -244,7 +244,7 @@ glk_window_get_root()
  * Creates a new window. If there are no windows, the first three arguments are
  * meaningless. @split <emphasis>must</emphasis> be 0, and @method and @size
  * are ignored. @wintype is the type of window you're creating, and @rock is
- * the rock (see <link linkend="chimara-Rocks">Rocks</link>).
+ * the rock (see [Rocks][chimara-Rocks]).
  *
  * If any windows exist, new windows must be created by splitting existing
  * ones. @split is the window you want to split; this <emphasis>must 
@@ -781,9 +781,10 @@ free_winids_below(winid_t win)
  * the same thing.) 
  *
  * The @result argument is filled with the output character count of the window
- * stream. See <link linkend="chimara-Streams">Streams</link> and <link
- * linkend="chimara-Closing-Streams">Closing Streams</link>.
- * 
+ * stream.
+ * See [Streams][chimara-Streams] and [Closing
+ * Streams][chimara-Closing-Streams].
+ *
  * When you close a window (and it is not the root window), the other window
  * in its pair takes over all the freed-up area. Let's close D, in the current
  * example:
@@ -1046,7 +1047,7 @@ glk_window_clear(winid_t win)
  * |[<!--language="C"-->
  * glk_stream_set_current(glk_window_get_stream(win));
  * ]|
- * See <link linkend="chimara-Streams">Streams</link>.
+ * See [Streams][chimara-Streams].
  */
 void
 glk_set_window(winid_t win)
@@ -1062,11 +1063,11 @@ glk_set_window(winid_t win)
  * glk_window_get_stream:
  * @win: A window.
  *
- * Returns the stream which is associated with @win. (See <link 
- * linkend="chimara-Window-Streams">Window Streams</link>.) Every window has a
- * stream which can be printed to, but this may not be useful, depending on the
- * window type.
- * 
+ * Returns the stream which is associated with @win.
+ * (See [Window Streams][chimara-Window-Streams].)
+ * Every window has a stream which can be printed to, but this may not be
+ * useful, depending on the window type.
+ *
  * <note><para>
  *   For example, printing to a blank window's stream has no effect.
  * </para></note>
@@ -1137,9 +1138,9 @@ glk_window_get_echo_stream(winid_t win)
  * @heightptr: Pointer to a location to store the window's height, or %NULL.
  *
  * Simply returns the actual size of the window, in its measurement system.
- * As described in <link linkend="chimara-Other-API-Conventions">Other API 
- * Conventions</link>, either @widthptr or @heightptr can be %NULL, if you
- * only want one measurement. 
+ * As described in [Other API Conventions][chimara-Other-API-Conventions],
+ * either @widthptr or @heightptr can be %NULL, if you only want one
+ * measurement.
  *
  * <note><para>Or, in fact, both, if you want to waste time.</para></note>
  */
