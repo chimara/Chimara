@@ -341,9 +341,9 @@ glk_window_get_root()
  * of the 50% it had before.
  * 
  * Now the player stretches the window vertically.
- * <informalfigure><mediaobject><imageobject><imagedata fileref="fig6.png"/>
- * </imageobject></mediaobject></informalfigure>
- * 
+ *
+ * ![stretching window vertically](fig6.png)
+ *
  * The library figures: the topmost split, the original A/B split, is 50-50. So
  * B gets half the screen space, and the pair window next to it (the lower “O”)
  * gets the other half.
