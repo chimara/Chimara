@@ -17,11 +17,12 @@
  * @short_description: Specifying an interrupt handler for cleaning up critical
  * resources
  *
- * Most platforms have some provision for interrupting a program &mdash;
- * <keycombo action="simul"><keycap function="command">command</keycap><keycap>period</keycap></keycombo>
- * on the Macintosh,
- * <keycombo action="simul"><keycap function="control">control</keycap><keycap>C</keycap></keycombo>
- * in Unix, possibly a window manager item, or other possibilities.
+ * Most platforms have some provision for interrupting a program
+ * &mdash; <keycombo action="simul"><keycap
+ * function="command">command</keycap><keycap>period</keycap></keycombo> on the
+ * Macintosh, <keycombo action="simul"><keycap
+ * function="control">control</keycap><keycap>C</keycap></keycombo> in Unix,
+ * possibly a window manager item, or other possibilities.
  * This can happen at any time, including while execution is nested inside one
  * of your own functions, or inside a Glk library function.
  *
@@ -241,10 +242,12 @@
  *
  * If you use the basic text API, the character code which is returned can be
  * any value from 0 to 255. The printable character codes have already been
- * described. The remaining codes are typically control codes:
- * <keycombo action="simul"><keycap function="control">control</keycap><keycap>A</keycap></keycombo> to
- * <keycombo action="simul"><keycap function="control">control</keycap><keycap>Z</keycap></keycombo>
- * and a few others.
+ * described.
+ * The remaining codes are typically control codes: <keycombo
+ * action="simul"><keycap function="control">control</keycap><keycap>A</keycap></keycombo>
+ * to <keycombo action="simul"><keycap
+ * function="control">control</keycap><keycap>Z</keycap></keycombo> and a few
+ * others.
  *
  * There are also a number of special codes, representing special keyboard
  * keys, which can be returned from a char-input event. These are represented
@@ -289,10 +292,11 @@
  * </para></note>
  * 
  * Some characters may not be enterable because they are reserved for the
- * purposes of the interface. For example, the Mac Glk library reserves the 
- * <keycap function="tab">tab</keycap> key for switching between different Glk
- * windows. Therefore, on the Mac, the library will never generate a
- * %keycode_Tab event or a <keycombo action="simul"><keycap
+ * purposes of the interface.
+ * For example, the Mac Glk library reserves the <keycap
+ * function="tab">tab</keycap> key for switching between different Glk windows.
+ * Therefore, on the Mac, the library will never generate a %keycode_Tab event
+ * or a <keycombo action="simul"><keycap
  * function="control">control</keycap><keycap>I</keycap></keycombo> event.
  * 
  * <note><para>
@@ -2493,26 +2497,21 @@
  * a mouse is available.)
  * 
  * Mouse input returns the position of the character that was touched, from
- * (0,0) to 
- * <inlineequation>
- *   <alt>(width-1,height-1)</alt>
- *   <mathphrase>(width - 1, height - 1)</mathphrase>
- * </inlineequation>
- * .
- * 
+ * (0,0) to <inlineequation><alt>(width-1,height-1)</alt><mathphrase>(width - 1,
+ * height - 1)</mathphrase></inlineequation>.
+ *
  * Character input is as described in the previous section.
  * 
  * Line input is slightly different; it is guaranteed to take place in the
  * window, at the output cursor position. The player can compose input only to
- * the right edge of the window; therefore, the maximum input length is
- * <inlineequation>
- *   <alt>(windowwidth - 1 - cursorposition)</alt>
- *   <mathphrase>(windowwidth - 1 - cursorposition)</mathphrase>
- * </inlineequation>
- * . If the maxlen argument of glk_request_line_event() is smaller than this,
- * the library will not allow the input cursor to go more than maxlen characters
- * past its start point. 
- * 
+ * the right edge of the window; therefore, the maximum input length
+ * is <inlineequation><alt>(windowwidth - 1 -
+ * cursorposition)</alt><mathphrase>(windowwidth - 1 -
+ * cursorposition)</mathphrase></inlineequation>.
+ * If the maxlen argument of glk_request_line_event() is smaller than this, the
+ * library will not allow the input cursor to go more than maxlen characters
+ * past its start point.
+ *
  * <note><para>
  *   This allows you to enter text in a fixed-width field, without the player
  *   being able to overwrite other parts of the window.
@@ -3042,10 +3041,10 @@
  * gidispatch_get_function:
  * @index: Unique integer index of the function.
  *
- * Returns a structure describing a Glk function. @index can range from 0 to
- * <inlineequation><mathphrase>N - 1</mathphrase><alt>N - 
- * 1</alt></inlineequation>, where N is the value returned by 
- * gidispatch_count_functions().
+ * Returns a structure describing a Glk function.
+ * @index can range from 0 to <inlineequation><mathphrase>N -
+ * 1</mathphrase><alt>N - 1</alt></inlineequation>, where N is the value
+ * returned by gidispatch_count_functions().
  *
  * <note><para>
  *   Again, it is safest to assume that the structure is only valid until the

@@ -268,19 +268,14 @@ glk_window_get_root()
  * 
  * The examples we've seen so far have the simplest kind of size control. (Yes,
  * this is “below”.)
- * Every pair is a percentage split, with
- * <inlineequation>
- *   <alt>X</alt>
- *   <mathphrase>X</mathphrase>
- * </inlineequation>
- * percent going to one side, and 
- * <inlineequation>
- *   <alt>(100-X)</alt>
- *   <mathphrase>(100 - X)</mathphrase>
- * </inlineequation> 
- * percent going to the other side. If the player resizes the window, the whole
- * mess expands, contracts, or stretches in a uniform way.
- * 
+ * Every pair is a percentage split,
+ * with <inlineequation><alt>X</alt><mathphrase>X</mathphrase></inlineequation>
+ * percent going to one side,
+ * and <inlineequation><alt>(100-X)</alt><mathphrase>(100 -
+ * X)</mathphrase></inlineequation> percent going to the other side.
+ * If the player resizes the window, the whole mess expands, contracts, or
+ * stretches in a uniform way.
+ *
  * As I said above, you can also make fixed-size splits. This is a little more
  * complicated, because you have to know how this fixed size is measured.
  * 

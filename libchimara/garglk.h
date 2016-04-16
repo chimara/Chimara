@@ -75,11 +75,12 @@ extern void garglk_set_reversevideo_stream(strid_t str, glui32 reverse);
 /**
  * keycode_Erase:
  *
- * Since %keycode_Delete represents either the <keycap>Delete</keycap> or 
- * <keycap>Backspace</keycap> key, Gargoyle defines a separate constant
- * %keycode_Erase to represent <emphasis>only</emphasis> the 
- * <keycap>Delete</keycap> key. In character input, <keycap>Delete</keycap> is
- * still reported as %keycode_Delete, but the two are distinguished in 
+ * Since %keycode_Delete represents either the <keycap>Delete</keycap>
+ * or <keycap>Backspace</keycap> key, Gargoyle defines a separate constant
+ * %keycode_Erase to represent <emphasis>only</emphasis>
+ * the <keycap>Delete</keycap> key.
+ * In character input, <keycap>Delete</keycap> is still reported as
+ * %keycode_Delete, but the two are distinguished in
  * glk_set_terminators_line_event().
  */
 #define keycode_Erase    (0xffffef7f)

@@ -292,8 +292,8 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
  *
  * Request input of a line of Unicode characters. This works the same as
  * glk_request_line_event(), except the result is stored in an array of
- * <type>glui32</type> values instead of an array of characters, and the values
- * may be any valid Unicode code points.
+ * #glui32 values instead of an array of characters, and the values may be any
+ * valid Unicode code points.
  *
  * If possible, the library should return fully composed Unicode characters,
  * rather than strings of base and composition characters.

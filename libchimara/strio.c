@@ -987,13 +987,10 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
  * @buf: A buffer with space for at least @len characters.
  * @len: The number of characters to read, plus one.
  *
- * Reads characters from @str, until either 
- * <inlineequation>
- *   <alt>@len - 1</alt>
- *   <mathphrase>@len - 1</mathphrase>
- * </inlineequation>
- * characters have been read or a newline has been read. It then puts a
- * terminal null (`'\0'`) character on the end.
+ * Reads characters from @str, until either <inlineequation><alt>@len -
+ * 1</alt><mathphrase>@len - 1</mathphrase></inlineequation> characters have
+ * been read or a newline has been read.
+ * It then puts a terminal null (`'\0'`) character on the end.
  * It returns the number of characters actually read, including the newline (if
  * there is one) but not including the terminal null.
  *
@@ -1159,13 +1156,10 @@ glk_get_line_stream(strid_t str, char *buf, glui32 len)
  * @buf: A buffer with space for at least @len Unicode code points.
  * @len: The number of characters to read, plus one.
  *
- * Reads Unicode characters from @str, until either 
- * <inlineequation>
- *   <alt>@len - 1</alt>
- *   <mathphrase>@len - 1</mathphrase>
- * </inlineequation> 
- * Unicode characters have been read or a newline has been read. It then puts a
- * terminal null (a zero value) on the end.
+ * Reads Unicode characters from @str, until either <inlineequation><alt>@len -
+ * 1</alt><mathphrase>@len - 1</mathphrase></inlineequation> Unicode characters
+ * have been read or a newline has been read.
+ * It then puts a terminal null (a zero value) on the end.
  *
  * Returns: The number of characters actually read, including the newline (if
  * there is one) but not including the terminal null.

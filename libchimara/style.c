@@ -1040,10 +1040,9 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
  *   colors are reversed.</para></listitem>
  * </varlistentry>
  * </variablelist>
- * Signed values, such as the %stylehint_Weight value, are cast to
- * <type>glui32</type>. They may be cast to <type>glsi32</type> to be dealt with
- * in a more natural context.
- * 
+ * Signed values, such as the %stylehint_Weight value, are cast to #glui32.
+ * They may be cast to #glsi32 to be dealt with in a more natural context.
+ *
  * Returns: TRUE upon successul retrieval, otherwise FALSE.
  */
 glui32
