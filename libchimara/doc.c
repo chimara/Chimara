@@ -154,74 +154,66 @@
  * objects may be represented as integers, or as VM objects of some sort.
  * </para></note>
  *
- * <refsect2 id="chimara-Rocks"><!-- Indeed it does. -->
- * <title>Rocks</title>
- * <para>
+ * # Rocks # {#chimara-Rocks}
+ *
  * Every one of these objects (window, stream, file reference, or sound channel)
  * has a “rock” value.
  * This is simply a 32-bit integer value which you provide, for your own
  * purposes, when you create the object.
- * </para>
+ *
  * <note><para>The library &mdash; so to speak &mdash; stuffs this value under a
  * rock for safe-keeping, and gives it back to you when you ask for it.
  * </para></note>
  * <note><para>If you don't know what to use the rocks for, provide 0 and forget
  * about it.</para></note>
- * </refsect2>
- * <refsect2 id="chimara-Iterating-Through-Opaque-Objects">
- * <title>Iteration Through Opaque Objects</title>
- * <para>
+ *
+ * # Iteration Through Opaque Objects # {#chimara-Iterating-Through-Opaque-Objects}
+ *
  * For each class of opaque objects, there is an iterate function, which you can
  * use to obtain a list of all existing objects of that class. It takes the form
- * |[
+ * |[<!--language="C"-->
  * CLASSid_t glk_CLASS_iterate(CLASSid_t obj, glui32 *rockptr);
  * ]|
  * ...where <code><replaceable>CLASS</replaceable></code> represents one of the
  * opaque object classes. 
- * </para>
+ *
  * <note><para>
  *   So, at the current time, these are the functions glk_window_iterate(),
  *   glk_stream_iterate(), glk_fileref_iterate(), and glk_schannel_iterate().  
  *   There may be more classes in future versions of the spec; they all behave
  *   the same.
  * </para></note>
- * <para>
+ *
  * Calling <code>glk_<replaceable>CLASS</replaceable>_iterate(%NULL, r)</code>
  * returns the first object; calling 
  * <code>glk_<replaceable>CLASS</replaceable>_iterate(obj, r)</code> returns
  * the next object, until there aren't any more, at which time it returns %NULL.
- * </para>
- * <para>
+ *
  * The @rockptr argument is a pointer to a location; whenever  
  * <code>glk_<replaceable>CLASS</replaceable>_iterate()</code> returns an
  * object, the object's rock is stored in the location <code>(*@rockptr)</code>.
  * If you don't want the rocks to be returned, you may set @rockptr to %NULL.
- * </para>
- * <para>
+ *
  * You usually use this as follows:
- * |[
+ * |[<!--language="C"-->
  * obj = glk_CLASS_iterate(NULL, NULL);
  * while (obj) {
  *    // ...do something with obj...
  *    obj = glk_CLASS_iterate(obj, NULL);
  * }
  * ]|
- * </para>
- * <para>
+ *
  * If you create or destroy objects inside this loop, obviously, the results are
  * unpredictable. However it is always legal to call 
  * <code>glk_<replaceable>CLASS</replaceable>_iterate(obj, r)</code> as long as
  * @obj is a valid object id, or %NULL.
- * </para>
- * <para>
+ *
  * The order in which objects are returned is entirely arbitrary. The library
  * may even rearrange the order every time you create or destroy an object of
  * the given class. As long as you do not create or destroy any object, the rule
  * is that <code>glk_<replaceable>CLASS</replaceable>_iterate(obj, r)</code> has
  * a fixed result, and iterating through the results as above will list every
  * object exactly once. 
- * </para>
- * </refsect2>
  */
 
 /**
@@ -803,8 +795,8 @@
  * SECTION:glk-stream-types
  * @short_description: Window, memory, file, and resource streams
  *
- * <refsect2 id="chimara-Window-Streams"><title>Window Streams</title>
- * <para>
+ * # Window Streams # {#chimara-Window-Streams}
+ *
  * Every window has an output stream associated with it. This is created
  * automatically, with %filemode_Write, when you open the window. You get it
  * with glk_window_get_stream(). Window streams always have rock value 0.
@@ -813,12 +805,11 @@
  * automatically when you close its window with glk_window_close().
  * 
  * Only printable characters (including newline) may be printed to a window
- * stream. See <link linkend="chimara-Character-Encoding">Character 
- * Encoding</link>.
- * </para>
- * </refsect2>
- * <refsect2 id="chimara-Memory-Streams"><title>Memory Streams</title>
- * <para>
+ * stream.
+ * See [Character Encoding](chimara-Character-Encoding).
+ *
+ * # Memory Streams # {#chimara-Memory-Streams}
+ *
  * You can open a stream which reads from or writes to a space in memory. See
  * glk_stream_open_memory() and glk_stream_open_memory_uni(). When opening a
  * memory stream, you specify a buffer to which the stream's output will be
@@ -851,21 +842,19 @@
  * the stream is closed. The library may store the data there as it is written,
  * or deposit it all in a lump when the stream is closed. It is illegal to
  * change the contents of the buffer while the stream is open.
- * </para>
- * </refsect2>
- * <refsect2 id="chimara-File-Streams"><title>File Streams</title>
- * <para>
+ *
+ * # File Streams # {#chimara-File-Streams}
+ *
  * You can open a stream which reads from or writes to a disk file. See 
  * glk_stream_open_file() and glk_stream_open_file_uni().
  *
  * The file may be written in text or binary mode; this is determined by the
  * file reference you open the stream with. Similarly, platform-dependent
- * attributes such as file type are determined by the file reference. See <link
- * linkend="chimara-File-References">File References</link>.
- * </para>
- * </refsect2>
- * <refsect2 id="chimara-Resource-Streams"><title>Resource Streams</title>
- * <para>
+ * attributes such as file type are determined by the file reference.
+ * See [File References](chimara-File-References).
+ *
+ * # Resource Streams # {#chimara-Resource-Streams}
+ *
  * You can open a stream which reads from (but not writes to) a resource file.
  *
  * <note><para>
@@ -885,8 +874,6 @@
  *   distinguishing text and binary files. See “Other Resource Arrangements”
  *   in the Blorb spec: <ulink url="http://eblong.com/zarf/blorb/"></ulink>
  * </para></note>
- * </para>
- * </refsect2>
  */
  
 /**
@@ -3121,8 +3108,10 @@
  * Selectors][chimara-Table-of-Selectors].
  * @arglist is the list of arguments, and @numargs is the length of the list.
  *
- * The arguments are all stored as #gluniversal_t
- * objects.</para><refsect3 id="chimara-Basic-Dispatch-Types"><title>Basic Dispatch Types</title><para>
+ * The arguments are all stored as #gluniversal_t objects.
+ *
+ * ## Basic Dispatch Types ## {#chimara-Basic-Dispatch-Types}
+ *
  * Numeric arguments are passed in the obvious way &mdash; one argument per
  * #gluniversal_t, with the @uint or @sint field set to the numeric value.
  * Characters and strings are also passed in this way &mdash; #char<!---->s in
@@ -3132,8 +3121,11 @@
  * handle all opaque pointer types.)
  * 
  * However, pointers (other than C strings), arrays, and structures complicate
- * life. So do return
- * values.</para></refsect3><refsect3 id="chimara-References"><title>References</title><para>
+ * life.
+ * So do return values.
+ *
+ * ## References ## {#chimara-References}
+ *
  * A reference to a numeric type or object reference &mdash; that is,
  * <code>#glui32*</code>, <code>#winid_t*</code>, and so on &mdash; takes
  * <emphasis>one or two</emphasis> #gluniversal_t objects. The first is a flag
@@ -3215,8 +3207,10 @@
  * ]|
  * 
  * As you see, the length of @arglist depends on how many of the reference
- * arguments are
- * %NULL.</para></refsect3><refsect3 id="chimara-Structures"><title>Structures</title><para>
+ * arguments are %NULL.
+ *
+ * ## Structures ## {#chimara-Structures}
+ *
  * A structure pointer is represented by a single @ptrflag, possibly followed by
  * a sequence of #gluniversal_t objects (one for each field of the structure.)
  * Again, if the structure pointer is non-%NULL, the @ptrflag should be %TRUE
@@ -3244,7 +3238,10 @@
  *   <code>arglist[0].ptrflag</code> to %FALSE, and using a one-element @arglist
  *   instead of five-element. But it's illegal to pass %NULL to glk_select(). So
  *   you cannot actually do this.
- * </para></note></refsect3><refsect3 id="chimara-Arrays"><title>Arrays</title>
+ * </para></note>
+ *
+ * ## Arrays ## {#chimara-Arrays}
+ *
  * In the Glk API, an array argument is always followed by a numeric argument
  * giving the array's length. These two C arguments are a single logical
  * argument, which is represented by <emphasis>one or three</emphasis>
@@ -3277,7 +3274,10 @@
  * <note><para>
  *   glk_put_buffer() does not modify the array passed to it, so there is no
  *   need to copy the characters out.
- * </para></note></refsect3><refsect3 id="chimara-Return-Values"><title>Return Values</title>
+ * </para></note>
+ *
+ * ## Return Values ## {#chimara-Return-Values}
+ *
  * The return value of a function is not treated specially. It is simply
  * considered to be a pass-out reference argument which may not be %NULL. It
  * comes after all the other arguments of the function.
@@ -3294,7 +3294,6 @@
  * gidispatch_call(0x0021, 3, arglist);
  * rock = arglist[2].uint;
  * ]|
- * </para></refsect3><para>
  */
 
 /**
