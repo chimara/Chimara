@@ -1426,21 +1426,20 @@ chimara_glk_is_line_input_pending(ChimaraGlk *glk)
  * used for status bars and in game menus.
  *
  * The following tag names are supported:
- * <itemizedlist>
- *	<listitem><para>normal</para></listitem>
- *	<listitem><para>emphasized</para></listitem>
- *	<listitem><para>preformatted</para></listitem>
- *	<listitem><para>header</para></listitem>
- *	<listitem><para>subheader</para></listitem>
- *	<listitem><para>alert</para></listitem>
- *	<listitem><para>note</para></listitem>
- *	<listitem><para>block-quote</para></listitem>
- *	<listitem><para>input</para></listitem>
- *	<listitem><para>user1</para></listitem>
- *	<listitem><para>user2</para></listitem>
- *	<listitem><para>hyperlink</para></listitem>
- *	<listitem><para>pager</para></listitem>
- * </itemizedlist>
+ *
+ * - normal
+ * - emphasized
+ * - preformatted
+ * - header
+ * - subheader
+ * - alert
+ * - note
+ * - block-quote
+ * - input
+ * - user1
+ * - user2
+ * - hyperlink
+ * - pager
  *
  * Returns: (transfer none): The #GtkTextTag corresponding to @name in the
  * styles of @window.
