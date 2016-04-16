@@ -374,9 +374,8 @@
  *
  * Therefore, a Glk program that accepts line input should convert its text to a
  * normalized form before parsing it. These functions offer those conversions.
- * The algorithms are defined by the Unicode spec (chapter 3.7) and <ulink
- * url="http://www.unicode.org/reports/tr15/">Unicode Standard Annex
- * &num;15</ulink>.
+ * The algorithms are defined by the Unicode spec (chapter 3.7) and [Unicode
+ * Standard Annex &num;15](http://www.unicode.org/reports/tr15/).
  */
 
 /**
@@ -1288,9 +1287,8 @@
  * @short_description: Gargoyle extensions to Glk
  *
  * This section describes various extensions to Glk that were written for the
- * popular interpreter <ulink 
- * url="http://www.ccxvii.net/gargoyle/">Gargoyle</ulink> by Tor Andersson (now 
- * maintained by Ben Cressey).
+ * popular interpreter [Gargoyle](http://www.ccxvii.net/gargoyle/) by Tor
+ * Andersson (now maintained by Ben Cressey).
  *
  * These functions mostly serve to close the gap between Glk's input/output
  * capabilities and what some interpreters expect. For example, 

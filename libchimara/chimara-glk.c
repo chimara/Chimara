@@ -45,10 +45,8 @@
  * plugin_la_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
  * ]|
  * This will produce `plugin.la` which is a text file containing the correct
- * plugin file to open (see the relevant section of the
- * <ulink 
- * url="http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html">
- * Libtool manual</ulink>).
+ * plugin file to open (see the relevant section of the [Libtool
+ * manual](http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html)).
  *
  * You need to initialize GDK threading in any program you use a #ChimaraGlk
  * widget in.
@@ -1491,11 +1489,11 @@ chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned int *num_tags)
  *
  * Sometimes it is preferable to load image and sound resources from somewhere
  * else than a Blorb file, for example while developing a game. Section 14 of
- * the <ulink url="http://eblong.com/zarf/blorb/blorb.html#s14">Blorb
- * specification</ulink> allows for this possibility. This function sets @func
- * to be called when the Glk program requests loading an image or sound without
- * a Blorb resource map having been loaded, optionally passing @user_data as an 
- * extra parameter.
+ * the [Blorb specification](http://eblong.com/zarf/blorb/blorb.html#s14) allows
+ * for this possibility.
+ * This function sets @func to be called when the Glk program requests loading
+ * an image or sound without a Blorb resource map having been loaded, optionally
+ * passing @user_data as an extra parameter.
  *
  * Note that @func is only called if no Blorb resource map has been set; having
  * a resource map in place overrides this function.

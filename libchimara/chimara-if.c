@@ -383,9 +383,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 *
 	 * Some early Infocom games were sold by the Tandy Corporation. Setting this
 	 * property to %TRUE changes the wording of some Version 3 Infocom games
-	 * slightly, so as to be less offensive. See <ulink
-	 * url="http://www.ifarchive.org/if-archive/infocom/info/tandy_bits.html">
-	 * http://www.ifarchive.org/if-archive/infocom/info/tandy_bits.html</ulink>.
+	 * slightly, so as to be less offensive.
+	 * See <http://www.ifarchive.org/if-archive/infocom/info/tandy_bits.html>.
 	 *
 	 * Only affects Z-machine interpreters.
 	 */
