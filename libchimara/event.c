@@ -178,10 +178,10 @@ glk_select(event_t *event)
  * one to occur.
  * 
  * This checks if an internally-spawned event is available. If so, it stores it 
- * in the structure pointed to by @event. If not, it sets
- * <code>@event->type</code> to %evtype_None. Either way, it returns almost
- * immediately.
- * 
+ * in the structure pointed to by @event. If not, it sets `event->type` to
+ * %evtype_None.
+ * Either way, it returns almost immediately.
+ *
  * The first question you now ask is, what is an internally-spawned event?
  * glk_select_poll() does not check for or return %evtype_CharInput,
  * %evtype_LineInput, %evtype_MouseInput, or %evtype_Hyperlink events. It is
@@ -200,9 +200,8 @@ glk_select(event_t *event)
  * In some Glk libraries, text that you send to a window is buffered; it does
  * not actually appear until you request player input with glk_select().
  * glk_select_poll() attends to this buffer-flushing task in the same way.
- * (Although it does not do the “<computeroutput>Hit any key to scroll
- * down</computeroutput>” waiting which may be done in glk_select(); that's a
- * player-input task.)
+ * (Although it does not do the “`Hit any key to scroll down`” waiting which may
+ * be done in glk_select(); that's a player-input task.)
  *
  * Similarly, on multitasking platforms, glk_select() may yield time to other
  * processes; and glk_select_poll() does this as well.

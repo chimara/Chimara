@@ -1087,7 +1087,7 @@ strid_t glk_window_get_stream(winid_t win)
  *
  * Sets @win's echo stream to @str, which can be any valid output stream. You
  * can reset a window to stop echoing by calling 
- * <code>#glk_window_set_echo_stream(@win, %NULL)</code>.
+ * `glk_window_set_echo_stream(win, NULL)`.
  *
  * It is illegal to set a window's echo stream to be its 
  * <emphasis>own</emphasis> window stream. That would create an infinite loop,
@@ -1120,7 +1120,7 @@ glk_window_set_echo_stream(winid_t win, strid_t str)
  * @win: A window.
  *
  * Returns the echo stream of window @win. Initially, a window has no echo
- * stream, so <code>#glk_window_get_echo_stream(@win)</code> will return %NULL.
+ * stream, so `glk_window_get_echo_stream(win)` will return %NULL.
  *
  * Returns: A stream, or %NULL.
  */

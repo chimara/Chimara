@@ -23,9 +23,9 @@ static void style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTa
  * @styl: The style to apply
  *
  * Changes the style of the current output stream. @styl should be one of the
- * <code>style_</code> constants. However, any value is actually legal; if the 
- * interpreter does not recognize the style value, it will treat it as 
- * %style_Normal.
+ * `style_` constants.
+ * However, any value is actually legal; if the interpreter does not recognize
+ * the style value, it will treat it as %style_Normal.
  * <note><para>
  *  This policy allows for the future definition of styles without breaking old
  *  Glk libraries.
@@ -874,7 +874,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
  * glk_stylehint_set:
  * @wintype: The window type to set a style hint on, or %wintype_AllTypes.
  * @styl: The style to set a hint for.
- * @hint: The type of style hint, one of the <code>stylehint_</code> constants.
+ * @hint: The type of style hint, one of the `stylehint_` constants.
  * @val: The style hint. The meaning of this depends on @hint.
  *
  * Sets a hint about the appearance of one style for a particular type of 
@@ -910,7 +910,7 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
  * glk_stylehint_clear:
  * @wintype: The window type to set a style hint on, or %wintype_AllTypes.
  * @styl: The style to set a hint for.
- * @hint: The type of style hint, one of the <code>stylehint_</code> constants.
+ * @hint: The type of style hint, one of the `stylehint_` constants.
  *
  * Clears a hint about the appearance of one style for a particular type of 
  * window to its default value. You can also set @wintype to %wintype_AllTypes, 

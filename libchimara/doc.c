@@ -142,9 +142,9 @@
  * If a Glk function takes an object reference as an argument, it is illegal to
  * pass in %NULL unless the function definition says otherwise.
  * 
- * The <filename class="headerfile">glk.h</filename> file defines types
- * #winid_t, #strid_t, #frefid_t, #schanid_t to store references. These are
- * pointers to struct #glk_window_struct, #glk_stream_struct, 
+ * The `glk.h` file defines types #winid_t, #strid_t, #frefid_t, #schanid_t to
+ * store references.
+ * These are pointers to struct #glk_window_struct, #glk_stream_struct,
  * #glk_fileref_struct, and #glk_schannel_struct respectively. It is, of course,
  * illegal to pass one kind of pointer to a function which expects another.
  * 
@@ -174,8 +174,8 @@
  * |[<!--language="C"-->
  * CLASSid_t glk_CLASS_iterate(CLASSid_t obj, glui32 *rockptr);
  * ]|
- * ...where <code><replaceable>CLASS</replaceable></code> represents one of the
- * opaque object classes. 
+ * ...where `<replaceable>CLASS</replaceable>` represents one of the opaque
+ * object classes.
  *
  * <note><para>
  *   So, at the current time, these are the functions glk_window_iterate(),
@@ -184,14 +184,14 @@
  *   the same.
  * </para></note>
  *
- * Calling <code>glk_<replaceable>CLASS</replaceable>_iterate(%NULL, r)</code>
- * returns the first object; calling 
- * <code>glk_<replaceable>CLASS</replaceable>_iterate(obj, r)</code> returns
- * the next object, until there aren't any more, at which time it returns %NULL.
+ * Calling `glk_<replaceable>CLASS</replaceable>_iterate(NULL, r)` returns the
+ * first object; calling `glk_<replaceable>CLASS</replaceable>_iterate(obj, r)`
+ * returns the next object, until there aren't any more, at which time it
+ * returns %NULL.
  *
  * The @rockptr argument is a pointer to a location; whenever  
- * <code>glk_<replaceable>CLASS</replaceable>_iterate()</code> returns an
- * object, the object's rock is stored in the location <code>(*@rockptr)</code>.
+ * `glk_<replaceable>CLASS</replaceable>_iterate()` returns an object, the
+ * object's rock is stored in the location `(*@rockptr)`.
  * If you don't want the rocks to be returned, you may set @rockptr to %NULL.
  *
  * You usually use this as follows:
@@ -205,15 +205,15 @@
  *
  * If you create or destroy objects inside this loop, obviously, the results are
  * unpredictable. However it is always legal to call 
- * <code>glk_<replaceable>CLASS</replaceable>_iterate(obj, r)</code> as long as
- * @obj is a valid object id, or %NULL.
+ * `glk_<replaceable>CLASS</replaceable>_iterate(obj, r)` as long as @obj is a
+ * valid object id, or %NULL.
  *
  * The order in which objects are returned is entirely arbitrary. The library
  * may even rearrange the order every time you create or destroy an object of
  * the given class. As long as you do not create or destroy any object, the rule
- * is that <code>glk_<replaceable>CLASS</replaceable>_iterate(obj, r)</code> has
- * a fixed result, and iterating through the results as above will list every
- * object exactly once. 
+ * is that `glk_<replaceable>CLASS</replaceable>_iterate(obj, r)` has a fixed
+ * result, and iterating through the results as above will list every object
+ * exactly once.
  */
 
 /**
@@ -249,10 +249,10 @@
  * There are also a number of special codes, representing special keyboard
  * keys, which can be returned from a char-input event. These are represented
  * as 32-bit integers, starting with 4294967295 (0xFFFFFFFF) and working down.
- * The special key codes are defined in the <filename 
- * class="headerfile">glk.h</filename> file. They include one code for <keycap
- * function="enter">return</keycap> or <keycap function="enter">enter</keycap>,
- * one for <keycap function="delete">delete</keycap> or <keycap
+ * The special key codes are defined in the `glk.h` file.
+ * They include one code for <keycap function="enter">return</keycap> or <keycap
+ * function="enter">enter</keycap>, one for <keycap
+ * function="delete">delete</keycap> or <keycap
  * function="backspace">backspace</keycap>, twelve function keys, and one code
  * for any key which has no Latin-1 or special code. The full list of key codes
  * is included below.
@@ -575,8 +575,8 @@
  * them as usual. For information about how platform-specific streams come to
  * be, see [Startup Options][chimara-Startup-Options].
  *
- * A stream is opened with a particular file mode, see the 
- * <code>filemode_</code> constants below.
+ * A stream is opened with a particular file mode, see the `filemode_` constants
+ * below.
  *
  * <note><para>
  *   In the stdio library, using fopen(), %filemode_Write would be mode
@@ -1194,10 +1194,10 @@
  * These callbacks are optional, in the sense that the program may or may not
  * set them. However, any library which wants to interoperate with the dispatch
  * layer must <emphasis>allow</emphasis> the program to set them; it is the
- * program's choice. The library does this by implementing
- * <code>set_registry functions</code> &mdash; the functions to which the
- * program passes its callbacks.
- * 
+ * program's choice.
+ * The library does this by implementing `set_registry` functions &mdash; the
+ * functions to which the program passes its callbacks.
+ *
  * <note><para>
  *   Even though these callbacks and the functions to set them are declared in
  *   <filename class="headerfile">gi_dispa.h</filename>, they are not defined in
@@ -1222,24 +1222,24 @@
  * If you do not call giblorb_set_resource_map() in your startup code, or if it
  * fails, the library is left to its own devices for finding resources. Some
  * libraries may try to load resources from individual files &mdash; 
- * <filename>PIC1</filename>, <filename>PIC2</filename>, 
- * <filename>PIC3</filename>, and so on. (See the Blorb specification for more 
- * on this approach.) Other libraries will not have any other loading mechanism
- * at all; no resources will be available. 
+ * `PIC1`, `PIC2`, `PIC3`, and so on.
+ * (See the Blorb specification for more on this approach.)
+ * Other libraries will not have any other loading mechanism at all; no
+ * resources will be available.
  */
 
 /**
  * SECTION:blorb-layer
  * @short_description: The platform-independent functions in the Blorb layer
  *
- * These are the functions which are implemented in 
- * <filename>gi_blorb.c</filename>. They will be compiled into the library, but
- * they are the same on every platform. In general, only the library needs to
- * call these functions. The Glk program should allow the library to do all the
- * resource handling.
- */ 
- 
-/** 
+ * These are the functions which are implemented in `gi_blorb.c`.
+ * They will be compiled into the library, but they are the same on every
+ * platform.
+ * In general, only the library needs to call these functions.
+ * The Glk program should allow the library to do all the resource handling.
+ */
+
+/**
  * SECTION:blorb-errors
  * @short_description: Error codes returned by the Blorb layer functions
  *
@@ -1256,16 +1256,17 @@
  * GlkTerm. 
  *
  * When you compile a Glk program, you may define a function called 
- * <function>glkunix_startup_code&lpar;&rpar;</function>, and an array 
- * <code>glkunix_arguments[]</code>. These set up various Unix-specific options
- * used by the Glk library. There is a sample “<filename>glkstart.c</filename>”
- * file included in this package; you should modify it to your needs.
+ * `glkunix_startup_code()`, and an array `glkunix_arguments[]`.
+ * These set up various Unix-specific options used by the Glk library.
+ * There is a sample “`glkstart.c`” file included in this package; you should
+ * modify it to your needs.
  * |[<!--language="C"-->
  * extern glkunix_argumentlist_t glkunix_arguments[];
  * ]|
- * The <code>glkunix_arguments[]</code> array is a list of command-line 
- * arguments that your program can accept. The library will sort these out of 
- * the command line and pass them on to your code.
+ * The `glkunix_arguments[]` array is a list of command-line arguments that your
+ * program can accept.
+ * The library will sort these out of the command line and pass them on to your
+ * code.
  */
 
 /**
@@ -1323,9 +1324,9 @@
  * If you are writing a C program, there is an additional complication. A
  * library which does not support graphics may not implement the graphics
  * functions at all. Even if you put gestalt tests around your graphics calls,
- * you may get link-time errors. If the <filename
- * class="headerfile">glk.h</filename> file is so old that it does not declare
- * the graphics functions and constants, you may even get compile-time errors.
+ * you may get link-time errors.
+ * If the `glk.h` file is so old that it does not declare the graphics functions
+ * and constants, you may even get compile-time errors.
  *
  * To avoid this, you can perform a preprocessor test for the existence of
  * %GLK_MODULE_IMAGE. If this is defined, so are all the functions and constants
@@ -1352,10 +1353,10 @@
  * If you are writing a C program, there is an additional complication. A 
  * library which does not support sound may not implement the sound functions at
  * all. Even if you put gestalt tests around your sound calls, you may get 
- * link-time errors. If the <filename class="headerfile">glk.h</filename> file 
- * is so old that it does not declare the sound functions and constants, you may
- * even get compile-time errors.
- * 
+ * link-time errors.
+ * If the `glk.h` file is so old that it does not declare the sound functions
+ * and constants, you may even get compile-time errors.
+ *
  * To avoid this, you can perform a preprocessor test for the existence of
  * %GLK_MODULE_SOUND2. If this is defined, so are all the functions and constants
  * described in this section. If not, not.
@@ -1443,10 +1444,11 @@
  * glui32 res;
  * res = glk_gestalt(gestalt_Version, 0);
  * ]|
- * <code>res</code> will be set to a 32-bit number which encodes the version of
- * the Glk spec which the library implements. The upper 16 bits stores the major
- * version number; the next 8 bits stores the minor version number; the low 8 
- * bits stores an even more minor version number, if any.
+ * `res` will be set to a 32-bit number which encodes the version of the Glk
+ * spec which the library implements.
+ * The upper 16 bits stores the major version number; the next 8 bits stores the
+ * minor version number; the low 8 bits stores an even more minor version
+ * number, if any.
  *
  * <note><para>
  *   So the version number 78.2.11 would be encoded as 0x004E020B.
@@ -1466,51 +1468,50 @@
 /**
  * gestalt_CharInput:
  *
- * If you set <code>ch</code> to a character code, or a special code (from
- * 0xFFFFFFFF down), and call
+ * If you set `ch` to a character code, or a special code (from 0xFFFFFFFF
+ * down), and call
  * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_CharInput, ch);
  * ]|
- * then <code>res</code> will be %TRUE (1) if that character can be typed by
- * the player in character input, and %FALSE (0) if not.
+ * then `res` will be %TRUE (1) if that character can be typed by the player in
+ * character input, and %FALSE (0) if not.
  * See [Character Input][chimara-Character-Input].
  */
 
 /**
  * gestalt_LineInput:
  *
- * If you set <code>ch</code> to a character code, and call
+ * If you set `ch` to a character code, and call
  * |[<!--language="C"-->
  * glui32 res;
  * res = glk_gestalt(gestalt_LineInput, ch);
  * ]|
- * then <code>res</code> will be %TRUE (1) if that character can be typed by the
- * player in line input, and %FALSE (0) if not. Note that if <code>ch</code> is 
- * a nonprintable Latin-1 character (0 to 31, 127 to 159), then this is 
- * guaranteed to return %FALSE.
+ * then `res` will be %TRUE (1) if that character can be typed by the player in
+ * line input, and %FALSE (0) if not.
+ * Note that if `ch` is a nonprintable Latin-1 character (0 to 31, 127 to 159),
+ * then this is guaranteed to return %FALSE.
  * See [Line Input][chimara-Line-Input].
  */
 
 /**
  * gestalt_CharOutput:
  *
- * If you set <code>ch</code> to a character code (Latin-1 or higher), and call
+ * If you set `ch` to a character code (Latin-1 or higher), and call
  * |[<!--language="C"-->
  * glui32 res, len;
  * res = glk_gestalt_ext(gestalt_CharOutput, ch, &amp;len, 1);
  * ]|
- * then <code>res</code> will be one of %gestalt_CharOutput_CannotPrint,
+ * then `res` will be one of %gestalt_CharOutput_CannotPrint,
  * %gestalt_CharOutput_ExactPrint, or %gestalt_CharOutput_ApproxPrint (see 
  * below.)
  * 
- * In all cases, <code>len</code> (the #glui32 value pointed at by the third
- * argument) will be the number of actual glyphs which will be used to represent
- * the character. In the case of %gestalt_CharOutput_ExactPrint, this will 
- * always be 1; for %gestalt_CharOutput_CannotPrint, it may be 0 (nothing 
- * printed) or higher; for %gestalt_CharOutput_ApproxPrint, it may be 1 or 
- * higher. This information may be useful when printing text in a fixed-width 
- * font.
+ * In all cases, `len` (the #glui32 value pointed at by the third argument) will
+ * be the number of actual glyphs which will be used to represent the character.
+ * In the case of %gestalt_CharOutput_ExactPrint, this will always be 1; for
+ * %gestalt_CharOutput_CannotPrint, it may be 0 (nothing printed) or higher; for
+ * %gestalt_CharOutput_ApproxPrint, it may be 1 or higher.
+ * This information may be useful when printing text in a fixed-width font.
  *
  * <note><para>
  *   As described in <link linkend="chimara-Other-API-Conventions">Other API
@@ -1518,9 +1519,8 @@
  *   third argument in glk_gestalt_ext(), or by calling glk_gestalt() instead.
  * </para></note>
  *
- * This selector will always return %gestalt_CharOutput_CannotPrint if 
- * <code>ch</code> is an unprintable eight-bit character (0 to 9, 11 to 31, 127 
- * to 159.)
+ * This selector will always return %gestalt_CharOutput_CannotPrint if `ch` is
+ * an unprintable eight-bit character (0 to 9, 11 to 31, 127 to 159.)
  *
  * <note><para>
  *   Make sure you do not get confused by signed byte values. If you set a
@@ -1564,10 +1564,9 @@
  * When the %gestalt_CharOutput selector returns this for a character, the 
  * library will print some approximation of the character. It will be more or 
  * less right, but it may not be precise, and it may not be distinguishable from
- * other, similar characters. (Examples: 
- * “<computeroutput>ae</computeroutput>” for the one-character “&aelig;”
- * ligature, “<computeroutput>e</computeroutput>” for “&egrave;”,
- * “<computeroutput>|</computeroutput>” for a broken vertical bar (&brvbar;).)
+ * other, similar characters.
+ * (Examples: “`ae`” for the one-character “&aelig;” ligature, “`e`” for
+ * “&egrave;”, “`|`” for a broken vertical bar (&brvbar;).)
  */
  
 /**
@@ -1779,11 +1778,10 @@
  * If you are writing a C program, there is an additional complication. A
  * library which does not support Unicode may not implement the Unicode
  * functions at all. Even if you put gestalt tests around your Unicode calls,
- * you may get link-time errors. If the 
- * <filename class="headerfile">glk.h</filename> file is so old that it does not
- * declare the Unicode functions and constants, you may even get compile-time
- * errors.
- * 
+ * you may get link-time errors.
+ * If the `glk.h` file is so old that it does not declare the Unicode functions
+ * and constants, you may even get compile-time errors.
+ *
  * To avoid this, you can perform a preprocessor test for the existence of
  * %GLK_MODULE_UNICODE.
  */
@@ -3009,11 +3007,10 @@
  * @index: Unique integer index of the integer constant.
  *
  * Returns a structure describing an integer constant which the library exports.
- * These are, roughly, all the constants defined in the <filename
- * class="headerfile">glk.h</filename> file. @index can range from 0 to
- * <inlineequation><mathphrase>N - 1</mathphrase><alt>N - 
- * 1</alt></inlineequation>, where N is the value returned by 
- * gidispatch_count_intconst().
+ * These are, roughly, all the constants defined in the `glk.h` file.
+ * @index can range from 0 to <inlineequation><mathphrase>N -
+ * 1</mathphrase><alt>N - 1</alt></inlineequation>, where N is the value
+ * returned by gidispatch_count_intconst().
  *
  * Returns: A #gidispatch_intconst_t structure describing the integer constant.
  */
@@ -3064,12 +3061,11 @@
  * gidispatch_function_t:
  * @id: Dispatch selector of the function.
  * @fnptr: Pointer to the function.
- * @name: Name of the function, without the <code>glk_</code> prefix.
+ * @name: Name of the function, without the `glk_` prefix.
  *
  * The @id field is a selector &mdash; a numeric constant used to refer to the
  * function in question. @name is the function name, as it is given in the
- * <filename class="headerfile">glk.h</filename> file, but without the 
- * “<code>glk_</code>” prefix.
+ * `glk.h` file, but without the “`glk_`” prefix.
  * And @fnptr is the address of the function itself.
  *
  * <note><para>
@@ -3117,9 +3113,9 @@
  * Characters and strings are also passed in this way &mdash; #char<!---->s in
  * the @uch, @sch, or @ch fields (depending on whether the #char is signed) and
  * strings in the @charstr field. Opaque objects (windows, streams, etc) are
- * passed in the @opaqueref field (which is <code>void*</code>, in order to
- * handle all opaque pointer types.)
- * 
+ * passed in the @opaqueref field (which is `void*`, in order to handle all
+ * opaque pointer types.)
+ *
  * However, pointers (other than C strings), arrays, and structures complicate
  * life.
  * So do return values.
@@ -3127,7 +3123,7 @@
  * ## References ## {#chimara-References}
  *
  * A reference to a numeric type or object reference &mdash; that is,
- * <code>#glui32*</code>, <code>#winid_t*</code>, and so on &mdash; takes
+ * [`glui32*`][glui32], [`winid_t*`][winid-t], and so on &mdash; takes
  * <emphasis>one or two</emphasis> #gluniversal_t objects. The first is a flag
  * indicating whether the reference argument is %NULL or not. The @ptrflag field
  * of this #gluniversal_t should be %FALSE (0) if the reference is %NULL, and
@@ -3136,8 +3132,7 @@
  * is %TRUE, you must then put a #gluniversal_t storing the base type of the
  * reference.
  *
- * For example, consider a hypothetical function, with selector 
- * <code>0xABCD</code>:
+ * For example, consider a hypothetical function, with selector `0xABCD`:
  * |[<!--language="C"-->
  * void glk_glomp(glui32 num, winid_t win, glui32 *numref, strid_t *strref);
  * ]|
@@ -3164,8 +3159,8 @@
  * ]|
  * 
  * Note that you copy the value of the reference arguments into and out of
- * @arglist. Of course, it may be that 
- * <function>glk_glomp&lpar;&rpar;</function> only uses these as pass-out
+ * @arglist.
+ * Of course, it may be that `glk_glomp<!---->()` only uses these as pass-out
  * references or pass-in references; if so, you could skip copying in or out.
  *
  * For further examples:
@@ -3230,8 +3225,8 @@
  * ]|
  * 
  * Since the structure passed to glk_select() is a pass-out reference (the entry
- * values are ignored), you don't need to fill in <code>arglist[1..4]</code>
- * before calling gidispatch_call().
+ * values are ignored), you don't need to fill in `arglist[1..4]` before calling
+ * gidispatch_call().
  * 
  * <note><para>
  *   Theoretically, you would invoke <code>#glk_select(%NULL)</code> by setting'
@@ -3324,22 +3319,23 @@
  * This returns a string which encodes the proper argument list for the given
  * function. If there is no such function in the library, this returns %NULL.
  * 
- * The prototype string for the <function>glk_glomp&lpar;&rpar;</function> 
- * function described above would be: <code>"4IuQa&amp;Iu&amp;Qb:"</code>. The 
- * <code>"4"</code> is the number of arguments (including the return value, if 
- * there is one, which in this case there isn't.) <code>"Iu"</code> denotes an 
- * unsigned integer; <code>"Qa"</code> is an opaque object of class 0 (window).
- * <code>"&amp;Iu"</code> is a <emphasis>reference</emphasis> to an unsigned
- * integer, and <code>"&amp;Qb"</code> is a reference to a stream. The colon at
- * the end terminates the argument list; the return value would follow it, if
- * there was one.
- * 
- * Note that the initial number (<code>"4"</code> in this case) is the number of
- * logical arguments, not the number of #gluniversal_t objects which will be
- * passed to gidispatch_call(). The <function>glk_glomp&lpar;&rpar;</function> 
- * call uses anywhere from four to six #gluniversal_t objects, as demonstrated 
- * above.
- * 
+ * The prototype string for the `glk_glomp<!---->()` function described above would be:
+ * `"4IuQa&amp;Iu&amp;Qb:"`.
+ * The `"4"` is the number of arguments (including the return value, if there is
+ * one, which in this case there isn't.)
+ * `"Iu"` denotes an unsigned integer; `"Qa"` is an opaque object of class 0
+ * (window).
+ * `"&amp;Iu"` is a <emphasis>reference</emphasis> to an unsigned integer, and
+ * `"&amp;Qb"` is a reference to a stream.
+ * The colon at the end terminates the argument list; the return value would
+ * follow it, if there was one.
+ *
+ * Note that the initial number (`"4"` in this case) is the number of logical
+ * arguments, not the number of #gluniversal_t objects which will be passed to
+ * gidispatch_call().
+ * The `glk_glomp<!---->()` call uses anywhere from four to six #gluniversal_t objects,
+ * as demonstrated above.
+ *
  * The basic type codes:
  * <variablelist>
  * <varlistentry>
@@ -3875,7 +3871,7 @@
  * leading dash, if any.) 
  * @desc: a description of the argument; this is used when the library is 
  * printing a list of options.
- * @argtype: one of the <code>glkunix_arg_</code> constants.
+ * @argtype: one of the `glkunix_arg_` constants.
  * 
  * <variablelist>
  * <varlistentry>
@@ -3907,8 +3903,8 @@
  * </varlistentry>
  * </variablelist>
  * 
- * To accept arbitrary arguments which lack dashes, specify a name of 
- * <code>""</code> and an argtype of %glkunix_arg_ValueFollows.
+ * To accept arbitrary arguments which lack dashes, specify a name of `""` and
+ * an argtype of %glkunix_arg_ValueFollows.
  *
  * If you don't care about command-line arguments, you must still define an
  * empty arguments list, as follows:
@@ -3930,8 +3926,7 @@
  *     { NULL, glkunix_arg_End, NULL }
  * };
  * ]|
- * This would match the arguments “<code>thingfile -goo -wob8 -bom -hum
- * song</code>”.
+ * This would match the arguments “`thingfile -goo -wob8 -bom -hum song`”.
  *
  * After the library parses the command line, it does various occult rituals of
  * initialization, and then calls glkunix_startup_code().
@@ -3950,9 +3945,9 @@
  * @argc: The number of arguments in @argv.
  * @argv: Strings representing command line arguments.
  * 
- * The fields are a standard Unix <code>(argc, argv)</code> list, which contain
- * the arguments you requested from the command line. In deference to custom,
- * <code>argv[0]</code> is always the program name.
+ * The fields are a standard Unix `(argc, argv)` list, which contain the
+ * arguments you requested from the command line.
+ * In deference to custom, `argv[0]` is always the program name.
  */
 
 /**

@@ -112,7 +112,7 @@ glk_fileref_get_rock(frefid_t fref)
 
 /**
  * glk_fileref_create_temp:
- * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
+ * @usage: Bitfield with one or more of the `fileusage_` constants.
  * @rock: The new fileref's rock value.
  *
  * Creates a reference to a temporary file. It is always a new file (one which
@@ -160,7 +160,7 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
 
 /**
  * glk_fileref_create_by_prompt:
- * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
+ * @usage: Bitfield with one or more of the `fileusage_` constants.
  * @fmode: File mode, contolling the dialog's behavior.
  * @rock: The new fileref's rock value.
  *
@@ -211,9 +211,8 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  *   before you use it.
  * </para></note>
  *
- * The recommended file suffixes for files are <filename>.glkdata</filename> for
- * %fileusage_Data, <filename>.glksave</filename> for %fileusage_SavedGame,
- * <filename>.txt</filename> for %fileusage_Transcript and
+ * The recommended file suffixes for files are `.glkdata` for %fileusage_Data,
+ * `.glksave` for %fileusage_SavedGame, `.txt` for %fileusage_Transcript and
  * %fileusage_InputRecord.
  *
  * Returns: A new fileref, or #NULL if the fileref creation failed or the
@@ -328,7 +327,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 
 /**
  * glk_fileref_create_by_name:
- * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
+ * @usage: Bitfield with one or more of the `fileusage_` constants.
  * @name: A filename.
  * @rock: The new fileref's rock value.
  *
@@ -360,14 +359,11 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  * brackets (less-than and greater-than), colon, double-quote, pipe (vertical
  * bar), question-mark, asterisk. The library should also truncate the argument
  * at the first period (delete the first period and any following characters).
- * If the result is the empty string, change it to the string
- * <code>"null"</code>.
+ * If the result is the empty string, change it to the string `"null"`.
  *
  * It should then append an appropriate suffix, depending on the usage:
- * <filename>.glkdata</filename> for %fileusage_Data,
- * <filename>.glksave</filename> for %fileusage_SavedGame,
- * <filename>.txt</filename> for %fileusage_Transcript and
- * %fileusage_InputRecord.
+ * `.glkdata` for %fileusage_Data, `.glksave` for %fileusage_SavedGame, `.txt`
+ * for %fileusage_Transcript and %fileusage_InputRecord.
  *
  * The above behavior is not a requirement of the Glk spec. Older
  * implementations can continue doing what they do. Some programs (e.g.
@@ -508,7 +504,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 
 /**
  * glk_fileref_create_from_fileref:
- * @usage: Bitfield with one or more of the <code>fileusage_</code> constants.
+ * @usage: Bitfield with one or more of the `fileusage_` constants.
  * @fref: Fileref to copy.
  * @rock: The new fileref's rock value.
  *
@@ -550,7 +546,7 @@ glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
  * 
  * Destroys a fileref which you have created. This does <emphasis>not</emphasis>
  * affect the disk file; it just reclaims the resources allocated by the
- * <code>glk_fileref_create...</code> function.
+ * `glk_fileref_create...` function.
  *
  * It is legal to destroy a fileref after opening a file with it (while the
  * file is still open.) The fileref is only used for the opening operation,

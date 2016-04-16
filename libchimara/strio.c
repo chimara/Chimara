@@ -709,7 +709,7 @@ get_char_stream_common(strid_t str)
  *
  * If the stream contains Unicode data &mdash; for example, if it was created
  * with glk_stream_open_file_uni() or glk_stream_open_memory_uni() &mdash; then
- * characters beyond 255 will be returned as 0x3F (<code>"?"</code>).
+ * characters beyond 255 will be returned as 0x3F (`"?"`).
  *
  * It is usually more efficient to read several characters at once with
  * glk_get_buffer_stream() or glk_get_line_stream(), as opposed to calling
@@ -993,9 +993,9 @@ glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
  *   <mathphrase>@len - 1</mathphrase>
  * </inlineequation>
  * characters have been read or a newline has been read. It then puts a
- * terminal null (<code>'\0'</code>) character on
- * the end. It returns the number of characters actually read, including the
- * newline (if there is one) but not including the terminal null.
+ * terminal null (`'\0'`) character on the end.
+ * It returns the number of characters actually read, including the newline (if
+ * there is one) but not including the terminal null.
  *
  * Returns: The number of characters actually read.
  */
@@ -1363,7 +1363,7 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
  *   good for much anyhow.
  * </para></note>
  *
- * glk_stream_get_position() on a window stream will always return zero.
+ * `glk_stream_get_position()` on a window stream will always return zero.
  *
  * <note><para>
  *   It might make more sense to return the number of characters written to the
@@ -1401,7 +1401,7 @@ glk_stream_get_position(strid_t str)
  *
  * Sets the position of the read/write mark in @str. The position is controlled
  * by @pos, and the meaning of @pos is controlled by @seekmode. See the
- * <code>seekmode_</code> constants below.
+ * `seekmode_` constants below.
  *
  * It is illegal to specify a position before the beginning or after the end of
  * the file.

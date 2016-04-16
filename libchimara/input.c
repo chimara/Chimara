@@ -1148,7 +1148,7 @@ is_valid_line_terminator(glui32 keycode)
 /**
  * glk_set_terminators_line_event:
  * @win: The window for which to set the line input terminator keys.
- * @keycodes: An array of <code>keycode_</code> constants, of length @count.
+ * @keycodes: An array of `keycode_` constants, of length @count.
  * @count: The array length of @keycodes.
  *
  * It is possible to request that other keystrokes complete line input as well.

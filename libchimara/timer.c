@@ -8,13 +8,13 @@ extern GPrivate glk_data_key;
  * stop timer events.
  *
  * Initially, there is no timer and you get no timer events. If you call
- * <code>glk_request_timer_events(<emphasis>N</emphasis>)</code>, with 
+ * `glk_request_timer_events(<emphasis>N</emphasis>)`, with
  * <emphasis>N</emphasis> not 0, you will get timer events about every 
  * <emphasis>N</emphasis> milliseconds thereafter. (Assuming that they are 
  * supported &mdash; if not, glk_request_timer_events() has no effect.) Unlike 
  * keyboard and mouse events, timer events will continue until you shut them 
  * off. You do not have to re-request them every time you get one. Call 
- * <code>glk_request_timer_events(0)</code> to stop getting timer events. 
+ * `glk_request_timer_events(0)` to stop getting timer events.
  *
  * The rule is that when you call glk_select() or glk_select_poll(), if it has
  * been more than <emphasis>N</emphasis> milliseconds since the last timer 

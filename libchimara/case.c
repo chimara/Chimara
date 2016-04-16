@@ -9,14 +9,13 @@
  *
  * You can convert Latin-1 characters between upper and lower case with two Glk
  * utility functions, glk_char_to_lower() and glk_char_to_upper(). These have a
- * few advantages over the standard ANSI <function>tolower()</function> and
- * <function>toupper()</function> macros. They work for the entire Latin-1
- * character set, including accented letters; they behave consistently on all
- * platforms, since they're part of the Glk library; and they are safe for all
- * characters. That is, if you call glk_char_to_lower() on a lower-case
- * character, or a character which is not a letter, you'll get the argument
- * back unchanged.
- * 
+ * few advantages over the standard ANSI `tolower()` and `toupper()` macros.
+ * They work for the entire Latin-1 character set, including accented letters;
+ * they behave consistently on all platforms, since they're part of the Glk
+ * library; and they are safe for all characters.
+ * That is, if you call glk_char_to_lower() on a lower-case character, or a
+ * character which is not a letter, you'll get the argument back unchanged.
+ *
  * The case-sensitive characters in Latin-1 are the ranges 0x41..0x5A,
  * 0xC0..0xD6, 0xD8..0xDE (upper case) and the ranges 0x61..0x7A, 0xE0..0xF6,
  * 0xF8..0xFE (lower case). These are arranged in parallel; so 
@@ -71,10 +70,10 @@ glk_char_to_upper(unsigned char ch)
  * @len, but the true count will be returned. (The contents of the buffer after
  * the returned count are undefined.)
  *
- * The <code>lower_case</code> and <code>upper_case</code> functions do what
- * you'd expect: they convert every character in the buffer (the first @numchars
- * of them) to its upper or lower-case equivalent, if there is such a thing.
- * 
+ * The `lower_case` and `upper_case` functions do what you'd expect: they
+ * convert every character in the buffer (the first @numchars of them) to its
+ * upper or lower-case equivalent, if there is such a thing.
+ *
  * See the Unicode spec (chapter 3.13, chapter 4.2, etc) for the exact
  * definitions of upper, lower, and title-case mapping.
  * 
@@ -162,8 +161,8 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
  * @lowerrest: %TRUE if the rest of @buf should be lowercased, %FALSE 
  * otherwise.
  *
- * See glk_buffer_to_lower_case_uni(). The <code>title_case</code> function has
- * an additional (boolean) flag. If the flag is zero, the function changes the
+ * See glk_buffer_to_lower_case_uni(). The `title_case` function has an
+ * additional (boolean) flag. If the flag is zero, the function changes the
  * first character of the buffer to upper-case, and leaves the rest of the
  * buffer unchanged. If the flag is nonzero, it changes the first character to
  * upper-case and the rest to lower-case.
@@ -256,8 +255,9 @@ glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len, glui32 numchars)
  * followed by Unicode character 0x0300 (COMBINING GRAVE ACCENT) into the
  * one-character string “&egrave;” (character 0xE8, an accented “e”).
  *
- * The <code>canon_normalize</code> function includes decomposition as part of
- * its implementation. You never have to call both functions on the same string.
+ * The `canon_normalize` function includes decomposition as part of its
+ * implementation.
+ * You never have to call both functions on the same string.
  *
  * Both of these functions are idempotent.
  *

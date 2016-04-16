@@ -275,7 +275,7 @@ glk_put_buffer_uni(glui32 *buf, glui32 len)
  * length of the buffer.
  *
  * Unicode values (characters greater than 255) cannot be written to the buffer.
- * If you try, they will be stored as 0x3F (<code>"?"</code>) characters.
+ * If you try, they will be stored as 0x3F (`"?"`) characters.
  *
  * Returns: the new stream, or %NULL on error.
  */
@@ -455,7 +455,7 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
  *
  * When writing in binary mode, Unicode values (characters greater than 255)
  * cannot be written to the file. If you try, they will be stored as 0x3F
- * (<code>"?"</code>) characters. In text mode, Unicode values may be stored
+ * (`"?"`) characters. In text mode, Unicode values may be stored
  * exactly, approximated, or abbreviated, depending on what the platform's text
  * files support.
  *

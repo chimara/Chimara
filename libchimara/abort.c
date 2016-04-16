@@ -18,7 +18,7 @@ extern GPrivate glk_data_key;
  * called, before the process is shut down.
  *
  * Initially there is no interrupt handler. You can reset to not having any by
- * calling <code>#glk_set_interrupt_handler(%NULL)</code>.
+ * calling `glk_set_interrupt_handler(NULL)`.
  *
  * If you call glk_set_interrupt_handler() with a new handler function while an
  * older one is set, the new one replaces the old one. Glk does not try to queue

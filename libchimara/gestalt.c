@@ -39,20 +39,19 @@ glk_gestalt(glui32 sel, glui32 val)
  * not be meaningful. The @arr and @arrlen arguments of glk_gestalt_ext() are
  * always optional; you may always pass %NULL and 0, if you do not want whatever
  * information they represent. glk_gestalt() is simply a shortcut for this;
- * <code>#glk_gestalt(x, y)</code> is exactly the same as 
- * <code>#glk_gestalt_ext(x, y, %NULL, 0)</code>.
+ * `glk_gestalt(x, y)` is exactly the same as `glk_gestalt_ext(x, y, NULL, 0)`.
  *
  * The critical point is that if the Glk library has never heard of the selector
  * @sel, it will return 0. It is <emphasis>always</emphasis> safe to call 
- * <code>#glk_gestalt(x, y)</code> (or <code>#glk_gestalt_ext(x, y, %NULL, 0)</code>).
+ * `glk_gestalt(x, y)` (or `glk_gestalt_ext(x, y, NULL, 0)`).
  * Even if you are using an old library, which was compiled before
  * the given capability was imagined, you can test for the capability by calling
  * glk_gestalt(); the library will correctly indicate that it does not support
  * it, by returning 0.
  *
- * (It is also safe to call <code>#glk_gestalt_ext(x, y, z, zlen)</code> for an
- * unknown selector <code>x</code>, where <code>z</code> is not %NULL, as long
- * as <code>z</code> points at an array of at least <code>zlen</code> elements.
+ * (It is also safe to call `glk_gestalt_ext(x, y, z, zlen)` for an unknown
+ * selector `x`, where `z` is not %NULL, as long as `z` points at an array of at
+ * least `zlen` elements.
  * The selector will be careful not to write beyond that point in the array, if
  * it writes to the array at all.)
  *

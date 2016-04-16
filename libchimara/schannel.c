@@ -455,9 +455,9 @@ glk_schannel_play(schanid_t chan, glui32 snd)
  * @notify: If nonzero, requests a notification when the sound is finished.
  *
  * This works the same as glk_schannel_play(), but lets you specify additional 
- * options. <code>glk_schannel_play(chan, snd)</code> is exactly equivalent to 
- * <code>glk_schannel_play_ext(chan, snd, 1, 0)</code>.
- * 
+ * options. `glk_schannel_play(chan, snd)` is exactly equivalent to
+ * `glk_schannel_play_ext(chan, snd, 1, 0)`.
+ *
  * The @repeats value is the number of times the sound should be repeated. A 
  * repeat value of -1 (or rather 0xFFFFFFFF) means that the sound should repeat 
  * forever. A repeat value of 0 means that the sound will not be played at all; 

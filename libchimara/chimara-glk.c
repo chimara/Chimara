@@ -34,19 +34,18 @@
  * @stability: Unstable
  * 
  * The #ChimaraGlk widget opens and runs a Glk program. The program must be
- * compiled as a plugin module, with a function <function>glk_main()</function>
- * that the Glk library can hook into.
+ * compiled as a plugin module, with a function `glk_main()` that the Glk
+ * library can hook into.
  *
- * On Linux systems, this is a file with a name like 
- * <filename>plugin.so</filename>. For portability, you can use libtool and 
- * automake:
+ * On Linux systems, this is a file with a name like `plugin.so`.
+ * For portability, you can use libtool and automake:
  * |[<!--language="automake"-->
  * pkglib_LTLIBRARIES = plugin.la
  * plugin_la_SOURCES = plugin.c foo.c bar.c
  * plugin_la_LDFLAGS = -module -shared -avoid-version -export-symbols-regex "^glk_main$$"
  * ]|
- * This will produce <filename>plugin.la</filename> which is a text file 
- * containing the correct plugin file to open (see the relevant section of the
+ * This will produce `plugin.la` which is a text file containing the correct
+ * plugin file to open (see the relevant section of the
  * <ulink 
  * url="http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html">
  * Libtool manual</ulink>).
@@ -686,7 +685,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * @window_id_string: A string value uniquely identifying the window that
 	 * received character input
 	 * @keysym: The key that was typed, in the form of a key symbol from
-	 * <filename class="headerfile">gdk/gdkkeysyms.h</filename>
+	 * `gdk/gdkkeysyms.h`
 	 *
 	 * Emitted when a Glk window receives character input.
 	 * The @window_rock can be used to identify the window.
@@ -806,7 +805,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * chimara_glk_run(), but the plugin can change it by calling 
 	 * garglk_set_program_name(). To find out when this information changes,
 	 * for example to put the program name in the title bar of a window, connect
-	 * to the <code>::notify::program-name</code> signal.
+	 * to the `::notify::program-name` signal.
 	 */
 	g_object_class_install_property(object_class, PROP_PROGRAM_NAME,
 		g_param_spec_string("program-name", _("Program name"),
@@ -1134,8 +1133,7 @@ glk_enter(struct StartupData *startup)
 /**
  * chimara_glk_run:
  * @glk: a #ChimaraGlk widget
- * @plugin: path to a plugin module compiled with <filename 
- * class="header">glk.h</filename>
+ * @plugin: path to a plugin module compiled with `glk.h`
  * @argc: Number of command line arguments in @argv
  * @argv: Array of command line arguments to pass to the plugin
  * @error: location to store a #GError, or %NULL
@@ -1217,8 +1215,7 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 /**
  * chimara_glk_run_file:
  * @self: a #ChimaraGlk widget
- * @plugin_file: a #GFile pointing to a plugin module compiled with <filename
- * class="header">glk.h</filename>
+ * @plugin_file: a #GFile pointing to a plugin module compiled with `glk.h`
  * @argc: Number of command line arguments in @argv
  * @argv: Array of command line arguments to pass to the plugin
  * @error: location to store a #GError, or %NULL
@@ -1339,8 +1336,7 @@ chimara_glk_get_running(ChimaraGlk *glk)
 /**
  * chimara_glk_feed_char_input:
  * @glk: a #ChimaraGlk widget
- * @keyval: a key symbol as defined in <filename 
- * class="headerfile">gdk/gdkkeysyms.h</filename>
+ * @keyval: a key symbol as defined in `gdk/gdkkeysyms.h`
  * 
  * Pretend that a key was pressed in the Glk program as a response to a 
  * character input request. You can call this function even when no window has
