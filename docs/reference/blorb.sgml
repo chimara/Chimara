@@ -31,7 +31,7 @@ This is for historical reasons; Infocom's Z-machine architecture used this schem
 For the complete Blorb specification and tools for Blorb file manipulation, see:
 <ulink role="online-location" url="http://eblong.com/zarf/blorb/"/>
 </para>
-<refsect2 id="chimara-How-This-Works">
+<refsect2 id="chimara-blorb-How-This-Works">
 <title>How This Works</title>
 <para>
 The Blorb layer is implemented in a C source file, <filename>gi_blorb.c</filename>, and its header, <filename class="headerfile">gi_blorb.h</filename>. This code is (mostly) platform-independent &mdash; it is identical in every library, just as the <filename class="headerfile">glk.h</filename> header file is identical in every library. Each library author who wants to support Blorb should download the <filename>gi_blorb.c</filename> and <filename class="headerfile">gi_blorb.h</filename> files from the Glk web site, and compile them unchanged into the library.

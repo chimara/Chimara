@@ -23,7 +23,7 @@ This is most useful for virtual machines and other run-time systems, which want 
 <para>
 If you are writing a C program which uses the Glk API, you can ignore this section entirely. If you are writing a VM which uses Glk, you need to read it. If you are implementing a Glk library, you should also read it. (There are some additional interfaces which your library must support for the dispatch layer to work right.) 
 </para>
-<refsect2 id="chimara-How-This-Works">
+<refsect2 id="chimara-dispatch-How-This-Works">
 <title>How This Works</title>
 <para>
 The dispatch layer is implemented in a C source file, <filename>gi_dispa.c</filename>, and its header, <filename class="headerfile">gi_dispa.h</filename>. This code is platform-independent &mdash; it is identical in every library, just as the <filename class="headerfile">glk.h</filename> header file is identical in every library. Each library author should download the <filename>gi_dispa.c</filename> and <filename class="headerfile">gi_dispa.h</filename> files from the Glk web site, and compile them unchanged into the library.
