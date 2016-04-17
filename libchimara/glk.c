@@ -32,13 +32,13 @@ G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
  * would be cutting off all the sessions instead of just yours. You would 
  * probably also prevent final text from being visible to the player.
  * </para></note>
- * <note><title>Chimara</title>
- * <para>
- * If there are any windows open at the time glk_exit() is called, then Chimara
- * will leave them open. This way, the final text remains visible. Note that bad  
- * things most definitely <emphasis>will</emphasis> happen if you use the ANSI
- * <function>exit()</function>.
- * </para></note>
+ *
+ * > # Chimara #
+ * > If there are any windows open at the time glk_exit() is called, then
+ * > Chimara will leave them open.
+ * > This way, the final text remains visible.
+ * > Note that bad things most definitely <emphasis>will</emphasis> happen if
+ * > you use the ANSI `exit()`.
  */
 void
 glk_exit(void)

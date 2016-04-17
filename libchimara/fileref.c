@@ -169,12 +169,10 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * file navigation tool. (The prompt, if any, is inferred from the usage
  * argument.)
  *
- * <note><title>Chimara</title>
- * <para>
- * Chimara uses a #GtkFileChooserDialog.
- * The default starting location for the dialog may be set with
- * glkunix_set_base_file().
- * </para></note>
+ * > # Chimara #
+ * > Chimara uses a #GtkFileChooserDialog.
+ * > The default starting location for the dialog may be set with
+ * > glkunix_set_base_file().
  *
  * @fmode must be one of these values:
  * <variablelist>
@@ -337,11 +335,10 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  * <note><para>
  *   This usually means “in the same directory as your program.”
  * </para></note>
- * <note><title>Chimara</title>
- * <para>
- * In Chimara, the file is created in the directory last set by 
- * glkunix_set_base_file(), and otherwise in the current working directory.
- * </para></note>
+ *
+ * > # Chimara #
+ * > In Chimara, the file is created in the directory last set by
+ * > glkunix_set_base_file(), and otherwise in the current working directory.
  *
  * Earlier versions of the Glk spec specified that the library may have to
  * extend, truncate, or change your name argument in order to produce a legal

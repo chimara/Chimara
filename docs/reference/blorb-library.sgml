@@ -23,9 +23,9 @@ Each library must implement <link linkend="giblorb-set-resource-map"><function>g
 <para>
 The library must also link in the <filename>gi_blorb.c</filename> file. Most of this should compile without difficulty on any platform. However, it does need to allocate memory. As supplied, <filename>gi_blorb.c</filename> calls the ANSI functions <function>malloc()</function>, <function>realloc()</function>, and <function>free()</function>. If this is not appropriate on your OS, feel free to change these calls. They are isolated at the end of the file.
 </para>
-<note><title>Chimara</title>
+<blockquote><refsect2><title>Chimara</title>
 <para>
 The Chimara library uses the GLib functions <link linkend="g-malloc"><function>g_malloc()</function></link>, <link linkend="g-realloc"><function>g_realloc()</function></link>, and <link linkend="g-free"><function>g_free()</function></link> because of their additional error-checking features.
-</para></note>
+</para></refsect2></blockquote>
 </refsect1>
 </refentry>

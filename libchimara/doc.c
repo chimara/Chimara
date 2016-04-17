@@ -2630,11 +2630,10 @@
  * should be a visible window border between the new window and its sibling.
  * (This is a hint to the library.)
  *
- * <note><title>Chimara</title><para>
- *   There will only be a visible border if the #ChimaraGlk:spacing property
- *   is nonzero. Setting #ChimaraGlk:spacing to zero disables all borders on Glk
- *   windows.
- * </para></note>
+ * > # Chimara #
+ * > There will only be a visible border if the #ChimaraGlk:spacing property
+ * > is nonzero.
+ * > Setting #ChimaraGlk:spacing to zero disables all borders on Glk windows.
  */
 
 /**
@@ -2686,11 +2685,10 @@
  *   questionable. If you write out a file in text mode, and then read it back
  *   in text mode, high-bit characters (128 to 255) may be transformed or lost.
  * </para></note>
- * <note><title>Chimara</title>
- * <para>
- * Text mode files in Chimara are in UTF-8, which is GTK+'s native file
- * encoding.
- * </para></note>
+ *
+ * > # Chimara #
+ * > Text mode files in Chimara are in UTF-8, which is GTK+'s native file
+ * > encoding.
  */
 
 /**
@@ -3583,12 +3581,11 @@
  * giblorb_err_Alloc: 
  *
  * Memory could not be allocated.
- * <note><title>Chimara</title>
- * <para>
- *  The Blorb layer in the Chimara library should not return this error code;
- *  instead, the program aborts if memory allocation fails, in keeping with
- *  GLib practices.
- * </para></note> 
+ *
+ * > # Chimara #
+ * > The Blorb layer in the Chimara library should not return this error code;
+ * > instead, the program aborts if memory allocation fails, in keeping with
+ * > GLib practices.
  */
  
 /**

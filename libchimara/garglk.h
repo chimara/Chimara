@@ -8,12 +8,11 @@
  * can perform a preprocessor test for the existence of %GARGLK. If this
  * macro is defined, then so are all the Gargoyle extensions. If not, not.
  *
- * <note><title>Chimara</title><para>
- *   Currently, in Chimara, the functions are defined, but a few of them
- *   (garglk_unput_string() and garglk_unput_string_uni()) are not implemented.
- *   You can call them, but they will have no effect except to print a warning
- *   to the console.
- * </para></note>
+ * > # Chimara #
+ * > Currently, in Chimara, the functions are defined, but a few of them
+ * > (garglk_unput_string() and garglk_unput_string_uni()) are not implemented.
+ * > You can call them, but they will have no effect except to print a warning
+ * > to the console.
  */
 #define GARGLK 1
 

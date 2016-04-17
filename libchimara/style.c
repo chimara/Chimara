@@ -955,11 +955,11 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
  * 
  * Decides whether two styles are visually distinguishable in the given window.
  * The exact meaning of this is left for the library to determine.
- * <note><title>Chimara</title><para>
- *   Currently, all styles of one window are assumed to be mutually
- *   distinguishable.
- * </para></note>
- * 
+ *
+ * > # Chimara #
+ * > Currently, all styles of one window are assumed to be mutually
+ * > distinguishable.
+ *
  * Returns: %TRUE (1) if the two styles are visually distinguishable. If they 
  * are not, it returns %FALSE (0).
  */

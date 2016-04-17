@@ -70,27 +70,27 @@ This document defines the Glk API. I have tried to specify exactly what everythi
 <note><para>
 Sections labeled like this are notes. They do not define anything; they clarify or explain what has already been defined. If there seems to be a conflict, ignore the note and follow the definition.
 </para></note>
-<note><title>WORK</title>
+<blockquote><refsect2><title>WORK</title>
 <para>
 Notes with the label “WORK” are things which I have not yet fully resolved.
 Your comments requested and welcome.
-</para></note>
-<note><title>Chimara</title>
+</para></refsect2></blockquote>
+<blockquote><refsect2><title>Chimara</title>
 <para>
 Notes labeled “Chimara” are specific to Chimara's implementation of the Glk API and are not part of the original Glk API specification.
-</para></note>
+</para></refsect2></blockquote>
 <para>
 This document is written for the point of view of the game programmer &mdash; the person who wants to use the Glk library to print text, input text, and so on. By saying what the Glk library does, of course, this document also defines the task of the Glk programmer &mdash; the person who wants to port the Glk library to a new platform or operating system. If the Glk library guarantees something, the game programmer can rely on it, and the Glk programmer is required to support it. Contrariwise, if the library does not guarantee something, the Glk programmer may handle it however he likes, and the game programmer must not rely on it. If something is illegal, the game programmer must not do it, and the Glk programmer is not required to worry about it. 
 </para>
 <note><para>
 It is preferable, but not required, that the Glk library detect illegal requests and display error messages. The Glk library may simply crash when the game program does something illegal. This is why the game programmer must not do it. Right?
 </para></note>
-<note><title>Chimara</title>
+<blockquote><refsect2><title>Chimara</title>
 <para>
 Wherever possible, Chimara checks for anything defined as illegal, and prints a
 warning message to standard error. It tries to recover as gracefully as possible
 so that the program can continue.
-</para></note>
+</para></refsect2></blockquote>
 <para>
 Hereafter, “Glk” or “the library” refers to the Glk library, and “the program” is the game program (or whatever) which is using the Glk library to print text, input text, or whatever.
 “You” are the person writing the program.

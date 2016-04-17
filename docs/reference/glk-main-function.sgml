@@ -20,7 +20,7 @@ The top level of the program &mdash; the <function>main()</function> function in
 <note><para>
 This means that Glk isn't really a library. In a sense, you are writing a library, which is linked into Glk. This is bizarre to think about, so forget it.
 </para></note>
-<note><title>Chimara</title>
+<blockquote><refsect2><title>Chimara</title>
 <para>
 In Chimara, the arrangement is even more bizarre. Chimara <emphasis>is</emphasis> a library, and it runs your Glk program from within a GTK+ graphical application (the “host program”).
 Chimara treats your program as a plugin, or shared library, and it executes your program in its own thread, displaying windows and output in the GTK+ program.
@@ -28,7 +28,7 @@ Chimara treats your program as a plugin, or shared library, and it executes your
 <para>
 This makes absolutely no difference to you, the Glk <emphasis>programmer</emphasis>; if your program works correctly with a “regular” Glk library, it will also work properly with Chimara.
 The only difference is in compiling your Glk program.
-</para></note>
+</para></refsect2></blockquote>
 <para>
 You define a function called glk_main(), which the library calls to begin running your program. glk_main() should run until your program is finished, and then return.
 </para>
@@ -55,11 +55,11 @@ This is a legal Glk-compatible program. As you might expect, it doesn't do anyth
 <note><para>
 <keycombo action="simul"><keycap function="command">Command</keycap><keycap>period</keycap></keycombo> on the Macintosh; a <guimenuitem>kill-window</guimenuitem> menu option in an X window manager; <keycombo action="simul"><keycap function="control">control</keycap><keycap>C</keycap></keycombo> in a curses terminal window.
 </para></note>
-<note><title>Chimara</title>
+<blockquote><refsect2><title>Chimara</title>
 <para>
 In Chimara, there is no standard way; the program will stop when the host program calls chimara_glk_stop().
 The host program might have a “Stop” button which does this, for example, but it will also generally happen when the #ChimaraGlk widget is destroyed or when the host program ends.
-</para></note>
+</para></refsect2></blockquote>
 <note><para>
 However, this program does not spin wildly and burn CPU time. The glk_select() function waits for an event it can return. Since it only returns events which you have requested, it will wait forever, and grant CPU time to other processes if that's meaningful on the player's machine.
 </para></note>

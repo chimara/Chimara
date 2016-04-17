@@ -750,10 +750,9 @@ glk_schannel_unpause(schanid_t chan)
  * %gestalt_SoundVolume selector before you rely on it; see [Testing for Sound
  * Capabilities][chimara-Testing-for-Sound-Capabilities].
  *
- * <note><title>Chimara</title>
- *   <para>Chimara supports volumes from 0 to 1000&percnt;, that is, values of
- *   @vol up to 0xA0000.</para>
- * </note>
+ * > # Chimara #
+ * > Chimara supports volumes from 0 to 1000&percnt;, that is, values of @vol up
+ * > to 0xA0000.
  */
 void 
 glk_schannel_set_volume(schanid_t chan, glui32 vol)
