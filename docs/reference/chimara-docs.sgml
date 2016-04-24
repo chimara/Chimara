@@ -169,4 +169,9 @@
    <title>Index of symbols</title>
    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
   </index>
+
+  <index id="deprecated-index">
+    <title>Index of deprecated symbols</title>
+    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
+  </index>
 </book>
