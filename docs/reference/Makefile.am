@@ -126,12 +126,12 @@ DISTCLEANFILES = version.xml $(DOC_MODULE)-overrides.txt
 
 # Uncomment this if you want your docs-status tested during 'make check'
 # Comment this while not all symbols are documented, otherwise distcheck fails
-#if ENABLE_GTK_DOC
-#TESTS_ENVIRONMENT = \
-#	DOC_MODULE=$(DOC_MODULE) DOC_MAIN_SGML_FILE=$(DOC_MAIN_SGML_FILE) \
-#	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir)
-#TESTS = $(GTKDOC_CHECK)
-#endif
+if ENABLE_GTK_DOC
+TESTS_ENVIRONMENT = \
+	DOC_MODULE=$(DOC_MODULE) DOC_MAIN_SGML_FILE=$(DOC_MAIN_SGML_FILE) \
+	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir)
+TESTS = $(GTKDOC_CHECK)
+endif
 
 dist_noinst_SCRIPTS = build-selector-table.pl
 
