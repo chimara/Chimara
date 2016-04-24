@@ -723,6 +723,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * [Rocks][chimara-Rocks])
 	 * @window_id_string: A string value uniquely identifying the window that
 	 * was printed to
+	 * @text: The text that was printed
 	 *
 	 * Emitted when text is printed to a text buffer window.
 	 * The @window_rock can be used to identify the window.
