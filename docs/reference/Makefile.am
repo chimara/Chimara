@@ -1,27 +1,25 @@
 ### Makefile.am for Gtk-Doc directory #########################################
 # Adapted from examples/Makefile.am in Gtk-Doc distribution
 
-# We require automake 1.6 at least.
-AUTOMAKE_OPTIONS = 1.6
-
 # The name of the module, e.g. 'glib'.
 DOC_MODULE = chimara
 
 # Uncomment for versioned docs and specify the version of the module, e.g. '2'.
 # DOC_MODULE_VERSION = 2
 
-# The top-level SGML file. You can change this if you want to.
+# The top-level XML file.
 DOC_MAIN_SGML_FILE = $(DOC_MODULE)-docs.sgml
 
-# The directory containing the source code. Relative to $(srcdir).
-# gtk-doc will search all .c & .h files beneath here for inline comments
-# documenting the functions and macros.
-DOC_SOURCE_DIR = ../../libchimara
+# Directories containing the source code.
+# gtk-doc will search all .c & .h files beneath these paths
+# for inline comments documenting the functions and macros.
+DOC_SOURCE_DIR = $(top_srcdir)/libchimara
 
-# Extra options to pass to gtkdoc-scangobj. Not normally needed.
+# Extra options to pass to gtkdoc-scangobj. Normally not needed.
 SCANGOBJ_OPTIONS = 
 
 # Extra options to supply to gtkdoc-scan.
+# e.g. SCAN_OPTIONS = --deprecated-guards="GTK_DISABLE_DEPRECATED"
 # DO NOT use --rebuild-types, because it will think glk_window_get_type()
 # is a GObject type. That makes it segfault.
 SCAN_OPTIONS = 
@@ -29,18 +27,11 @@ SCAN_OPTIONS =
 # Extra options to supply to gtkdoc-mkdb.
 MKDB_OPTIONS = --sgml-mode --output-format=xml
 
-# Extra options to supply to gtkdoc-mktmpl
-MKTMPL_OPTIONS = 
-
 # Extra options to supply to gtkdoc-mkhtml
-# The --path is because Gtk-doc is broken on non-distcheck vpath builds! Sigh.
-# But it only works on Gtk-doc 1.11 and higher. So if you want to do a vpath
-# build then uncomment this and require 1.11 in configure.ac. If you want to do
-# vpath build on Debian, then you're S.O.L. Complain to Gtk-doc and Debian.
-# MKHTML_OPTIONS = --path="$(abs_builddir)"
 MKHTML_OPTIONS = 
 
-# Extra options to supply to gtkdoc-fixref. Not normally needed.
+# Extra options to supply to gtkdoc-fixref. Normally not needed.
+# e.g. FIXXREF_OPTIONS = --extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
 FIXXREF_OPTIONS = 
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
@@ -48,9 +39,11 @@ HFILE_GLOB = $(top_srcdir)/libchimara/*.h
 CFILE_GLOB = $(top_srcdir)/libchimara/*.c
 
 # Extra headers to include when scanning, which are not under DOC_SOURCE_DIR
+# e.g. EXTRA_HFILES=$(top_srcdir)/contrib/extra.h
 EXTRA_HFILES = 
 
-# Header files to ignore when scanning. Use base file name, no paths
+# Header files or dirs to ignore when scanning. Use base file/dir names
+# e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h private_code
 IGNORE_HFILES = chimara-glk-private.h chimara-marshallers.h \
 	abort.h charset.h event.h fileref.h graphics.h hyperlink.h init.h input.h \
 	magic.h mouse.h pager.h resource.h schannel.h stream.h strio.h style.h \
@@ -101,7 +94,7 @@ content_files = version.xml \
 	blorb.sgml \
 	blorb-library.sgml
 
-# SGML files where gtk-doc abbreviations (#GtkWidget) are expanded
+# Files where gtk-doc abbrevations (#GtkWidget) are expanded
 # These files must be listed here *and* in content_files
 expand_content_files = \
 	glk-main-function.sgml \
@@ -134,7 +127,9 @@ DISTCLEANFILES = version.xml $(DOC_MODULE)-overrides.txt
 # Uncomment this if you want your docs-status tested during 'make check'
 # Comment this while not all symbols are documented, otherwise distcheck fails
 #if ENABLE_GTK_DOC
-#TESTS_ENVIRONMENT = cd $(srcdir) &&
+#TESTS_ENVIRONMENT = \
+#	DOC_MODULE=$(DOC_MODULE) DOC_MAIN_SGML_FILE=$(DOC_MAIN_SGML_FILE) \
+#	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir)
 #TESTS = $(GTKDOC_CHECK)
 #endif
 
