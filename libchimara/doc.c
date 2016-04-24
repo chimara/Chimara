@@ -1408,6 +1408,14 @@
  */
 
 /**
+ * GLK_MODULE_RESOURCE_STREAM:
+ *
+ * If this preprocessor symbol is defined, so are glk_stream_open_resource() and
+ * glk_stream_open_resource_uni().
+ * If not, not.
+ */
+
+/**
  * winid_t:
  *
  * Opaque structure representing a Glk window. It has no user-accessible 
