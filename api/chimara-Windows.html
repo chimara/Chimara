@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Windows</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
+<link rel="prev" href="chimara-glk-spec-windows.html" title="Windows">
+<link rel="next" href="chimara-Window-Arrangement.html" title="Window Arrangement">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-windows.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-glk-spec-windows.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Window-Arrangement.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Windows"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle">Windows</span></h2>
+<p>Windows — Introduction to Glk windows</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="idp140340083757680"></a><h2>Description</h2>
+<p>
+On most platforms, the program/library combination will appear to the player in a window — either a window which covers the entire screen, or one which shares screen space with other windows in a multi-programming environment.
+Obviously your program does not have worry about the details of this.
+The Glk screen space is a rectangle, which you can divide into panels for various purposes.
+It is these panels which I will refer to as “windows” hereafter.
+</p>
+<p>
+You refer to a window using an opaque C structure pointer. See <a href="chimara-Opaque-Objects.html" title="Opaque Objects">Opaque Objects</a>.
+</p>
+<p>
+A window has a type. Currently there are four window types:
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term">Text buffer windows</span></td>
+<td>
+<p>
+	A stream of text.
+	</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>The “story window” of an Infocom game.
+	</p>
+</div>
+<p>
+	You can only print at the end of the stream, and input a line of text at the end of the stream.
+	</p>
+</td>
+</tr>
+<tr>
+<td><span class="term">Text grid windows</span></td>
+<td>
+<p>
+	A grid of characters in a fixed-width font.
+	</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>The “status window” of an Infocom game.
+	</p>
+</div>
+<p>
+	You can print anywhere in the grid.
+	</p>
+</td>
+</tr>
+<tr>
+<td><span class="term">Graphics windows</span></td>
+<td>
+<p>
+	A grid of colored pixels. Graphics windows do not support text input or output, but there are image commands to draw in them.
+	</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>This is an optional capability; not all Glk libraries support graphics. See <a href="chimara-Testing-for-Graphics-Capabilities.html" title="Testing for Graphics Capabilities">Testing for Graphics Capabilities</a>.
+	</p>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="term">Blank windows</span></td>
+<td>
+<p>A blank window. Blank windows support neither input nor output.
+	</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+	They exist mostly to be an example of a “generic” window.
+	You are unlikely to want to use them.
+	</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p>
+</p>
+<p>
+As Glk is an expanding system, more window types may be added in the future. Therefore, it is important to remember that not all window types will necessarily be available under all Glk libraries.
+</p>
+<p>
+There is one other special type of window, the pair window. Pair windows are created by Glk as part of the system of window arrangement. You cannot create them yourself. See <a href="chimara-The-Types-of-Windows.html#wintype-Pair" title="wintype_Pair">Pair Windows</a>.
+</p>
+<p>
+Every window has a rock. This is a value you provide when the window is created; you can use it however you want. See <a href="chimara-Opaque-Objects.html#chimara-Rocks" title="Rocks">Rocks</a>.
+</p>
+<p>
+When Glk starts up, there are no windows.
+</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+When I say there are no windows, I mean there are no Glk windows. In a multiprogramming environment, such as X or MacOS, there may be an application window visible; this is the screen space that will contain all the Glk windows that you create. But at first, this screen space is empty and unused.
+</p>
+</div>
+<p>
+Without a window, you cannot do any kind of input or output; so the first thing you'll want to do is create one. See <a href="chimara-Window-Opening-Closing-and-Constraints.html" title="Window Opening, Closing, and Constraints">Window Opening, Closing, and Constraints</a>.
+</p>
+<p>
+You can create as many windows as you want, of any types. You control their arrangement and sizes through a fairly flexible system of calls. See <a href="chimara-Window-Arrangement.html" title="Window Arrangement">Window Arrangement</a>.
+</p>
+<p>
+You can close any windows you want. You can even close all the windows, which returns you to the original startup state.
+</p>
+<p>
+You can request input from any or all windows. Input can be mouse input (on platforms which support a mouse), single-character input, or input of an entire line of text. It is legal to request input from several windows at the same time. The library will have some interface mechanism for the player to control which window he is typing in.
+</p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

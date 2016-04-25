@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Testing for Graphics Capabilities</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-graphics.html" title="Graphics">
+<link rel="prev" href="chimara-Graphics-in-Text-Buffer-Windows.html" title="Graphics in Text Buffer Windows">
+<link rel="next" href="chimara-glk-spec-sound.html" title="Sound">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Testing-for-Graphics-Capabilities.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-graphics.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Graphics-in-Text-Buffer-Windows.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-glk-spec-sound.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Testing-for-Graphics-Capabilities"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Testing-for-Graphics-Capabilities.top_of_page"></a>Testing for Graphics Capabilities</span></h2>
+<p>Testing for Graphics Capabilities — Checking whether the library supports graphics</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Graphics-Capabilities.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Testing-for-Graphics-Capabilities.html#GLK-MODULE-IMAGE:CAPS" title="GLK_MODULE_IMAGE">GLK_MODULE_IMAGE</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Graphics-Capabilities.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Graphics-Capabilities.description"></a><h2>Description</h2>
+<p>Before calling Glk graphics functions, you should use the gestalt selector
+<a href="chimara-The-Gestalt-System.html#gestalt-Graphics" title="gestalt_Graphics"><code class="literal">gestalt_Graphics</code></a>. To test for additional capabilities, you can also use the
+<a href="chimara-The-Gestalt-System.html#gestalt-DrawImage" title="gestalt_DrawImage"><code class="literal">gestalt_DrawImage</code></a> and <a href="chimara-The-Gestalt-System.html#gestalt-GraphicsTransparency" title="gestalt_GraphicsTransparency"><code class="literal">gestalt_GraphicsTransparency</code></a> selectors.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Graphics-Capabilities.functions_details"></a><h2>Functions</h2>
+<p></p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Graphics-Capabilities.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-IMAGE:CAPS"></a><h3>GLK_MODULE_IMAGE</h3>
+<pre class="programlisting">#define GLK_MODULE_IMAGE
+</pre>
+<p>If you are writing a C program, there is an additional complication. A
+library which does not support graphics may not implement the graphics
+functions at all. Even if you put gestalt tests around your graphics calls,
+you may get link-time errors.
+If the <code class="literal">glk.h</code> file is so old that it does not declare the graphics functions
+and constants, you may even get compile-time errors.</p>
+<p>To avoid this, you can perform a preprocessor test for the existence of
+<a href="chimara-Testing-for-Graphics-Capabilities.html#GLK-MODULE-IMAGE:CAPS" title="GLK_MODULE_IMAGE"><code class="literal">GLK_MODULE_IMAGE</code></a>. If this is defined, so are all the functions and constants
+described in this section. If not, not.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  To be extremely specific, there are two ways this can happen. If the 
+  <code class="filename">glk.h</code> file that comes with the
+  library is too old to have the graphics declarations in it, it will of
+  course lack <a href="chimara-Testing-for-Graphics-Capabilities.html#GLK-MODULE-IMAGE:CAPS" title="GLK_MODULE_IMAGE"><code class="literal">GLK_MODULE_IMAGE</code></a> as well. If the <code class="filename">glk.h</code> file is recent, but the library is old,
+  the definition of <a href="chimara-Testing-for-Graphics-Capabilities.html#GLK-MODULE-IMAGE:CAPS" title="GLK_MODULE_IMAGE"><code class="literal">GLK_MODULE_IMAGE</code></a> should be removed from <code class="filename">glk.h</code>, to avoid link errors. This is not a
+  great solution. A better one is for the library to implement the graphics
+  functions as stubs that do nothing (or cause run-time errors). Since no
+  program will call the stubs without testing <a href="chimara-The-Gestalt-System.html#gestalt-Graphics" title="gestalt_Graphics"><code class="literal">gestalt_Graphics</code></a>, this is
+  sufficient.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

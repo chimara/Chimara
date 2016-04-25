@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The Interrupt Handler</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
+<link rel="prev" href="chimara-Exiting-Your-Program.html" title="Exiting Your Program">
+<link rel="next" href="chimara-The-Tick-Thing.html" title="The Tick Thing">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-The-Interrupt-Handler.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-overall-structure.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Exiting-Your-Program.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-The-Tick-Thing.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-The-Interrupt-Handler"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-The-Interrupt-Handler.top_of_page"></a>The Interrupt Handler</span></h2>
+<p>The Interrupt Handler — Specifying an interrupt handler for cleaning up critical
+resources</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Interrupt-Handler.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-The-Interrupt-Handler.html#glk-set-interrupt-handler" title="glk_set_interrupt_handler ()">glk_set_interrupt_handler</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Interrupt-Handler.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Interrupt-Handler.description"></a><h2>Description</h2>
+<p>Most platforms have some provision for interrupting a program
+— <span><strong class="keycap">command</strong></span>+<span><strong class="keycap">period</strong></span> on the
+Macintosh, <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">C</strong></span> in Unix,
+possibly a window manager item, or other possibilities.
+This can happen at any time, including while execution is nested inside one
+of your own functions, or inside a Glk library function.</p>
+<p>If you need to clean up critical resources, you can specify an interrupt
+handler function.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Interrupt-Handler.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-set-interrupt-handler"></a><h3>glk_set_interrupt_handler ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_set_interrupt_handler (<em class="parameter"><code><span class="type">void</span> (*func) (void)</code></em>);</pre>
+<p>Sets <em class="parameter"><code>func</code></em>
+ to be the interrupt handler. <em class="parameter"><code>func</code></em>
+ should be a pointer to a
+function which takes no argument and returns no result. If Glk receives an
+interrupt, and you have set an interrupt handler, your handler will be
+called, before the process is shut down.</p>
+<p>Initially there is no interrupt handler. You can reset to not having any by
+calling <code class="literal">glk_set_interrupt_handler(NULL)</code>.</p>
+<p>If you call <a href="chimara-The-Interrupt-Handler.html#glk-set-interrupt-handler" title="glk_set_interrupt_handler ()"><code class="function">glk_set_interrupt_handler()</code></a> with a new handler function while an
+older one is set, the new one replaces the old one. Glk does not try to queue
+interrupt handlers.</p>
+<p>You should not try to interact with the player in your interrupt handler. Do
+not call <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> or <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>. Anything you print to a window
+may not be visible to the player.</p>
+<div class="refsect3" lang="en">
+<a name="glk-set-interrupt-handler.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>func</p></td>
+<td class="parameter_description"><p>A pointer to an interrupt handler function.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Interrupt-Handler.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

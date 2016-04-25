@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Introduction</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-api-spec.html" title="Glk API Specification, version 0.7.4">
+<link rel="prev" href="chimara-glk-api-spec.html" title="Glk API Specification, version 0.7.4">
+<link rel="next" href="chimara-What-About-the-Virtual-Machine.html" title="What About the Virtual Machine?">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-api-spec.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-glk-api-spec.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-What-About-the-Virtual-Machine.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="chapter" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="chimara-Introduction"></a>Introduction</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="sect1"><a href="chimara-Introduction.html#chimara-What-Glk-Is">What Glk Is</a></span></dt>
+<dt><span class="sect1"><a href="chimara-What-About-the-Virtual-Machine.html">What About the Virtual Machine?</a></span></dt>
+<dt><span class="sect1"><a href="chimara-What-Does-Glk-Not-Do.html">What Does Glk Not Do?</a></span></dt>
+<dt><span class="sect1"><a href="chimara-Conventions-of-This-Document.html">Conventions of This Document</a></span></dt>
+<dt><span class="sect1"><a href="chimara-Credits.html">Credits</a></span></dt>
+</dl></div>
+<div class="sect1" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="chimara-What-Glk-Is"></a>What Glk Is</h2></div></div></div>
+<p>
+Glk defines a portable API (programming interface) for applications with text UIs (user interfaces.)
+It was primarily designed for interactive fiction, but it should be suitable for many interactive text utilities, particularly those based on a command line.
+</p>
+<p>
+Rather than go into a detailed explanation of what that means, let me give examples from the world of text adventures. TADS, Glulx, and Infocom's Z-machine have nearly identical interface capabilities; each allows a program to...
+</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>print an indefinite stream of text into an output buffer, with some style control</p></li>
+<li><p>input a line of text</p></li>
+<li><p>display a few lines of text in a small separate window</p></li>
+<li><p>store information in a file, or read it in</p></li>
+</ul></div>
+<p>
+and so on. However, the implementation of these capabilities vary widely between platforms and operating systems. Furthermore, this variance is transparent to the program (the adventure game.) The game does not care whether output is displayed via a character terminal emulator or a GUI window; nor whether input uses Mac-style mouse editing or EMACS-style control key editing.
+</p>
+<p>
+On the third hand, the user is likely to care deeply about these interface decisions. This is why there are Mac-native interpreters on Macintoshes, stylus and touch-screen interpreters on mobile devices, and so on — and (ultimately) why there are Macintoshes and iPads and terminal window apps in the first place.
+</p>
+<p>
+On the <span class="emphasis"><em>fourth</em></span> hand, TADS and Inform are not alone; there is historically a large number of text adventure systems. Most are obsolete or effectively dead; but it is inevitable that more will appear. Users want each living system ported to all the platforms in use. Users also prefer these ports to use the same interface, as much as possible.
+</p>
+<p>
+This all adds up to a pain in the ass.
+</p>
+<p>
+Glk tries to draw a line between the parts of the text adventure world which are identical on all IF systems, and different on different operating systems, from the parts which are unique to each IF system but identical in all OSs. The border between these two worlds is the Glk API.
+</p>
+<p>
+My hope is that a new IF system, or existing ones which are less-supported (Hugo, AGT, etc) can be written using Glk for all input and output function. The IF system would then be in <span class="emphasis"><em>truly</em></span> portable C. On the other side of the line, there would be a Glk library for each operating system and interface (Macintosh, X-windows, curses-terminal, etc.) Porting the IF system to every platform would be trivial; compile the system, and link in the library.
+</p>
+<p>
+Glk can also serve as a nice interface for applications other than games — data manglers, quick hacks, or anything else which would normally lack niceties such as editable input, macros, scrolling, or whatever is native to your machine's interface idiom.
+</p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

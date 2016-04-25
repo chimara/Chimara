@@ -1,0 +1,450 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Interrogating the Interface</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
+<link rel="prev" href="chimara-The-Dispatch-Layer.html" title="The Dispatch Layer">
+<link rel="next" href="chimara-Dispatching.html" title="Dispatching">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Interrogating-the-Interface.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-the-dispatch-layer.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-The-Dispatch-Layer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Dispatching.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Interrogating-the-Interface"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Interrogating-the-Interface.top_of_page"></a>Interrogating the Interface</span></h2>
+<p>Interrogating the Interface — Finding out what functions the Glk library exports</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Interrogating-the-Interface.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-count-classes" title="gidispatch_count_classes ()">gidispatch_count_classes</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t"><span class="returnvalue">gidispatch_intconst_t</span></a> *
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-get-class" title="gidispatch_get_class ()">gidispatch_get_class</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-count-intconst" title="gidispatch_count_intconst ()">gidispatch_count_intconst</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t"><span class="returnvalue">gidispatch_intconst_t</span></a> *
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-get-intconst" title="gidispatch_get_intconst ()">gidispatch_get_intconst</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-count-functions" title="gidispatch_count_functions ()">gidispatch_count_functions</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t"><span class="returnvalue">gidispatch_function_t</span></a> *
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-get-function" title="gidispatch_get_function ()">gidispatch_get_function</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t"><span class="returnvalue">gidispatch_function_t</span></a> *
+</td>
+<td class="function_name">
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-get-function-by-id" title="gidispatch_get_function_by_id ()">gidispatch_get_function_by_id</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Interrogating-the-Interface.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t">gidispatch_intconst_t</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t">gidispatch_function_t</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Window" title="gidisp_Class_Window">gidisp_Class_Window</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Stream" title="gidisp_Class_Stream">gidisp_Class_Stream</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Fileref" title="gidisp_Class_Fileref">gidisp_Class_Fileref</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Schannel" title="gidisp_Class_Schannel">gidisp_Class_Schannel</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Interrogating-the-Interface.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+#include &lt;libchimara/gi-dispa.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Interrogating-the-Interface.description"></a><h2>Description</h2>
+<p>These are the ancilliary functions that let you enumerate.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Interrogating-the-Interface.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="gidispatch-count-classes"></a><h3>gidispatch_count_classes ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+gidispatch_count_classes (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Returns the number of opaque object classes used by the library. You will
+need to know this if you want to keep track of opaque objects as they are
+created; see <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-object-registry" title="gidispatch_set_object_registry ()">Opaque Object Registry</a>.</p>
+<p>As of Glk API 0.7.0, there are four classes: windows, streams, filerefs, and
+sound channels (numbered 0, 1, 2, and 3 respectively.)</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-count-classes.returns"></a><h4>Returns</h4>
+<p> Number of opaque object classes used by the library.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-get-class"></a><h3>gidispatch_get_class ()</h3>
+<pre class="programlisting"><a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t"><span class="returnvalue">gidispatch_intconst_t</span></a> *
+gidispatch_get_class (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> index</code></em>);</pre>
+<p>Returns a structure describing an opaque class that the library exports.
+<em class="parameter"><code>index</code></em>
+ can range from 0 to <span class="mathphrase">N -
+1</span>, where N is the value
+returned by <a href="chimara-Interrogating-the-Interface.html#gidispatch-count-classes" title="gidispatch_count_classes ()"><code class="function">gidispatch_count_classes()</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-class.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>index</p></td>
+<td class="parameter_description"><p>Unique integer index of the class.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-class.returns"></a><h4>Returns</h4>
+<p> A <a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t"><span class="type">gidispatch_intconst_t</span></a> structure describing the class.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-count-intconst"></a><h3>gidispatch_count_intconst ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+gidispatch_count_intconst (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Returns the number of integer constants exported by the library.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-count-intconst.returns"></a><h4>Returns</h4>
+<p> Number of integer constants exported by the library.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-get-intconst"></a><h3>gidispatch_get_intconst ()</h3>
+<pre class="programlisting"><a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t"><span class="returnvalue">gidispatch_intconst_t</span></a> *
+gidispatch_get_intconst (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> index</code></em>);</pre>
+<p>Returns a structure describing an integer constant which the library exports.
+These are, roughly, all the constants defined in the <code class="literal">glk.h</code> file.
+<em class="parameter"><code>index</code></em>
+ can range from 0 to <span class="mathphrase">N -
+1</span>, where N is the value
+returned by <a href="chimara-Interrogating-the-Interface.html#gidispatch-count-intconst" title="gidispatch_count_intconst ()"><code class="function">gidispatch_count_intconst()</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-intconst.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>index</p></td>
+<td class="parameter_description"><p>Unique integer index of the integer constant.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-intconst.returns"></a><h4>Returns</h4>
+<p> A <a href="chimara-Interrogating-the-Interface.html#gidispatch-intconst-t" title="gidispatch_intconst_t"><span class="type">gidispatch_intconst_t</span></a> structure describing the integer constant.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-count-functions"></a><h3>gidispatch_count_functions ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+gidispatch_count_functions (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Returns the number of functions exported by the library.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-count-functions.returns"></a><h4>Returns</h4>
+<p> Number of functions exported by the library.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-get-function"></a><h3>gidispatch_get_function ()</h3>
+<pre class="programlisting"><a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t"><span class="returnvalue">gidispatch_function_t</span></a> *
+gidispatch_get_function (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> index</code></em>);</pre>
+<p>Returns a structure describing a Glk function.
+<em class="parameter"><code>index</code></em>
+ can range from 0 to <span class="mathphrase">N -
+1</span>, where N is the value
+returned by <a href="chimara-Interrogating-the-Interface.html#gidispatch-count-functions" title="gidispatch_count_functions ()"><code class="function">gidispatch_count_functions()</code></a>.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Again, it is safest to assume that the structure is only valid until the
+  next <a href="chimara-Interrogating-the-Interface.html#gidispatch-get-function" title="gidispatch_get_function ()"><code class="function">gidispatch_get_function()</code></a> or <a href="chimara-Interrogating-the-Interface.html#gidispatch-get-function-by-id" title="gidispatch_get_function_by_id ()"><code class="function">gidispatch_get_function_by_id()</code></a> call.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-function.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>index</p></td>
+<td class="parameter_description"><p>Unique integer index of the function.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-function.returns"></a><h4>Returns</h4>
+<p> A <a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t"><span class="type">gidispatch_function_t</span></a> structure describing the function.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-get-function-by-id"></a><h3>gidispatch_get_function_by_id ()</h3>
+<pre class="programlisting"><a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t"><span class="returnvalue">gidispatch_function_t</span></a> *
+gidispatch_get_function_by_id (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> id</code></em>);</pre>
+<p>Returns a structure describing the Glk function with selector <em class="parameter"><code>id</code></em>
+. If there 
+is no such function in the library, this returns <code class="literal">NULL</code>.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Again, it is safest to assume that the structure is only valid until the
+  next <a href="chimara-Interrogating-the-Interface.html#gidispatch-get-function" title="gidispatch_get_function ()"><code class="function">gidispatch_get_function()</code></a> or <a href="chimara-Interrogating-the-Interface.html#gidispatch-get-function-by-id" title="gidispatch_get_function_by_id ()"><code class="function">gidispatch_get_function_by_id()</code></a> call.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-function-by-id.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>id</p></td>
+<td class="parameter_description"><p>A selector.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-function-by-id.returns"></a><h4>Returns</h4>
+<p> a <a href="chimara-Interrogating-the-Interface.html#gidispatch-function-t" title="gidispatch_function_t"><span class="type">gidispatch_function_t</span></a> structure, or <code class="literal">NULL</code>.</p>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Interrogating-the-Interface.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="gidispatch-intconst-t"></a><h3>gidispatch_intconst_t</h3>
+<pre class="programlisting">typedef struct {
+    char *name;
+    glui32 val;
+} gidispatch_intconst_t;
+</pre>
+<p>This structure simply contains a string and a value. The string is a
+symbolic name of the value, and can be re-exported to anyone interested in
+using Glk constants.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  In the current <code class="filename">gi_dispa.c</code> library, these structures
+  are static and immutable, and will never be deallocated. However, it is
+  safer to assume that the structure may be reused in future
+  <a href="chimara-Interrogating-the-Interface.html#gidispatch-get-intconst" title="gidispatch_get_intconst ()"><code class="function">gidispatch_get_intconst()</code></a> calls.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-intconst-t.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><span class="type">char</span> *<em class="structfield"><code><a name="gidispatch-intconst-t.name"></a>name</code></em>;</p></td>
+<td class="struct_member_description"><p>Symbolic name of the integer constant.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gidispatch-intconst-t.val"></a>val</code></em>;</p></td>
+<td class="struct_member_description"><p>Value of the integer constant.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-function-t"></a><h3>gidispatch_function_t</h3>
+<pre class="programlisting">typedef struct {
+    glui32 id;
+    void *fnptr;
+    char *name;
+} gidispatch_function_t;
+</pre>
+<p>The <em class="parameter"><code>id</code></em>
+ field is a selector — a numeric constant used to refer to the
+function in question. <em class="parameter"><code>name</code></em>
+ is the function name, as it is given in the
+<code class="literal">glk.h</code> file, but without the “<code class="literal">glk_</code>” prefix.
+And <em class="parameter"><code>fnptr</code></em>
+ is the address of the function itself.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This is included because it might be useful, but it is not recommended. To
+  call an arbitrary Glk function, you should use <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>.
+</p>
+</div>
+<p>See <a href="chimara-Table-of-Selectors.html" title="Table of Selectors">Table of Selectors</a> for the selector
+definitions.
+See <a href="chimara-Dispatching.html" title="Dispatching">Dispatching</a> for more about calling Glk functions
+by selector.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-function-t.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gidispatch-function-t.id"></a>id</code></em>;</p></td>
+<td class="struct_member_description"><p>Dispatch selector of the function.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">void</span> *<em class="structfield"><code><a name="gidispatch-function-t.fnptr"></a>fnptr</code></em>;</p></td>
+<td class="struct_member_description"><p>Pointer to the function.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">char</span> *<em class="structfield"><code><a name="gidispatch-function-t.name"></a>name</code></em>;</p></td>
+<td class="struct_member_description"><p>Name of the function, without the <code class="literal">glk_</code> prefix.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidisp-Class-Window"></a><h3>gidisp_Class_Window</h3>
+<pre class="programlisting">#define gidisp_Class_Window (0)
+</pre>
+<p>Represents a <a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> opaque object.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidisp-Class-Stream"></a><h3>gidisp_Class_Stream</h3>
+<pre class="programlisting">#define gidisp_Class_Stream (1)
+</pre>
+<p>Represents a <a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> opaque object.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidisp-Class-Fileref"></a><h3>gidisp_Class_Fileref</h3>
+<pre class="programlisting">#define gidisp_Class_Fileref (2)
+</pre>
+<p>Represents a <a href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t"><span class="type">frefid_t</span></a> opaque object.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidisp-Class-Schannel"></a><h3>gidisp_Class_Schannel</h3>
+<pre class="programlisting">#define gidisp_Class_Schannel (3)
+</pre>
+<p>Represents a <a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a> opaque object.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

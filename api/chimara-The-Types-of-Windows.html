@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The Types of Windows</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
+<link rel="prev" href="chimara-A-Note-on-Display-Style.html" title="A Note on Display Style">
+<link rel="next" href="chimara-Echo-Streams.html" title="Echo Streams">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-The-Types-of-Windows.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-windows.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-A-Note-on-Display-Style.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Echo-Streams.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-The-Types-of-Windows"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-The-Types-of-Windows.top_of_page"></a>The Types of Windows</span></h2>
+<p>The Types of Windows — Blank, pair, text grid, text buffer, and graphics windows</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Types-of-Windows.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-The-Types-of-Windows.html#glk-window-move-cursor" title="glk_window_move_cursor ()">glk_window_move_cursor</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Types-of-Windows.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Types-of-Windows.html#wintype-Blank" title="wintype_Blank">wintype_Blank</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Types-of-Windows.html#wintype-Pair" title="wintype_Pair">wintype_Pair</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer">wintype_TextBuffer</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Types-of-Windows.html#wintype-TextGrid" title="wintype_TextGrid">wintype_TextGrid</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics">wintype_Graphics</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Types-of-Windows.html#wintype-AllTypes" title="wintype_AllTypes">wintype_AllTypes</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Types-of-Windows.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Types-of-Windows.description"></a><h2>Description</h2>
+<p>A technical description of all the window types, and exactly how they behave.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Types-of-Windows.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-window-move-cursor"></a><h3>glk_window_move_cursor ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_window_move_cursor (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                        <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> xpos</code></em>,
+                        <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> ypos</code></em>);</pre>
+<p>Sets the cursor position. If you move the cursor right past the end of a 
+line, it wraps; the next character which is printed will appear at the
+beginning of the next line.</p>
+<p>If you move the cursor below the last line, or when the cursor reaches the
+end of the last line, it goes “off the screen” and further output has no
+effect.
+You must call <a href="chimara-The-Types-of-Windows.html#glk-window-move-cursor" title="glk_window_move_cursor ()"><code class="function">glk_window_move_cursor()</code></a> or <a href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()"><code class="function">glk_window_clear()</code></a> to move the
+cursor back into the visible region.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+ Note that the arguments of <a href="chimara-The-Types-of-Windows.html#glk-window-move-cursor" title="glk_window_move_cursor ()"><code class="function">glk_window_move_cursor()</code></a> are <span class="type">unsigned 
+ int</span>s. This is okay, since there are no negative positions. If you try
+ to pass a negative value, Glk will interpret it as a huge positive value,
+ and it will wrap or go off the last line.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+ Also note that the output cursor is not necessarily visible. In particular,
+ when you are requesting line or character input in a grid window, you cannot
+ rely on the cursor position to prompt the player where input is indicated.
+ You should print some character prompt at that spot — a “&gt;”
+ character, for example.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-move-cursor.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A text grid window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>xpos</p></td>
+<td class="parameter_description"><p>Horizontal cursor position.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>ypos</p></td>
+<td class="parameter_description"><p>Vertical cursor position.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Types-of-Windows.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="wintype-Blank"></a><h3>wintype_Blank</h3>
+<pre class="programlisting">#define wintype_Blank (2)
+</pre>
+<p>A blank window is always blank. It supports no input and no output. (You
+can call <a href="chimara-Other-Window-Functions.html#glk-window-get-stream" title="glk_window_get_stream ()"><code class="function">glk_window_get_stream()</code></a> on it, as you can with any window, but
+printing to the resulting stream has no effect.) A blank window has no
+size; <a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> will return (0,0), and it is illegal to set a
+window split with a fixed size in the measurement system of a blank window.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  A blank window is not the same as there being no windows. When Glk starts
+  up, there are no windows at all, not even a window of the blank type.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="wintype-Pair"></a><h3>wintype_Pair</h3>
+<pre class="programlisting">#define wintype_Pair (1)
+</pre>
+<p>A pair window is completely filled by the two windows it contains. It
+supports no input and no output, and it has no size.</p>
+<p>You cannot directly create a pair window; one is automatically created
+every time you split a window with <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>. Pair windows are
+always created with a rock value of 0.</p>
+<p>You can close a pair window with <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-close" title="glk_window_close ()"><code class="function">glk_window_close()</code></a>; this also closes every
+window contained within the pair window.</p>
+<p>It is legal to split a pair window when you call <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="wintype-TextBuffer"></a><h3>wintype_TextBuffer</h3>
+<pre class="programlisting">#define wintype_TextBuffer (3)
+</pre>
+<p>A text buffer window contains a linear stream of text. It supports output;
+when you print to it, the new text is added to the end. There is no way for
+you to affect text which has already been printed. There are no guarantees
+about how much text the window keeps; old text may be stored forever, so
+that the user can scroll back to it, or it may be thrown away as soon as it
+scrolls out of the window. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Therefore, there may or may not be a player-controllable scroll bar or
+  other scrolling widget.
+</p>
+</div>
+<p>The display of the text in a text buffer is up to the library. Lines will
+probably not be broken in the middles of words — but if they are, the
+library is not doing anything illegal, only ugly. Text selection and copying
+to a clipboard, if available, are handled however is best on the player's
+machine. Paragraphs (as defined by newline characters in the output) may be
+indented. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  You should not, in general, fake this by printing spaces before each
+  paragraph of prose text. Let the library and player preferences handle
+  that. Special cases (like indented lists) are of course up to you.
+</p>
+</div>
+<p>When a text buffer is cleared (with <a href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()"><code class="function">glk_window_clear()</code></a>), the library will do
+something appropriate; the details may vary. It may clear the window, with
+later text appearing at the top — or the bottom. It may simply print
+enough blank lines to scroll the current text out of the window. It may
+display a distinctive page-break symbol or divider.</p>
+<p>The size of a text buffer window is necessarily imprecise. Calling
+<a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> will return the number of rows and columns that would
+be available <span class="emphasis"><em>if</em></span> the window was filled with 
+“0” (zero) characters in the “normal” font.
+However, the window may use a non-fixed-width font, so that number of
+characters in a line could vary. The window might even support 
+variable-height text (say, if the player is using large text for emphasis);
+that would make the number of lines in the window vary as well.</p>
+<p>Similarly, when you set a fixed-size split in the measurement system of a
+text buffer, you are setting a window which can handle a fixed number of rows
+(or columns) of “0” characters.
+The number of rows (or characters) that will actually be displayed depends on
+font variances.</p>
+<p>A text buffer window supports both character and line input, but not mouse
+input.</p>
+<p>In character input, there will be some visible signal that the window is
+waiting for a keystroke. (Typically, a cursor at the end of the text.) When
+the player hits a key in that window, an event is generated, but the key is
+<span class="emphasis"><em>not</em></span> printed in the window.</p>
+<p>In line input, again, there will be some visible signal. It is most common
+for the player to compose input in the window itself, at the end of the text.
+(This is how IF story input usually looks.) But it's not strictly required.
+An alternative approach is the way MUD clients usually work: there is a
+dedicated one-line input window, outside of Glk's window space, and the user
+composes input there.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  If this approach is used, there will still be some way to handle input from
+  two windows at once. It is the library's responsibility to make this
+  available to the player. You only need request line input and  wait for the
+  result.
+</p>
+</div>
+<p>By default, when the player finishes his line of input, the library will
+display the input text at the end of the buffer text (if it wasn't there
+already.) It will be followed by a newline, so that the next text you print
+will start a new line (paragraph) after the input.</p>
+<p>If you call <a href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a>, the same thing happens; whatever text
+the user was composing is visible at the end of the buffer text, followed by
+a newline.</p>
+<p>However, this default behavior can be changed with the
+<a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a> call. If the default echoing is disabled, the
+library will <span class="emphasis"><em>not</em></span> display the input text (plus newline)
+after input is either completed or cancelled. The buffer will end with
+whatever prompt you displayed before requesting input. If you want the
+traditional input behavior, it is then your responsibility to print the text,
+using the Input text style, followed by a newline (in the original style).</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="wintype-TextGrid"></a><h3>wintype_TextGrid</h3>
+<pre class="programlisting">#define wintype_TextGrid (4)
+</pre>
+<p>A text grid contains a rectangular array of characters, in a fixed-width
+font. Its size is the number of columns and rows of the array.</p>
+<p>A text grid window supports output. It maintains knowledge of an output
+cursor position. When the window is opened, it is filled with blanks (space
+characters), and the output cursor starts in the top left corner —
+character (0,0). If the window is cleared with <a href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()"><code class="function">glk_window_clear()</code></a>, the window
+is filled with blanks again, and the cursor returns to the top left corner.</p>
+<p>When you print, the characters of the output are laid into the array in
+order, left to right and top to bottom. When the cursor reaches the end of a
+line, or if a newline (0x0A) is printed, the cursor goes to the beginning of
+the next line. The library makes <span class="emphasis"><em>no</em></span> attempt to wrap
+lines at word breaks. If the cursor reaches the end of the last line, further
+printing has no effect on the window until the cursor is moved.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Note that printing fancy characters may cause the cursor to advance more
+  than one position per character. (For example, the “æ” ligature may
+  print as two characters.)
+  See <a href="chimara-Output.html" title="Output">Output</a>, for how to test this
+  situation.
+</p>
+</div>
+<p>You can set the cursor position with <a href="chimara-The-Types-of-Windows.html#glk-window-move-cursor" title="glk_window_move_cursor ()"><code class="function">glk_window_move_cursor()</code></a>.</p>
+<p>When a text grid window is resized smaller, the bottom or right area is
+thrown away, but the remaining area stays unchanged. When it is resized
+larger, the new bottom or right area is filled with blanks.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  You may wish to watch for <a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange"><code class="literal">evtype_Arrange</code></a> events, and clear-and-redraw your
+  text grid windows when you see them change size.
+</p>
+</div>
+<p>Text grid window support character and line input, as well as mouse input (if
+a mouse is available.)</p>
+<p>Mouse input returns the position of the character that was touched, from
+(0,0) to <span class="mathphrase">(width - 1,
+height - 1)</span>.</p>
+<p>Character input is as described in the previous section.</p>
+<p>Line input is slightly different; it is guaranteed to take place in the
+window, at the output cursor position. The player can compose input only to
+the right edge of the window; therefore, the maximum input length
+is <span class="mathphrase">(windowwidth - 1 -
+cursorposition)</span>.
+If the maxlen argument of <a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a> is smaller than this, the
+library will not allow the input cursor to go more than maxlen characters
+past its start point.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This allows you to enter text in a fixed-width field, without the player
+  being able to overwrite other parts of the window.
+</p>
+</div>
+<p>When the player finishes his line of input, it will remain visible in the
+window, and the output cursor will be positioned at the beginning of the 
+<span class="emphasis"><em>next</em></span> row. Again, if you <a href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a>, the
+same thing happens. The <a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a> call has no effect in grid
+windows.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="wintype-Graphics"></a><h3>wintype_Graphics</h3>
+<pre class="programlisting">#define wintype_Graphics (5)
+</pre>
+<p>A graphics window contains a rectangular array of pixels. Its size is the
+number of columns and rows of the array.</p>
+<p>Each graphics window has a background color, which is initially white. You
+can change this; see <a href="chimara-Graphics-in-Graphics-Windows.html" title="Graphics in Graphics Windows">Graphics in Graphics
+Windows</a>.</p>
+<p>When a graphics window is resized smaller, the bottom or right area is
+thrown away, but the remaining area stays unchanged. When it is resized
+larger, the new bottom or right area is filled with the background color.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  You may wish to watch for <a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange"><code class="literal">evtype_Arrange</code></a> events, and clear-and-redraw your
+  graphics windows when you see them change size.
+</p>
+</div>
+<p>In some libraries, you can receive a graphics-redraw event (<a href="chimara-Events.html#evtype-Redraw" title="evtype_Redraw"><code class="literal">evtype_Redraw</code></a>)
+at any time. This signifies that the window in question has been cleared to
+its background color, and must be redrawn. If you create any graphics
+windows, you <span class="emphasis"><em>must</em></span> handle these events.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Redraw events can be triggered when a Glk window is uncovered or made
+  visible by the platform's window manager. On the other hand, some Glk
+  libraries handle these problem automatically — for example, with a
+  backing store — and do not send you redraw events. On the third hand,
+  the backing store may be discarded if memory is low, or for other reasons
+  — perhaps the screen's color depth has changed. So redraw events are
+  always a possibility, even in clever libraries. This is why you must be
+  prepared to handle them.
+
+  However, you will not receive a redraw event when you create a graphics
+  window. It is assumed that you will do the initial drawing of your own
+  accord. You also do not get redraw events when a graphics window is
+  enlarged. If you ordered the enlargement, you already know about it; if the
+  player is responsible, you receive a window-arrangement event, which covers
+  the situation.
+</p>
+</div>
+<p>For a description of the drawing functions that apply to graphics windows,
+see <a href="chimara-Graphics-in-Graphics-Windows.html" title="Graphics in Graphics Windows">Graphics in Graphics Windows</a>.</p>
+<p>Graphics windows support no text input or output.</p>
+<p>Not all libraries support graphics windows. You can test whether Glk graphics
+are available using the gestalt system. In a C program, you can also test
+whether the graphics functions are defined at compile-time.
+See <a href="chimara-Testing-for-Graphics-Capabilities.html" title="Testing for Graphics Capabilities">Testing for Graphics
+Capabilities</a>.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  As with all windows, you should also test for <code class="literal">NULL</code> when you create a
+  graphics window.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="wintype-AllTypes"></a><h3>wintype_AllTypes</h3>
+<pre class="programlisting">#define wintype_AllTypes (0)
+</pre>
+<p>A constant representing all window types, which may be used as the <em class="parameter"><code>wintype</code></em>
+
+argument in <a href="chimara-Suggesting-the-Appearance-of-Styles.html#glk-stylehint-set" title="glk_stylehint_set ()"><code class="function">glk_stylehint_set()</code></a>.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

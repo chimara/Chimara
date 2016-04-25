@@ -1,0 +1,518 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Time and Date Conversions</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-the-system-clock.html" title="The System Clock">
+<link rel="prev" href="chimara-The-System-Clock.html" title="The System Clock">
+<link rel="next" href="chimara-Testing-for-Clock-Capabilities.html" title="Testing for Clock Capabilities">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Time-and-Date-Conversions.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-the-system-clock.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-The-System-Clock.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Testing-for-Clock-Capabilities.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Time-and-Date-Conversions"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Time-and-Date-Conversions.top_of_page"></a>Time and Date Conversions</span></h2>
+<p>Time and Date Conversions — Converting from timestamps to date structures and back</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Time-and-Date-Conversions.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-utc" title="glk_time_to_date_utc ()">glk_time_to_date_utc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-local" title="glk_time_to_date_local ()">glk_time_to_date_local</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-utc" title="glk_simple_time_to_date_utc ()">glk_simple_time_to_date_utc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-local" title="glk_simple_time_to_date_local ()">glk_simple_time_to_date_local</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-utc" title="glk_date_to_time_utc ()">glk_date_to_time_utc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-local" title="glk_date_to_time_local ()">glk_date_to_time_local</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="returnvalue">glsi32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-utc" title="glk_date_to_simple_time_utc ()">glk_date_to_simple_time_utc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="returnvalue">glsi32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-local" title="glk_date_to_simple_time_local ()">glk_date_to_simple_time_local</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Time-and-Date-Conversions.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t">glkdate_t</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Time-and-Date-Conversions.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Time-and-Date-Conversions.description"></a><h2>Description</h2>
+<p>This section describes functions for converting timestamps to more
+human-readable date structures and back.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Time-and-Date-Conversions.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-time-to-date-utc"></a><h3>glk_time_to_date_utc ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_time_to_date_utc (<em class="parameter"><code><a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> *time</code></em>,
+                      <em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>);</pre>
+<p>Convert the given timestamp (as returned by <a href="chimara-The-System-Clock.html#glk-current-time" title="glk_current_time ()"><code class="function">glk_current_time()</code></a>) to a
+broken-out structure. This function returns a date and time in universal time
+(GMT).</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  The seconds value may be 60 because of a leap second.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-time-to-date-utc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>time</p></td>
+<td class="parameter_description"><p>A <a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> structure as returned by <a href="chimara-The-System-Clock.html#glk-current-time" title="glk_current_time ()"><code class="function">glk_current_time()</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>An empty <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure to fill in.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-time-to-date-local"></a><h3>glk_time_to_date_local ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_time_to_date_local (<em class="parameter"><code><a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> *time</code></em>,
+                        <em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>);</pre>
+<p>Does the same thing as <a href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-utc" title="glk_time_to_date_utc ()"><code class="function">glk_time_to_date_utc()</code></a>, but this function returns
+local time.</p>
+<div class="refsect3" lang="en">
+<a name="glk-time-to-date-local.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>time</p></td>
+<td class="parameter_description"><p>A <a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> structure as returned by <a href="chimara-The-System-Clock.html#glk-current-time" title="glk_current_time ()"><code class="function">glk_current_time()</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>An empty <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure to fill in.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-simple-time-to-date-utc"></a><h3>glk_simple_time_to_date_utc ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_simple_time_to_date_utc (<em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> time</code></em>,
+                             <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> factor</code></em>,
+                             <em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>);</pre>
+<p>Convert the given timestamp (as returned by <a href="chimara-The-System-Clock.html#glk-current-simple-time" title="glk_current_simple_time ()"><code class="function">glk_current_simple_time()</code></a>) to a
+broken-out structure in universal time. The <em class="parameter"><code>time</code></em>
+ argument is multiplied by
+<em class="parameter"><code>factor</code></em>
+ to produce a Unix timestamp.</p>
+<p>Since the resolution of <a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-utc" title="glk_simple_time_to_date_utc ()"><code class="function">glk_simple_time_to_date_utc()</code></a> and
+<a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-local" title="glk_simple_time_to_date_local ()"><code class="function">glk_simple_time_to_date_local()</code></a> is no better than seconds, they will return
+zero for the microseconds value.</p>
+<div class="refsect3" lang="en">
+<a name="glk-simple-time-to-date-utc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>time</p></td>
+<td class="parameter_description"><p>Timestamp as returned by <a href="chimara-The-System-Clock.html#glk-current-simple-time" title="glk_current_simple_time ()"><code class="function">glk_current_simple_time()</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>factor</p></td>
+<td class="parameter_description"><p>Factor by which to multiply <em class="parameter"><code>time</code></em>
+in order to get seconds.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>An empty <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure to fill in.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-simple-time-to-date-local"></a><h3>glk_simple_time_to_date_local ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_simple_time_to_date_local (<em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> time</code></em>,
+                               <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> factor</code></em>,
+                               <em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>);</pre>
+<p>Does the same thing as <a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-utc" title="glk_simple_time_to_date_utc ()"><code class="function">glk_simple_time_to_date_utc()</code></a>, but fills in the <em class="parameter"><code>date</code></em>
+
+structure in local time.</p>
+<div class="refsect3" lang="en">
+<a name="glk-simple-time-to-date-local.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>time</p></td>
+<td class="parameter_description"><p>Timestamp as returned by <a href="chimara-The-System-Clock.html#glk-current-simple-time" title="glk_current_simple_time ()"><code class="function">glk_current_simple_time()</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>factor</p></td>
+<td class="parameter_description"><p>Factor by which to multiply <em class="parameter"><code>time</code></em>
+in order to get seconds.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>An empty <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure to fill in.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-date-to-time-utc"></a><h3>glk_date_to_time_utc ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_date_to_time_utc (<em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>,
+                      <em class="parameter"><code><a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> *time</code></em>);</pre>
+<p>Convert the broken-out structure (interpreted as universal time) to a
+timestamp. The weekday value in <em class="parameter"><code>date</code></em>
+ is ignored. The other values need not
+be in their normal ranges; they will be normalized.</p>
+<p>If the time cannot be represented by the platform's time library, this may
+return -1 for the seconds value. (I.e., the <em class="parameter"><code>high_sec</code></em>
+ and <em class="parameter"><code>low_sec</code></em>
+ fields
+both $FFFFFFFF. The microseconds field is undefined in this case.)</p>
+<div class="refsect3" lang="en">
+<a name="glk-date-to-time-utc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>A date in the form of a <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>time</p></td>
+<td class="parameter_description"><p>An empty <a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> structure to fill in.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-date-to-time-local"></a><h3>glk_date_to_time_local ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_date_to_time_local (<em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>,
+                        <em class="parameter"><code><a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> *time</code></em>);</pre>
+<p>Does the same thing as <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-utc" title="glk_date_to_time_utc ()"><code class="function">glk_date_to_time_utc()</code></a>, but interprets the broken-out
+structure as local time.</p>
+<p>The <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-local" title="glk_date_to_time_local ()"><code class="function">glk_date_to_time_local()</code></a> function may not be smart about Daylight Saving
+Time conversions.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  If implemented with the <code class="function">mktime()</code> libc function, it should use the negative
+  <em class="parameter"><code>tm_isdst</code></em> flag to “attempt to divine whether summer time is in effect”.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-date-to-time-local.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>A date in the form of a <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>time</p></td>
+<td class="parameter_description"><p>An empty <a href="chimara-The-System-Clock.html#glktimeval-t" title="glktimeval_t"><span class="type">glktimeval_t</span></a> structure to fill in.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-date-to-simple-time-utc"></a><h3>glk_date_to_simple_time_utc ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="returnvalue">glsi32</span></a>
+glk_date_to_simple_time_utc (<em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>,
+                             <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> factor</code></em>);</pre>
+<p>Convert the broken-out structure (interpreted as universal time) to a
+timestamp divided by <em class="parameter"><code>factor</code></em>
+. The weekday value in <em class="parameter"><code>date</code></em>
+ is ignored. The
+other values need not be in their normal ranges; they will be normalized.</p>
+<p>If the time cannot be represented by the platform's time library, this may
+return -1.</p>
+<div class="refsect3" lang="en">
+<a name="glk-date-to-simple-time-utc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>A date in the form of a <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>factor</p></td>
+<td class="parameter_description"><p>Factor by which to divide the time value.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-date-to-simple-time-utc.returns"></a><h4>Returns</h4>
+<p> a timestamp divided by <em class="parameter"><code>factor</code></em>
+, and truncated to 32 bits, or -1 on
+error.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-date-to-simple-time-local"></a><h3>glk_date_to_simple_time_local ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="returnvalue">glsi32</span></a>
+glk_date_to_simple_time_local (<em class="parameter"><code><a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> *date</code></em>,
+                               <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> factor</code></em>);</pre>
+<p>Does the same thing as <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-utc" title="glk_date_to_simple_time_utc ()"><code class="function">glk_date_to_simple_time_utc()</code></a>, but interprets the
+broken-out structure as local time.</p>
+<div class="refsect3" lang="en">
+<a name="glk-date-to-simple-time-local.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>date</p></td>
+<td class="parameter_description"><p>A date in the form of a <a href="chimara-Time-and-Date-Conversions.html#glkdate-t" title="glkdate_t"><span class="type">glkdate_t</span></a> structure.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>factor</p></td>
+<td class="parameter_description"><p>Factor by which to divide the time value.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-date-to-simple-time-local.returns"></a><h4>Returns</h4>
+<p> a timestamp divided by <em class="parameter"><code>factor</code></em>
+, and truncated to 32 bits, or -1 on
+error.</p>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Time-and-Date-Conversions.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="glkdate-t"></a><h3>glkdate_t</h3>
+<pre class="programlisting">typedef struct {
+    glsi32 year;     /* full (four-digit) year */
+    glsi32 month;    /* 1-12, 1 is January */
+    glsi32 day;      /* 1-31 */
+    glsi32 weekday;  /* 0-6, 0 is Sunday */
+    glsi32 hour;     /* 0-23 */
+    glsi32 minute;   /* 0-59 */
+    glsi32 second;   /* 0-59, maybe 60 during a leap second */
+    glsi32 microsec; /* 0-999999 */
+} glkdate_t;
+</pre>
+<p>This structure represents a human-readable date in a specific timezone.</p>
+<div class="refsect3" lang="en">
+<a name="glkdate-t.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.year"></a>year</code></em>;</p></td>
+<td class="struct_member_description"><p>The full (four-digit) year</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.month"></a>month</code></em>;</p></td>
+<td class="struct_member_description"><p>The month number, ranging from 1-12, 1 is January</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.day"></a>day</code></em>;</p></td>
+<td class="struct_member_description"><p>The day of the month, ranging from 1-31</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.weekday"></a>weekday</code></em>;</p></td>
+<td class="struct_member_description"><p>The day of the week, ranging from 0-6, 0 is Sunday</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.hour"></a>hour</code></em>;</p></td>
+<td class="struct_member_description"><p>The hour of the day, ranging from 0-23</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.minute"></a>minute</code></em>;</p></td>
+<td class="struct_member_description"><p>The minute of the hour, ranging from 0-59</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.second"></a>second</code></em>;</p></td>
+<td class="struct_member_description"><p>The second of the minute, ranging from 0-59; may be 60 during a leap
+second</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="glkdate-t.microsec"></a>microsec</code></em>;</p></td>
+<td class="struct_member_description"><p>The fraction of the second in microseconds, ranging from 0-999999</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

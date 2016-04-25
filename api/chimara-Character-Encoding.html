@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Character Encoding</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-character-encoding.html" title="Character Encoding">
+<link rel="prev" href="chimara-glk-spec-character-encoding.html" title="Character Encoding">
+<link rel="next" href="chimara-Output.html" title="Output">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-character-encoding.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-glk-spec-character-encoding.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Output.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Character-Encoding"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle">Character Encoding</span></h2>
+<p>Character Encoding — Latin-1 and Unicode characters</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="idp140340079648912"></a><h2>Description</h2>
+<p>
+Glk has two separate, but parallel, APIs for managing text input and output. The basic functions deal entirely in 8-bit characters; their arguments are arrays of bytes (octets). These functions all assume the Latin-1 character encoding. Equivalently, they may be said to use code points U+00..U+FF of <a href="http://unicode.org" target="_top">Unicode</a>.
+</p>
+<p>
+Latin-1 is an 8-bit character encoding; it maps numeric codes in the range 0 to 255 into printed characters. The values from 32 to 126 are the standard printable ASCII characters (<code class="code">' '</code> to <code class="code">'~'</code>). Values 0 to 31 and 127 to 159 are reserved for control characters, and have no printed equivalent.
+</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+Note that the basic Glk text API does not use UTF-8, or any other Unicode character form. Each character is represented by a single byte — even characters in the 128..255 range.
+</p>
+</div>
+<p>
+The extended, or “Unicode”, Glk functions deal entirely in 32-bit words. They take arrays of words, not bytes, as arguments. They can therefore cope with any Unicode code point. The extended functions have names ending in “<code class="code">_uni</code>”.
+</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+Since these functions deal in arrays of 32-bit words, they can be said to use the UTF-32 character encoding form. (But <span class="emphasis"><em>not</em></span> the UTF-32 character encoding <span class="emphasis"><em>scheme</em></span> — that's a stream of bytes which must be interpreted in big-endian or little-endian mode. Glk Unicode functions operate on long integers, not bytes.) UTF-32 is also known as UCS-4, according to the Unicode spec (appendix C.2), modulo some semantic requirements which we will not deal with here. For practical purposes, we can ignore the whole encoding issue, and assume that we are dealing with sequences of numeric code points.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+Why not UTF-8? It is a reasonable bare-bones compression algorithm for Unicode character streams; but IF systems typically have their own compression models for text. Compositing the two ideas causes more problems than it solves. The other advantage of UTF-8 is that 7-bit ASCII is automatically valid UTF-8; but this is not compelling for IF systems, in which the compiler can be tasked with generating consistent textual data. And UTF-8 is a variable-width encoding. Nobody ever wept at the prospect of avoiding that kettle of eels.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+What about bi-directional text?
+It's a good idea, and may show up in future versions of this document.
+It is not in this version because we want to get something simple implemented soon.
+For the moment, print out all text in reading order (not necessarily left-to-right) and hope for the best.
+Current suggestions include a <code class="code">stylehint_Direction</code>, which the game can set to indicate that text in the given style should be laid out right-to-left.
+Top-to-bottom (or bottom-to-top) may be desirable too.
+The direction stylehints might only apply to full paragraphs (like justification stylehints); or they might apply to any text, thus requiring the library to lay out “zig-zag” blocks.
+The possibilities remain to be explored.
+Page layout is hard.
+</p>
+<p>
+Another possibility is to let the library determine the directionality of text from the character set. This is not impossible — MacOSX text widgets do it. It may be too difficult.
+</p>
+<p>
+In the meantime, it is worth noting that the Windows Glk library does not autodetect directionality, but the CheapGlk library running on MacOSX does. Therefore, there is no platform-independent way to handle right-to-left fonts at present.
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

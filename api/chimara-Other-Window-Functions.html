@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Other Window Functions</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
+<link rel="prev" href="chimara-Echo-Streams.html" title="Echo Streams">
+<link rel="next" href="chimara-glk-spec-events.html" title="Events">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Other-Window-Functions.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-windows.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Echo-Streams.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-glk-spec-events.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Other-Window-Functions"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Other-Window-Functions.top_of_page"></a>Other Window Functions</span></h2>
+<p>Other Window Functions — Miscellaneous functions for windows</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Other-Window-Functions.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-iterate" title="glk_window_iterate ()">glk_window_iterate</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-get-rock" title="glk_window_get_rock ()">glk_window_get_rock</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-get-type" title="glk_window_get_type ()">glk_window_get_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-get-parent" title="glk_window_get_parent ()">glk_window_get_parent</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-get-sibling" title="glk_window_get_sibling ()">glk_window_get_sibling</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-get-root" title="glk_window_get_root ()">glk_window_get_root</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()">glk_window_clear</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-window-get-stream" title="glk_window_get_stream ()">glk_window_get_stream</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Other-Window-Functions.html#glk-set-window" title="glk_set_window ()">glk_set_window</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Other-Window-Functions.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Other-Window-Functions.description"></a><h2>Description</h2>
+<p>This section contains functions for windows that don't fit anywhere else.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Other-Window-Functions.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-window-iterate"></a><h3>glk_window_iterate ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+glk_window_iterate (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                    <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *rockptr</code></em>);</pre>
+<p>This function can be used to iterate through the list of all open windows
+(including pair windows.)
+See <a href="chimara-Opaque-Objects.html#chimara-Iterating-Through-Opaque-Objects" title="Iteration Through Opaque Objects">Iterating Through Opaque
+Objects</a>.</p>
+<p>As that section describes, the order in which windows are returned is
+arbitrary. The root window is not necessarily first, nor is it necessarily
+last.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-iterate.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>rockptr</p></td>
+<td class="parameter_description"><p>Return location for the next window's rock, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-iterate.returns"></a><h4>Returns</h4>
+<p> the next window, or <code class="literal">NULL</code> if there are no more.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-get-rock"></a><h3>glk_window_get_rock ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_window_get_rock (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Returns <em class="parameter"><code>win</code></em>
+'s rock value. Pair windows always have rock 0; all other windows
+return whatever rock value you created them with.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-rock.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-rock.returns"></a><h4>Returns</h4>
+<p> A rock value.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-get-type"></a><h3>glk_window_get_type ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_window_get_type (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Returns <em class="parameter"><code>win</code></em>
+'s type, one of <a href="chimara-The-Types-of-Windows.html#wintype-Blank" title="wintype_Blank"><code class="literal">wintype_Blank</code></a>, <a href="chimara-The-Types-of-Windows.html#wintype-Pair" title="wintype_Pair"><code class="literal">wintype_Pair</code></a>,
+<a href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer"><code class="literal">wintype_TextBuffer</code></a>, <a href="chimara-The-Types-of-Windows.html#wintype-TextGrid" title="wintype_TextGrid"><code class="literal">wintype_TextGrid</code></a>, or <a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics"><code class="literal">wintype_Graphics</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-type.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-type.returns"></a><h4>Returns</h4>
+<p> The window's type.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-get-parent"></a><h3>glk_window_get_parent ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+glk_window_get_parent (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Returns the window which is the parent of <em class="parameter"><code>win</code></em>
+. If <em class="parameter"><code>win</code></em>
+ is the root window,
+this returns <code class="literal">NULL</code>, since the root window has no parent. Remember that the
+parent of every window is a pair window; other window types are always
+childless.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-parent.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-parent.returns"></a><h4>Returns</h4>
+<p> A window, or <code class="literal">NULL</code>.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-get-sibling"></a><h3>glk_window_get_sibling ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+glk_window_get_sibling (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Returns the other child of <em class="parameter"><code>win</code></em>
+'s parent. If <em class="parameter"><code>win</code></em>
+ is the root window, this
+returns <code class="literal">NULL</code>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-sibling.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-sibling.returns"></a><h4>Returns</h4>
+<p> A window, or <code class="literal">NULL</code>.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-get-root"></a><h3>glk_window_get_root ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+glk_window_get_root (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Returns the root window. If there are no windows, this returns <code class="literal">NULL</code>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-root.returns"></a><h4>Returns</h4>
+<p> A window, or <code class="literal">NULL</code>.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-clear"></a><h3>glk_window_clear ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_window_clear (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Erases <em class="parameter"><code>win</code></em>
+. The meaning of this depends on the window type.</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term">Text buffer</span></td>
+<td><p>
+  This may do any number of things, such as delete all text in the window, or
+  print enough blank lines to scroll all text beyond visibility, or insert a
+  page-break marker which is treated specially by the display part of the
+  library.
+ </p></td>
+</tr>
+<tr>
+<td><span class="term">Text grid</span></td>
+<td><p>
+  This will clear the window, filling all positions with blanks (in the
+  normal style). The window cursor is moved to the top left corner (position
+  0,0).
+ </p></td>
+</tr>
+<tr>
+<td><span class="term">Graphics</span></td>
+<td><p>
+  Clears the entire window to its current background color. See <a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics">Graphics Windows</a>.
+ </p></td>
+</tr>
+<tr>
+<td><span class="term">Other window types</span></td>
+<td><p>No effect.</p></td>
+</tr>
+</tbody>
+</table></div>
+<p>It is illegal to erase a window which has line input pending.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-clear.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-get-stream"></a><h3>glk_window_get_stream ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+glk_window_get_stream (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Returns the stream which is associated with <em class="parameter"><code>win</code></em>
+.
+(See <a href="chimara-The-Types-of-Streams.html#chimara-Window-Streams" title="Window Streams">Window Streams</a>.)
+Every window has a stream which can be printed to, but this may not be
+useful, depending on the window type.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  For example, printing to a blank window's stream has no effect.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-stream.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-get-stream.returns"></a><h4>Returns</h4>
+<p> A window stream.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-set-window"></a><h3>glk_set_window ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_set_window (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Sets the current stream to <em class="parameter"><code>win</code></em>
+'s window stream. If <em class="parameter"><code>win</code></em>
+ is <code class="literal">NULL</code>, it is
+equivalent to</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">glk_stream_set_current(<span class="number">NULL</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+If <em class="parameter"><code>win</code></em>
+ is not <code class="literal">NULL</code>, it is equivalent to</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">glk_stream_set_current(glk_window_get_stream(win));</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+See <a href="chimara-Streams.html" title="Streams">Streams</a>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-set-window.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A window, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Other-Window-Functions.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

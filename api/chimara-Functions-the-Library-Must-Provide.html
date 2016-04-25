@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Functions the Library Must Provide</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
+<link rel="prev" href="chimara-Getting-Argument-Prototypes.html" title="Getting Argument Prototypes">
+<link rel="next" href="chimara-Table-of-Selectors.html" title="Table of Selectors">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Functions-the-Library-Must-Provide.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-the-dispatch-layer.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Getting-Argument-Prototypes.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Table-of-Selectors.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Functions-the-Library-Must-Provide.top_of_page"></a>Functions the Library Must Provide</span></h2>
+<p>Functions the Library Must Provide — Platform-dependent dispatch layer functions</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-object-registry" title="gidispatch_set_object_registry ()">gidispatch_set_object_registry</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="returnvalue">gidispatch_rock_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-get-objrock" title="gidispatch_get_objrock ()">gidispatch_get_objrock</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-retained-registry" title="gidispatch_set_retained_registry ()">gidispatch_set_retained_registry</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t">gidispatch_rock_t</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+#include &lt;libchimara/gi-dispa.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide.description"></a><h2>Description</h2>
+<p>Ideally, the three layers — program, dispatch layer, Glk library
+— would be completely modular; each would refer only to the layers
+beneath it. Sadly, there are a few places where the library must notify the
+program that something has happened. Worse, these situations are only
+relevant to programs which use the dispatch layer, and then only some of
+those.</p>
+<p>Since C is uncomfortable with the concept of calling functions which may not
+exist, Glk handles this with call-back function pointers. The program can
+pass callbacks in to the library; if it does, the library will call them, and
+if not, the library doesn't try.</p>
+<p>These callbacks are optional, in the sense that the program may or may not
+set them. However, any library which wants to interoperate with the dispatch
+layer must <span class="emphasis"><em>allow</em></span> the program to set them; it is the
+program's choice.
+The library does this by implementing <code class="literal">set_registry</code> functions — the
+functions to which the program passes its callbacks.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Even though these callbacks and the functions to set them are declared in
+  <code class="filename">gi_dispa.h</code>, they are not defined in
+  <code class="filename">gi_dispa.c</code>. The dispatch layer merely coordinates
+  them. The program defines the callback functions; the library calls them.
+</p>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="gidispatch-set-object-registry"></a><h3>gidispatch_set_object_registry ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+gidispatch_set_object_registry (<em class="parameter"><code><a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="type">gidispatch_rock_t</span></a> (*regi) (void *obj, glui32 objclass)</code></em>,
+                                <em class="parameter"><code><span class="type">void</span> (*unregi) (void *obj, glui32 objclass, gidispatch_rock_t objrock)</code></em>);</pre>
+<p>The Glk API refers to opaque objects by pointer; but a VM probably cannot 
+store pointers to native memory. Therefore, a VM program will want to keep a
+VM-accessible collection of opaque objects.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  For example, it might keep a hash table for each opaque object class,
+  mapping integer identifiers to object pointers.
+</p>
+</div>
+<p>To make this possible, a Glk library must implement 
+<a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-object-registry" title="gidispatch_set_object_registry ()"><code class="function">gidispatch_set_object_registry()</code></a>.</p>
+<p>Your program calls <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-object-registry" title="gidispatch_set_object_registry ()"><code class="function">gidispatch_set_object_registry()</code></a> early (before it begins
+actually executing VM code.) You pass in two function pointers, matching the
+following prototypes:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">gidispatch_rock_t my_vm_reg_object(<span class="type">void</span> *obj, glui32 objclass);
+<span class="type">void</span> my_vm_unreg_object(<span class="type">void</span> *obj, glui32 objclass, gidispatch_rock_t objrock);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>Whenever the Glk library creates an object, it will call
+<code class="literal">my_vm_reg_object()</code>.
+It will pass the object pointer and the class number (from 0
+to <span class="mathphrase">N - 1</span>, where N is the value returned by
+<a href="chimara-Interrogating-the-Interface.html#gidispatch-count-classes" title="gidispatch_count_classes ()"><code class="function">gidispatch_count_classes()</code></a>.)</p>
+<p>You can return any value in the <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="type">gidispatch_rock_t</span></a> object; the library will
+stash this away inside the object.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Note that this is entirely separate from the regular Glk rock, which is
+  always a <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> and can be set independently.
+</p>
+</div>
+<p>Whenever the Glk library destroys an object, it will call
+<code class="literal">my_vm_unreg_object()</code>.
+It passes you the object pointer, class number, and the object rock.</p>
+<p>One significant detail: It is possible that some Glk objects will already
+exist when your <code class="function">glk_main()</code> function is called.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  For example, MacGlk can open a stream when the user double-clicks a file;
+  this occurs before <code class="function">glk_main()</code>.
+</p>
+</div>
+<p>So when you call <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-object-registry" title="gidispatch_set_object_registry ()"><code class="function">gidispatch_set_object_registry()</code></a>, it may immediately call
+your <code class="literal">my_vm_reg_object()</code> callback, notifying you of the existing
+objects.
+You must be prepared for this possibility.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  If you are keeping hash tables, for example, create them before you call
+  <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-object-registry" title="gidispatch_set_object_registry ()"><code class="function">gidispatch_set_object_registry()</code></a>.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="gidispatch-set-object-registry.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>regi</p></td>
+<td class="parameter_description"><p>Function to call whenever an opaque object is created.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>unregi</p></td>
+<td class="parameter_description"><p>Function to call whenever an opaque object is destroyed.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-get-objrock"></a><h3>gidispatch_get_objrock ()</h3>
+<pre class="programlisting"><a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="returnvalue">gidispatch_rock_t</span></a>
+gidispatch_get_objrock (<em class="parameter"><code><span class="type">void</span> *obj</code></em>,
+                        <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> objclass</code></em>);</pre>
+<p>You can, at any time, get the object rock of an object. The library
+implements this function.</p>
+<p>With this and your two callbacks, you can maintain (say) a hash table for
+each object class, and easily convert back and forth between hash table keys
+and Glk object pointers. A more sophisticated run-time system (such as Java)
+could create a typed VM object for every Glk object, thus allowing VM code to
+manipulate Glk objects intelligently.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-get-objrock.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>obj</p></td>
+<td class="parameter_description"><p>An opaque object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>objclass</p></td>
+<td class="parameter_description"><p>One of <a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Window" title="gidisp_Class_Window"><span class="type">gidisp_Class_Window</span></a>, <a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Stream" title="gidisp_Class_Stream"><span class="type">gidisp_Class_Stream</span></a>,
+<a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Fileref" title="gidisp_Class_Fileref"><span class="type">gidisp_Class_Fileref</span></a>, or <a href="chimara-Interrogating-the-Interface.html#gidisp-Class-Schannel" title="gidisp_Class_Schannel"><span class="type">gidisp_Class_Schannel</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gidispatch-set-retained-registry"></a><h3>gidispatch_set_retained_registry ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+gidispatch_set_retained_registry (<em class="parameter"><code><a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="type">gidispatch_rock_t</span></a> (*regi) (void *array, glui32 len, char *typecode)</code></em>,
+                                  <em class="parameter"><code><span class="type">void</span> (*unregi) (void *array, glui32 len, char *typecode, gidispatch_rock_t objrock)</code></em>);</pre>
+<p>A few Glk functions take an array and hold onto it.
+The memory is “owned” by the library until some future Glk call releases it.
+While the library retains the array, your program should not read, write,
+move, or deallocate it. When the library releases it, the contents are in
+their final form, and you can copy them out (if appropriate) and dispose of
+the memory as you wish.</p>
+<p>To allow this, the library implements <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-set-retained-registry" title="gidispatch_set_retained_registry ()"><code class="function">gidispatch_set_retained_registry()</code></a>.</p>
+<p>Again, you pass in two function pointers:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">gidispatch_rock_t my_vm_reg_array(<span class="type">void</span> *array, glui32 len, <span class="type">char</span> *typecode);
+<span class="type">void</span> my_vm_unreg_array(<span class="type">void</span> *array, glui32 len, <span class="type">char</span> *typecode, gidispatch_rock_t objrock);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>Whenever a Glk function retains an array, it will call
+<code class="literal">my_vm_reg_array()</code>.
+This occurs only if you pass an array to an argument with the <code class="literal">"#!"</code> prefix.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  But not in every such case. Wait for the
+  <code class="function">my_vm_reg_array()</code> call to confirm it.
+</p>
+</div>
+<p>The library passes the array and its length, exactly as you put them in the
+<a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> array. It also passes the string which describes the argument.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Currently, the only calls that retain arrays are <a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a>,
+  <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory" title="glk_stream_open_memory ()"><code class="function">glk_stream_open_memory()</code></a>, <a href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()"><code class="function">glk_request_line_event_uni()</code></a>, and
+  <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory-uni" title="glk_stream_open_memory_uni ()"><code class="function">glk_stream_open_memory_uni()</code></a>. The first two of these use arrays of
+  characters, so the string is <code class="code">"&amp;+#!Cn"</code>. The latter two use
+  arrays of <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a>, so the string is <code class="code">"&amp;+#!Iu"</code>.
+</p>
+</div>
+<p>You can return any value in the <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="type">gidispatch_rock_t</span></a> object; the library will
+stash this away with the array.</p>
+<p>When a Glk function releases a retained array, it will call
+<code class="literal">my_vm_unreg_array()</code>.
+It passes back the same <em class="parameter"><code>array</code></em>
+, <em class="parameter"><code>len</code></em>
+, and <em class="parameter"><code>typecode</code></em>
+ parameters, as well as
+the <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-rock-t" title="gidispatch_rock_t"><span class="type">gidispatch_rock_t</span></a> you returned from <code class="literal">my_vm_reg_array()</code>.</p>
+<p>With these callbacks, you can maintain a collection of retained arrays. You
+can use this to copy data from C arrays to your own data structures, or keep
+relocatable memory locked, or prevent a garbage-collection system from
+deallocating an array while Glk is writing to it.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-set-retained-registry.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>regi</p></td>
+<td class="parameter_description"><p>Function to call whenever the Glk library assumes ownership of an
+array.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>unregi</p></td>
+<td class="parameter_description"><p>Function to call whenever the Glk library releases ownership of an
+array.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Functions-the-Library-Must-Provide.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="gidispatch-rock-t"></a><h3>gidispatch_rock_t</h3>
+<p>You can store any value you want in this object; return it from your object
+registry and retained array registry callbacks, and the library will stash it
+away. You can retrieve it with <a href="chimara-Functions-the-Library-Must-Provide.html#gidispatch-get-objrock" title="gidispatch_get_objrock ()"><code class="function">gidispatch_get_objrock()</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="gidispatch-rock-t.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="union_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gidispatch-rock-t.num"></a>num</code></em>;</p></td>
+<td class="union_member_description"><p>Space for storing an integer.</p></td>
+<td class="union_member_annotations"> </td>
+</tr>
+<tr>
+<td class="union_member_name"><p><span class="type">void</span> *<em class="structfield"><code><a name="gidispatch-rock-t.ptr"></a>ptr</code></em>;</p></td>
+<td class="union_member_description"><p>Space for storing a pointer.</p></td>
+<td class="union_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

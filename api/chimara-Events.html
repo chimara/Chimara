@@ -1,0 +1,499 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Events</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-events.html" title="Events">
+<link rel="prev" href="chimara-glk-spec-events.html" title="Events">
+<link rel="next" href="chimara-Character-Input-Events.html" title="Character Input Events">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Events.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-events.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-glk-spec-events.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Character-Input-Events.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Events"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Events.top_of_page"></a>Events</span></h2>
+<p>Events — Waiting for events</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Events.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Events.html#glk-select" title="glk_select ()">glk_select</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()">glk_select_poll</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Events.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a href="chimara-Events.html#event-t" title="event_t">event_t</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-None" title="evtype_None">evtype_None</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-Timer" title="evtype_Timer">evtype_Timer</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-CharInput" title="evtype_CharInput">evtype_CharInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-LineInput" title="evtype_LineInput">evtype_LineInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-MouseInput" title="evtype_MouseInput">evtype_MouseInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange">evtype_Arrange</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-Redraw" title="evtype_Redraw">evtype_Redraw</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-SoundNotify" title="evtype_SoundNotify">evtype_SoundNotify</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-Hyperlink" title="evtype_Hyperlink">evtype_Hyperlink</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Events.html#evtype-VolumeNotify" title="evtype_VolumeNotify">evtype_VolumeNotify</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Events.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Events.description"></a><h2>Description</h2>
+<p>As described in <a href="chimara-Your-Programs-Main-Function.html" title="Your Program's Main Function">Your Program's Main
+Function</a>, all player input is handed to
+your program by the <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> call, in the form of events.
+You should write at least one event loop to retrieve these events.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Events.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-select"></a><h3>glk_select ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_select (<em class="parameter"><code><a href="chimara-Events.html#event-t" title="event_t"><span class="type">event_t</span></a> *event</code></em>);</pre>
+<p>Causes the program to wait for an event, and then store it in the structure
+pointed to by <em class="parameter"><code>event</code></em>
+. Unlike most Glk functions that take pointers, the
+argument of <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> may not be <code class="literal">NULL</code>.</p>
+<p>Most of the time, you only get the events that you request. However, there
+are some events which can arrive at any time. This is why you must always
+call <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> in a loop, and continue the loop until you get the event
+you really want.</p>
+<div class="refsect3" lang="en">
+<a name="glk-select.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>event</p></td>
+<td class="parameter_description"><p>Pointer to an <a href="chimara-Events.html#event-t" title="event_t"><span class="type">event_t</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-select-poll"></a><h3>glk_select_poll ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_select_poll (<em class="parameter"><code><a href="chimara-Events.html#event-t" title="event_t"><span class="type">event_t</span></a> *event</code></em>);</pre>
+<p>You can also inquire if an event is available, without stopping to wait for 
+one to occur.</p>
+<p>This checks if an internally-spawned event is available. If so, it stores it 
+in the structure pointed to by <em class="parameter"><code>event</code></em>
+. If not, it sets <code class="literal">event-&gt;type</code> to
+<a href="chimara-Events.html#evtype-None" title="evtype_None"><code class="literal">evtype_None</code></a>.
+Either way, it returns almost immediately.</p>
+<p>The first question you now ask is, what is an internally-spawned event?
+<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> does not check for or return <a href="chimara-Events.html#evtype-CharInput" title="evtype_CharInput"><code class="literal">evtype_CharInput</code></a>,
+<a href="chimara-Events.html#evtype-LineInput" title="evtype_LineInput"><code class="literal">evtype_LineInput</code></a>, <a href="chimara-Events.html#evtype-MouseInput" title="evtype_MouseInput"><code class="literal">evtype_MouseInput</code></a>, or <a href="chimara-Events.html#evtype-Hyperlink" title="evtype_Hyperlink"><code class="literal">evtype_Hyperlink</code></a> events. It is
+intended for you to test conditions which may have occurred while you are
+computing, and not interfacing with the player. For example, time may pass
+during slow computations; you can use <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> to see if a
+<a href="chimara-Events.html#evtype-Timer" title="evtype_Timer"><code class="literal">evtype_Timer</code></a> event has occurred.
+(See <a href="chimara-Timer-Events.html" title="Timer Events">Timer Events</a>.)</p>
+<p>At the moment, <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> checks for <a href="chimara-Events.html#evtype-Timer" title="evtype_Timer"><code class="literal">evtype_Timer</code></a>, <a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange"><code class="literal">evtype_Arrange</code></a>,
+<a href="chimara-Events.html#evtype-Redraw" title="evtype_Redraw"><code class="literal">evtype_Redraw</code></a> and <a href="chimara-Events.html#evtype-SoundNotify" title="evtype_SoundNotify"><code class="literal">evtype_SoundNotify</code></a> events.
+But see <a href="chimara-Other-Events.html" title="Other Events">Other Events</a>.</p>
+<p>The second question is, what does it mean that <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> returns 
+“almost immediately”?
+In some Glk libraries, text that you send to a window is buffered; it does
+not actually appear until you request player input with <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>.
+<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> attends to this buffer-flushing task in the same way.
+(Although it does not do the “<code class="literal">Hit any key to scroll down</code>” waiting which may
+be done in <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>; that's a player-input task.)</p>
+<p>Similarly, on multitasking platforms, <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> may yield time to other
+processes; and <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> does this as well.</p>
+<p>The upshot of this is that you should not call <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> very often. 
+If you are not doing much work between player inputs, you should not need to
+call it at all.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+ For example, in a virtual machine interpreter, you should not call
+ <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> after every opcode.
+</p>
+</div>
+<p>However, if you are doing intense computation, you may wish to call
+<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> every so often to yield time to other processes. And if you
+are printing intermediate results during this computation, you should
+<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> every so often, so that you can be certain your output will 
+be displayed before the next <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+ However, you should call <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> often — once per opcode in a VM
+ interpreter. See <a href="chimara-The-Tick-Thing.html" title="The Tick Thing">The Tick 
+ Thing</a>.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-select-poll.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>event</p></td>
+<td class="parameter_description"><p>Return location for an event.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Events.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="event-t"></a><h3>event_t</h3>
+<pre class="programlisting">typedef struct {
+    glui32 type;
+    winid_t win;
+    glui32 val1, val2;
+} event_t;
+</pre>
+<p>The event structure is self-explanatory. <em class="parameter"><code>type</code></em>
+ is the event type. The window
+that spawned the event, if relevant, is in <em class="parameter"><code>win</code></em>
+. The remaining fields contain
+more information specific to the event.</p>
+<p>The event types are described below. Note that <a href="chimara-Events.html#evtype-None" title="evtype_None"><code class="literal">evtype_None</code></a> is zero, and the
+other values are positive. Negative event types (0x80000000 to 0xFFFFFFFF) 
+are reserved for implementation-defined events.</p>
+<div class="refsect3" lang="en">
+<a name="event-t.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="event-t.type"></a>type</code></em>;</p></td>
+<td class="struct_member_description"><p>the event type</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> <em class="structfield"><code><a name="event-t.win"></a>win</code></em>;</p></td>
+<td class="struct_member_description"><p>the window that spawned the event, or <code class="literal">NULL</code></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="event-t.val1"></a>val1</code></em>;</p></td>
+<td class="struct_member_description"><p>information, the meaning of which depends on the type of event</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="event-t.val2"></a>val2</code></em>;</p></td>
+<td class="struct_member_description"><p>more information, the meaning of which depends on the type of event</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-None"></a><h3>evtype_None</h3>
+<pre class="programlisting">#define evtype_None (0)
+</pre>
+<p>No event. This is a placeholder, and <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> never returns it.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-Timer"></a><h3>evtype_Timer</h3>
+<pre class="programlisting">#define evtype_Timer (1)
+</pre>
+<p>An event that repeats at fixed intervals.
+See <a href="chimara-Timer-Events.html" title="Timer Events">Timer Events</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-CharInput"></a><h3>evtype_CharInput</h3>
+<pre class="programlisting">#define evtype_CharInput (2)
+</pre>
+<p>A keystroke event in a window.
+See <a href="chimara-Character-Input-Events.html" title="Character Input Events">Character Input Events</a>.</p>
+<p>If a window has a pending request for character input, and the player hits a
+key in that window, <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> will return an event whose type is
+<a href="chimara-Events.html#evtype-CharInput" title="evtype_CharInput"><code class="literal">evtype_CharInput</code></a>. Once this happens, the request is complete; it is no 
+longer pending. You must call <a href="chimara-Character-Input-Events.html#glk-request-char-event" title="glk_request_char_event ()"><code class="function">glk_request_char_event()</code></a> or
+<a href="chimara-Character-Input-Events.html#glk-request-char-event-uni" title="glk_request_char_event_uni ()"><code class="function">glk_request_char_event_uni()</code></a> if you want another character from that window.</p>
+<p>In the event structure, <em class="parameter"><code>win</code></em>
+ tells what window the event came from. <em class="parameter"><code>val1</code></em>
+ 
+tells what character was entered; this will be a character code, or a special
+keycode.
+(See <a href="chimara-Character-Input.html" title="Character Input">Character Input</a>.)
+If you called <a href="chimara-Character-Input-Events.html#glk-request-char-event" title="glk_request_char_event ()"><code class="function">glk_request_char_event()</code></a>, <em class="parameter"><code>val1</code></em>
+ will be in 0..255, or else a
+special keycode.
+In any case, <em class="parameter"><code>val2</code></em>
+ will be 0.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-LineInput"></a><h3>evtype_LineInput</h3>
+<pre class="programlisting">#define evtype_LineInput (3)
+</pre>
+<p>A full line of input completed in a window.
+See <a href="chimara-Line-Input-Events.html" title="Line Input Events">Line Input Events</a>.</p>
+<p>If a window has a pending request for line input, the player can generally
+hit the <span><strong class="keycap">enter</strong></span> key (in that window) to complete line input.
+The details will depend on the platform's native user interface.</p>
+<p>When line input is completed, <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> will return an event whose type is
+<a href="chimara-Events.html#evtype-LineInput" title="evtype_LineInput"><code class="literal">evtype_LineInput</code></a>. Once this happens, the request is complete; it is no
+longer pending. You must call <a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a> if you want another
+line of text from that window.</p>
+<p>In the event structure, <em class="parameter"><code>win</code></em>
+ tells what window the event came from. <em class="parameter"><code>val1</code></em>
+
+tells how many characters were entered. <em class="parameter"><code>val2</code></em>
+ will be 0 unless input was
+ended by a special terminator key, in which case <em class="parameter"><code>val2</code></em>
+ will be the keycode
+(one of the values passed to <a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>).</p>
+<p>The characters themselves are stored in the buffer specified in the original
+<a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a> or <a href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()"><code class="function">glk_request_line_event_uni()</code></a> call.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  There is no null terminator or newline stored in the buffer.
+</p>
+</div>
+<p>It is illegal to print anything to a window which has line input pending. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This is because the window may be displaying and editing the player's 
+  input, and printing anything would make life unnecessarily complicated for
+  the library.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-MouseInput"></a><h3>evtype_MouseInput</h3>
+<pre class="programlisting">#define evtype_MouseInput (4)
+</pre>
+<p>A mouse click in a window.
+See <a href="chimara-Mouse-Input-Events.html" title="Mouse Input Events">Mouse Input Events</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-Arrange"></a><h3>evtype_Arrange</h3>
+<pre class="programlisting">#define evtype_Arrange (5)
+</pre>
+<p>An event signalling that the sizes of some windows have changed. </p>
+<p>Some platforms allow the player to resize the Glk window during play. This 
+will naturally change the sizes of your windows. If this occurs, then
+immediately after all the rearrangement, <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> will return an event
+whose type is <a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange"><code class="literal">evtype_Arrange</code></a>. You can use this notification to redisplay the
+contents of a graphics or text grid window whose size has changed.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  The display of a text buffer window is entirely up to the library, so you
+  don't need to worry about those.
+</p>
+</div>
+<p>In the event structure, <em class="parameter"><code>win</code></em>
+ will be <code class="literal">NULL</code> if all windows are affected. If 
+only some windows are affected, <em class="parameter"><code>win</code></em>
+ will refer to a window which contains 
+all the affected windows. <em class="parameter"><code>val1</code></em>
+ and <em class="parameter"><code>val2</code></em>
+ will be 0.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  You can always play it safe, ignore <em class="parameter"><code>win</code></em>, and redraw every graphics and 
+  text grid window.
+</p>
+</div>
+<p>An arrangement event is guaranteed to occur whenever the player causes any
+window to change size, as measured by its own metric. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Size changes caused by you — for example, if you open, close, or 
+  resize a window — do not trigger arrangement events. You must be 
+  aware of the effects of your window management, and redraw the windows that
+  you affect.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  It is possible that several different player actions can cause windows to
+  change size. For example, if the player changes the screen resolution, an
+  arrangement event might be triggered. This might also happen if the player
+  changes his display font to a different size; the windows would then be
+  different “sizes” in the metric of rows and columns, which is the important
+  metric and the only one you have access to.
+</p>
+</div>
+<p>Arrangement events, like timer events, can be returned by <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>.
+But this will not occur on all platforms. You must be ready to receive an
+arrangement event when you call <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>, but it is possible that it
+will not arrive until the next time you call <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This is because on some platforms, window resizing is handled as part of
+  player input; on others, it can be triggered by an external process such as 
+  a window manager.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-Redraw"></a><h3>evtype_Redraw</h3>
+<pre class="programlisting">#define evtype_Redraw (6)
+</pre>
+<p>An event signalling that graphics windows must be redrawn.</p>
+<p>On platforms that support graphics, it is possible that the contents of a
+graphics window will be lost, and have to be redrawn from scratch. If this
+occurs, then <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> will return an event whose type is <a href="chimara-Events.html#evtype-Redraw" title="evtype_Redraw"><code class="literal">evtype_Redraw</code></a>.</p>
+<p>In the event structure, <em class="parameter"><code>win</code></em>
+ will be <code class="literal">NULL</code> if all windows are affected. If 
+only some windows are affected, <em class="parameter"><code>win</code></em>
+ will refer to a window which contains 
+all the affected windows. <em class="parameter"><code>val1</code></em>
+ and <em class="parameter"><code>val2</code></em>
+ will be 0.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  You can always play it safe, ignore <em class="parameter"><code>win</code></em>, and redraw every graphics window.
+</p>
+</div>
+<p>Affected windows are already cleared to their background color when you 
+receive the redraw event.</p>
+<p>Redraw events can be returned by <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>. But, like arrangement
+events, this is platform-dependent. See <a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange"><code class="literal">evtype_Arrange</code></a>.</p>
+<p>For more about redraw events and how they affect graphics windows, see
+<a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics">Graphics Windows</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-SoundNotify"></a><h3>evtype_SoundNotify</h3>
+<pre class="programlisting">#define evtype_SoundNotify (7)
+</pre>
+<p>The completion of a sound being played in a sound channel.</p>
+<p>On platforms that support sound, you can request to receive an 
+<a href="chimara-Events.html#evtype-SoundNotify" title="evtype_SoundNotify"><code class="literal">evtype_SoundNotify</code></a> event when a sound finishes playing.
+See <a href="chimara-Playing-Sounds.html" title="Playing Sounds">Playing Sounds</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-Hyperlink"></a><h3>evtype_Hyperlink</h3>
+<pre class="programlisting">#define evtype_Hyperlink (8)
+</pre>
+<p>The selection of a hyperlink in a window.</p>
+<p>On platforms that support hyperlinks, you can request to receive an
+<a href="chimara-Events.html#evtype-Hyperlink" title="evtype_Hyperlink"><code class="literal">evtype_Hyperlink</code></a> event when the player selects a link.
+See <a href="chimara-Accepting-Hyperlink-Events.html" title="Accepting Hyperlink Events">Accepting Hyperlink Events</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="evtype-VolumeNotify"></a><h3>evtype_VolumeNotify</h3>
+<pre class="programlisting">#define evtype_VolumeNotify (9)
+</pre>
+<p>The completion of a gradual volume change in a sound channel.</p>
+<p>On platforms that support sound, you can request to receive an
+<a href="chimara-Events.html#evtype-VolumeNotify" title="evtype_VolumeNotify"><code class="literal">evtype_VolumeNotify</code></a> event when a gradual volume change completes.
+See <a href="chimara-Playing-Sounds.html" title="Playing Sounds">Playing Sounds</a>.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

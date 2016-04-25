@@ -1,0 +1,1067 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The Gestalt System</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
+<link rel="prev" href="chimara-Opaque-Objects.html" title="Opaque Objects">
+<link rel="next" href="chimara-Other-API-Conventions.html" title="Other API Conventions">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-The-Gestalt-System.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-overall-structure.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Opaque-Objects.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Other-API-Conventions.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-The-Gestalt-System"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-The-Gestalt-System.top_of_page"></a>The Gestalt System</span></h2>
+<p>The Gestalt System — Testing Glk's capabilities</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Gestalt-System.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-The-Gestalt-System.html#glk-gestalt-ext" title="glk_gestalt_ext ()">glk_gestalt_ext</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-The-Gestalt-System.html#glk-gestalt" title="glk_gestalt ()">glk_gestalt</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Gestalt-System.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Version" title="gestalt_Version">gestalt_Version</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Unicode" title="gestalt_Unicode">gestalt_Unicode</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#GLK-MODULE-UNICODE:CAPS" title="GLK_MODULE_UNICODE">GLK_MODULE_UNICODE</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-UnicodeNorm" title="gestalt_UnicodeNorm">gestalt_UnicodeNorm</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#GLK-MODULE-UNICODE-NORM:CAPS" title="GLK_MODULE_UNICODE_NORM">GLK_MODULE_UNICODE_NORM</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-CharOutput" title="gestalt_CharOutput">gestalt_CharOutput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-CannotPrint" title="gestalt_CharOutput_CannotPrint">gestalt_CharOutput_CannotPrint</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ApproxPrint" title="gestalt_CharOutput_ApproxPrint">gestalt_CharOutput_ApproxPrint</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ExactPrint" title="gestalt_CharOutput_ExactPrint">gestalt_CharOutput_ExactPrint</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-LineInput" title="gestalt_LineInput">gestalt_LineInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-LineInputEcho" title="gestalt_LineInputEcho">gestalt_LineInputEcho</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#GLK-MODULE-LINE-ECHO:CAPS" title="GLK_MODULE_LINE_ECHO">GLK_MODULE_LINE_ECHO</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-LineTerminators" title="gestalt_LineTerminators">gestalt_LineTerminators</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#GLK-MODULE-LINE-TERMINATORS:CAPS" title="GLK_MODULE_LINE_TERMINATORS">GLK_MODULE_LINE_TERMINATORS</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-LineTerminatorKey" title="gestalt_LineTerminatorKey">gestalt_LineTerminatorKey</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-CharInput" title="gestalt_CharInput">gestalt_CharInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-MouseInput" title="gestalt_MouseInput">gestalt_MouseInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Timer" title="gestalt_Timer">gestalt_Timer</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Graphics" title="gestalt_Graphics">gestalt_Graphics</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-DrawImage" title="gestalt_DrawImage">gestalt_DrawImage</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2">gestalt_Sound2</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Sound" title="gestalt_Sound">gestalt_Sound</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-SoundVolume" title="gestalt_SoundVolume">gestalt_SoundVolume</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-SoundNotify" title="gestalt_SoundNotify">gestalt_SoundNotify</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-Hyperlinks" title="gestalt_Hyperlinks">gestalt_Hyperlinks</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-HyperlinkInput" title="gestalt_HyperlinkInput">gestalt_HyperlinkInput</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-SoundMusic" title="gestalt_SoundMusic">gestalt_SoundMusic</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-GraphicsTransparency" title="gestalt_GraphicsTransparency">gestalt_GraphicsTransparency</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-DateTime" title="gestalt_DateTime">gestalt_DateTime</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#gestalt-ResourceStream" title="gestalt_ResourceStream">gestalt_ResourceStream</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-The-Gestalt-System.html#GLK-MODULE-RESOURCE-STREAM:CAPS" title="GLK_MODULE_RESOURCE_STREAM">GLK_MODULE_RESOURCE_STREAM</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Gestalt-System.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Gestalt-System.description"></a><h2>Description</h2>
+<p>The “gestalt” mechanism (cheerfully stolen from the Mac OS) is a system by
+which the Glk API can be upgraded without making your life impossible.
+New capabilities (graphics, sound, or so on) can be added without changing
+the basic specification.
+The system also allows for “optional” capabilities — those which not
+all Glk library implementations will support — and allows you to check
+for their presence without trying to infer them from a version number.</p>
+<p>The basic idea is that you can request information about the capabilities of
+the API, by calling the gestalt functions.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Gestalt-System.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-gestalt-ext"></a><h3>glk_gestalt_ext ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_gestalt_ext (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> sel</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> val</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *arr</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> arrlen</code></em>);</pre>
+<p>Calls the gestalt system to request information about the capabilities of the
+API. The selector <em class="parameter"><code>sel</code></em>
+ tells which capability you are requesting information
+about; the other three arguments are additional information, which may or may
+not be meaningful. The <em class="parameter"><code>arr</code></em>
+ and <em class="parameter"><code>arrlen</code></em>
+ arguments of <a href="chimara-The-Gestalt-System.html#glk-gestalt-ext" title="glk_gestalt_ext ()"><code class="function">glk_gestalt_ext()</code></a> are
+always optional; you may always pass <code class="literal">NULL</code> and 0, if you do not want whatever
+information they represent. <a href="chimara-The-Gestalt-System.html#glk-gestalt" title="glk_gestalt ()"><code class="function">glk_gestalt()</code></a> is simply a shortcut for this;
+<code class="literal">glk_gestalt(x, y)</code> is exactly the same as <code class="literal">glk_gestalt_ext(x, y, NULL, 0)</code>.</p>
+<p>The critical point is that if the Glk library has never heard of the selector
+<em class="parameter"><code>sel</code></em>
+, it will return 0. It is <span class="emphasis"><em>always</em></span> safe to call 
+<code class="literal">glk_gestalt(x, y)</code> (or <code class="literal">glk_gestalt_ext(x, y, NULL, 0)</code>).
+Even if you are using an old library, which was compiled before
+the given capability was imagined, you can test for the capability by calling
+<a href="chimara-The-Gestalt-System.html#glk-gestalt" title="glk_gestalt ()"><code class="function">glk_gestalt()</code></a>; the library will correctly indicate that it does not support
+it, by returning 0.</p>
+<p>(It is also safe to call <code class="literal">glk_gestalt_ext(x, y, z, zlen)</code> for an unknown
+selector <code class="literal">x</code>, where <code class="literal">z</code> is not <code class="literal">NULL</code>, as long as <code class="literal">z</code> points at an array of at
+least <code class="literal">zlen</code> elements.
+The selector will be careful not to write beyond that point in the array, if
+it writes to the array at all.)</p>
+<p>(If a selector does not use the second argument, you should always pass 0; do
+not assume that the second argument is simply ignored. This is because the
+selector may be extended in the future. You will continue to get the current
+behavior if you pass 0 as the second argument, but other values may produce
+other behavior.)</p>
+<div class="refsect3" lang="en">
+<a name="glk-gestalt-ext.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>sel</p></td>
+<td class="parameter_description"><p>A selector, representing which capability to request information
+about.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>val</p></td>
+<td class="parameter_description"><p>Extra information, depending on the value of <em class="parameter"><code>sel</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>arr</p></td>
+<td class="parameter_description"><p>Location of an array to store extra information in, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>arrlen</p></td>
+<td class="parameter_description"><p>Length of <em class="parameter"><code>arr</code></em>
+, or 0 if <em class="parameter"><code>arr</code></em>
+is <code class="literal">NULL</code>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-gestalt-ext.returns"></a><h4>Returns</h4>
+<p> an integer, depending on what selector was called.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-gestalt"></a><h3>glk_gestalt ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_gestalt (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> sel</code></em>,
+             <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> val</code></em>);</pre>
+<p>Calls the gestalt system to request information about selector <em class="parameter"><code>sel</code></em>
+, without
+passing an array to store extra information in (see <a href="chimara-The-Gestalt-System.html#glk-gestalt-ext" title="glk_gestalt_ext ()"><code class="function">glk_gestalt_ext()</code></a>).</p>
+<div class="refsect3" lang="en">
+<a name="glk-gestalt.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>sel</p></td>
+<td class="parameter_description"><p>A selector, representing which capability to request information
+about.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>val</p></td>
+<td class="parameter_description"><p>Extra information, depending on the value of <em class="parameter"><code>sel</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-gestalt.returns"></a><h4>Returns</h4>
+<p> an integer, depending on what selector was called.</p>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-The-Gestalt-System.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="gestalt-Version"></a><h3>gestalt_Version</h3>
+<pre class="programlisting">#define gestalt_Version (0)
+</pre>
+<p>For an example of the gestalt mechanism, consider the selector
+<a href="chimara-The-Gestalt-System.html#gestalt-Version" title="gestalt_Version"><code class="literal">gestalt_Version</code></a>. If you do</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_Version, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+<code class="literal">res</code> will be set to a 32-bit number which encodes the version of the Glk
+spec which the library implements.
+The upper 16 bits stores the major version number; the next 8 bits stores the
+minor version number; the low 8 bits stores an even more minor version
+number, if any.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  So the version number 78.2.11 would be encoded as 0x004E020B.
+</p>
+</div>
+<p>The current Glk specification version is 0.7.4, so this selector will return
+0x00000704.</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt_ext(gestalt_Version, <span class="number">0</span>, <span class="number">NULL</span>, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+does exactly the same thing. Note that, in either case, the second argument 
+is not used; so you should always pass 0 to avoid future surprises.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-Unicode"></a><h3>gestalt_Unicode</h3>
+<pre class="programlisting">#define gestalt_Unicode (15)
+</pre>
+<p>The basic text functions will be available in every Glk library. The Unicode
+functions may or may not be available. Before calling them, you should use
+the <a href="chimara-The-Gestalt-System.html#gestalt-Unicode" title="gestalt_Unicode"><code class="literal">gestalt_Unicode</code></a> and <a href="chimara-The-Gestalt-System.html#gestalt-UnicodeNorm" title="gestalt_UnicodeNorm"><code class="literal">gestalt_UnicodeNorm</code></a> gestalt selectors.</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_Unicode, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns 1 if the core Unicode functions are available. If it returns 0,
+you should not try to call them. They may print nothing, print gibberish, or
+cause a run-time error. The Unicode functions include
+<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>, <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-upper-case-uni" title="glk_buffer_to_upper_case_uni ()"><code class="function">glk_buffer_to_upper_case_uni()</code></a>,  
+<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-title-case-uni" title="glk_buffer_to_title_case_uni ()"><code class="function">glk_buffer_to_title_case_uni()</code></a>, <a href="chimara-How-to-Print.html#glk-put-char-uni" title="glk_put_char_uni ()"><code class="function">glk_put_char_uni()</code></a>, <a href="chimara-How-to-Print.html#glk-put-string-uni" title="glk_put_string_uni ()"><code class="function">glk_put_string_uni()</code></a>,
+<a href="chimara-How-to-Print.html#glk-put-buffer-uni" title="glk_put_buffer_uni ()"><code class="function">glk_put_buffer_uni()</code></a>, <a href="chimara-How-to-Print.html#glk-put-char-stream-uni" title="glk_put_char_stream_uni ()"><code class="function">glk_put_char_stream_uni()</code></a>, <a href="chimara-How-to-Print.html#glk-put-string-stream-uni" title="glk_put_string_stream_uni ()"><code class="function">glk_put_string_stream_uni()</code></a>,
+<a href="chimara-How-to-Print.html#glk-put-buffer-stream-uni" title="glk_put_buffer_stream_uni ()"><code class="function">glk_put_buffer_stream_uni()</code></a>, <a href="chimara-How-to-Read.html#glk-get-char-stream-uni" title="glk_get_char_stream_uni ()"><code class="function">glk_get_char_stream_uni()</code></a>,
+<a href="chimara-How-to-Read.html#glk-get-buffer-stream-uni" title="glk_get_buffer_stream_uni ()"><code class="function">glk_get_buffer_stream_uni()</code></a>, <a href="chimara-How-to-Read.html#glk-get-line-stream-uni" title="glk_get_line_stream_uni ()"><code class="function">glk_get_line_stream_uni()</code></a>,
+<a href="chimara-Character-Input-Events.html#glk-request-char-event-uni" title="glk_request_char_event_uni ()"><code class="function">glk_request_char_event_uni()</code></a>, <a href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()"><code class="function">glk_request_line_event_uni()</code></a>,
+<a href="chimara-The-Types-of-Streams.html#glk-stream-open-file-uni" title="glk_stream_open_file_uni ()"><code class="function">glk_stream_open_file_uni()</code></a>, <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory-uni" title="glk_stream_open_memory_uni ()"><code class="function">glk_stream_open_memory_uni()</code></a>.</p>
+<p>If you are writing a C program, there is an additional complication. A
+library which does not support Unicode may not implement the Unicode
+functions at all. Even if you put gestalt tests around your Unicode calls,
+you may get link-time errors.
+If the <code class="literal">glk.h</code> file is so old that it does not declare the Unicode functions
+and constants, you may even get compile-time errors.</p>
+<p>To avoid this, you can perform a preprocessor test for the existence of
+<a href="chimara-The-Gestalt-System.html#GLK-MODULE-UNICODE:CAPS" title="GLK_MODULE_UNICODE"><code class="literal">GLK_MODULE_UNICODE</code></a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-UNICODE:CAPS"></a><h3>GLK_MODULE_UNICODE</h3>
+<pre class="programlisting">#define GLK_MODULE_UNICODE
+</pre>
+<p>If this preprocessor symbol is defined, so are the core Unicode functions and
+constants (see <a href="chimara-The-Gestalt-System.html#gestalt-Unicode" title="gestalt_Unicode"><code class="literal">gestalt_Unicode</code></a>). If not, not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-UnicodeNorm"></a><h3>gestalt_UnicodeNorm</h3>
+<pre class="programlisting">#define gestalt_UnicodeNorm (16)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_UnicodeNorm, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This code returns 1 if the Unicode normalization functions are available. If
+it returns 0, you should not try to call them. The Unicode normalization
+functions include <a href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-decompose-uni" title="glk_buffer_canon_decompose_uni ()"><code class="function">glk_buffer_canon_decompose_uni()</code></a> and
+<a href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-normalize-uni" title="glk_buffer_canon_normalize_uni ()"><code class="function">glk_buffer_canon_normalize_uni()</code></a>.</p>
+<p>The equivalent preprocessor test for these functions is
+<a href="chimara-The-Gestalt-System.html#GLK-MODULE-UNICODE-NORM:CAPS" title="GLK_MODULE_UNICODE_NORM"><code class="literal">GLK_MODULE_UNICODE_NORM</code></a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-UNICODE-NORM:CAPS"></a><h3>GLK_MODULE_UNICODE_NORM</h3>
+<pre class="programlisting">#define GLK_MODULE_UNICODE_NORM
+</pre>
+<p>If this preprocessor symbol is defined, so are the Unicode normalization
+functions (see <a href="chimara-The-Gestalt-System.html#gestalt-UnicodeNorm" title="gestalt_UnicodeNorm"><code class="literal">gestalt_UnicodeNorm</code></a>). If not, not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-CharOutput"></a><h3>gestalt_CharOutput</h3>
+<pre class="programlisting">#define gestalt_CharOutput (3)
+</pre>
+<p>If you set <code class="literal">ch</code> to a character code (Latin-1 or higher), and call</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res, len;
+res = glk_gestalt_ext(gestalt_CharOutput, ch, &amp;len, <span class="number">1</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+then <code class="literal">res</code> will be one of <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-CannotPrint" title="gestalt_CharOutput_CannotPrint"><code class="literal">gestalt_CharOutput_CannotPrint</code></a>,
+<a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ExactPrint" title="gestalt_CharOutput_ExactPrint"><code class="literal">gestalt_CharOutput_ExactPrint</code></a>, or <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ApproxPrint" title="gestalt_CharOutput_ApproxPrint"><code class="literal">gestalt_CharOutput_ApproxPrint</code></a> (see 
+below.)</p>
+<p>In all cases, <code class="literal">len</code> (the <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> value pointed at by the third argument) will
+be the number of actual glyphs which will be used to represent the character.
+In the case of <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ExactPrint" title="gestalt_CharOutput_ExactPrint"><code class="literal">gestalt_CharOutput_ExactPrint</code></a>, this will always be 1; for
+<a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-CannotPrint" title="gestalt_CharOutput_CannotPrint"><code class="literal">gestalt_CharOutput_CannotPrint</code></a>, it may be 0 (nothing printed) or higher; for
+<a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ApproxPrint" title="gestalt_CharOutput_ApproxPrint"><code class="literal">gestalt_CharOutput_ApproxPrint</code></a>, it may be 1 or higher.
+This information may be useful when printing text in a fixed-width font.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  As described in <a href="chimara-Other-API-Conventions.html" title="Other API Conventions">Other API
+  Conventions</a>, you may skip this information by passing <code class="literal">NULL</code> as the
+  third argument in <a href="chimara-The-Gestalt-System.html#glk-gestalt-ext" title="glk_gestalt_ext ()"><code class="function">glk_gestalt_ext()</code></a>, or by calling <a href="chimara-The-Gestalt-System.html#glk-gestalt" title="glk_gestalt ()"><code class="function">glk_gestalt()</code></a> instead.
+</p>
+</div>
+<p>This selector will always return <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-CannotPrint" title="gestalt_CharOutput_CannotPrint"><code class="literal">gestalt_CharOutput_CannotPrint</code></a> if <code class="literal">ch</code> is
+an unprintable eight-bit character (0 to 9, 11 to 31, 127 to 159.)</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Make sure you do not get confused by signed byte values. If you set a
+  “<span class="type">signed char</span>” variable <code class="code">ch</code> to 0xFE, the
+  small-thorn character (þ), it will wind up as -2.
+  (The same is true of a “<span class="type">char</span>” variable, if your compiler
+  treats “<span class="type">char</span>” as signed!)
+  If you then call
+  </p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_CharOutput, ch);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  then (by the definition of C/C++) <code class="code">ch</code> will be sign-extended to
+  0xFFFFFFFE, which is not a legitimate character, even in Unicode. You
+  should write
+  </p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_CharOutput, (<span class="type">unsigned</span> <span class="type">char</span>)ch);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  instead.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Unicode includes the concept of non-spacing or combining characters, which 
+  do not represent glyphs; and double-width characters, whose glyphs take up
+  two spaces in a fixed-width font. Future versions of this spec may 
+  recognize these concepts by returning a <code class="code">len</code> of 0 or 2 when
+  <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput-ExactPrint" title="gestalt_CharOutput_ExactPrint"><code class="literal">gestalt_CharOutput_ExactPrint</code></a> is used. For the moment, we are adhering to 
+  a policy of “simple stuff first”.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-CharOutput-CannotPrint"></a><h3>gestalt_CharOutput_CannotPrint</h3>
+<pre class="programlisting">#define   gestalt_CharOutput_CannotPrint (0)
+</pre>
+<p>When the <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput" title="gestalt_CharOutput"><code class="literal">gestalt_CharOutput</code></a> selector returns this for a character, the
+character cannot be meaningfully printed. If you try, the player may see
+nothing, or may see a placeholder.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-CharOutput-ApproxPrint"></a><h3>gestalt_CharOutput_ApproxPrint</h3>
+<pre class="programlisting">#define   gestalt_CharOutput_ApproxPrint (1)
+</pre>
+<p>When the <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput" title="gestalt_CharOutput"><code class="literal">gestalt_CharOutput</code></a> selector returns this for a character, the 
+library will print some approximation of the character. It will be more or 
+less right, but it may not be precise, and it may not be distinguishable from
+other, similar characters.
+(Examples: “<code class="literal">ae</code>” for the one-character “æ” ligature, “<code class="literal">e</code>” for
+“è”, “<code class="literal">|</code>” for a broken vertical bar (¦).)</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-CharOutput-ExactPrint"></a><h3>gestalt_CharOutput_ExactPrint</h3>
+<pre class="programlisting">#define   gestalt_CharOutput_ExactPrint (2)
+</pre>
+<p>When the <a href="chimara-The-Gestalt-System.html#gestalt-CharOutput" title="gestalt_CharOutput"><code class="literal">gestalt_CharOutput</code></a> selector returns this for a character, the
+character will be printed exactly as defined.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-LineInput"></a><h3>gestalt_LineInput</h3>
+<pre class="programlisting">#define gestalt_LineInput (2)
+</pre>
+<p>If you set <code class="literal">ch</code> to a character code, and call</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_LineInput, ch);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+then <code class="literal">res</code> will be <code class="literal">TRUE</code> (1) if that character can be typed by the player in
+line input, and <code class="literal">FALSE</code> (0) if not.
+Note that if <code class="literal">ch</code> is a nonprintable Latin-1 character (0 to 31, 127 to 159),
+then this is guaranteed to return <code class="literal">FALSE</code>.
+See <a href="chimara-Line-Input.html" title="Line Input">Line Input</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-LineInputEcho"></a><h3>gestalt_LineInputEcho</h3>
+<pre class="programlisting">#define gestalt_LineInputEcho (17)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_LineInputEcho, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>This returns 1 if <a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a> is supported, and 0 if it is not.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Remember that if it is not supported, the behavior is always the default,
+  which is line echoing <span class="emphasis"><em>enabled</em></span>.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-LINE-ECHO:CAPS"></a><h3>GLK_MODULE_LINE_ECHO</h3>
+<pre class="programlisting">#define GLK_MODULE_LINE_ECHO
+</pre>
+<p>If this preprocessor symbol is defined, so is <a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a>. If
+not, not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-LineTerminators"></a><h3>gestalt_LineTerminators</h3>
+<pre class="programlisting">#define gestalt_LineTerminators (18)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_LineTerminators, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>This returns 1 if <a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a> is supported, and 0 if it
+is not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-LINE-TERMINATORS:CAPS"></a><h3>GLK_MODULE_LINE_TERMINATORS</h3>
+<pre class="programlisting">#define GLK_MODULE_LINE_TERMINATORS
+</pre>
+<p>If this preprocessor symbol is defined, so is
+<a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>. If not, not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-LineTerminatorKey"></a><h3>gestalt_LineTerminatorKey</h3>
+<pre class="programlisting">#define gestalt_LineTerminatorKey (19)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_LineTerminatorKey, ch);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>This returns 1 if the keycode <em class="parameter"><code>ch</code></em>
+ can be passed to
+<a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>. If it returns 0, that keycode will be
+ignored as a line terminator. Printable characters and <a href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a> will
+always return 0.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-CharInput"></a><h3>gestalt_CharInput</h3>
+<pre class="programlisting">#define gestalt_CharInput (1)
+</pre>
+<p>If you set <code class="literal">ch</code> to a character code, or a special code (from 0xFFFFFFFF
+down), and call</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_CharInput, ch);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+then <code class="literal">res</code> will be <code class="literal">TRUE</code> (1) if that character can be typed by the player in
+character input, and <code class="literal">FALSE</code> (0) if not.
+See <a href="chimara-Character-Input.html" title="Character Input">Character Input</a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-MouseInput"></a><h3>gestalt_MouseInput</h3>
+<pre class="programlisting">#define gestalt_MouseInput (4)
+</pre>
+<p>You can test whether mouse input is supported with the <a href="chimara-The-Gestalt-System.html#gestalt-MouseInput" title="gestalt_MouseInput"><code class="literal">gestalt_MouseInput</code></a> 
+selector.</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_MouseInput, windowtype);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This will return <code class="literal">TRUE</code> (1) if windows of the given type support mouse input.
+If this returns <code class="literal">FALSE</code> (0), it is still legal to call
+<a href="chimara-Mouse-Input-Events.html#glk-request-mouse-event" title="glk_request_mouse_event ()"><code class="function">glk_request_mouse_event()</code></a>, but it will have no effect, and you will never get
+mouse events.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-Timer"></a><h3>gestalt_Timer</h3>
+<pre class="programlisting">#define gestalt_Timer (5)
+</pre>
+<p>You can test whether the library supports timer events:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_Timer, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns <code class="literal">TRUE</code> (1) if timer events are supported, and <code class="literal">FALSE</code> (0) if they 
+are not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-Graphics"></a><h3>gestalt_Graphics</h3>
+<pre class="programlisting">#define gestalt_Graphics (6)
+</pre>
+<p>Before calling Glk graphics functions, you should use the following gestalt
+selector:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_Graphics, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns 1 if the overall suite of graphics functions is available. This
+includes <a href="chimara-Image-Resources.html#glk-image-draw" title="glk_image_draw ()"><code class="function">glk_image_draw()</code></a>, <a href="chimara-Image-Resources.html#glk-image-draw-scaled" title="glk_image_draw_scaled ()"><code class="function">glk_image_draw_scaled()</code></a>, <a href="chimara-Image-Resources.html#glk-image-get-info" title="glk_image_get_info ()"><code class="function">glk_image_get_info()</code></a>,
+<a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-erase-rect" title="glk_window_erase_rect ()"><code class="function">glk_window_erase_rect()</code></a>, <a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-fill-rect" title="glk_window_fill_rect ()"><code class="function">glk_window_fill_rect()</code></a>,
+<a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-set-background-color" title="glk_window_set_background_color ()"><code class="function">glk_window_set_background_color()</code></a>, and <a href="chimara-Graphics-in-Text-Buffer-Windows.html#glk-window-flow-break" title="glk_window_flow_break ()"><code class="function">glk_window_flow_break()</code></a>. It also
+includes the capability to create graphics windows.</p>
+<p>If this selector returns 0, you should not try to call these functions. They
+may have no effect, or they may cause a run-time error. If you try to create
+a graphics window, you will get <code class="literal">NULL</code>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-DrawImage"></a><h3>gestalt_DrawImage</h3>
+<pre class="programlisting">#define gestalt_DrawImage (7)
+</pre>
+<p>This selector returns 1 if images can be drawn in windows of the given type. 
+If it returns 0, <a href="chimara-Image-Resources.html#glk-image-draw" title="glk_image_draw ()"><code class="function">glk_image_draw()</code></a> will fail and return <code class="literal">FALSE</code> (0). You should 
+test <a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics"><code class="literal">wintype_Graphics</code></a> and <a href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer"><code class="literal">wintype_TextBuffer</code></a> separately, since libraries 
+may implement both, neither, or only one.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-Sound2"></a><h3>gestalt_Sound2</h3>
+<pre class="programlisting">#define gestalt_Sound2 (21)
+</pre>
+<p>You can test whether the library supports sound:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_Sound2, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns 1 if the overall suite of sound functions is available. This
+includes all the functions defined in <a href="chimara-glk-spec-sound.html" title="Sound">this chapter</a>.
+It also includes the capabilities described below under <a href="chimara-The-Gestalt-System.html#gestalt-SoundMusic" title="gestalt_SoundMusic"><code class="literal">gestalt_SoundMusic</code></a>,
+<a href="chimara-The-Gestalt-System.html#gestalt-SoundVolume" title="gestalt_SoundVolume"><code class="literal">gestalt_SoundVolume</code></a>, and <a href="chimara-The-Gestalt-System.html#gestalt-SoundNotify" title="gestalt_SoundNotify"><code class="literal">gestalt_SoundNotify</code></a>.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-Sound"></a><h3>gestalt_Sound</h3>
+<pre class="programlisting">#define gestalt_Sound (8)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_Sound, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns 1 if the overall suite of sound functions is available. This 
+includes <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a>, <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-destroy" title="glk_schannel_destroy ()"><code class="function">glk_schannel_destroy()</code></a>, 
+<a href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-iterate" title="glk_schannel_iterate ()"><code class="function">glk_schannel_iterate()</code></a>, <a href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-get-rock" title="glk_schannel_get_rock ()"><code class="function">glk_schannel_get_rock()</code></a>, <a href="chimara-Playing-Sounds.html#glk-schannel-play" title="glk_schannel_play ()"><code class="function">glk_schannel_play()</code></a>,
+<a href="chimara-Playing-Sounds.html#glk-schannel-play-ext" title="glk_schannel_play_ext ()"><code class="function">glk_schannel_play_ext()</code></a>, <a href="chimara-Playing-Sounds.html#glk-schannel-stop" title="glk_schannel_stop ()"><code class="function">glk_schannel_stop()</code></a>, <a href="chimara-Playing-Sounds.html#glk-schannel-set-volume" title="glk_schannel_set_volume ()"><code class="function">glk_schannel_set_volume()</code></a>, and
+<a href="chimara-Playing-Sounds.html#glk-sound-load-hint" title="glk_sound_load_hint ()"><code class="function">glk_sound_load_hint()</code></a>.</p>
+<p>If this selector returns 0, you should not try to call these functions. They 
+may have no effect, or they may cause a run-time error.</p>
+<p>This selector is guaranteed to return 1 if <a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> does.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-SoundVolume"></a><h3>gestalt_SoundVolume</h3>
+<pre class="programlisting">#define gestalt_SoundVolume (9)
+</pre>
+<p>You can test whether the library supports setting the volume of sound 
+channels: </p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_SoundVolume, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This selector returns 1 if the <a href="chimara-Playing-Sounds.html#glk-schannel-set-volume" title="glk_schannel_set_volume ()"><code class="function">glk_schannel_set_volume()</code></a> function works. If 
+it returns zero, <a href="chimara-Playing-Sounds.html#glk-schannel-set-volume" title="glk_schannel_set_volume ()"><code class="function">glk_schannel_set_volume()</code></a> has no effect.</p>
+<p>This selector is guaranteed to return 1 if <a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> does.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-SoundNotify"></a><h3>gestalt_SoundNotify</h3>
+<pre class="programlisting">#define gestalt_SoundNotify (10)
+</pre>
+<p>You can test whether the library supports sound notification events:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_SoundNotify, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This selector returns 1 if the library supports sound notification events. If
+it returns zero, you will never get such events.</p>
+<p>This selector is guaranteed to return 1 if <a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> does.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-Hyperlinks"></a><h3>gestalt_Hyperlinks</h3>
+<pre class="programlisting">#define gestalt_Hyperlinks (11)
+</pre>
+<p>You can test whether the library supports hyperlinks:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">glui32 res;
+res = glk_gestalt(gestalt_Hyperlinks, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns 1 if the overall suite of hyperlinks functions is available.
+This includes <a href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink" title="glk_set_hyperlink ()"><code class="function">glk_set_hyperlink()</code></a>, <a href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink-stream" title="glk_set_hyperlink_stream ()"><code class="function">glk_set_hyperlink_stream()</code></a>,
+<a href="chimara-Accepting-Hyperlink-Events.html#glk-request-hyperlink-event" title="glk_request_hyperlink_event ()"><code class="function">glk_request_hyperlink_event()</code></a>, <a href="chimara-Accepting-Hyperlink-Events.html#glk-cancel-hyperlink-event" title="glk_cancel_hyperlink_event ()"><code class="function">glk_cancel_hyperlink_event()</code></a>.</p>
+<p>If this selector returns 0, you should not try to call these functions. They
+may have no effect, or they may cause a run-time error.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-HyperlinkInput"></a><h3>gestalt_HyperlinkInput</h3>
+<pre class="programlisting">#define gestalt_HyperlinkInput (12)
+</pre>
+<p>You can test whether hyperlinks are supported with the 
+<a href="chimara-The-Gestalt-System.html#gestalt-HyperlinkInput" title="gestalt_HyperlinkInput"><code class="literal">gestalt_HyperlinkInput</code></a> selector:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_HyperlinkInput, windowtype);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This will return <code class="literal">TRUE</code> (1) if windows of the given type support hyperlinks.
+If this returns <code class="literal">FALSE</code> (0), it is still legal to call <a href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink" title="glk_set_hyperlink ()"><code class="function">glk_set_hyperlink()</code></a> and
+<a href="chimara-Accepting-Hyperlink-Events.html#glk-request-hyperlink-event" title="glk_request_hyperlink_event ()"><code class="function">glk_request_hyperlink_event()</code></a>, but they will have no effect, and you will
+never get hyperlink events.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-SoundMusic"></a><h3>gestalt_SoundMusic</h3>
+<pre class="programlisting">#define gestalt_SoundMusic (13)
+</pre>
+<p>You can test whether music resources are supported:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_SoundMusic, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+This returns 1 if the library is capable of playing music sound resources. If 
+it returns 0, only sampled sounds can be played.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  “Music sound resources” means MOD songs — the only music format that
+  Blorb currently supports.
+  The presence of this selector is, of course, an ugly hack.
+  It is a concession to the current state of the Glk libraries, some of which
+  can handle AIFF but not MOD sounds.
+</p>
+</div>
+<p>This selector is guaranteed to return 1 if <a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> does.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-GraphicsTransparency"></a><h3>gestalt_GraphicsTransparency</h3>
+<pre class="programlisting">#define gestalt_GraphicsTransparency (14)
+</pre>
+<p>This returns 1 if images with alpha channels can actually be drawn with the
+appropriate degree of transparency. If it returns 0, the alpha channel is
+ignored; fully transparent areas will be drawn in an implementation-defined
+color.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  The JPEG format does not support transparency or alpha channels; the PNG 
+  format does.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-DateTime"></a><h3>gestalt_DateTime</h3>
+<pre class="programlisting">#define gestalt_DateTime (20)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_DateTime, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>This returns 1 if the overall suite of system clock functions, as described
+in <a href="chimara-The-System-Clock.html" title="The System Clock">this chapter</a>, is available.</p>
+<p>If this selector returns 0, you should not try to call these functions. They
+may have no effect, or they may cause a run-time error.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Glk timer events are covered by a different selector. See <a href="chimara-The-Gestalt-System.html#gestalt-Timer" title="gestalt_Timer"><code class="literal">gestalt_Timer</code></a>.
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="gestalt-ResourceStream"></a><h3>gestalt_ResourceStream</h3>
+<pre class="programlisting">#define gestalt_ResourceStream (22)
+</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">res = glk_gestalt(gestalt_ResourceStream, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>This returns 1 if the <a href="chimara-The-Types-of-Streams.html#glk-stream-open-resource" title="glk_stream_open_resource ()"><code class="function">glk_stream_open_resource()</code></a> and
+<a href="chimara-The-Types-of-Streams.html#glk-stream-open-resource-uni" title="glk_stream_open_resource_uni ()"><code class="function">glk_stream_open_resource_uni()</code></a> functions are available. If it returns 0, you
+should not call them.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-RESOURCE-STREAM:CAPS"></a><h3>GLK_MODULE_RESOURCE_STREAM</h3>
+<pre class="programlisting">#define GLK_MODULE_RESOURCE_STREAM
+</pre>
+<p>If this preprocessor symbol is defined, so are <a href="chimara-The-Types-of-Streams.html#glk-stream-open-resource" title="glk_stream_open_resource ()"><code class="function">glk_stream_open_resource()</code></a> and
+<a href="chimara-The-Types-of-Streams.html#glk-stream-open-resource-uni" title="glk_stream_open_resource_uni ()"><code class="function">glk_stream_open_resource_uni()</code></a>.
+If not, not.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

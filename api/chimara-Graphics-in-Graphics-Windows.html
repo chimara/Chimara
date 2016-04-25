@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Graphics in Graphics Windows</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-graphics.html" title="Graphics">
+<link rel="prev" href="chimara-Image-Resources.html" title="Image Resources">
+<link rel="next" href="chimara-Graphics-in-Text-Buffer-Windows.html" title="Graphics in Text Buffer Windows">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Graphics-in-Graphics-Windows.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-graphics.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Image-Resources.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Graphics-in-Text-Buffer-Windows.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Graphics-in-Graphics-Windows"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Graphics-in-Graphics-Windows.top_of_page"></a>Graphics in Graphics Windows</span></h2>
+<p>Graphics in Graphics Windows — Drawing graphics in graphics windows</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Graphics-in-Graphics-Windows.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-set-background-color" title="glk_window_set_background_color ()">glk_window_set_background_color</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-fill-rect" title="glk_window_fill_rect ()">glk_window_fill_rect</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-erase-rect" title="glk_window_erase_rect ()">glk_window_erase_rect</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Graphics-in-Graphics-Windows.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Graphics-in-Graphics-Windows.description"></a><h2>Description</h2>
+<p>A graphics window is a rectangular canvas of pixels, upon which you can draw
+images. The contents are entirely under your control. You can draw as many
+images as you like, at any positions — overlapping if you like. If the
+window is resized, you are responsible for redrawing everything.
+See <a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics">Graphics Windows</a>.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Note that graphics windows do not support a full set of object-drawing 
+  commands, nor can you draw text in them. That may be available in a future 
+  Glk extension. For now, it seems reasonable to limit the task to a single 
+  primitive, the drawing of a raster image. And then there's the ability to
+  fill a rectangle with a solid color — a small extension, and 
+  hopefully no additional work for the library, since it can already clear 
+  with arbitrary background colors. In fact, if <a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-fill-rect" title="glk_window_fill_rect ()"><code class="function">glk_window_fill_rect()</code></a> did 
+  not exist, an author could invent it — by briefly setting the
+  background color, erasing a rectangle, and restoring.
+</p>
+</div>
+<p>If you call <a href="chimara-Image-Resources.html#glk-image-draw" title="glk_image_draw ()"><code class="function">glk_image_draw()</code></a> or <a href="chimara-Image-Resources.html#glk-image-draw-scaled" title="glk_image_draw_scaled ()"><code class="function">glk_image_draw_scaled()</code></a> in a graphics window,
+<em class="parameter"><code>val1</code></em>
+ and <em class="parameter"><code>val2</code></em>
+ are interpreted as X and Y coordinates. The image will be 
+drawn with its upper left corner at this position.</p>
+<p>It is legitimate for part of the image to fall outside the window; the excess
+is not drawn. Note that these are signed arguments, so you can draw an image
+which falls outside the left or top edge of the window, as well as the right
+or bottom.</p>
+<p>There are a few other commands which apply to graphics windows.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Graphics-in-Graphics-Windows.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-window-set-background-color"></a><h3>glk_window_set_background_color ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_window_set_background_color (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> color</code></em>);</pre>
+<p>This sets the window's background color. It does not change what is currently
+displayed; it only affects subsequent clears and resizes. The initial 
+background color of each window is white.</p>
+<p>Colors are encoded in a 32-bit value: the top 8 bits must be zero, the next 8
+bits are the red value, the next 8 bits are the green value, and the bottom 8
+bits are the blue value. Color values range from 0 to 255.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  So <code class="code">0x00000000</code> is black, <code class="code">0x00FFFFFF</code> is white, and 
+  <code class="code">0x00FF0000</code> is bright red.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This function may only be used with graphics windows. To set background 
+  colors in a text window, use text styles with color hints; see <a href="chimara-Styles.html" title="Styles">Styles</a>.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-set-background-color.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A graphics window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>color</p></td>
+<td class="parameter_description"><p>a 32-bit RGB color value.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-fill-rect"></a><h3>glk_window_fill_rect ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_window_fill_rect (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                      <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> color</code></em>,
+                      <em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> left</code></em>,
+                      <em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> top</code></em>,
+                      <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> width</code></em>,
+                      <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> height</code></em>);</pre>
+<p>This fills the given rectangle with the given color. It is legitimate for
+part of the rectangle to fall outside the window. If width or height is zero,
+nothing is drawn.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-fill-rect.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A graphics window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>color</p></td>
+<td class="parameter_description"><p>A 32-bit RGB color value, see <a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-set-background-color" title="glk_window_set_background_color ()"><code class="function">glk_window_set_background_color()</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>left</p></td>
+<td class="parameter_description"><p>The x coordinate of the top left corner of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>top</p></td>
+<td class="parameter_description"><p>The y coordinate of the top left corner of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>width</p></td>
+<td class="parameter_description"><p>The width of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>height</p></td>
+<td class="parameter_description"><p>The height of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-erase-rect"></a><h3>glk_window_erase_rect ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_window_erase_rect (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                       <em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> left</code></em>,
+                       <em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> top</code></em>,
+                       <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> width</code></em>,
+                       <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> height</code></em>);</pre>
+<p>This fills the given rectangle with the window's background color.</p>
+<p>You can also fill an entire graphics window with its background color by 
+calling <a href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()"><code class="function">glk_window_clear()</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-window-erase-rect.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>A graphics window.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>left</p></td>
+<td class="parameter_description"><p>The x coordinate of the top left corner of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>top</p></td>
+<td class="parameter_description"><p>The y coordinate of the top left corner of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>width</p></td>
+<td class="parameter_description"><p>The width of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>height</p></td>
+<td class="parameter_description"><p>The height of the rectangle.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Graphics-in-Graphics-Windows.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Creating and Destroying Sound Channels</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-sound.html" title="Sound">
+<link rel="prev" href="chimara-Sound-Resources.html" title="Sound Resources">
+<link rel="next" href="chimara-Playing-Sounds.html" title="Playing Sounds">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Creating-and-Destroying-Sound-Channels.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-sound.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Sound-Resources.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Playing-Sounds.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Creating-and-Destroying-Sound-Channels"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Creating-and-Destroying-Sound-Channels.top_of_page"></a>Creating and Destroying Sound Channels</span></h2>
+<p>Creating and Destroying Sound Channels — Creating new sound channels and closing them</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Creating-and-Destroying-Sound-Channels.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()">glk_schannel_create</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()">glk_schannel_create_ext</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-destroy" title="glk_schannel_destroy ()">glk_schannel_destroy</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Creating-and-Destroying-Sound-Channels.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Creating-and-Destroying-Sound-Channels.description"></a><h2>Description</h2>
+<p>Sounds in Glk are played through sound channels. Sound channels are another
+type of opaque object, like windows, streams, and file references.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Creating-and-Destroying-Sound-Channels.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-schannel-create"></a><h3>glk_schannel_create ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+glk_schannel_create (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
+<p>This creates a sound channel, about as you'd expect.</p>
+<p>Remember that it is possible that the library will be unable to create a new
+channel, in which case <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a> will return <code class="literal">NULL</code>.</p>
+<p>When you create a channel using <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a>, it has full volume,
+represented by the value 0x10000. Half volume would be 0x8000, three-quarters
+volume would be 0xC000, and so on. A volume of zero represents silence.</p>
+<p>You can overdrive the volume of a channel by setting a volume greater than 
+0x10000. However, this is not recommended; the library may be unable to 
+increase the volume past full, or the sound may become distorted. You should 
+always create sound resources with the maximum volume you will need, and then
+reduce the volume when appropriate using the channel-volume calls.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Mathematically, these volume changes should be taken as linear
+  multiplication of a waveform represented as linear samples. As I
+  understand it, linear PCM encodes the sound pressure, and therefore a
+  volume of 0x8000 should represent a 6 dB drop.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-schannel-create.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>rock</p></td>
+<td class="parameter_description"><p>The rock value to give the new sound channel.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-schannel-create.returns"></a><h4>Returns</h4>
+<p> A new sound channel, or <code class="literal">NULL</code>.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-schannel-create-ext"></a><h3>glk_schannel_create_ext ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+glk_schannel_create_ext (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>,
+                         <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> volume</code></em>);</pre>
+<p>The <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a> call lets you create a channel with the volume
+already set at a given level.</p>
+<p>Not all libraries support <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a>. You should test the
+<a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> selector before you rely on it; see <a href="chimara-Testing-for-Sound-Capabilities.html" title="Testing for Sound Capabilities">Testing for Sound
+Capabilities</a>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-schannel-create-ext.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>rock</p></td>
+<td class="parameter_description"><p>The rock value to give the new sound channel.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>volume</p></td>
+<td class="parameter_description"><p>Integer representing the volume; 0x10000 is 100%.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-schannel-create-ext.returns"></a><h4>Returns</h4>
+<p> A new sound channel, or <code class="literal">NULL</code>.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-schannel-destroy"></a><h3>glk_schannel_destroy ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_schannel_destroy (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a> chan</code></em>);</pre>
+<p>Destroys the channel. If the channel is playing a sound, the sound stops 
+immediately (with no notification event).</p>
+<div class="refsect3" lang="en">
+<a name="glk-schannel-destroy.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>chan</p></td>
+<td class="parameter_description"><p>The sound channel to destroy.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Creating-and-Destroying-Sound-Channels.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

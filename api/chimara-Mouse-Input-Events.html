@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Mouse Input Events</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-events.html" title="Events">
+<link rel="prev" href="chimara-Line-Input-Events.html" title="Line Input Events">
+<link rel="next" href="chimara-Timer-Events.html" title="Timer Events">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Mouse-Input-Events.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-events.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Line-Input-Events.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Timer-Events.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Mouse-Input-Events"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Mouse-Input-Events.top_of_page"></a>Mouse Input Events</span></h2>
+<p>Mouse Input Events — Events representing a mouse click</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Mouse-Input-Events.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Mouse-Input-Events.html#glk-request-mouse-event" title="glk_request_mouse_event ()">glk_request_mouse_event</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Mouse-Input-Events.html#glk-cancel-mouse-event" title="glk_cancel_mouse_event ()">glk_cancel_mouse_event</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Mouse-Input-Events.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Mouse-Input-Events.description"></a><h2>Description</h2>
+<p>On some platforms, Glk can recognize when the mouse (or other pointer) is 
+used to select a spot in a window. You can request mouse input only in text 
+grid windows and graphics windows.</p>
+<p>A window can have mouse input and character/line input pending at the same
+time.</p>
+<p>If the player clicks in a window which has a mouse input event pending,
+<a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> will return an event whose type is <a href="chimara-Events.html#evtype-MouseInput" title="evtype_MouseInput"><code class="literal">evtype_MouseInput</code></a>. Again,
+once this happens, the request is complete, and you must request another if
+you want further mouse input.</p>
+<p>In the event structure, <em class="parameter"><code>win</code></em>
+ tells what window the event came from.</p>
+<p>In a text grid window, the <em class="parameter"><code>val1</code></em>
+ and <em class="parameter"><code>val2</code></em>
+ fields are the x and y coordinates
+of the character that was clicked on. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>So <em class="parameter"><code>val1</code></em> is the column, and <em class="parameter"><code>val2</code></em> is the row.</p>
+</div>
+<p>The top leftmost character is considered to be (0,0).</p>
+<p>In a graphics window, they are the x and y coordinates of the pixel that was
+clicked on. Again, the top left corner of the window is (0,0).</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Most mouse-based idioms define standard functions for mouse hits in text
+  windows — typically selecting or copying text. It is up to the
+  library to separate this from Glk mouse input. The library may choose to
+  select text when it is clicked normally, and cause Glk mouse events when
+  text is control-clicked. Or the other way around. Or it may be the
+  difference between clicking and double-clicking. Or the library may
+  reserve a particular mouse button, on a multi-button mouse. It may even
+  specify a keyboard key to be the "mouse button", referring to wherever the
+  mouse cursor is when the key is hit. Or some even more esoteric positioning
+  system. You need only know that the user can do it, or not.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  However, since different platforms will handle this issue differently, you
+  should be careful how you instruct the player in your program. Do not tell
+  the player to “double-click”, “right-click”, or “control-click” in a
+  window.
+  The preferred term is “to touch the window”, or a spot in the window.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Goofy, but preferred.
+</p>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Mouse-Input-Events.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-request-mouse-event"></a><h3>glk_request_mouse_event ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_request_mouse_event (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Requests mouse input on the window <em class="parameter"><code>win</code></em>
+.</p>
+<div class="refsect3" lang="en">
+<a name="glk-request-mouse-event.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>Window on which to request a mouse input event.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-cancel-mouse-event"></a><h3>glk_cancel_mouse_event ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_cancel_mouse_event (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>);</pre>
+<p>Cancels the pending mouse input request on <em class="parameter"><code>win</code></em>
+.</p>
+<div class="refsect3" lang="en">
+<a name="glk-cancel-mouse-event.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>Window with a mouse input event pending.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Mouse-Input-Events.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

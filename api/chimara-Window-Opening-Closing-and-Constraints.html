@@ -1,0 +1,617 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Window Opening, Closing, and Constraints</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
+<link rel="prev" href="chimara-Window-Arrangement.html" title="Window Arrangement">
+<link rel="next" href="chimara-Changing-Window-Constraints.html" title="Changing Window Constraints">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Window-Opening-Closing-and-Constraints.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-windows.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Window-Arrangement.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Changing-Window-Constraints.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Window-Opening-Closing-and-Constraints.top_of_page"></a>Window Opening, Closing, and Constraints</span></h2>
+<p>Window Opening, Closing, and Constraints — Creating new windows and closing them</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()">glk_window_open</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-close" title="glk_window_close ()">glk_window_close</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Left" title="winmethod_Left">winmethod_Left</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Right" title="winmethod_Right">winmethod_Right</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Above" title="winmethod_Above">winmethod_Above</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Below" title="winmethod_Below">winmethod_Below</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed">winmethod_Fixed</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional">winmethod_Proportional</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Border" title="winmethod_Border">winmethod_Border</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-NoBorder" title="winmethod_NoBorder">winmethod_NoBorder</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints.description"></a><h2>Description</h2>
+<p>You can open a new window using <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> and close it again using
+<a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-close" title="glk_window_close ()"><code class="function">glk_window_close()</code></a>.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-window-open"></a><h3>glk_window_open ()</h3>
+<pre class="programlisting"><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="returnvalue">winid_t</span></a>
+glk_window_open (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> split</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> method</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> size</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> wintype</code></em>,
+                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
+<p>Creates a new window. If there are no windows, the first three arguments are
+meaningless. <em class="parameter"><code>split</code></em>
+ <span class="emphasis"><em>must</em></span> be 0, and <em class="parameter"><code>method</code></em>
+ and <em class="parameter"><code>size</code></em>
+
+are ignored. <em class="parameter"><code>wintype</code></em>
+ is the type of window you're creating, and <em class="parameter"><code>rock</code></em>
+ is
+the rock (see <a href="chimara-Opaque-Objects.html#chimara-Rocks" title="Rocks">Rocks</a>).</p>
+<p>If any windows exist, new windows must be created by splitting existing
+ones. <em class="parameter"><code>split</code></em>
+ is the window you want to split; this <span class="emphasis"><em>must 
+not</em></span> be zero. <em class="parameter"><code>method</code></em>
+ specifies the direction and the split method
+(see below). <em class="parameter"><code>size</code></em>
+ is the size of the split. <em class="parameter"><code>wintype</code></em>
+ is the type of window
+you're creating, and <em class="parameter"><code>rock</code></em>
+ is the rock.</p>
+<p>The method argument must be the logical-or of a direction constant
+(<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Above" title="winmethod_Above"><code class="literal">winmethod_Above</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Below" title="winmethod_Below"><code class="literal">winmethod_Below</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Left" title="winmethod_Left"><code class="literal">winmethod_Left</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Right" title="winmethod_Right"><code class="literal">winmethod_Right</code></a>) and a
+split-method constant (<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed"><code class="literal">winmethod_Fixed</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>).</p>
+<p>Remember that it is possible that the library will be unable to create a new
+window, in which case <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> will return <code class="literal">NULL</code>.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  It is acceptable to gracefully exit, if the window you are creating is an
+  important one — such as your first window. But you should not try to
+  perform any window operation on the id until you have tested to make sure
+  it is non-zero.
+</p>
+</div>
+<p>The examples we've seen so far have the simplest kind of size control. (Yes,
+this is “below”.)
+Every pair is a percentage split,
+with <span class="mathphrase">X</span>
+percent going to one side,
+and <span class="mathphrase">(100 -
+X)</span> percent going to the other side.
+If the player resizes the window, the whole mess expands, contracts, or
+stretches in a uniform way.</p>
+<p>As I said above, you can also make fixed-size splits. This is a little more
+complicated, because you have to know how this fixed size is measured.</p>
+<p>Sizes are measured in a way which is different for each window type. For
+example, a text grid window is measured by the size of its fixed-width font.
+You can make a text grid window which is fixed at a height of four rows, or
+ten columns. A text buffer window is measured by the size of its font.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Remember that different windows may use different size fonts. Even two
+  text grid windows may use fixed-size fonts of different sizes.
+</p>
+</div>
+<p>Graphics windows are measured in pixels, not characters. Blank windows
+aren't measured at all; there's no meaningful way to measure them, and
+therefore you can't create a blank window of a fixed size, only of a
+proportional (percentage) size.</p>
+<p>So to create a text buffer window which takes the top 40% of the original
+window's space, you would execute</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">newwin = glk_window_open(win, winmethod_Above | winmethod_Proportional, <span class="number">40</span>, wintype_TextBuffer, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>To create a text grid which is always five lines high, at the bottom of the
+original window, you would do</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting">newwin = glk_window_open(win, winmethod_Below | winmethod_Fixed, <span class="number">5</span>, wintype_TextGrid, <span class="number">0</span>);</pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>Note that the meaning of the <em class="parameter"><code>size</code></em>
+ argument depends on the <em class="parameter"><code>method</code></em>
+ argument.
+If the method is <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed"><code class="literal">winmethod_Fixed</code></a>, it also depends on the <em class="parameter"><code>wintype</code></em>
+ argument.
+The new window is then called the “key window” of this split, because its
+window type determines how the split size is computed.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  For <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a> splits, you can still call the new window the
+  “key window”.
+  But the key window is not important for proportional splits, because the
+  size will always be computed as a simple ratio of the available space, not
+  a fixed size of one child window.
+</p>
+</div>
+<p>This system is more or less peachy as long as all the constraints work out.
+What happens when there is a conflict? The rules are simple. Size control
+always flows down the tree, and the player is at the top. Let's bring out an
+example:</p>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td><div class="mediaobject"><img src="fig5-7a.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+     O
+    / \
+   O   B
+  / \
+ A   C
+</pre></div></td>
+</tr></tbody>
+</table></div>
+<p>First we split A into A and B, with a 50% proportional split. Then we split
+A into A and C, with C above, C being a text grid window, and C gets a fixed
+size of two rows (as measured in its own font size). A gets whatever remains
+of the 50% it had before.</p>
+<p>Now the player stretches the window vertically.</p>
+<p><span class="inlinemediaobject"><img src="fig6.png" alt="stretching window vertically"></span></p>
+<p>The library figures: the topmost split, the original A/B split, is 50-50. So
+B gets half the screen space, and the pair window next to it (the lower “O”)
+gets the other half.
+Then it looks at the lower “O”.
+C gets two rows; A gets the rest.
+All done.</p>
+<p>Then the user maliciously starts squeezing the window down, in stages:</p>
+<div class="informaltable">
+<a name="chimara-Figure-Squeezing-Window"></a><table border="0">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr valign="top">
+<td valign="top"><div class="mediaobject"><img src="fig5-7a.png"></div></td>
+<td valign="top"><div class="mediaobject"><img src="fig7b.png"></div></td>
+<td valign="top"><div class="mediaobject"><img src="fig7c.png"></div></td>
+<td valign="top"><div class="mediaobject"><img src="fig7d.png"></div></td>
+<td valign="top"><div class="mediaobject"><img src="fig7e.png"></div></td>
+</tr></tbody>
+</table>
+</div>
+<p>The logic remains the same. B always gets half the space. At stage 3,
+there's no room left for A, so it winds up with zero height. Nothing
+displayed in A will be visible. At stage 4, there isn't even room in the
+upper 50% to give C its two rows; so it only gets one. Finally, C is
+squashed out of existence as well.</p>
+<p>When a window winds up undersized, it remembers what size it should be. In
+the example above, A remembers that it should be two rows; if the user
+expands the window to the original size, it would return to the original
+layout.</p>
+<p>The downward flow of control is a bit harsh. After all, in stage 4, there's
+room for C to have its two rows if only B would give up some of its 50%. But
+this does not happen.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This makes life much easier for the Glk library. To determine the
+  configuration of a window, it only needs to look at the window's
+  ancestors, never at its descendants. So window layout is a simple
+  recursive algorithm, no backtracking.
+</p>
+</div>
+<p>What happens when you split a fixed-size window? The resulting pair window
+— that is, the two new parts together — retain the same size
+constraint as the original window that was split. The key window for the
+original split is still the key window for that split, even though it's now
+a grandchild instead of a child.</p>
+<p>The easy, and correct, way to think about this is that the size constraint
+is stored by a window's parent, not the window itself; and a constraint
+consists of a pointer to a key window plus a size value.</p>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td><div class="mediaobject"><img src="fig8a.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+ A   
+</pre></div></td>
+<td><div class="mediaobject"><img src="fig8b.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+   O1  
+  / \  
+ A   B 
+</pre></div></td>
+<td><div class="mediaobject"><img src="fig8c.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+     O1  
+    / \  
+   O2  B 
+  / \    
+ A   C   
+</pre></div></td>
+</tr></tbody>
+</table></div>
+<p>The initial window is A. After the first split, the new pair window (O1,
+which covers the whole screen) knows that its new child (B) is below A, and
+gets 50% of its own area. (B is the key window for this split, but a
+proportional split doesn't care about key windows.)</p>
+<p>After the <span class="emphasis"><em>second</em></span> split, all this remains true; O1 knows
+that its first child gets 50% of its space, and B is O1's key window. But
+now O1's first child is O2 instead of A. The newer pair window (O2) knows
+that its first child (C) is above the second, and gets a fixed size of two
+rows. (As measured in C's font, because C is O2's key window.)</p>
+<p>If we split C, now, the resulting pair will still be two C-font rows high
+— that is, tall enough for two lines of whatever font C displays. For
+the sake of example, we'll do this vertically.</p>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td><div class="mediaobject"><img src="fig9.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+     O1
+    / \
+   O2  B
+  / \
+ A   O3
+    / \
+   C   D
+</pre></div></td>
+</tr></tbody>
+</table></div>
+<p>O3 now knows that its children have a 50-50 left-right split. O2 is still
+committed to giving its upper child, O3, two C-font rows. Again, this is
+because C is O2's key window. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This turns out to be a good idea, because it means that C, the text grid
+  window, is still two rows high. If O3 had been a upper-lower split, things
+  wouldn't work out so neatly. But the rules would still apply. If you don't
+  like this, don't do it.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-open.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>split</p></td>
+<td class="parameter_description"><p>The window to split to create the new window. Must be 0 if there
+are no windows yet.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>method</p></td>
+<td class="parameter_description"><p>Position of the new window and method of size computation. One of
+<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Above" title="winmethod_Above"><code class="literal">winmethod_Above</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Below" title="winmethod_Below"><code class="literal">winmethod_Below</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Left" title="winmethod_Left"><code class="literal">winmethod_Left</code></a>, or <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Right" title="winmethod_Right"><code class="literal">winmethod_Right</code></a>
+OR'ed with <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed"><code class="literal">winmethod_Fixed</code></a> or <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>. If <em class="parameter"><code>wintype</code></em>
+is
+<a href="chimara-The-Types-of-Windows.html#wintype-Blank" title="wintype_Blank"><code class="literal">wintype_Blank</code></a>, then <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed"><code class="literal">winmethod_Fixed</code></a> is not allowed. May also be OR'ed with
+<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Border" title="winmethod_Border"><code class="literal">winmethod_Border</code></a> or <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-NoBorder" title="winmethod_NoBorder"><code class="literal">winmethod_NoBorder</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>size</p></td>
+<td class="parameter_description"><p>Size of the new window, in percentage points if <em class="parameter"><code>method</code></em>
+is
+<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>, otherwise in characters if <em class="parameter"><code>wintype</code></em>
+is
+<a href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer"><code class="literal">wintype_TextBuffer</code></a> or <a href="chimara-The-Types-of-Windows.html#wintype-TextGrid" title="wintype_TextGrid"><code class="literal">wintype_TextGrid</code></a>, or pixels if <em class="parameter"><code>wintype</code></em>
+is
+<a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics"><code class="literal">wintype_Graphics</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>wintype</p></td>
+<td class="parameter_description"><p>Type of the new window. One of <a href="chimara-The-Types-of-Windows.html#wintype-Blank" title="wintype_Blank"><code class="literal">wintype_Blank</code></a>, <a href="chimara-The-Types-of-Windows.html#wintype-TextGrid" title="wintype_TextGrid"><code class="literal">wintype_TextGrid</code></a>,
+<a href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer"><code class="literal">wintype_TextBuffer</code></a>, or <a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics"><code class="literal">wintype_Graphics</code></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>rock</p></td>
+<td class="parameter_description"><p>The new window's rock value.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-open.returns"></a><h4>Returns</h4>
+<p> the new window, or <code class="literal">NULL</code> on error.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-window-close"></a><h3>glk_window_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+glk_window_close (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                  <em class="parameter"><code><a href="chimara-Closing-Streams.html#stream-result-t" title="stream_result_t"><span class="type">stream_result_t</span></a> *result</code></em>);</pre>
+<p>Closes <em class="parameter"><code>win</code></em>
+, which is pretty much exactly the opposite of opening a window.
+It is legal to close all your windows, or to close the root window (which is
+the same thing.) </p>
+<p>The <em class="parameter"><code>result</code></em>
+ argument is filled with the output character count of the window
+stream.
+See <a href="chimara-Streams.html" title="Streams">Streams</a> and <a href="chimara-Closing-Streams.html" title="Closing Streams">Closing
+Streams</a>.</p>
+<p>When you close a window (and it is not the root window), the other window
+in its pair takes over all the freed-up area. Let's close D, in the current
+example:</p>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td><div class="mediaobject"><img src="fig10.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+     O1
+    / \
+   O2  B
+  / \
+ A   C
+</pre></div></td>
+</tr></tbody>
+</table></div>
+<p>Notice what has happened. D is gone. O3 is gone, and its 50-50 left-right
+split has gone with it. The other size constraints are unchanged; O2 is
+still committed to giving its upper child two rows, as measured in the font
+of O2's key window, which is C. Conveniently, O2's upper child is C, just as
+it was before we created D. In fact, now that D is gone, everything is back
+to the way it was before we created D.</p>
+<p>But what if we had closed C instead of D? We would have gotten this:</p>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td><div class="mediaobject"><img src="fig11.png"></div></td>
+<td><div class="mediaobject"><pre class="literallayout">
+     O1
+    / \
+   O2  B
+  / \
+ A   D
+</pre></div></td>
+</tr></tbody>
+</table></div>
+<p>Again, O3 is gone. But D has collapsed to zero height. This is because its
+height is controlled by O2, and O2's key window was C, and C is now gone. O2
+no longer has a key window at all, so it cannot compute a height for its
+upper child, so it defaults to zero.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  This may seem to be an inconvenient choice. That is deliberate. You should
+  not leave a pair window with no key, and the zero-height default reminds
+  you not to. You can use <a href="chimara-Changing-Window-Constraints.html#glk-window-set-arrangement" title="glk_window_set_arrangement ()"><code class="function">glk_window_set_arrangement()</code></a> to set a new split
+  measurement and key window. See <a href="chimara-Changing-Window-Constraints.html" title="Changing Window Constraints">Changing Window
+  Constraints</a>.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-window-close.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>Window to close.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>result</p></td>
+<td class="parameter_description"><p>Pointer to a <a href="chimara-Closing-Streams.html#stream-result-t" title="stream_result_t"><span class="type">stream_result_t</span></a> in which to store the write count.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Window-Opening-Closing-and-Constraints.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="winmethod-Left"></a><h3>winmethod_Left</h3>
+<pre class="programlisting">#define winmethod_Left  (0x00)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, the new window will be 
+to the left of the old one which was split.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-Right"></a><h3>winmethod_Right</h3>
+<pre class="programlisting">#define winmethod_Right (0x01)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, the new window will be 
+to the right of the old one which was split.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-Above"></a><h3>winmethod_Above</h3>
+<pre class="programlisting">#define winmethod_Above (0x02)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, the new window will be 
+above the old one which was split.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-Below"></a><h3>winmethod_Below</h3>
+<pre class="programlisting">#define winmethod_Below (0x03)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, the new window will be 
+below the old one which was split.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-Fixed"></a><h3>winmethod_Fixed</h3>
+<pre class="programlisting">#define winmethod_Fixed (0x10)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, the new window will be 
+a fixed size. (See <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>).</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-Proportional"></a><h3>winmethod_Proportional</h3>
+<pre class="programlisting">#define winmethod_Proportional (0x20)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, the new window will be 
+a given proportion of the old window's size. (See <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>).</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-Border"></a><h3>winmethod_Border</h3>
+<pre class="programlisting">#define winmethod_Border   (0x000)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, it specifies that there
+should be a visible window border between the new window and its sibling.
+(This is a hint to the library.)</p>
+<div class="blockquote"><blockquote class="blockquote"><div class="refsect2" lang="en">
+<a name="idp140340084941920"></a><h3>Chimara</h3>
+<p>There will only be a visible border if the <a href="ChimaraGlk.html#ChimaraGlk--spacing" title="The “spacing” property"><span class="type">“spacing”</span></a> property
+is nonzero.
+Setting <a href="ChimaraGlk.html#ChimaraGlk--spacing" title="The “spacing” property"><span class="type">“spacing”</span></a> to zero disables all borders on Glk windows.</p>
+</div></blockquote></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="winmethod-NoBorder"></a><h3>winmethod_NoBorder</h3>
+<pre class="programlisting">#define winmethod_NoBorder (0x100)
+</pre>
+<p>When calling <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a> with this <em class="parameter"><code>method</code></em>
+, it specifies that there
+should not be a visible window border between the new window and its sibling.
+(This is a hint to the library; you might specify NoBorder between two
+graphics windows that should form a single image.)</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

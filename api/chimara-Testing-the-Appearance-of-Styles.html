@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Testing the Appearance of Styles</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-streams.html" title="Streams">
+<link rel="prev" href="chimara-Suggesting-the-Appearance-of-Styles.html" title="Suggesting the Appearance of Styles">
+<link rel="next" href="chimara-The-Types-of-Streams.html" title="The Types of Streams">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Testing-the-Appearance-of-Styles.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-streams.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Suggesting-the-Appearance-of-Styles.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-The-Types-of-Streams.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Testing-the-Appearance-of-Styles"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Testing-the-Appearance-of-Styles.top_of_page"></a>Testing the Appearance of Styles</span></h2>
+<p>Testing the Appearance of Styles — Finding out how the library displays your style hints</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-the-Appearance-of-Styles.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Testing-the-Appearance-of-Styles.html#glk-style-distinguish" title="glk_style_distinguish ()">glk_style_distinguish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Testing-the-Appearance-of-Styles.html#glk-style-measure" title="glk_style_measure ()">glk_style_measure</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-the-Appearance-of-Styles.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-the-Appearance-of-Styles.description"></a><h2>Description</h2>
+<p>You can suggest the appearance of a window's style before the window is
+created; after the window is created, you can test the style's actual
+appearance. These functions do not test the style hints; they test the
+attribute of the style as it appears to the player.</p>
+<p>Note that although you cannot change the appearance of a window's styles
+after the window is created, the library can. A platform may support dynamic
+preferences, which allow the player to change text formatting while your
+program is running.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Changes that affect window size (such as font size changes) will be
+  signalled by an <a href="chimara-Events.html#evtype-Arrange" title="evtype_Arrange"><code class="literal">evtype_Arrange</code></a> event. However, more subtle changes (such
+  as text color differences) are not signalled. If you test the appearance of
+  styles at the beginning of your program, you must keep in mind the
+  possibility that the player will change them later.
+</p>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-the-Appearance-of-Styles.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-style-distinguish"></a><h3>glk_style_distinguish ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_style_distinguish (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                       <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> styl1</code></em>,
+                       <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> styl2</code></em>);</pre>
+<p>Decides whether two styles are visually distinguishable in the given window.
+The exact meaning of this is left for the library to determine.</p>
+<div class="blockquote"><blockquote class="blockquote"><div class="refsect2" lang="en">
+<a name="idp140340079704064"></a><h3>Chimara</h3>
+<p>Currently, all styles of one window are assumed to be mutually
+distinguishable.</p>
+</div></blockquote></div>
+<div class="refsect3" lang="en">
+<a name="glk-style-distinguish.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>The window in which the styles are to be distinguished.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>styl1</p></td>
+<td class="parameter_description"><p>The first style to be distinguished from the second style.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>styl2</p></td>
+<td class="parameter_description"><p>The second style to be distinguished from the first style.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-style-distinguish.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> (1) if the two styles are visually distinguishable. If they
+are not, it returns <code class="literal">FALSE</code> (0).</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-style-measure"></a><h3>glk_style_measure ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_style_measure (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                   <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> styl</code></em>,
+                   <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> hint</code></em>,
+                   <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *result</code></em>);</pre>
+<p>Tries to test an attribute of one style in the given window <em class="parameter"><code>win</code></em>
+. The library
+may not be able to determine the attribute; if not, this returns <code class="literal">FALSE</code> (0).
+If it can, it returns <code class="literal">TRUE</code> (1) and stores the value in the location pointed
+at by <em class="parameter"><code>result</code></em>
+. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  As usual, it is legal for <em class="parameter"><code>result</code></em> to be <code class="literal">NULL</code>, although fairly pointless.
+</p>
+</div>
+<p>The meaning of the value depends on the hint which was tested:</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Indentation" title="stylehint_Indentation"><code class="literal">stylehint_Indentation</code></a>, <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-ParaIndentation" title="stylehint_ParaIndentation"><code class="literal">stylehint_ParaIndentation</code></a></span></td>
+<td>
+<p>The indentation and paragraph indentation. These are in a
+  metric which is platform-dependent.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>Most likely either characters or pixels.</p>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Justification" title="stylehint_Justification"><code class="literal">stylehint_Justification</code></a></span></td>
+<td><p>One of the constants <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-just-LeftFlush" title="stylehint_just_LeftFlush"><code class="literal">stylehint_just_LeftFlush</code></a>,
+  <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-just-LeftRight" title="stylehint_just_LeftRight"><code class="literal">stylehint_just_LeftRight</code></a>, <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-just-Centered" title="stylehint_just_Centered"><code class="literal">stylehint_just_Centered</code></a>, or
+  <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-just-RightFlush" title="stylehint_just_RightFlush"><code class="literal">stylehint_just_RightFlush</code></a>.</p></td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Size" title="stylehint_Size"><code class="literal">stylehint_Size</code></a></span></td>
+<td>
+<p>The font size. Again, this is in a platform-dependent
+  metric.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>Pixels, points, or simply 1 if the library does not support
+  varying font sizes.</p>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Weight" title="stylehint_Weight"><code class="literal">stylehint_Weight</code></a></span></td>
+<td><p>1 for heavy-weight fonts (boldface), 0 for normal weight,
+  and -1 for light-weight fonts.</p></td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Oblique" title="stylehint_Oblique"><code class="literal">stylehint_Oblique</code></a></span></td>
+<td><p>1 for oblique fonts (italic), or 0 for normal angle.</p></td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Proportional" title="stylehint_Proportional"><code class="literal">stylehint_Proportional</code></a></span></td>
+<td><p>1 for proportional-width fonts, or 0 for fixed-width.
+  </p></td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-TextColor" title="stylehint_TextColor"><code class="literal">stylehint_TextColor</code></a>, <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-BackColor" title="stylehint_BackColor"><code class="literal">stylehint_BackColor</code></a></span></td>
+<td><p>These are values from 0x00000000 to 0x00FFFFFF, encoded as
+  described in <a href="chimara-Suggesting-the-Appearance-of-Styles.html" title="Suggesting the Appearance of Styles">Suggesting the
+  Appearance of Styles</a>.</p></td>
+</tr>
+<tr>
+<td><span class="term"><a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-ReverseColor" title="stylehint_ReverseColor"><code class="literal">stylehint_ReverseColor</code></a></span></td>
+<td><p>0 for normal printing, 1 if the foreground and background
+  colors are reversed.</p></td>
+</tr>
+</tbody>
+</table></div>
+<p>Signed values, such as the <a href="chimara-Suggesting-the-Appearance-of-Styles.html#stylehint-Weight" title="stylehint_Weight"><code class="literal">stylehint_Weight</code></a> value, are cast to <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a>.
+They may be cast to <a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> to be dealt with in a more natural context.</p>
+<div class="refsect3" lang="en">
+<a name="glk-style-measure.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>win</p></td>
+<td class="parameter_description"><p>The window from which to take the style.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>styl</p></td>
+<td class="parameter_description"><p>The style to perform the measurement on.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>hint</p></td>
+<td class="parameter_description"><p>The stylehint to measure.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>result</p></td>
+<td class="parameter_description"><p>Address to write the result to.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-style-measure.returns"></a><h4>Returns</h4>
+<p> TRUE upon successul retrieval, otherwise FALSE.</p>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-the-Appearance-of-Styles.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

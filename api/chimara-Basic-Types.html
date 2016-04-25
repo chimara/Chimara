@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Basic Types</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
+<link rel="prev" href="chimara-The-Tick-Thing.html" title="The Tick Thing">
+<link rel="next" href="chimara-Opaque-Objects.html" title="Opaque Objects">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Basic-Types.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-overall-structure.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-The-Tick-Thing.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Opaque-Objects.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Basic-Types"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Basic-Types.top_of_page"></a>Basic Types</span></h2>
+<p>Basic Types — Basic types used in Glk</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Basic-Types.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a href="chimara-Basic-Types.html#glui32" title="glui32">glui32</a></td>
+</tr>
+<tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a href="chimara-Basic-Types.html#glsi32" title="glsi32">glsi32</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Basic-Types.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Basic-Types.description"></a><h2>Description</h2>
+<p>For simplicity, all the arguments used in Glk calls are of a very few types.</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term">32-bit unsigned integer</span></td>
+<td><p>Unsigned integers are used wherever possible, which is
+   nearly everywhere. This type is called <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a>.</p></td>
+</tr>
+<tr>
+<td><span class="term">32-bit signed integer</span></td>
+<td><p>This type is called <a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a>. Rarely used.</p></td>
+</tr>
+<tr>
+<td><span class="term">References to library objects</span></td>
+<td><p>These are pointers to opaque C structures; each library
+   will use different structures, so you can not and should not try to
+   manipulate their contents. See <a href="chimara-Opaque-Objects.html" title="Opaque Objects">Opaque Objects</a>.</p></td>
+</tr>
+<tr>
+<td><span class="term">Pointer to one of the above types</span></td>
+<td><p>Pointer to a structure which consists entirely of the
+   above types.</p></td>
+</tr>
+<tr>
+<td><span class="term"><span class="type">unsigned char</span></span></td>
+<td><p>This is used only for Latin-1 text characters; see 
+   <a href="chimara-Character-Encoding.html" title="Character Encoding">Character Encoding</a>.
+   </p></td>
+</tr>
+<tr>
+<td><span class="term">Pointer to <span class="type">char</span></span></td>
+<td><p>Sometimes this means a null-terminated string; sometimes
+   an unterminated buffer, with length as a separate <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> argument. The
+   documentation says which.</p></td>
+</tr>
+<tr>
+<td><span class="term">Pointer to <span class="type">void</span></span></td>
+<td><p>When nothing else will do.</p></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Basic-Types.functions_details"></a><h2>Functions</h2>
+<p></p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Basic-Types.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="glui32"></a><h3>glui32</h3>
+<pre class="programlisting">typedef uint32_t glui32;
+</pre>
+<p>A 32-bit unsigned integer type, used wherever possible in Glk.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glsi32"></a><h3>glsi32</h3>
+<pre class="programlisting">typedef int32_t glsi32;
+</pre>
+<p>A 32-bit signed integer type, rarely used.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

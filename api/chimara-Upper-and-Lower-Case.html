@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Upper and Lower Case</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-character-encoding.html" title="Character Encoding">
+<link rel="prev" href="chimara-Character-Input.html" title="Character Input">
+<link rel="next" href="chimara-Unicode-String-Normalization.html" title="Unicode String Normalization">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Upper-and-Lower-Case.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-character-encoding.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Character-Input.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Unicode-String-Normalization.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Upper-and-Lower-Case"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Upper-and-Lower-Case.top_of_page"></a>Upper and Lower Case</span></h2>
+<p>Upper and Lower Case — Changing the case of strings</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Upper-and-Lower-Case.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">unsigned <span class="returnvalue">char</span>
+</td>
+<td class="function_name">
+<a href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()">glk_char_to_lower</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">unsigned <span class="returnvalue">char</span>
+</td>
+<td class="function_name">
+<a href="chimara-Upper-and-Lower-Case.html#glk-char-to-upper" title="glk_char_to_upper ()">glk_char_to_upper</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()">glk_buffer_to_lower_case_uni</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-upper-case-uni" title="glk_buffer_to_upper_case_uni ()">glk_buffer_to_upper_case_uni</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+</td>
+<td class="function_name">
+<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-title-case-uni" title="glk_buffer_to_title_case_uni ()">glk_buffer_to_title_case_uni</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Upper-and-Lower-Case.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Upper-and-Lower-Case.description"></a><h2>Description</h2>
+<p>Glk has functions to manipulate the case of both Latin-1 and Unicode strings.
+One Latin-1 lowercase character corresponds to one uppercase character, and
+vice versa, so the Latin-1 functions act on single characters. The Unicode
+functions act on whole strings, since the length of the string may change.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Upper-and-Lower-Case.functions_details"></a><h2>Functions</h2>
+<div class="refsect2" lang="en">
+<a name="glk-char-to-lower"></a><h3>glk_char_to_lower ()</h3>
+<pre class="programlisting">unsigned <span class="returnvalue">char</span>
+glk_char_to_lower (<em class="parameter"><code>unsigned <span class="type">char</span> ch</code></em>);</pre>
+<p>You can convert Latin-1 characters between upper and lower case with two Glk
+utility functions, <a href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()"><code class="function">glk_char_to_lower()</code></a> and <a href="chimara-Upper-and-Lower-Case.html#glk-char-to-upper" title="glk_char_to_upper ()"><code class="function">glk_char_to_upper()</code></a>. These have a
+few advantages over the standard ANSI <code class="literal"><code class="function">tolower()</code></code> and <code class="literal"><code class="function">toupper()</code></code> macros.
+They work for the entire Latin-1 character set, including accented letters;
+they behave consistently on all platforms, since they're part of the Glk
+library; and they are safe for all characters.
+That is, if you call <a href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()"><code class="function">glk_char_to_lower()</code></a> on a lower-case character, or a
+character which is not a letter, you'll get the argument back unchanged.</p>
+<p>The case-sensitive characters in Latin-1 are the ranges 0x41..0x5A,
+0xC0..0xD6, 0xD8..0xDE (upper case) and the ranges 0x61..0x7A, 0xE0..0xF6,
+0xF8..0xFE (lower case). These are arranged in parallel; so 
+<a href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()"><code class="function">glk_char_to_lower()</code></a> will add 0x20 to values in the upper-case ranges, and
+<a href="chimara-Upper-and-Lower-Case.html#glk-char-to-upper" title="glk_char_to_upper ()"><code class="function">glk_char_to_upper()</code></a> will subtract 0x20 from values in the lower-case ranges.</p>
+<div class="refsect3" lang="en">
+<a name="glk-char-to-lower.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ch</p></td>
+<td class="parameter_description"><p>A Latin-1 character.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-char-to-lower.returns"></a><h4>Returns</h4>
+<p> A lowercase or non-letter Latin-1 character.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-char-to-upper"></a><h3>glk_char_to_upper ()</h3>
+<pre class="programlisting">unsigned <span class="returnvalue">char</span>
+glk_char_to_upper (<em class="parameter"><code>unsigned <span class="type">char</span> ch</code></em>);</pre>
+<p>If <em class="parameter"><code>ch</code></em>
+ is a lowercase character in the Latin-1 character set, converts it to
+uppercase. Otherwise, leaves it unchanged. See <a href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()"><code class="function">glk_char_to_lower()</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-char-to-upper.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ch</p></td>
+<td class="parameter_description"><p>A Latin-1 character.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-char-to-upper.returns"></a><h4>Returns</h4>
+<p> An uppercase or non-letter Latin-1 character.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-buffer-to-lower-case-uni"></a><h3>glk_buffer_to_lower_case_uni ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_buffer_to_lower_case_uni (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *buf</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> len</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> numchars</code></em>);</pre>
+<p>Unicode character conversion is trickier, and must be applied to character
+arrays, not single characters. These functions 
+(<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>, <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-upper-case-uni" title="glk_buffer_to_upper_case_uni ()"><code class="function">glk_buffer_to_upper_case_uni()</code></a>, and
+<a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-title-case-uni" title="glk_buffer_to_title_case_uni ()"><code class="function">glk_buffer_to_title_case_uni()</code></a>) provide two length arguments because a
+string of Unicode characters may expand when its case changes. The <em class="parameter"><code>len</code></em>
+
+argument is the available length of the buffer; <em class="parameter"><code>numchars</code></em>
+ is the number of
+characters in the buffer initially. (So <em class="parameter"><code>numchars</code></em>
+ must be less than or equal
+to <em class="parameter"><code>len</code></em>
+. The contents of the buffer after <em class="parameter"><code>numchars</code></em>
+ do not affect the
+operation.)</p>
+<p>The functions return the number of characters after conversion. If this is
+greater than <em class="parameter"><code>len</code></em>
+, the characters in the array will be safely truncated at
+<em class="parameter"><code>len</code></em>
+, but the true count will be returned. (The contents of the buffer after
+the returned count are undefined.)</p>
+<p>The <code class="literal">lower_case</code> and <code class="literal">upper_case</code> functions do what you'd expect: they
+convert every character in the buffer (the first <em class="parameter"><code>numchars</code></em>
+ of them) to its
+upper or lower-case equivalent, if there is such a thing.</p>
+<p>See the Unicode spec (chapter 3.13, chapter 4.2, etc) for the exact
+definitions of upper, lower, and title-case mapping.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Unicode has some strange case cases. For example, a combined character
+  that looks like “ss” might properly be upper-cased into
+  <span class="emphasis"><em>two</em></span> “S” characters.
+  Title-casing is even stranger; “ss” (at the beginning of a word) might be
+  title-cased into a different combined character that looks like “Ss”.
+  The <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-title-case-uni" title="glk_buffer_to_title_case_uni ()"><code class="function">glk_buffer_to_title_case_uni()</code></a> function is actually title-casing the
+  first character of the buffer.
+  If it makes a difference.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-buffer-to-lower-case-uni.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>buf</p></td>
+<td class="parameter_description"><p>A character array in UCS-4.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>len</p></td>
+<td class="parameter_description"><p>Available length of <em class="parameter"><code>buf</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>numchars</p></td>
+<td class="parameter_description"><p>Number of characters in <em class="parameter"><code>buf</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-buffer-to-lower-case-uni.returns"></a><h4>Returns</h4>
+<p> The number of characters after conversion.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-buffer-to-upper-case-uni"></a><h3>glk_buffer_to_upper_case_uni ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_buffer_to_upper_case_uni (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *buf</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> len</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> numchars</code></em>);</pre>
+<p>Converts the first <em class="parameter"><code>numchars</code></em>
+ characters of <em class="parameter"><code>buf</code></em>
+ to their uppercase 
+equivalents, if there is such a thing. See <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>.</p>
+<div class="refsect3" lang="en">
+<a name="glk-buffer-to-upper-case-uni.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>buf</p></td>
+<td class="parameter_description"><p>A character array in UCS-4.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>len</p></td>
+<td class="parameter_description"><p>Available length of <em class="parameter"><code>buf</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>numchars</p></td>
+<td class="parameter_description"><p>Number of characters in <em class="parameter"><code>buf</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-buffer-to-upper-case-uni.returns"></a><h4>Returns</h4>
+<p> The number of characters after conversion.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="glk-buffer-to-title-case-uni"></a><h3>glk_buffer_to_title_case_uni ()</h3>
+<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_buffer_to_title_case_uni (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *buf</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> len</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> numchars</code></em>,
+                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> lowerrest</code></em>);</pre>
+<p>See <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>. The <code class="literal">title_case</code> function has an
+additional (boolean) flag. If the flag is zero, the function changes the
+first character of the buffer to upper-case, and leaves the rest of the
+buffer unchanged. If the flag is nonzero, it changes the first character to
+upper-case and the rest to lower-case.</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Earlier drafts of this spec had a separate function which title-cased the
+  first character of every <span class="emphasis"><em>word</em></span> in the buffer. I took
+  this out after reading Unicode Standard Annex #29, which explains how
+  to divide a string into words. If you want it, feel free to implement it.
+</p>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-buffer-to-title-case-uni.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>buf</p></td>
+<td class="parameter_description"><p>A character array in UCS-4.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>len</p></td>
+<td class="parameter_description"><p>Available length of <em class="parameter"><code>buf</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>numchars</p></td>
+<td class="parameter_description"><p>Number of characters in <em class="parameter"><code>buf</code></em>
+.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>lowerrest</p></td>
+<td class="parameter_description"><p><code class="literal">TRUE</code> if the rest of <em class="parameter"><code>buf</code></em>
+should be lowercased, <code class="literal">FALSE</code>
+otherwise.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3" lang="en">
+<a name="glk-buffer-to-title-case-uni.returns"></a><h4>Returns</h4>
+<p> The number of characters after conversion.</p>
+</div>
+</div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Upper-and-Lower-Case.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

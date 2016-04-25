@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Blorb Errors</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-the-blorb-layer.html" title="Appendix B. The Blorb Layer">
+<link rel="prev" href="chimara-What-the-Blorb-Layer-Does.html" title="What the Blorb Layer Does">
+<link rel="next" href="chimara-glk-spec-glk-extensions.html" title="Appendix C. Glk Extensions">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Blorb-Errors.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-the-blorb-layer.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-What-the-Blorb-Layer-Does.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-glk-spec-glk-extensions.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Blorb-Errors"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Blorb-Errors.top_of_page"></a>Blorb Errors</span></h2>
+<p>Blorb Errors — Error codes returned by the Blorb layer functions</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Blorb-Errors.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-t" title="giblorb_err_t">giblorb_err_t</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-None" title="giblorb_err_None">giblorb_err_None</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-CompileTime" title="giblorb_err_CompileTime">giblorb_err_CompileTime</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-Alloc" title="giblorb_err_Alloc">giblorb_err_Alloc</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-Read" title="giblorb_err_Read">giblorb_err_Read</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-NotAMap" title="giblorb_err_NotAMap">giblorb_err_NotAMap</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-Format" title="giblorb_err_Format">giblorb_err_Format</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Blorb-Errors.html#giblorb-err-NotFound" title="giblorb_err_NotFound">giblorb_err_NotFound</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Blorb-Errors.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+#include &lt;libchimara/gi-blorb.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Blorb-Errors.description"></a><h2>Description</h2>
+<p>All Blorb layer functions, including <a href="chimara-What-the-Program-Does.html#giblorb-set-resource-map" title="giblorb_set_resource_map ()"><code class="function">giblorb_set_resource_map()</code></a>, return the
+following error codes.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Blorb-Errors.functions_details"></a><h2>Functions</h2>
+<p></p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Blorb-Errors.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-t"></a><h3>giblorb_err_t</h3>
+<pre class="programlisting">typedef glui32 giblorb_err_t;
+</pre>
+<p>An integer type that can hold the Blorb error codes.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-None"></a><h3>giblorb_err_None</h3>
+<pre class="programlisting">#define giblorb_err_None (0)
+</pre>
+<p>No error.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-CompileTime"></a><h3>giblorb_err_CompileTime</h3>
+<pre class="programlisting">#define giblorb_err_CompileTime (1)
+</pre>
+<p>Something is compiled wrong in the Blorb layer.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-Alloc"></a><h3>giblorb_err_Alloc</h3>
+<pre class="programlisting">#define giblorb_err_Alloc (2)
+</pre>
+<p>Memory could not be allocated.</p>
+<div class="blockquote"><blockquote class="blockquote"><div class="refsect2" lang="en">
+<a name="idp140340079641504"></a><h3>Chimara</h3>
+<p>The Blorb layer in the Chimara library should not return this error code;
+instead, the program aborts if memory allocation fails, in keeping with
+GLib practices.</p>
+</div></blockquote></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-Read"></a><h3>giblorb_err_Read</h3>
+<pre class="programlisting">#define giblorb_err_Read (3)
+</pre>
+<p>Data could not be read from the file.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-NotAMap"></a><h3>giblorb_err_NotAMap</h3>
+<pre class="programlisting">#define giblorb_err_NotAMap (4)
+</pre>
+<p>The map parameter is invalid.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-Format"></a><h3>giblorb_err_Format</h3>
+<pre class="programlisting">#define giblorb_err_Format (5)
+</pre>
+<p>The Blorb file is corrupted or invalid.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="giblorb-err-NotFound"></a><h3>giblorb_err_NotFound</h3>
+<pre class="programlisting">#define giblorb_err_NotFound (6)
+</pre>
+<p>The requested data could not be found.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

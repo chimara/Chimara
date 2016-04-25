@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Testing for Sound Capabilities</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-sound.html" title="Sound">
+<link rel="prev" href="chimara-Other-Sound-Channel-Functions.html" title="Other Sound Channel Functions">
+<link rel="next" href="chimara-glk-spec-hyperlinks.html" title="Hyperlinks">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-Testing-for-Sound-Capabilities.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-sound.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Other-Sound-Channel-Functions.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-glk-spec-hyperlinks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-Testing-for-Sound-Capabilities"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-Testing-for-Sound-Capabilities.top_of_page"></a>Testing for Sound Capabilities</span></h2>
+<p>Testing for Sound Capabilities — Checking whether the library supports sound</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Sound-Capabilities.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Testing-for-Sound-Capabilities.html#GLK-MODULE-SOUND:CAPS" title="GLK_MODULE_SOUND">GLK_MODULE_SOUND</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-Testing-for-Sound-Capabilities.html#GLK-MODULE-SOUND2:CAPS" title="GLK_MODULE_SOUND2">GLK_MODULE_SOUND2</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Sound-Capabilities.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Sound-Capabilities.description"></a><h2>Description</h2>
+<p>Before calling Glk sound functions, you should use the <a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a>
+selector.</p>
+<p>Earlier versions of the Glk spec defined separate selectors for various
+optional capabilities. This has proven to be an unnecessarily confusing
+strategy, and is no longer used. The <a href="chimara-The-Gestalt-System.html#gestalt-Sound" title="gestalt_Sound"><code class="literal">gestalt_Sound</code></a>, <a href="chimara-The-Gestalt-System.html#gestalt-SoundMusic" title="gestalt_SoundMusic"><code class="literal">gestalt_SoundMusic</code></a>,
+<a href="chimara-The-Gestalt-System.html#gestalt-SoundVolume" title="gestalt_SoundVolume"><code class="literal">gestalt_SoundVolume</code></a>, and <a href="chimara-The-Gestalt-System.html#gestalt-SoundNotify" title="gestalt_SoundNotify"><code class="literal">gestalt_SoundNotify</code></a> selectors still exist, but you
+should not need to test them; the <a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> selector covers all of
+them.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Sound-Capabilities.functions_details"></a><h2>Functions</h2>
+<p></p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-Testing-for-Sound-Capabilities.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-SOUND:CAPS"></a><h3>GLK_MODULE_SOUND</h3>
+<pre class="programlisting">#define GLK_MODULE_SOUND
+</pre>
+<p>You can perform a preprocessor test for the existence of <a href="chimara-Testing-for-Sound-Capabilities.html#GLK-MODULE-SOUND:CAPS" title="GLK_MODULE_SOUND"><code class="literal">GLK_MODULE_SOUND</code></a>.
+If this is defined, so are all the functions and constants described in this
+section. If not, not.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="GLK-MODULE-SOUND2:CAPS"></a><h3>GLK_MODULE_SOUND2</h3>
+<pre class="programlisting">#define GLK_MODULE_SOUND2
+</pre>
+<p>If you are writing a C program, there is an additional complication. A 
+library which does not support sound may not implement the sound functions at
+all. Even if you put gestalt tests around your sound calls, you may get 
+link-time errors.
+If the <code class="literal">glk.h</code> file is so old that it does not declare the sound functions
+and constants, you may even get compile-time errors.</p>
+<p>To avoid this, you can perform a preprocessor test for the existence of
+<a href="chimara-Testing-for-Sound-Capabilities.html#GLK-MODULE-SOUND2:CAPS" title="GLK_MODULE_SOUND2"><code class="literal">GLK_MODULE_SOUND2</code></a>. If this is defined, so are all the functions and constants
+described in this section. If not, not.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

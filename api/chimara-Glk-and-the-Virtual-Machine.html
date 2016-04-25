@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Glk and the Virtual Machine</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-Porting-Adapting-and-Other-Messy-Bits.html" title="Porting, Adapting, and Other Messy Bits">
+<link rel="prev" href="chimara-Going-Outside-the-Glk-API.html" title="Going Outside the Glk API">
+<link rel="next" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-Porting-Adapting-and-Other-Messy-Bits.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-Going-Outside-the-Glk-API.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-glk-spec-the-dispatch-layer.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="sect1" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="chimara-Glk-and-the-Virtual-Machine"></a>Glk and the Virtual Machine</h2></div></div></div>
+<p>
+Most IF games are built on a virtual machine, such as the Z-machine or the TADS runtime structure. Building a virtual machine which uses Glk as its interface is somewhat more complicated than writing a single Glk program.
+</p>
+<p>
+The question to ask is: what API will be exported to the game author — the person writing a program to run on the VM?
+</p>
+<div class="sect2" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="chimara-Implementing-a-Higher-Layer-Over-Glk"></a>Implementing a Higher Layer over Glk</h3></div></div></div>
+<p>
+Thus far, each virtual machine has had its own built-in I/O API. Most of them have identical basic capabilities — read lines of input, display a stream of output, show a status line of some sort, and so on. This commonality, of course, is the ground from which Glk sprouted in the first place.
+</p>
+<p>
+If the I/O API is a subset of the capabilities of Glk, it can be implemented as a layer on top of Glk. In this way, an existing VM can often be ported to Glk without any change visible to the author. Standard TADS can be ported in this way; the V5/8 Z-machine can as well (with the sole exception, as far as I know, of colored text.) 
+</p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="chimara-Glk-as-a-VM-s-Native-API"></a>Glk as a VM's Native API</h3></div></div></div>
+<p>
+The other approach is to use Glk as the virtual machine's own I/O API, and provide it directly to the game author. The Glulx virtual machine is built this way. This is inherently more powerful, since it allows access to all of Glk, instead of a subset. As Glk is designed to be easily expandable, and will gain new (optional) capabilities over time, this approach also allows a VM to gain capabilities over time without much upheaval.
+</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+To a certain extent, Glk was designed for this use more than any other.
+For example, this is why all Glk function arguments are either pointers or 32-bit integers, and why all Glk API structures are effectively arrays of same.
+It is also why the iterator functions exist; a VM's entire memory space may be reset by an “undo” or “restore” command, and it would then have to, ah, take inventory of its streams and windows and filerefs.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+This is also another reason why Glk provides file API calls. A VM can provide Glk as the game author's entire access to the file system, as well as the author's entire access to the display system. The VM will then be simpler, more modular, not as tied into the native OS — all that good stuff.
+</p>
+</div>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+The Society of C Pedants wishes me to point out that the structures in the Glk API aren't really arrays of 32-bit integers. A structure made up entirely of 32-bit integers can still be padded weirdly by a C compiler. This problem is solved cleanly by the dispatch layer; see below.
+</p>
+</div>
+<p>
+The mechanics of this are tricky, because Glk has many API calls, and more will be added over time.
+</p>
+<p>
+In a VM with a limited number of opcodes, it may be best to allocate a single “Glk” opcode, with a variable number of arguments, the first of which is a function selector.
+(Glulx does this.)
+Allow at least 16 bits for this selector; there may be more than 256 Glk calls someday.
+(For a list of standard selectors for Glk calls, see <a href="chimara-Table-of-Selectors.html" title="Table of Selectors">Table of Selectors</a>.)
+</p>
+<p>
+In a VM with a large opcode space, you could reserve a 16-bit range of opcodes for Glk.
+</p>
+<p>
+It may also be feasible to extend the function-call mechanism in some way, to include the range of Glk functions.
+</p>
+<p>
+In any case, the API still has to be exported to the game author in whatever language is compiled to the VM. Ideally, this can be done as a set of function calls.
+</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+But it doesn't have to be. The Inform compiler, for example, can accept assembly opcodes in-line with Inform source code. It's nearly as convenient to let the author type in opcodes as function calls.
+</p>
+</div>
+<p>
+There is a further complication when new calls are added to Glk. This should not be a major problem. The compiler is mapping Glk calls one-to-one to its own functions or opcodes, so this should be a matter of adding to a fixed list somewhere in the compiler and releasing an upgrade.
+</p>
+<p>
+Alternatively, if the compiler has some way to define new opcodes, even this much effort is not necessary.
+</p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+The Inform compiler is designed this way; the game author can define new opcodes and use them. So if a new call has been added to Glk, and it has been implemented in the interpreter with a known selector, it can be used in Inform immediately, without a compiler upgrade.
+</p>
+</div>
+<p>
+Or, you can provide a completely dynamic interface to the Glk API. This is the province of the Glk dispatch layer, which is not part of Glk proper; it rests on top. See <a href="chimara-The-Dispatch-Layer.html" title="The Dispatch Layer">The Dispatch Layer</a>. 
+</p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>File References</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="chimara-glk-spec-file-references.html" title="File References">
+<link rel="prev" href="chimara-glk-spec-file-references.html" title="File References">
+<link rel="next" href="chimara-The-Types-of-File-References.html" title="The Types of File References">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#chimara-File-References.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chimara-glk-spec-file-references.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chimara-glk-spec-file-references.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-The-Types-of-File-References.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry" lang="en">
+<a name="chimara-File-References"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="chimara-File-References.top_of_page"></a>File References</span></h2>
+<p>File References — A platform-independent way to refer to disk files</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1" lang="en">
+<a name="chimara-File-References.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-File-References.html#fileusage-Data" title="fileusage_Data">fileusage_Data</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-File-References.html#fileusage-SavedGame" title="fileusage_SavedGame">fileusage_SavedGame</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-File-References.html#fileusage-Transcript" title="fileusage_Transcript">fileusage_Transcript</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-File-References.html#fileusage-InputRecord" title="fileusage_InputRecord">fileusage_InputRecord</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-File-References.html#fileusage-TextMode" title="fileusage_TextMode">fileusage_TextMode</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a href="chimara-File-References.html#fileusage-BinaryMode" title="fileusage_BinaryMode">fileusage_BinaryMode</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-File-References.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;libchimara/glk.h&gt;
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-File-References.description"></a><h2>Description</h2>
+<p>You deal with disk files using file references. Each fileref is an opaque C
+structure pointer; see <a href="chimara-Opaque-Objects.html" title="Opaque Objects">Opaque Objects</a>.</p>
+<p>A file reference contains platform-specific information about the name and
+location of the file, and possibly its type, if the platform has a notion of
+file type. It also includes a flag indication whether the file is a text file
+or binary file. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Note that this is different from the standard C I/O library, in which you
+  specify text or binary mode when the file is opened.
+</p>
+</div>
+<p>A fileref does not have to refer to a file which actually exists. You can
+create a fileref for a nonexistent file, and then open it in write mode to
+create a new file.</p>
+<p>You always provide a usage argument when you create a fileref. The usage
+indicates the file type and the mode (text or binary.) It must be the
+logical-or of a file-type constant and a mode constant. These values are used
+when you create a new file, and also to filter file lists when the player is
+selecting a file to load.</p>
+<p>In general, you should use text mode if the player expects to read the file
+with a platform-native text editor; you should use binary mode if the file is
+to be read back by your program, or if the data must be stored exactly. Text
+mode is appropriate for <a href="chimara-File-References.html#fileusage-Transcript" title="fileusage_Transcript"><code class="literal">fileusage_Transcript</code></a>; binary mode is appropriate for
+<a href="chimara-File-References.html#fileusage-SavedGame" title="fileusage_SavedGame"><code class="literal">fileusage_SavedGame</code></a> and probably for <a href="chimara-File-References.html#fileusage-InputRecord" title="fileusage_InputRecord"><code class="literal">fileusage_InputRecord</code></a>. <a href="chimara-File-References.html#fileusage-Data" title="fileusage_Data"><code class="literal">fileusage_Data</code></a>
+files may be text or binary, depending on what you use them for.</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-File-References.functions_details"></a><h2>Functions</h2>
+<p></p>
+</div>
+<div class="refsect1" lang="en">
+<a name="chimara-File-References.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2" lang="en">
+<a name="fileusage-Data"></a><h3>fileusage_Data</h3>
+<pre class="programlisting">#define fileusage_Data (0x00)
+</pre>
+<p>Any other kind of file (preferences, statistics, arbitrary data.)</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="fileusage-SavedGame"></a><h3>fileusage_SavedGame</h3>
+<pre class="programlisting">#define fileusage_SavedGame (0x01)
+</pre>
+<p>A file which stores game state.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="fileusage-Transcript"></a><h3>fileusage_Transcript</h3>
+<pre class="programlisting">#define fileusage_Transcript (0x02)
+</pre>
+<p>A file which contains a stream of text from the game (often an echo stream
+from a window.)</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="fileusage-InputRecord"></a><h3>fileusage_InputRecord</h3>
+<pre class="programlisting">#define fileusage_InputRecord (0x03)
+</pre>
+<p>A file which records player input.</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="fileusage-TextMode"></a><h3>fileusage_TextMode</h3>
+<pre class="programlisting">#define fileusage_TextMode   (0x100)
+</pre>
+<p>The file contents will be transformed to a platform-native text file as they
+are written out. Newlines may be converted to linefeeds or 
+linefeed-plus-carriage-return combinations; Latin-1 characters may be
+converted to native character codes. When reading a file in text mode, native
+line breaks will be converted back to newline (0x0A) characters, and native
+character codes may be converted to Latin-1 or UTF-8. </p>
+<div class="note">
+<h3 class="title"></h3>
+<p>
+  Line breaks will always be converted; other conversions are more
+  questionable. If you write out a file in text mode, and then read it back
+  in text mode, high-bit characters (128 to 255) may be transformed or lost.
+</p>
+</div>
+<div class="blockquote"><blockquote class="blockquote"><div class="refsect2" lang="en">
+<a name="idp140340084994016"></a><h3>Chimara</h3>
+<p>Text mode files in Chimara are in UTF-8, which is GTK+'s native file
+encoding.</p>
+</div></blockquote></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="fileusage-BinaryMode"></a><h3>fileusage_BinaryMode</h3>
+<pre class="programlisting">#define fileusage_BinaryMode (0x000)
+</pre>
+<p>The file contents will be stored exactly as they are written, and read back
+in the same way. The resulting file may not be viewable on platform-native
+text file viewers.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>

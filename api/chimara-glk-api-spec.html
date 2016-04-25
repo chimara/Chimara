@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Glk API Specification, version 0.7.4</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
+<link rel="start" href="index.html" title="Chimara Reference Manual">
+<link rel="up" href="index.html" title="Chimara Reference Manual">
+<link rel="prev" href="chimara-chimara-if.html" title="ChimaraIF">
+<link rel="next" href="chimara-Introduction.html" title="Introduction">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><img src="up-insensitive.png" width="16" height="16" border="0"></td>
+<td><a accesskey="p" href="chimara-chimara-if.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="chimara-Introduction.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="reference" lang="en">
+<div class="titlepage">
+<div>
+<div><h1 class="title">
+<a name="chimara-glk-api-spec"></a>Glk API Specification</h1></div>
+<div><h2 class="subtitle">API version 0.7.4</h2></div>
+<div><div class="author">
+<h3 class="author">
+<span class="firstname">Andrew</span> <span class="surname">Plotkin</span>
+</h3>
+<code class="email">&lt;<a href="mailto:erkyrath@eblong.com">erkyrath@eblong.com</a>&gt;</code>
+</div></div>
+<div><p class="releaseinfo">
+The authors of the Chimara library have adapted this document to better fit the format of a GtkDoc reference manual. They have also added notes specific to Chimara's implementation of the Glk API. The original API specification and further Glk information can be found at: <a href="http://eblong.com/zarf/glk/" target="_top">http://eblong.com/zarf/glk/</a>
+</p></div>
+<div><p class="copyright">Copyright © 1998–2012 Andrew Plotkin</p></div>
+<div><div class="legalnotice">
+<a name="idp140340078629472"></a><p>
+This specification is licensed under a Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License: <a href="" target="_top">http://creativecommons.org/licenses/by-nc-sa/3.0</a>
+</p>
+<p>
+The API <span class="emphasis"><em>described</em></span> by this document is an idea, not an expression of an idea, and is therefore not copyrightable.
+Anyone is free to write programs that use the Glk API or libraries that implement it.
+</p>
+</div></div>
+</div>
+<hr>
+</div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="chapter"><a href="chimara-Introduction.html">Introduction</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="chimara-Introduction.html#chimara-What-Glk-Is">What Glk Is</a></span></dt>
+<dt><span class="sect1"><a href="chimara-What-About-the-Virtual-Machine.html">What About the Virtual Machine?</a></span></dt>
+<dt><span class="sect1"><a href="chimara-What-Does-Glk-Not-Do.html">What Does Glk Not Do?</a></span></dt>
+<dt><span class="sect1"><a href="chimara-Conventions-of-This-Document.html">Conventions of This Document</a></span></dt>
+<dt><span class="sect1"><a href="chimara-Credits.html">Credits</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-overall-structure.html">Overall Structure</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Your-Programs-Main-Function.html">Your Program's Main Function</a></span><span class="refpurpose"> — How Glk starts your program</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Exiting-Your-Program.html">Exiting Your Program</a></span><span class="refpurpose"> — How to terminate a Glk program cleanly</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Interrupt-Handler.html">The Interrupt Handler</a></span><span class="refpurpose"> — Specifying an interrupt handler for cleaning up critical
+resources</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Tick-Thing.html">The Tick Thing</a></span><span class="refpurpose"> — Yielding time to the operating system</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Basic-Types.html">Basic Types</a></span><span class="refpurpose"> — Basic types used in Glk</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Opaque-Objects.html">Opaque Objects</a></span><span class="refpurpose"> — Complex objects in Glk</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Gestalt-System.html">The Gestalt System</a></span><span class="refpurpose"> — Testing Glk's capabilities</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Other-API-Conventions.html">Other API Conventions</a></span><span class="refpurpose"> — General information about the Glk API</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-character-encoding.html">Character Encoding</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Character-Encoding.html">Character Encoding</a></span><span class="refpurpose"> — Latin-1 and Unicode characters</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Output.html">Output</a></span><span class="refpurpose"> — Printing basics</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Line-Input.html">Line Input</a></span><span class="refpurpose"> — Reading lines of text</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Character-Input.html">Character Input</a></span><span class="refpurpose"> — Waiting for a single keystroke</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Upper-and-Lower-Case.html">Upper and Lower Case</a></span><span class="refpurpose"> — Changing the case of strings</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Unicode-String-Normalization.html">Unicode String Normalization</a></span><span class="refpurpose"> — Combining characters</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-A-Note-on-Unicode-Case-Folding-and-Normalization.html">A Note on Unicode Case-Folding and Normalization</a></span><span class="refpurpose"> — How to handle line input</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-windows.html">Windows</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Windows.html">Windows</a></span><span class="refpurpose"> — Introduction to Glk windows</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Window-Arrangement.html">Window Arrangement</a></span><span class="refpurpose"> — The Way of Window Arrangement</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Window-Opening-Closing-and-Constraints.html">Window Opening, Closing, and Constraints</a></span><span class="refpurpose"> — Creating new windows and closing them</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Changing-Window-Constraints.html">Changing Window Constraints</a></span><span class="refpurpose"> — Manipulating the size of a window</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-A-Note-on-Display-Style.html">A Note on Display Style</a></span><span class="refpurpose"> — How windows may be displayed on different platforms</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Types-of-Windows.html">The Types of Windows</a></span><span class="refpurpose"> — Blank, pair, text grid, text buffer, and graphics windows</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Echo-Streams.html">Echo Streams</a></span><span class="refpurpose"> — Creating a copy of a window's output</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Other-Window-Functions.html">Other Window Functions</a></span><span class="refpurpose"> — Miscellaneous functions for windows</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-events.html">Events</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Events.html">Events</a></span><span class="refpurpose"> — Waiting for events</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Character-Input-Events.html">Character Input Events</a></span><span class="refpurpose"> — Events representing a single keystroke</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Line-Input-Events.html">Line Input Events</a></span><span class="refpurpose"> — Events representing a line of user input</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Mouse-Input-Events.html">Mouse Input Events</a></span><span class="refpurpose"> — Events representing a mouse click</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Timer-Events.html">Timer Events</a></span><span class="refpurpose"> — Events sent at fixed intervals</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Other-Events.html">Other Events</a></span><span class="refpurpose"> — Events in future versions of Glk</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-streams.html">Streams</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Streams.html">Streams</a></span><span class="refpurpose"> — Input and output abstractions</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-How-to-Print.html">How to Print</a></span><span class="refpurpose"> — Printing to streams</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-How-to-Read.html">How to Read</a></span><span class="refpurpose"> — Reading from streams</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Closing-Streams.html">Closing Streams</a></span><span class="refpurpose"> — Closing streams and retrieving their character counts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Stream-Positions.html">Stream Positions</a></span><span class="refpurpose"> — Moving the read/write mark</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Styles.html">Styles</a></span><span class="refpurpose"> — Changing the appearance of printed text</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Suggesting-the-Appearance-of-Styles.html">Suggesting the Appearance of Styles</a></span><span class="refpurpose"> — Setting style hints</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Testing-the-Appearance-of-Styles.html">Testing the Appearance of Styles</a></span><span class="refpurpose"> — Finding out how the library displays your style hints</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Types-of-Streams.html">The Types of Streams</a></span><span class="refpurpose"> — Window, memory, file, and resource streams</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Other-Stream-Functions.html">Other Stream Functions</a></span><span class="refpurpose"> — Miscellaneous functions for streams</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-file-references.html">File References</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-File-References.html">File References</a></span><span class="refpurpose"> — A platform-independent way to refer to disk files</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Types-of-File-References.html">The Types of File References</a></span><span class="refpurpose"> — Four different ways to create a file reference</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Other-File-Reference-Functions.html">Other File Reference Functions</a></span><span class="refpurpose"> — Miscellaneous functions for file references</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-graphics.html">Graphics</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Image-Resources.html">Image Resources</a></span><span class="refpurpose"> — Graphics in Glk</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Graphics-in-Graphics-Windows.html">Graphics in Graphics Windows</a></span><span class="refpurpose"> — Drawing graphics in graphics windows</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Graphics-in-Text-Buffer-Windows.html">Graphics in Text Buffer Windows</a></span><span class="refpurpose"> — Drawing graphics inside or beside text</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Testing-for-Graphics-Capabilities.html">Testing for Graphics Capabilities</a></span><span class="refpurpose"> — Checking whether the library supports graphics</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-sound.html">Sound</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Sound-Resources.html">Sound Resources</a></span><span class="refpurpose"> — Sound in Glk</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Creating-and-Destroying-Sound-Channels.html">Creating and Destroying Sound Channels</a></span><span class="refpurpose"> — Creating new sound channels and closing them</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Playing-Sounds.html">Playing Sounds</a></span><span class="refpurpose"> — Producing noise</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Other-Sound-Channel-Functions.html">Other Sound Channel Functions</a></span><span class="refpurpose"> — Miscellaneous functions for sound channels</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Testing-for-Sound-Capabilities.html">Testing for Sound Capabilities</a></span><span class="refpurpose"> — Checking whether the library supports sound</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-hyperlinks.html">Hyperlinks</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Creating-Hyperlinks.html">Creating Hyperlinks</a></span><span class="refpurpose"> — Printing text as a hyperlink</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Accepting-Hyperlink-Events.html">Accepting Hyperlink Events</a></span><span class="refpurpose"> — Generating and catching hyperlink navigation events</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Testing-for-Hyperlink-Capabilities.html">Testing for Hyperlink Capabilities</a></span><span class="refpurpose"> — Checking whether the library supports hyperlinks</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-glk-spec-the-system-clock.html">The System Clock</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-System-Clock.html">The System Clock</a></span><span class="refpurpose"> — Getting the current time from the system clock</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Time-and-Date-Conversions.html">Time and Date Conversions</a></span><span class="refpurpose"> — Converting from timestamps to date structures and back</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Testing-for-Clock-Capabilities.html">Testing for Clock Capabilities</a></span><span class="refpurpose"> — Checking whether the library supports the clock functions</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="chimara-Porting-Adapting-and-Other-Messy-Bits.html">Porting, Adapting, and Other Messy Bits</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="chimara-Porting-Adapting-and-Other-Messy-Bits.html#chimara-Startup-Options">Startup Options</a></span></dt>
+<dt><span class="sect1"><a href="chimara-Going-Outside-the-Glk-API.html">Going Outside the Glk API</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="chimara-Going-Outside-the-Glk-API.html#chimara-Memory-Management">Memory Management</a></span></dt>
+<dt><span class="sect2"><a href="chimara-Going-Outside-the-Glk-API.html#chimara-String-Manipulation">String Manipulation</a></span></dt>
+<dt><span class="sect2"><a href="chimara-Going-Outside-the-Glk-API.html#chimara-File-Handling">File Handling</a></span></dt>
+<dt><span class="sect2"><a href="chimara-Going-Outside-the-Glk-API.html#chimara-Private-Extensions-to-Glk">Private Extensions to Glk</a></span></dt>
+</dl></dd>
+<dt><span class="sect1"><a href="chimara-Glk-and-the-Virtual-Machine.html">Glk and the Virtual Machine</a></span></dt>
+<dd><dl>
+<dt><span class="sect2"><a href="chimara-Glk-and-the-Virtual-Machine.html#chimara-Implementing-a-Higher-Layer-Over-Glk">Implementing a Higher Layer over Glk</a></span></dt>
+<dt><span class="sect2"><a href="chimara-Glk-and-the-Virtual-Machine.html#chimara-Glk-as-a-VM-s-Native-API">Glk as a VM's Native API</a></span></dt>
+</dl></dd>
+</dl></dd>
+<dt><span class="appendix"><a href="chimara-glk-spec-the-dispatch-layer.html">A. The Dispatch Layer</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Dispatch-Layer.html">The Dispatch Layer</a></span><span class="refpurpose"> — Calling Glk functions dynamically</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Interrogating-the-Interface.html">Interrogating the Interface</a></span><span class="refpurpose"> — Finding out what functions the Glk library exports</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Dispatching.html">Dispatching</a></span><span class="refpurpose"> — Dispatching the call to the Glk library</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Getting-Argument-Prototypes.html">Getting Argument Prototypes</a></span><span class="refpurpose"> — Querying Glk function prototypes</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Functions-the-Library-Must-Provide.html">Functions the Library Must Provide</a></span><span class="refpurpose"> — Platform-dependent dispatch layer functions</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Table-of-Selectors.html">Table of Selectors</a></span><span class="refpurpose"> — Table of dispatch selectors for Glk functions</span>
+</dt>
+</dl></dd>
+<dt><span class="appendix"><a href="chimara-glk-spec-the-blorb-layer.html">B. The Blorb Layer</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-The-Blorb-Layer.html">The Blorb Layer</a></span><span class="refpurpose"> — Loading resources from a Blorb file</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-What-the-Program-Does.html">What the Program Does</a></span><span class="refpurpose"> — How to use the Blorb layer in your program</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-What-the-Library-Does.html">What the Library Does</a></span><span class="refpurpose"> — How to implement the Blorb layer in your library</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-What-the-Blorb-Layer-Does.html">What the Blorb Layer Does</a></span><span class="refpurpose"> — The platform-independent functions in the Blorb layer</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Blorb-Errors.html">Blorb Errors</a></span><span class="refpurpose"> — Error codes returned by the Blorb layer functions</span>
+</dt>
+</dl></dd>
+<dt><span class="appendix"><a href="chimara-glk-spec-glk-extensions.html">C. Glk Extensions</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="chimara-Startup-Code.html">Startup Code</a></span><span class="refpurpose"> — Parsing startup options</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Unix-Extensions.html">Unix Extensions</a></span><span class="refpurpose"> — Unix-specific functions</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="chimara-Gargoyle-Extensions.html">Gargoyle Extensions</a></span><span class="refpurpose"> — Gargoyle extensions to Glk</span>
+</dt>
+</dl></dd>
+</dl>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25</div>
+</body>
+</html>
