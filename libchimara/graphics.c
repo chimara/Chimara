@@ -351,6 +351,7 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 {
 	VALID_WINDOW(win, return FALSE);
 	g_return_val_if_fail(win->type == wintype_Graphics || win->type == wintype_TextBuffer, FALSE);
+	g_return_val_if_fail(width != 0 && height != 0, FALSE);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	struct image_info *to_find = g_new0(struct image_info, 1);
