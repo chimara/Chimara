@@ -110,8 +110,12 @@ giblorb_print_contents(giblorb_map_t *map)
 
 	for(i=0; i<map->numresources; i++) {
 		giblorb_chunkdesc_t chunk = map->chunks[i];
-		printf("Chunk #%d, type: %d\n", i, chunk.type);
-	}	
+		printf("Chunk #%d, type: %c%c%c%c\n", i,
+            chunk.type >> 24,
+            chunk.type >> 16 & 0xFF,
+            chunk.type >> 8 & 0xFF,
+            chunk.type & 0xFF);
+	}
 }
 
 const char *
