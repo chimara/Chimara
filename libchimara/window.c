@@ -29,15 +29,9 @@ window_new_common(glui32 rock)
 	win->window_stream->style = "normal";
 	win->window_stream->glk_style = "normal";
 
-	win->echo_stream = NULL;
 	win->input_request_type = INPUT_REQUEST_NONE;
-	win->line_input_buffer = NULL;
-	win->line_input_buffer_unicode = NULL;
-	win->history = NULL;
 	win->echo_line_input = TRUE;
 	win->echo_current_line_input = TRUE;
-	win->extra_line_terminators = NULL;
-	win->current_extra_line_terminators = NULL;
 
 	/* Initialise the buffer */
 	win->buffer = g_string_sized_new(1024);
