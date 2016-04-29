@@ -165,13 +165,13 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 #endif
 
 	VALID_STREAM(str, return);
-	g_return_if_fail(str->window != NULL);
 
-	winid_t window = str->window;
+	winid_t win = str->window;
+	g_return_if_fail(win != NULL);
 
 	gdk_threads_enter();
 
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(window->widget) );
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 	GdkRGBA fore, back;
 	GdkRGBA *fore_pointer = NULL;
@@ -189,10 +189,10 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 		break;
 	case zcolor_Current:
 	{
-		if(window->zcolor) {
+		if(win->zcolor) {
 			// Get the current foreground color
 			GdkRGBA *current_color;
-			g_object_get(window->zcolor, "foreground-rgba", &current_color, NULL);
+			g_object_get(win->zcolor, "foreground-rgba", &current_color, NULL);
 			fore_name = gdk_rgba_to_string(current_color);
 
 			// Copy the color and use it
@@ -221,10 +221,10 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 		break;
 	case zcolor_Current:
 	{
-		if(window->zcolor) {
+		if(win->zcolor) {
 			// Get the current background color
 			GdkRGBA *current_color;
-			g_object_get(window->zcolor, "background-rgba", &current_color, NULL);
+			g_object_get(win->zcolor, "background-rgba", &current_color, NULL);
 			back_name = gdk_rgba_to_string(current_color);
 
 			// Copy the color and use it
@@ -245,7 +245,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 
 	if(fore_pointer == NULL && back_pointer == NULL) {
 		// NULL value means to ignore the zcolor property altogether
-		window->zcolor = NULL;
+		win->zcolor = NULL;
 	} else {
 		char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, fore_name, back_name);
 		g_free(fore_name);
@@ -268,11 +268,11 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 		}
 
 		// From now on, text will be drawn in the specified colors
-		window->zcolor = tag;
+		win->zcolor = tag;
 
 		// Update the reversed version if necessary
-		if(str->window->zcolor_reversed) {
-			gint reversed = GPOINTER_TO_INT( g_object_get_data( G_OBJECT(str->window->zcolor_reversed), "reverse-color" ) );
+		if(win->zcolor_reversed) {
+			int reversed = GPOINTER_TO_INT( g_object_get_data( G_OBJECT(win->zcolor_reversed), "reverse-color" ) );
 
 			gdk_threads_leave();
 			garglk_set_reversevideo_stream(str, reversed != 0);
@@ -322,8 +322,10 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 #endif
 
 	VALID_STREAM(str, return);
-	g_return_if_fail(str->window != NULL);
-	g_return_if_fail(str->window->type != wintype_TextBuffer || str->window->type != wintype_TextGrid);
+
+	winid_t win = str->window;
+	g_return_if_fail(win != NULL);
+	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
 	// Determine the current colors
 	
@@ -353,7 +355,7 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	g_free(background_name);
 
 	// Create a tag for the new colors if it doesn't exist yet
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(str->window->widget) );	
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
 	GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(buffer);
 	GtkTextTag *tag = gtk_text_tag_table_lookup(tags, name);
 	if(tag == NULL) {
@@ -370,11 +372,11 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 	}
 
 	// From now on, text will be drawn in the specified colors
-	str->window->zcolor_reversed = tag;
+	win->zcolor_reversed = tag;
 
 	// Update the background of the gtktextview to correspond with the current background color
 	if(current_background != NULL) {
-		gtk_widget_override_background_color(str->window->widget, GTK_STATE_FLAG_NORMAL, current_background);
+		gtk_widget_override_background_color(win->widget, GTK_STATE_FLAG_NORMAL, current_background);
 	}
 
 	gdk_threads_leave();
