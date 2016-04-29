@@ -420,7 +420,7 @@ glk_cancel_line_event(winid_t win, event_t *event)
         	(*glk_data->unregister_arr)(win->line_input_buffer, win->line_input_buffer_max_len, "&+#!Cn", win->buffer_rock);
     }
 
-	if(event != NULL && chars_written > 0) {
+	if(event != NULL) {
 		event->type = evtype_LineInput;
 		event->val1 = chars_written;
 	}
