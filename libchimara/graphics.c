@@ -127,8 +127,6 @@ load_image_in_cache(glui32 image, gint width, gint height)
 		return NULL;
 
 	/* Store the image in the cache */
-	gdk_threads_enter();
-
 	if( g_slist_length(glk_data->image_cache) >= IMAGE_CACHE_MAX_NUM ) {
 		struct image_info *head = (struct image_info*) glk_data->image_cache->data;
 		g_object_unref(head->pixbuf);
@@ -139,7 +137,6 @@ load_image_in_cache(glui32 image, gint width, gint height)
 	info->height = gdk_pixbuf_get_height(info->pixbuf);
 	glk_data->image_cache = g_slist_prepend(glk_data->image_cache, info);
 
-	gdk_threads_leave();
 	return info;
 }
 
@@ -159,16 +156,12 @@ on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_
 void
 on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 {
-	gdk_threads_enter();
-
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	g_mutex_lock(&glk_data->resource_lock);
 	image_loaded = TRUE;
 	g_cond_broadcast(&glk_data->resource_loaded);
 	g_mutex_unlock(&glk_data->resource_lock);
-
-	gdk_threads_leave();
 }
 
 
@@ -185,13 +178,9 @@ image_cache_find(struct image_info* to_find)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GSList *link = glk_data->image_cache;
 
-	gdk_threads_enter();
-
 	/* Empty cache */
-	if(link == NULL) {
-		gdk_threads_leave();
+	if(link == NULL)
 		return NULL;
-	}
 
 	/* Iterate over the cache to find the correct image and size */
 	struct image_info *match = NULL;
@@ -203,24 +192,19 @@ image_cache_find(struct image_info* to_find)
 
 				if(info->width == to_find->width && info->height == to_find->height) {
 					/* Prescaled image found */
-					gdk_threads_leave();
 					return info;
 				}
 				else if(info->width >= to_find->width && info->height >= to_find->height) {
 					/* Larger image found, needs to be scaled down in order to work */
-					gdk_threads_leave();
 					match = info;
 				}
 			} else {
 				if(!info->scaled) {
-					gdk_threads_leave();
 					return info; /* Found a match */
 				}
 			}
 		}
 	} while( (link = g_slist_next(link)) );
-
-	gdk_threads_leave();
 
 	return match;
 }
