@@ -1073,8 +1073,9 @@ glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 }
 
 /* Internal function returning the current default font for a window type
- * This can be used later for size calculations. Only wintype_TextGrid and wintype_TextBuffer are
- * supported for now */
+ * This can be used later for size calculations. Only wintype_TextGrid and
+ * wintype_TextBuffer are supported for now. Free return value with
+ * pango_font_description_free(). */
 PangoFontDescription *
 get_current_font(guint32 wintype)
 {
