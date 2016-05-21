@@ -1122,8 +1122,8 @@ glk_enter(struct StartupData *startup)
 	glk_main_t glk_main = startup->glk_main;
 
 	g_signal_emit_by_name(startup->glk_data->self, "started");
-	glk_main();
 	free_startup_data(startup);
+	glk_main();
 	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
 	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
 	return NULL;
