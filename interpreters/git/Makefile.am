@@ -1,7 +1,7 @@
 # Automatically generate version.h
 MAJOR = 1
-MINOR = 2
-PATCH = 9
+MINOR = 3
+PATCH = 4
 version.h: Makefile.am
 	$(AM_V_GEN)echo "// Automatically generated file -- do not edit!" > version.h
 	$(AM_V_at)echo "#define GIT_MAJOR" $(MAJOR) >> version.h
@@ -14,8 +14,12 @@ git_la_SOURCES = version.h git.h config.h compiler.h memory.h opcodes.h \
     labels.inc compiler.c gestalt.c git.c git_unix.c glkop.c heap.c memory.c \
     opcodes.c operands.c peephole.c savefile.c saveundo.c search.c terp.c \
     accel.c
-git_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libchimara
-git_la_CFLAGS = -DCHIMARA_EXTENSIONS -DUSE_INLINE $(AM_CFLAGS)
+git_la_CPPFLAGS = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/libchimara \
+	-DUSE_INLINE \
+	$(AM_CFLAGS) \
+	$(NULL)
 git_la_LDFLAGS = -module $(PLUGIN_LIBTOOL_FLAGS)
 
 gitdocdir = $(datadir)/doc/$(PACKAGE)/git

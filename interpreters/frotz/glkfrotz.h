@@ -35,7 +35,6 @@
 #include <time.h>
 
 #include "glk.h"
-#include <libchimara/garglk.h>
 
 extern int curr_status_ht;
 extern int mach_status_ht;
@@ -55,6 +54,7 @@ bool is_terminator (zchar);
 
 /* from glkstuff */
 void gos_update_width(void);
+void gos_update_height(void);
 void gos_cancel_pending_line(void);
 void reset_status_ht(void);
 

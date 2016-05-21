@@ -3,7 +3,7 @@
 # You can alter the 'default' part to change the game's default options.
 
 # Longest name		Long	short	description                             type    default code
-"Ignore errors"		ignore	i	"Ignore Z-machine strictness errors"	flag	0	{ ignore_errors = flag; }
+"Ignore errors"		ignore	i	"Ignore Z-machine strictness errors"	flag	1	{ ignore_errors = flag; }
 Normally nitfol checks for illegal and undefined Z-machine behaviour and alerts the user.  If you're playing someone else's buggy game, this can be annoying and you should use this option.
 
 "Inferior debugger"	fullname f	"For running under Emacs or DDD"	flag	0	{ fullname = flag; }

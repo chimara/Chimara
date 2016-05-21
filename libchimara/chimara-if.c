@@ -437,9 +437,10 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * ChimaraIF:ignore-errors:
 	 *
 	 * Setting this property to %TRUE will cause the interpreter to ignore
-	 * certain Z-machine runtime errors. Frotz will ignore any fatal errors.
-	 * Nitfol by default warns about any shady behavior, and this property will
-	 * turn those warnings off.
+	 * certain Z-machine runtime errors.
+   * If this is turned on, Frotz will ignore any fatal errors.
+	 * Nitfol, on the other hand, will warn about any shady behavior at all if
+	 * this is turned off.
 	 *
 	 * Only affects Z-machine interpreters. Behaves differently on Frotz and
 	 * Nitfol.
