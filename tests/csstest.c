@@ -38,13 +38,13 @@ main(int argc, char **argv)
 	GError *error = NULL;
 	gboolean res = gtk_css_provider_load_from_data(funky_provider,
 		".glk grid {"
-		"  font-size: 14;"
+		"  font-size: 14px;"
 		"  color: #303030;"
 		"  font-family: \"Andale Mono\";"
 		"}\n"
 		".glk buffer {"
 		"  color: #303030;"
-		"  font-size: 14;"
+		"  font-size: 14px;"
 		"  margin-bottom: 5px;"
 		"  font-family: \"Book Antiqua\";"
 		"}\n"
