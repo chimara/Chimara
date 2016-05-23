@@ -9,6 +9,13 @@
 
 G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
 
+static gboolean
+emit_stopped_signal(ChimaraGlk *glk)
+{
+	g_signal_emit_by_name(glk, "stopped");
+	return G_SOURCE_REMOVE;
+}
+
 /**
  * glk_exit:
  * 
@@ -90,8 +97,8 @@ glk_exit(void)
 
 	shutdown_glk_post();
 
-	g_signal_emit_by_name(glk_data->self, "stopped");
-	
+	gdk_threads_add_idle((GSourceFunc)emit_stopped_signal, glk_data->self);
+
 	g_thread_exit(NULL);
 }
 

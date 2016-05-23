@@ -1094,6 +1094,13 @@ free_startup_data(struct StartupData *startup)
 	g_slice_free(struct StartupData, startup);
 }
 
+static gboolean
+emit_started_signal(ChimaraGlk *glk)
+{
+	g_signal_emit_by_name(glk, "started");
+	return G_SOURCE_REMOVE;
+}
+
 /* glk_enter() is the actual function called in the new thread in which
 glk_main() runs. Takes ownership of @startup and will free it. */
 static gpointer
@@ -1118,10 +1125,10 @@ glk_enter(struct StartupData *startup)
 		}
 	}
 
+	gdk_threads_add_idle((GSourceFunc)emit_started_signal, startup->glk_data->self);
+
 	/* Run main function */
 	glk_main_t glk_main = startup->glk_main;
-
-	g_signal_emit_by_name(startup->glk_data->self, "started");
 	free_startup_data(startup);
 	glk_main();
 	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
