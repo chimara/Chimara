@@ -125,9 +125,9 @@ hyperlink_block_event_handler(gpointer key, gpointer value, gpointer user_data)
  *
  * A window can have hyperlink input and mouse, character, or line input pending
  * at the same time. However, if hyperlink and mouse input are requested at the
- * same time, the library may not provide an intuitive way for the player to 
- * distingish which a mouse click represents. Therefore, this combination should
- * be avoided.
+ * same time, the library may not provide an intuitive way for the player to
+ * distinguish which a mouse click represents.
+ * Therefore, this combination should be avoided.
  *
  * When a link is selected in a window with a pending request, glk_select() will
  * return an event of type %evtype_Hyperlink. In the event structure, @win tells
