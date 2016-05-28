@@ -722,20 +722,18 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GtkTextTag *tag;
 
-	switch(wintype) {
-	case wintype_TextBuffer:
+	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
 		tag = g_hash_table_lookup( glk_data->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
 		if(tag) {
 			glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
 		}
-		break;
-	case wintype_TextGrid:
+	}
+
+	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
 		tag = g_hash_table_lookup( glk_data->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
 		if(tag) {
 			glk_stylehint_set( wintype, styl, hint, query_tag(tag, wintype, hint) );
 		}
-	default:
-		return;
 	}
 }
 
