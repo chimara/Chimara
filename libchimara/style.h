@@ -30,15 +30,4 @@ typedef struct StyleSet {
 
 //#define DEBUG_STYLES
 
-#define ACTUAL_FG(tag) \
-	(GPOINTER_TO_INT( g_object_get_data(G_OBJECT((tag)), "reverse-color")) ? "background-rgba" : "foreground-rgba")
-
-#define ACTUAL_BG(tag) \
-	(GPOINTER_TO_INT( g_object_get_data(G_OBJECT((tag)), "reverse-color")) ? "foreground-rgba" : "background-rgba")
-
-#define ASSIGN_COLOR(to, from) \
-	(to)->red = (from)->red; \
-	(to)->green = (from)->green; \
-	(to)->blue = (from)->blue;
-
 #endif
