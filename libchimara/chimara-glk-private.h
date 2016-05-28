@@ -5,12 +5,16 @@
 #include <gmodule.h>
 #include <pango/pango.h>
 #include "glk.h"
-#include "style.h"
 #include "gi_blorb.h"
 #include "gi_dispa.h"
 #include "chimara-glk.h"
 
 G_BEGIN_DECLS
+
+typedef struct StyleSet {
+	GHashTable *text_grid;
+	GHashTable *text_buffer;
+} StyleSet;
 
 typedef struct _ChimaraGlkPrivate ChimaraGlkPrivate;
 
@@ -111,6 +115,9 @@ struct _ChimaraGlkPrivate {
 
 #define CHIMARA_GLK_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), CHIMARA_TYPE_GLK, ChimaraGlkPrivate))
 #define CHIMARA_GLK_USE_PRIVATE(o, n) ChimaraGlkPrivate *n = CHIMARA_GLK_PRIVATE(o)
+
+G_GNUC_INTERNAL const char *chimara_glk_get_tag_name(unsigned style);
+G_GNUC_INTERNAL const char *chimara_glk_get_glk_tag_name(unsigned style);
 
 G_END_DECLS
 
