@@ -48,9 +48,7 @@ glk_set_style(glui32 styl)
  */
 void
 glk_set_style_stream(strid_t str, glui32 styl) {
-#ifdef DEBUG_STYLES
-	g_printf("glk_set_style(str->rock=%d, styl=%d)\n", str->rock, styl);
-#endif
+	g_debug("glk_set_style(str->rock=%d, styl=%d)", str->rock, styl);
 
 	if(str->window == NULL)
 		return;
@@ -680,9 +678,7 @@ query_tag(GtkTextTag *tag, glui32 wintype, glui32 hint)
 void
 glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {
-#ifdef DEBUG_STYLES
-	g_printf("glk_stylehint_set(wintype=%d, styl=%d, hint=%d, val=%d)\n", wintype, styl, hint, val);
-#endif
+	g_debug("glk_stylehint_set(wintype=%d, styl=%d, hint=%d, val=%d)", wintype, styl, hint, val);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
@@ -715,9 +711,7 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 void
 glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 {
-#ifdef DEBUG_STYLES
-	g_printf("glk_stylehint_clear(wintype=%d, styl=%d, hint=%d)\n", wintype, styl, hint);
-#endif
+	g_debug("glk_stylehint_clear(wintype=%d, styl=%d, hint=%d)", wintype, styl, hint);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GtkTextTag *tag;
@@ -756,9 +750,7 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
 glui32
 glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
 {
-#ifdef DEBUG_STYLES
-	g_printf("glk_style_distinguish(win->rock=%d, styl1=%d, styl2=%d)\n", win->rock, styl1, styl2);
-#endif
+	g_debug("glk_style_distinguish(win->rock=%d, styl1=%d, styl2=%d)", win->rock, styl1, styl2);
 
 	/* FIXME */
 	return styl1 != styl2;
@@ -838,9 +830,7 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
 glui32
 glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 {
-#ifdef DEBUG_STYLES
-	g_printf("glk_style_measure(win->rock=%d, styl=%d, hint=%d, result=...)\n", win->rock, styl, hint);
-#endif
+	g_debug("glk_style_measure(win->rock=%d, styl=%d, hint=%d, result=...)", win->rock, styl, hint);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GtkTextTag *tag;

@@ -16,6 +16,4 @@ G_GNUC_INTERNAL void glkcolor_to_gdkrgba(glui32 val, GdkRGBA *color);
 G_GNUC_INTERNAL void style_stream_colors(strid_t str, GdkRGBA **foreground, GdkRGBA **background);
 G_GNUC_INTERNAL void style_apply(winid_t win, GtkTextIter *start, GtkTextIter *end);
 
-//#define DEBUG_STYLES
-
 #endif

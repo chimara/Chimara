@@ -2,7 +2,6 @@
 
 #include <glib.h>
 #include <glib/gi18n-lib.h>
-#include <glib/gprintf.h>
 #include <libchimara/glk.h>
 #include "chimara-glk-private.h"
 #include "stream.h"
@@ -162,9 +161,7 @@ garglk_unput_string_uni(glui32 *str)
 void
 garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 {
-#ifdef DEBUG_STYLES
-	g_printf("garglk_set_zcolors_stream(str->rock=%d, fg=%08X, bg=%08X)\n", str->rock, fg, bg);
-#endif
+	g_debug("garglk_set_zcolors_stream(str->rock=%d, fg=%08X, bg=%08X)", str->rock, fg, bg);
 
 	VALID_STREAM(str, return);
 
@@ -319,9 +316,7 @@ garglk_set_zcolors(glui32 fg, glui32 bg)
 void
 garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
 {
-#ifdef DEBUG_STYLES
-	g_printf("garglk_set_reversevideo_stream(str->rock=%d, reverse=%d)\n", str->rock, reverse);
-#endif
+	g_debug("garglk_set_reversevideo_stream(str->rock=%d, reverse=%d)", str->rock, reverse);
 
 	VALID_STREAM(str, return);
 

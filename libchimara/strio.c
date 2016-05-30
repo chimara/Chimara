@@ -50,9 +50,8 @@ write_utf8_to_window_buffer(winid_t win, gchar *s)
 void
 flush_window_buffer(winid_t win)
 {
-#ifdef DEBUG_STYLES
-	g_printf("%s\n", win->buffer->str);
-#endif
+	g_debug("%s", win->buffer->str);
+
 	if(win->type != wintype_TextBuffer && win->type != wintype_TextGrid)
 		return;
 
