@@ -76,6 +76,7 @@ gidispatch_set_object_registry(gidispatch_rock_t (*regi)(void *obj, glui32 objcl
 	winid_t win;
     strid_t str;
     frefid_t fref;
+	schanid_t chan;
     
     glk_data->register_obj = regi;
     glk_data->unregister_obj = unregi;
@@ -89,6 +90,8 @@ gidispatch_set_object_registry(gidispatch_rock_t (*regi)(void *obj, glui32 objcl
             str->disprock = (*glk_data->register_obj)(str, gidisp_Class_Stream);
         for(fref = glk_fileref_iterate(NULL, NULL); fref; fref = glk_fileref_iterate(fref, NULL))
             fref->disprock = (*glk_data->register_obj)(fref, gidisp_Class_Fileref);
+		for(chan = glk_schannel_iterate(NULL, NULL); chan; chan = glk_schannel_iterate(chan, NULL))
+			chan->disprock = (*glk_data->register_obj)(chan, gidisp_Class_Schannel);
     }
 }
 
