@@ -1,8 +1,6 @@
-#include "config.h"
-
 #include <errno.h>
+#include <string.h>
 
-#include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
@@ -260,7 +258,7 @@ write_buffer_to_stream(strid_t str, gchar *buf, glui32 len)
 			str->write_count += len;
 			break;
 		case STREAM_TYPE_RESOURCE:
-			ILLEGAL(_("Writing to a resource stream is illegal."));
+			ILLEGAL("Writing to a resource stream is illegal.");
 			break;
 		default:
 			ILLEGAL_PARAM("Unknown stream type: %u", str->type);
@@ -361,7 +359,7 @@ write_buffer_to_stream_uni(strid_t str, glui32 *buf, glui32 len)
 			str->write_count += len;
 			break;
 		case STREAM_TYPE_RESOURCE:
-			ILLEGAL(_("Writing to a resource stream is illegal."));
+			ILLEGAL("Writing to a resource stream is illegal.");
 			break;
 		default:
 			ILLEGAL_PARAM("Unknown stream type: %u", str->type);

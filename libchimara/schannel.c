@@ -1,7 +1,4 @@
-#include "config.h"
-
 #include <glib.h>
-#include <glib/gi18n-lib.h>
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
 #endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
@@ -32,7 +29,7 @@ static void
 clean_up_after_playing_sound(schanid_t chan)
 {
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
-		WARNING_S(_("Could not set GstElement state to"), "NULL");
+		WARNING("Could not set GstElement state to NULL");
 	if(chan->source)
 	{
 		gst_bin_remove(GST_BIN(chan->pipeline), chan->source);
@@ -64,7 +61,7 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 	case GST_MESSAGE_ERROR: 
 	{
 		gst_message_parse_error(message, &err, &debug_message);
-		IO_WARNING(_("GStreamer error"), err->message, debug_message);
+		IO_WARNING("GStreamer error", err->message, debug_message);
 		g_error_free(err);
 		g_free(debug_message);
 		clean_up_after_playing_sound(s);
@@ -73,7 +70,7 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 	case GST_MESSAGE_WARNING:
 	{
 		gst_message_parse_warning(message, &err, &debug_message);
-		IO_WARNING(_("GStreamer warning"), err->message, debug_message);
+		IO_WARNING("GStreamer warning", err->message, debug_message);
 		g_error_free(err);
 		g_free(debug_message);
 	}
@@ -92,7 +89,7 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 			s->repeats--;
 		if(s->repeats > 0) {
 			if(!gst_element_seek_simple(s->pipeline, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT, 0)) {
-				WARNING(_("Could not execute GStreamer seek"));
+				WARNING("Could not execute GStreamer seek");
 				clean_up_after_playing_sound(s);
 			}
 		} else {
@@ -118,7 +115,7 @@ on_ogg_demuxer_pad_added(GstElement *demux, GstPad *pad, schanid_t s)
 	/* We can now link this pad with the vorbis-decoder sink pad */
 	sinkpad = gst_element_get_static_pad(s->decode, "sink");
 	if(gst_pad_link(pad, sinkpad) != GST_PAD_LINK_OK)
-		WARNING(_("Could not link OGG demuxer with Vorbis decoder"));
+		WARNING("Could not link OGG demuxer with Vorbis decoder");
 	gst_object_unref(sinkpad);
 }
 
@@ -133,12 +130,12 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 		s->demux = gst_element_factory_make("oggdemux", NULL);
 		s->decode = gst_element_factory_make("vorbisdec", NULL);
 		if(!s->demux || !s->decode) {
-			WARNING(_("Could not create one or more GStreamer elements"));
+			WARNING("Could not create one or more GStreamer elements");
 			goto finally;
 		}
 		gst_bin_add_many(GST_BIN(s->pipeline), s->demux, s->decode, NULL);
 		if(!gst_element_link(s->typefind, s->demux) || !gst_element_link(s->decode, s->convert)) {
-			WARNING(_("Could not link GStreamer elements"));
+			WARNING("Could not link GStreamer elements");
 			goto finally;
 		}
 		/* We link the demuxer and decoder together dynamically, since the
@@ -148,28 +145,28 @@ on_type_found(GstElement *typefind, guint probability, GstCaps *caps, schanid_t 
 	} else if(strcmp(type, "audio/x-aiff") == 0) {
 		s->decode = gst_element_factory_make("aiffparse", NULL);
 		if(!s->decode) {
-			WARNING(_("Could not create 'aiffparse' GStreamer element"));
+			WARNING("Could not create 'aiffparse' GStreamer element");
 			goto finally;
 		}
 		gst_bin_add(GST_BIN(s->pipeline), s->decode);
 		if(!gst_element_link_many(s->typefind, s->decode, s->convert, NULL)) {
-			WARNING(_("Could not link GStreamer elements"));
+			WARNING("Could not link GStreamer elements");
 			goto finally;
 		}
 	} else if(g_str_has_prefix(type, "audio/x-mod")) {
 		/* "audio/x-mod, type=(string)s3m" has been observed */
 		s->decode = gst_element_factory_make("modplug", NULL);
 		if(!s->decode) {
-			WARNING(_("Could not create 'modplug' GStreamer element"));
+			WARNING("Could not create 'modplug' GStreamer element");
 			goto finally;
 		}
 		gst_bin_add(GST_BIN(s->pipeline), s->decode);
 		if(!gst_element_link_many(s->typefind, s->decode, s->convert, NULL)) {
-			WARNING(_("Could not link GStreamer elements"));
+			WARNING("Could not link GStreamer elements");
 			goto finally;
 		}
 	} else {
-		WARNING_S(_("Unexpected audio type in blorb"), type);
+		WARNING_S("Unexpected audio type in blorb", type);
 	}
 
 	/* This is necessary in case this handler occurs in the middle of a state
@@ -191,12 +188,12 @@ load_resource_into_giostream(glui32 snd)
 
 	if(glk_data->resource_map == NULL) {
 		if(glk_data->resource_load_callback == NULL) {
-			WARNING(_("No resource map has been loaded yet."));
+			WARNING("No resource map has been loaded yet");
 			return NULL;
 		}
 		char *filename = glk_data->resource_load_callback(CHIMARA_RESOURCE_SOUND, snd, glk_data->resource_load_callback_data);
 		if(filename == NULL) {
-			WARNING(_("Error loading resource from alternative location."));
+			WARNING("Error loading resource from alternative location");
 			return NULL;
 		}
 
@@ -204,14 +201,14 @@ load_resource_into_giostream(glui32 snd)
 		GFile *file = g_file_new_for_path(filename);
 		retval = G_INPUT_STREAM(g_file_read(file, NULL, &err));
 		if(retval == NULL)
-			IO_WARNING(_("Error loading resource from file"), filename, err->message);
+			IO_WARNING("Error loading resource from file", filename, err->message);
 		g_free(filename);
 		g_object_unref(file);
 	} else {
 		giblorb_result_t resource;
 		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
 		if(result != giblorb_err_None) {
-			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			WARNING_S( "Error loading resource", giblorb_get_error_message(result) );
 			return NULL;
 		}
 		retval = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
@@ -304,7 +301,7 @@ glk_schannel_create_ext(glui32 rock, glui32 volume)
 	s->filter = gst_element_factory_make("volume", NULL);
 	s->sink = gst_element_factory_make("autoaudiosink", NULL);
 	if(!s->typefind || !s->convert || !s->filter || !s->sink) {
-		WARNING(_("Could not create one or more GStreamer elements"));
+		WARNING("Could not create one or more GStreamer elements");
 		goto fail;
 	}
 
@@ -317,7 +314,7 @@ glk_schannel_create_ext(glui32 rock, glui32 volume)
 
 	/* Link elements: ??? -> Converter -> Volume filter -> Sink */
 	if(!gst_element_link_many(s->convert, s->filter, s->sink, NULL)) {
-		WARNING(_("Could not link GStreamer elements"));
+		WARNING("Could not link GStreamer elements");
 		goto fail;
 	}
 	g_signal_connect(s->typefind, "have-type", G_CALLBACK(on_type_found), s);
@@ -348,7 +345,7 @@ glk_schannel_destroy(schanid_t chan)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
-		WARNING_S(_("Could not set GstElement state to"), "NULL");
+		WARNING("Could not set GstElement state to NULL");
 	
 	glk_data->schannel_list = g_list_delete_link(glk_data->schannel_list, chan->schannel_list);
 
@@ -511,7 +508,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	g_object_unref(stream); /* Now owned by GStreamer element */
 	gst_bin_add(GST_BIN(chan->pipeline), chan->source);
 	if(!gst_element_link(chan->source, chan->typefind)) {
-		WARNING(_("Could not link GStreamer elements"));
+		WARNING("Could not link GStreamer elements");
 		clean_up_after_playing_sound(chan);
 		return 0;
 	}
@@ -522,7 +519,7 @@ glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 	
 	/* Play the sound; unless the channel is paused, then pause it instead */
 	if(!gst_element_set_state(chan->pipeline, chan->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
-		WARNING_S(_("Could not set GstElement state to"), chan->paused? "PAUSED" : "PLAYING");
+		WARNING_S("Could not set GstElement state to", chan->paused? "PAUSED" : "PLAYING");
 		clean_up_after_playing_sound(chan);
 		return 0;
 	}
@@ -577,7 +574,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
-		WARNING(_("No resource map has been loaded yet."));
+		WARNING("No resource map has been loaded yet");
 		return 0;
 	}
 
@@ -600,7 +597,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 		g_object_unref(stream); /* Now owned by GStreamer element */
 		gst_bin_add(GST_BIN(chanarray[count]->pipeline), chanarray[count]->source);
 		if(!gst_element_link(chanarray[count]->source, chanarray[count]->typefind)) {
-			WARNING(_("Could not link GStreamer elements"));
+			WARNING("Could not link GStreamer elements");
 			clean_up_after_playing_sound(chanarray[count]);
 		}
 
@@ -617,7 +614,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 			continue;
 		/* Play the sound; unless the channel is paused, then pause it instead */
 		if(!gst_element_set_state(chanarray[count]->pipeline, chanarray[count]->paused? GST_STATE_PAUSED : GST_STATE_PLAYING)) {
-			WARNING_S(_("Could not set GstElement state to"), chanarray[count]->paused? "PAUSED" : "PLAYING");
+			WARNING_S("Could not set GstElement state to", chanarray[count]->paused? "PAUSED" : "PLAYING");
 			skiparray[count] = TRUE;
 			clean_up_after_playing_sound(chanarray[count]);
 			continue;
@@ -673,14 +670,14 @@ glk_schannel_pause(schanid_t chan)
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
-		WARNING(_("Could not get GstElement state"));
+		WARNING("Could not get GstElement state");
 		return;
 	}
 	if(state != GST_STATE_PLAYING)
 		return; /* Silently do nothing if no sound is playing */
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_PAUSED)) {
-		WARNING_S(_("Could not set GstElement state to"), "PAUSED");
+		WARNING("Could not set GstElement state to PAUSED");
 		return;
 	}
 #endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
@@ -714,14 +711,14 @@ glk_schannel_unpause(schanid_t chan)
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
-		WARNING(_("Could not get GstElement state"));
+		WARNING("Could not get GstElement state");
 		return;
 	}
 	if(state != GST_STATE_PAUSED)
 		return; /* Silently do nothing */
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_PLAYING)) {
-		WARNING_S(_("Could not set GstElement state to"), "PLAYING");
+		WARNING("Could not set GstElement state to PLAYING");
 		return;
 	}
 #endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
@@ -899,7 +896,7 @@ glk_sound_load_hint(glui32 snd, glui32 flag)
 		 loading a chunk more than once does nothing */
 		result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
 		if(result != giblorb_err_None) {
-			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			WARNING_S( "Error loading resource", giblorb_get_error_message(result) );
 			return;
 		}
 	} else {
@@ -908,12 +905,12 @@ glk_sound_load_hint(glui32 snd, glui32 flag)
 		 isn't loaded */
 		result = giblorb_load_resource(glk_data->resource_map, giblorb_method_DontLoad, &resource, giblorb_ID_Snd, snd);
 		if(result != giblorb_err_None) {
-			WARNING_S( _("Error loading resource"), giblorb_get_error_message(result) );
+			WARNING_S( "Error loading resource", giblorb_get_error_message(result) );
 			return;
 		}
 		result = giblorb_unload_chunk(glk_data->resource_map, resource.chunknum);
 		if(result != giblorb_err_None) {
-			WARNING_S( _("Error unloading chunk"), giblorb_get_error_message(result) );
+			WARNING_S( "Error unloading chunk", giblorb_get_error_message(result) );
 			return;
 		}
 	}

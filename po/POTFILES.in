@@ -1,16 +1,8 @@
 # List of source files containing translatable strings.
 
-libchimara/chimara-glk.c
-libchimara/chimara-if.c
 libchimara/fileref.c
-libchimara/garglk.c
-libchimara/hyperlink.c
-libchimara/init.c
-libchimara/schannel.c
-libchimara/stream.c
-libchimara/strio.c
+libchimara/window.c
 player/callbacks.c
 player/chimara.ui
-player/main.c
 player/player.py
 player/preferences.c

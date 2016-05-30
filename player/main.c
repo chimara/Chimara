@@ -32,7 +32,6 @@
 
 #include <sys/stat.h>
 
-#include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
@@ -210,7 +209,7 @@ main(int argc, char *argv[])
 	gchar *configdir = g_build_filename(g_get_home_dir(), ".chimara", NULL);
 	if(!g_file_test(configdir, G_FILE_TEST_IS_DIR)
 		&& g_mkdir(configdir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
-		g_error(_("Cannot create configuration directory ~/.chimara"));
+		g_error("Cannot create configuration directory ~/.chimara");
 	g_free(configdir);
 
 	/* Initialize settings file; it can be overridden by a "chimara-config" file

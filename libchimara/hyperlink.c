@@ -1,6 +1,3 @@
-#include "config.h"
-
-#include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
@@ -152,7 +149,7 @@ glk_request_hyperlink_event(winid_t win)
 	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
 	if(win->hyperlink_event_requested) {
-		WARNING(_("Tried to request a hyperlink event on a window that already had a hyperlink request"));
+		WARNING("Tried to request a hyperlink event on a window that already had a hyperlink request");
 		return;
 	}
 
@@ -176,7 +173,7 @@ glk_cancel_hyperlink_event(winid_t win)
 	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
 	if(!win->hyperlink_event_requested) {
-		WARNING(_("Tried to cancel a nonexistent hyperlink request"));
+		WARNING("Tried to cancel a nonexistent hyperlink request");
 		return;
 	}
 

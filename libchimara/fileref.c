@@ -577,7 +577,7 @@ glk_fileref_delete_file(frefid_t fref)
 	}
 	else
 	{
-		ILLEGAL(_("Tried to delete a fileref that does not refer to an existing file."));
+		ILLEGAL("Tried to delete a fileref that does not refer to an existing file.");
 	}
 
 }

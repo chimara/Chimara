@@ -1,15 +1,13 @@
 /* licensing and copyright information here */
 
-#include "config.h"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <math.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #include <glib-object.h>
-#include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gtk/gtk.h>
 
@@ -942,8 +940,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * feeding it a predefined list of commands.
      */
     g_object_class_install_property( object_class, PROP_INTERACTIVE, 
-		g_param_spec_boolean("interactive", _("Interactive"),
-        _("Whether user input is expected in the Glk program"),
+		g_param_spec_boolean("interactive", "Interactive",
+		"Whether user input is expected in the Glk program",
         TRUE,
         G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
 
@@ -954,8 +952,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      * mode, all file operations will fail.
      */
     g_object_class_install_property(object_class, PROP_PROTECT, 
-		g_param_spec_boolean("protect", _("Protected"),
-        _("Whether the Glk program is barred from doing file operations"),
+		g_param_spec_boolean("protect", "Protected",
+		"Whether the Glk program is barred from doing file operations",
         FALSE,
         G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
 
@@ -968,8 +966,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * sibling window, no matter what the value of this property is.
 	 */
 	g_object_class_install_property(object_class, PROP_SPACING,
-		g_param_spec_uint("spacing", _("Spacing"),
-		_("The amount of space between Glk windows"),
+		g_param_spec_uint("spacing", "Spacing",
+		"The amount of space between Glk windows",
 		0, G_MAXUINT, 0,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
 	
@@ -984,8 +982,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * to the `::notify::program-name` signal.
 	 */
 	g_object_class_install_property(object_class, PROP_PROGRAM_NAME,
-		g_param_spec_string("program-name", _("Program name"),
-		_("Name of the currently running program"),
+		g_param_spec_string("program-name", "Program name",
+		"Name of the currently running program",
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
 		
@@ -997,8 +995,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * garglk_set_program_info(). See also #ChimaraGlk:program-name.
 	 */
 	g_object_class_install_property(object_class, PROP_PROGRAM_INFO,
-		g_param_spec_string("program-info", _("Program info"),
-		_("Information about the currently running program"),
+		g_param_spec_string("program-info", "Program info",
+		"Information about the currently running program",
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
 	
@@ -1015,8 +1013,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * not an interpreter and does not load story files.
 	 */
 	g_object_class_install_property(object_class, PROP_STORY_NAME,
-		g_param_spec_string("story-name", _("Story name"),
-		_("Name of the story currently loaded in the interpreter"),
+		g_param_spec_string("story-name", "Story name",
+		"Name of the story currently loaded in the interpreter",
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
 	
@@ -1026,8 +1024,8 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	 * Whether this Glk widget is currently running a game or not.
 	 */
 	g_object_class_install_property(object_class, PROP_RUNNING,
-		g_param_spec_boolean("running", _("Running"),
-		_("Whether there is a program currently running"),
+		g_param_spec_boolean("running", "Running",
+		"Whether there is a program currently running",
 		FALSE,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
 
@@ -1179,7 +1177,7 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 	if(fd == -1) {
 		if(error)
 			*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno), 
-				_("Error opening file \"%s\": %s"), filename, g_strerror(errno));
+				"Error opening file \"%s\": %s", filename, g_strerror(errno));
 		return FALSE;
 	}
 
@@ -1191,7 +1189,7 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 	if(close(fd) == -1) {
 		if(error)
 			*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno),
-				_("Error closing file \"%s\": %s"), filename, g_strerror(errno));
+				"Error closing file \"%s\": %s", filename, g_strerror(errno));
 		return FALSE;
 	}
 	return TRUE;
@@ -1339,7 +1337,8 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 	
 	if(chimara_glk_get_running(glk)) {
-		g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_ALREADY_RUNNING, _("There was already a plugin running."));
+		g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_ALREADY_RUNNING,
+			"There was already a plugin running.");
 		return FALSE;
 	}
     
@@ -1356,12 +1355,14 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
     
     if(!priv->program)
     {
-    	g_set_error(error, CHIMARA_ERROR, CHIMARA_LOAD_MODULE_ERROR, _("Error opening module: %s"), g_module_error());
+		g_set_error(error, CHIMARA_ERROR, CHIMARA_LOAD_MODULE_ERROR,
+			"Error opening module: %s", g_module_error());
         return FALSE;
     }
     if( !g_module_symbol(priv->program, "glk_main", (gpointer *) &startup->glk_main) )
     {
-    	g_set_error(error, CHIMARA_ERROR, CHIMARA_NO_GLK_MAIN, _("Error finding glk_main(): %s"), g_module_error());
+		g_set_error(error, CHIMARA_ERROR, CHIMARA_NO_GLK_MAIN,
+			"Error finding glk_main(): %s", g_module_error());
         return FALSE;
     }
 

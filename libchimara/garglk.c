@@ -1,6 +1,3 @@
-#include "config.h"
-
-#include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
@@ -112,7 +109,7 @@ garglk_set_story_name(const char *name)
 void
 garglk_set_story_title(const char *title)
 {
-	WARNING(_("Not implemented"));
+	WARNING("Not implemented");
 }
 
 /**
@@ -131,7 +128,7 @@ garglk_unput_string(char *str)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 
-	WARNING(_("Not implemented"));
+	WARNING("Not implemented");
 }
 
 /**
@@ -148,7 +145,7 @@ garglk_unput_string_uni(glui32 *str)
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
 	
-	WARNING(_("Not implemented"));
+	WARNING("Not implemented");
 }
 
 /**
@@ -184,7 +181,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	switch(fg) {
 	case zcolor_Transparent:
 	case zcolor_Cursor:
-		WARNING(_("zcolor_Transparent, zcolor_Cursor not implemented"));
+		WARNING("zcolor_Transparent, zcolor_Cursor not implemented");
 		// Fallthrough to default
 	case zcolor_Default:
 		fore_name = g_strdup("default");
@@ -216,7 +213,7 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
 	switch(bg) {
 	case zcolor_Transparent:
 	case zcolor_Cursor:
-		WARNING(_("zcolor_Transparent, zcolor_Cursor not implemented"));
+		WARNING("zcolor_Transparent, zcolor_Cursor not implemented");
 		// Fallthrough to default
 	case zcolor_Default:
 		back_name = g_strdup("default");

@@ -1,10 +1,7 @@
-#include "config.h"
-
 #include <errno.h>
 
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <glib/gi18n-lib.h>
 
 #include "chimara-glk-private.h"
 #include "fileref.h"
@@ -532,15 +529,15 @@ glk_stream_open_resource(glui32 filenum, glui32 rock)
 	giblorb_result_t res;
 	giblorb_map_t *map = giblorb_get_resource_map();
 	if(map == NULL) {
-		WARNING(_("Could not create resource stream, because there was no "
-			"resource map."));
+		WARNING("Could not create resource stream, because there was no "
+			"resource map.");
 		return NULL; /* Not running from a blorb file */
 	}
 
 	err = giblorb_load_resource(map, giblorb_method_Memory, &res, giblorb_ID_Data, filenum);
 	if(err) {
-		WARNING_S(_("Could not create resource stream, because the resource "
-			"could not be loaded"), giblorb_get_error_message(err));
+		WARNING_S("Could not create resource stream, because the resource "
+			"could not be loaded", giblorb_get_error_message(err));
 		return 0; /* Not found, or some other error */
 	}
 
@@ -559,8 +556,8 @@ glk_stream_open_resource(glui32 filenum, glui32 rock)
 	else if(res.chunktype == giblorb_ID_BINA)
 		isbinary = TRUE;
 	else {
-		WARNING(_("Could not create resource stream, because chunk was of "
-			"unknown type."));
+		WARNING("Could not create resource stream, because chunk was of "
+			"unknown type.");
 		return NULL; /* Unknown chunk type */
 	}
 

@@ -1,3 +1,6 @@
+#include "config.h"
+
+#include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
@@ -543,7 +546,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			GtkWidget *overlay = gtk_overlay_new();
 			GtkWidget *scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
 			GtkWidget *textview = gtk_text_view_new();
-			GtkWidget *pager = gtk_button_new_with_label("More");
+			GtkWidget *pager = gtk_button_new_with_label(_("More"));
 			GtkWidget *image = gtk_image_new_from_icon_name("go-down", GTK_ICON_SIZE_BUTTON);
 			GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(textview) );
 

@@ -1,7 +1,4 @@
-#include "config.h"
-
 #include <glib-object.h>
-#include <glib/gi18n-lib.h>
 
 #include "chimara-if.h"
 #include "chimara-glk.h"
@@ -39,15 +36,15 @@ static gboolean supported_formats[CHIMARA_IF_NUM_FORMATS][CHIMARA_IF_NUM_INTERPR
 	{ FALSE, FALSE, TRUE,  TRUE,  FALSE }  /* Gblorb */
 };
 static gchar *format_names[CHIMARA_IF_NUM_FORMATS] = {
-	N_("Z-code version 5"),
-	N_("Z-code version 6"),
-	N_("Z-code version 8"),
-	N_("Blorbed Z-code"),
-	N_("Glulx"),
-	N_("Blorbed Glulx")
+	"Z-code version 5",
+	"Z-code version 6",
+	"Z-code version 8",
+	"Blorbed Z-code",
+	"Glulx",
+	"Blorbed Glulx"
 };
 static gchar *interpreter_names[CHIMARA_IF_NUM_INTERPRETERS] = {
-	N_("Frotz"), N_("Nitfol"), N_("Glulxe"), N_("Git"), N_("Bocfel")
+	"Frotz", "Nitfol", "Glulxe", "Git", "Bocfel"
 };
 static gchar *plugin_names[CHIMARA_IF_NUM_INTERPRETERS] = {
 	"frotz", "nitfol", "glulxe", "git", "bocfel"
@@ -374,8 +371,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_PIRACY_MODE,
-		g_param_spec_boolean("piracy-mode", _("Piracy mode"),
-		_("Pretend the game is pirated"), FALSE,
+		g_param_spec_boolean("piracy-mode", "Piracy mode",
+		"Pretend the game is pirated", FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:tandy-bit:
@@ -388,8 +385,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_TANDY_BIT,
-		g_param_spec_boolean("tandy-bit", _("Tandy bit"),
-		_("Censor certain Infocom games"), FALSE,
+		g_param_spec_boolean("tandy-bit", "Tandy bit",
+		"Censor certain Infocom games", FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:expand-abbreviations:
@@ -429,8 +426,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_EXPAND_ABBREVIATIONS,
-		g_param_spec_boolean("expand-abbreviations", _("Expand abbreviations"),
-		_("Expand abbreviations such as X for EXAMINE"), FALSE,
+		g_param_spec_boolean("expand-abbreviations", "Expand abbreviations",
+		"Expand abbreviations such as X for EXAMINE", FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:ignore-errors:
@@ -445,8 +442,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_IGNORE_ERRORS,
-		g_param_spec_boolean("ignore-errors", _("Ignore errors"),
-		_("Do not warn the user about Z-machine errors"), FALSE,
+		g_param_spec_boolean("ignore-errors", "Ignore errors",
+		"Do not warn the user about Z-machine errors", FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:typo-correction:
@@ -458,8 +455,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Only affects Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_TYPO_CORRECTION,
-		g_param_spec_boolean("typo-correction", _("Typo correction"),
-		_("Try to remedy typos if the interpreter supports it"), TRUE,
+		g_param_spec_boolean("typo-correction", "Typo correction",
+		"Try to remedy typos if the interpreter supports it", TRUE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:interpreter-number:
@@ -475,8 +472,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_INTERPRETER_NUMBER,
-		g_param_spec_uint("interpreter-number", _("Interpreter number"),
-		_("Platform the Z-machine should pretend it is running on"),
+		g_param_spec_uint("interpreter-number", "Interpreter number",
+		"Platform the Z-machine should pretend it is running on",
 		CHIMARA_IF_ZMACHINE_DEFAULT, CHIMARA_IF_ZMACHINE_MAXVAL, CHIMARA_IF_ZMACHINE_DEFAULT,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
@@ -495,8 +492,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Frotz and Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_RANDOM_SEED,
-		g_param_spec_int("random-seed", _("Random seed"),
-		_("Seed for the random number generator"), G_MININT, G_MAXINT, 0,
+		g_param_spec_int("random-seed", "Random seed",
+		"Seed for the random number generator", G_MININT, G_MAXINT, 0,
 		G_PARAM_READWRITE | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:random-seed-set:
@@ -506,8 +503,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Only affects Z-machine interpreters.
 	 */
 	g_object_class_install_property(object_class, PROP_RANDOM_SEED_SET,
-		g_param_spec_boolean("random-seed-set", _("Random seed set"),
-		_("Whether the seed for the random number generator should be set manually"), FALSE,
+		g_param_spec_boolean("random-seed-set", "Random seed set",
+		"Whether the seed for the random number generator should be set manually", FALSE,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/**
 	 * ChimaraIF:graphics-file:
@@ -521,8 +518,8 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Only affects Frotz and Nitfol.
 	 */
 	g_object_class_install_property(object_class, PROP_GRAPHICS_FILE,
-	    g_param_spec_string("graphics-file", _("Graphics file"),
-	    _("Location in which to look for a separate graphics Blorb file"), NULL,
+	    g_param_spec_string("graphics-file", "Graphics file",
+	    "Location in which to look for a separate graphics Blorb file", NULL,
 	    G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
 	/* Private data */
 	g_type_class_add_private(klass, sizeof(ChimaraIFPrivate));
@@ -651,7 +648,8 @@ chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 		{
 			g_free(pluginpath);
 			g_free(pluginfile);
-			g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_NOT_FOUND, _("No appropriate %s interpreter plugin was found"), interpreter_names[interpreter]);
+			g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_NOT_FOUND,
+				"No appropriate %s interpreter plugin was found", interpreter_names[interpreter]);
 			return FALSE;
 		}
 #ifdef DEBUG

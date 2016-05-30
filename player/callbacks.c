@@ -157,10 +157,10 @@ on_open_activate(GtkAction *action, ChimaraGlk *glk)
 		gchar *uri;
 		
 		if(!(uri = g_filename_to_uri(filename, NULL, &error)))
-			g_warning(_("Could not convert filename '%s' to URI: %s"), filename, error->message);
+			g_warning("Could not convert filename '%s' to URI: %s", filename, error->message);
 		else {
 			if(!gtk_recent_manager_add_item(manager, uri))
-				g_warning(_("Could not add URI '%s' to recent files list."), uri);
+				g_warning("Could not add URI '%s' to recent files list.", uri);
 			g_free(uri);
 		}
 		g_free(filename);
@@ -192,7 +192,7 @@ on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
 	/* Add file to recent files list again, this updates it to most recently used */
 	GtkRecentManager *manager = gtk_recent_manager_get_default();
 	if(!gtk_recent_manager_add_item(manager, uri))
-		g_warning(_("Could not add URI '%s' to recent files list."), uri);
+		g_warning("Could not add URI '%s' to recent files list.", uri);
 
 finally2:
 	g_free(filename);
