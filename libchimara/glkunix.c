@@ -1,10 +1,11 @@
-#include <string.h>
 #include <stdlib.h>
-#include <libchimara/glk.h>
-#include <libchimara/glkstart.h>
+#include <string.h>
+
 #include "chimara-glk-private.h"
-#include "magic.h"
 #include "fileref.h"
+#include "glk.h"
+#include "glkstart.h"
+#include "magic.h"
 #include "stream.h"
 
 extern GPrivate glk_data_key;

@@ -1,6 +1,9 @@
 #include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
 
-#include "pager.h"
+#include "chimara-glk.h"
+#include "glk.h"
+#include "window.h"
 
 /* Not sure if necessary, but this is the margin within which the pager will
 stop paging if it's close to the end of the text buffer */

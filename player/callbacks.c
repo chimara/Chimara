@@ -29,13 +29,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "config.h"
 
-#include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
-#include <config.h>
+
 #include "error.h"
 
 /* If a game is running in @glk, warn the user that they will quit the currently

@@ -1,8 +1,8 @@
 /* Test for file I/O bug */
-
-#include <libchimara/glk.h>
-#include <glib.h>
 #include <string.h>
+
+#include <glib.h>
+#include <libchimara/glk.h>
 
 #define MAGIC_STRING "Zapp\xF6licious.\n"
 #define BUFLEN 80

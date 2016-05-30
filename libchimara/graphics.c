@@ -1,6 +1,11 @@
-#include "graphics.h"
+#include <gtk/gtk.h>
+
 #include "chimara-glk-private.h"
+#include "graphics.h"
 #include "magic.h"
+#include "resource.h"
+#include "strio.h"
+#include "window.h"
 
 #define BUFFER_SIZE (1024)
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include <libchimara/glk.h>
 
 static winid_t mainwin = NULL;

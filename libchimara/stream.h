@@ -1,12 +1,12 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-#include <gtk/gtk.h>
-#include "chimara-glk-private.h"
+#include <stdio.h>
+
+#include <glib.h>
+
 #include "glk.h"
 #include "gi_dispa.h"
-#include "window.h"
-#include "fileref.h"
 
 enum StreamType
 {

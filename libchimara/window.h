@@ -2,16 +2,9 @@
 #define WINDOW_H
 
 #include <gtk/gtk.h>
-#include "chimara-glk-private.h"
+
 #include "glk.h"
 #include "gi_dispa.h"
-#include "stream.h"
-#include "input.h"
-#include "style.h"
-#include "hyperlink.h"
-#include "mouse.h"
-#include "graphics.h"
-
 
 enum InputRequestType
 {

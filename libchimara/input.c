@@ -1,9 +1,15 @@
+#include <string.h>
+
 #include "charset.h"
+#include "chimara-glk-private.h"
+#include "event.h"
+#include "glk.h"
+#include "garglk.h"
 #include "magic.h"
 #include "input.h"
 #include "pager.h"
-#include "chimara-glk-private.h"
-#include "garglk.h"
+#include "strio.h"
+#include "window.h"
 
 extern GPrivate glk_data_key;
 

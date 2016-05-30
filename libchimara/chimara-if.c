@@ -1,9 +1,8 @@
-#include <errno.h>
-#include <stdlib.h>
-#include <glib.h>
+#include "config.h"
+
 #include <glib-object.h>
-#include <config.h>
 #include <glib/gi18n-lib.h>
+
 #include "chimara-if.h"
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"

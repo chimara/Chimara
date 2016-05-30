@@ -31,12 +31,12 @@
  */
 
 #include <stdlib.h>
-#include <glib.h>
+
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
-#include <config.h>
+
 #include "error.h"
 
 GObject *load_object(const gchar *name);

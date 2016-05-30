@@ -1,4 +1,5 @@
-#include <gtk/gtk.h>
+#include <glib.h>
+
 #include "glk.h"
 #include "magic.h"
 

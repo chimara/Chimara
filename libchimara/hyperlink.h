@@ -1,12 +1,9 @@
 #ifndef HYPERLINK_H
 #define HYPERLINK_H
 
-#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "glk.h"
-#include "window.h"
-#include "event.h"
 
 struct hyperlink {
 	guint32 value;

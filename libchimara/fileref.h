@@ -1,7 +1,8 @@
 #ifndef FILEREF_H
 #define FILEREF_H
 
-#include <gtk/gtk.h>
+#include <glib.h>
+
 #include "glk.h"
 #include "gi_dispa.h"
 

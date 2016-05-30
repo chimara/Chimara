@@ -1,15 +1,20 @@
-#include <config.h>
-#include "stream.h"
-#include "fileref.h"
-#include "magic.h"
-#include "gi_blorb.h"
+#include "config.h"
+
 #include <errno.h>
-#include <stdio.h>
+
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n-lib.h>
 
 #include "chimara-glk-private.h"
+#include "fileref.h"
+#include "glk.h"
+#include "gi_blorb.h"
+#include "magic.h"
+#include "resource.h"
+#include "stream.h"
+#include "window.h"
+
 extern GPrivate glk_data_key;
 
 /* Internal function: create a stream with a specified rock value */

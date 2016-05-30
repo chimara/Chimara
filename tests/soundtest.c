@@ -1,7 +1,7 @@
-#include <libchimara/glk.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
+
+#include <libchimara/glk.h>
 
 #define NUM_CHANNELS 2
 

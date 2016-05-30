@@ -1,7 +1,9 @@
 #include <string.h>
+
 #include <glib.h>
-#include "glk.h"
+
 #include "charset.h"
+#include "glk.h"
 
 /**
  * glk_char_to_lower:

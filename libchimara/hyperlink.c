@@ -1,8 +1,15 @@
-#include <config.h>
+#include "config.h"
+
 #include <glib/gi18n-lib.h>
-#include "hyperlink.h"
+#include <gtk/gtk.h>
+
 #include "chimara-glk-private.h"
+#include "event.h"
+#include "hyperlink.h"
 #include "magic.h"
+#include "stream.h"
+#include "strio.h"
+#include "window.h"
 
 extern GPrivate glk_data_key;
 

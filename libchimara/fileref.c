@@ -1,14 +1,16 @@
-#include <config.h>
+#include "config.h"
+
 #include <errno.h>
-#include <unistd.h>
-#include <string.h>
+
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n-lib.h>
-#include "fileref.h"
-#include "magic.h"
+
 #include "chimara-glk-private.h"
+#include "fileref.h"
+#include "glk.h"
 #include "gi_dispa.h"
+#include "magic.h"
 
 extern GPrivate glk_data_key;
 

@@ -1,14 +1,14 @@
 #ifndef __SCHANNEL_H__
 #define __SCHANNEL_H__
 
-#include <config.h>
-#include <glib.h>
-#include "glk.h"
-#include "gi_dispa.h"
-#include "chimara-glk.h"
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
 #endif
+#include <glib.h>
+
+#include "chimara-glk.h"
+#include "gi_dispa.h"
+#include "glk.h"
 
 struct glk_schannel_struct
 {

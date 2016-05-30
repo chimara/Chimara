@@ -30,10 +30,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <glib.h>
-#include <gio/gio.h>
 #include <gtk/gtk.h>
-
 #include <libchimara/chimara-glk.h>
 
 #include "plugin-utils.h"

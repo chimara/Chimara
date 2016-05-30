@@ -1,12 +1,13 @@
-#include "event.h"
-#include "magic.h"
-#include "glk.h"
-#include "window.h"
-#include "input.h"
 #include <string.h>
 
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
+#include "event.h"
+#include "glk.h"
+#include "input.h"
+#include "magic.h"
+#include "strio.h"
+#include "window.h"
 
 extern GPrivate glk_data_key;
 

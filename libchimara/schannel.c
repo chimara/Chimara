@@ -1,17 +1,18 @@
-#include <config.h>
+#include "config.h"
+
 #include <glib.h>
 #include <glib/gi18n-lib.h>
-#include <libchimara/glk.h>
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)
 #include <gst/gst.h>
 #endif /* GSTREAMER_0_10_SOUND || GSTREAMER_1_0_SOUND */
-#include "magic.h"
-#include "schannel.h"
+
 #include "chimara-glk-private.h"
-#include "gi_dispa.h"
-#include "gi_blorb.h"
-#include "resource.h"
 #include "event.h"
+#include "glk.h"
+#include "gi_dispa.h"
+#include "magic.h"
+#include "resource.h"
+#include "schannel.h"
 
 #define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
 

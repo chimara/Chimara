@@ -1,5 +1,8 @@
-#include "resource.h"
-#include "stream.h"
+#include <glib.h>
+
+#include "chimara-glk-private.h"
+#include "glk.h"
+#include "magic.h"
 
 extern GPrivate glk_data_key;
 

@@ -1,13 +1,17 @@
-#include <config.h>
+#include "config.h"
+
+#include <errno.h>
+
+#include <glib/gi18n-lib.h>
+#include <glib/gstdio.h>
+#include <gtk/gtk.h>
+
 #include "charset.h"
+#include "chimara-glk.h"
 #include "magic.h"
 #include "stream.h"
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n-lib.h>
+#include "style.h"
+#include "window.h"
 
 /* Internal function: ensure that an fseek() is called on a file pointer in
  between reading and writing operations, and vice versa. This will only come up

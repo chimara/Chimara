@@ -1,7 +1,8 @@
 #include <time.h>
-#include <sys/time.h>
 #include <string.h>
+
 #include <glib.h>
+
 #include "glk.h"
 
 /* Adapted from Andrew Plotkin's implementation in CheapGlk. Using GDateTime is

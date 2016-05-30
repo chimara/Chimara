@@ -1,7 +1,6 @@
 /* Program for testing multisessionality, i.e. whether two ChimaraGlk widgets
  can run in the same application. */
 
-#include <glib.h>
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 

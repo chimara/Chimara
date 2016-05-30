@@ -1,4 +1,5 @@
-#include <config.h>
+#include "config.h"
+
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 #if defined(GSTREAMER_0_10_SOUND) || defined(GSTREAMER_1_0_SOUND)

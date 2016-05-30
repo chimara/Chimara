@@ -1,13 +1,16 @@
 #include "config.h"
 
-#include <glib.h>
 #include <glib/gi18n-lib.h>
-#include <libchimara/glk.h>
+#include <gtk/gtk.h>
+
 #include "chimara-glk-private.h"
-#include "stream.h"
 #include "fileref.h"
-#include "style.h"
+#include "glk.h"
 #include "garglk.h"
+#include "magic.h"
+#include "stream.h"
+#include "style.h"
+#include "window.h"
 
 #define ZCOLOR_NAME_TEMPLATE "zcolor:%s/%s"
 

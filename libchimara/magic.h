@@ -1,7 +1,7 @@
 #ifndef __MAGIC_H__
 #define __MAGIC_H__
 
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "glk.h"
 
 #define MAGIC_FREE     0x46524545 /* "FREE" */

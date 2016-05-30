@@ -1,7 +1,7 @@
 #ifndef __CHIMARA_IF_H__
 #define __CHIMARA_IF_H__
 
-#include <glib.h>
+#include <glib-object.h>
 #include "chimara-glk.h"
 
 G_BEGIN_DECLS

@@ -1,8 +1,8 @@
+#include "config.h"
+
 #include <string.h>
 
 #include <gio/gio.h>
-
-#include "config.h"
 
 GFile *
 libname_from_la_file(char *la_filename)

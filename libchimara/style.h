@@ -2,9 +2,9 @@
 #define STYLE_H
 
 #include <gtk/gtk.h>
-#include <glib.h>
-#include "glk.h"
+
 #include "chimara-glk.h"
+#include "glk.h"
 
 G_GNUC_INTERNAL void style_init_textbuffer(GtkTextBuffer *buffer);
 G_GNUC_INTERNAL void style_init_textgrid(GtkTextBuffer *buffer);

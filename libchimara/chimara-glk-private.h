@@ -3,11 +3,11 @@
 
 #include <glib.h>
 #include <gmodule.h>
-#include <pango/pango.h>
+
+#include "chimara-glk.h"
 #include "glk.h"
 #include "gi_blorb.h"
 #include "gi_dispa.h"
-#include "chimara-glk.h"
 
 G_BEGIN_DECLS
 

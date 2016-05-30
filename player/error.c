@@ -19,8 +19,6 @@
 #include <gtk/gtk.h>
 #include <stdarg.h>
 
-#include "error.h"
-
 /* Create and display an error dialog box, with parent window parent, and
 message format string msg. If err is not NULL, tack the error message on to the
 end of the format string. */

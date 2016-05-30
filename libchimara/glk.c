@@ -1,10 +1,9 @@
 #include <gtk/gtk.h>
 
-#include "glk.h"
 #include "abort.h"
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
-#include "gi_blorb.h"
+#include "strio.h"
 #include "window.h"
 
 G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);

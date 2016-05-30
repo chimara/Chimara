@@ -3,9 +3,8 @@
 #ifndef __CHIMARA_GLK_H__
 #define __CHIMARA_GLK_H__
 
-#include <glib.h>
+#include <glib-object.h>
 #include <gtk/gtk.h>
-#include <pango/pango.h>
 
 G_BEGIN_DECLS
 

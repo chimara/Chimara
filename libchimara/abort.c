@@ -1,9 +1,8 @@
-#include "abort.h"
-#include "event.h"
 #include <glib.h>
-#include <gtk/gtk.h>
 
+#include "abort.h"
 #include "chimara-glk-private.h"
+#include "strio.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;

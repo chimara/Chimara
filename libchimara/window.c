@@ -1,9 +1,17 @@
-#include <glib.h>
-#include "window.h"
-#include "magic.h"
+#include <gtk/gtk.h>
+
 #include "chimara-glk-private.h"
+#include "glk.h"
 #include "gi_dispa.h"
+#include "graphics.h"
+#include "input.h"
+#include "magic.h"
+#include "mouse.h"
 #include "pager.h"
+#include "stream.h"
+#include "strio.h"
+#include "style.h"
+#include "window.h"
 
 extern GPrivate glk_data_key;
 

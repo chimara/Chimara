@@ -1,9 +1,11 @@
-#include <libchimara/glk.h>
+#include <glib.h>
+
 #include "chimara-glk-private.h"
-#include "window.h"
-#include "stream.h"
 #include "fileref.h"
+#include "glk.h"
 #include "schannel.h"
+#include "stream.h"
+#include "window.h"
 
 extern GPrivate glk_data_key;
 

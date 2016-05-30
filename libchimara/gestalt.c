@@ -1,5 +1,5 @@
 #include <stddef.h> /* Surprisingly, the only symbol needed is NULL */
-#include <config.h>
+
 #include "glk.h"
 #include "input.h"
 

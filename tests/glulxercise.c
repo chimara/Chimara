@@ -1,4 +1,4 @@
-#include <glib.h>
+#include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
 

@@ -1,6 +1,7 @@
+#include <glib.h>
+
 #include "charset.h"
 #include "magic.h"
-#include <glib.h>
 
 /* Internal function: change illegal (control) characters in a string to a
 placeholder character. Must free returned string afterwards. */

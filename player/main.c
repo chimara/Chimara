@@ -30,25 +30,19 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
 
-#include <glib.h>
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
+#include <libchimara/chimara-glk.h>
+#include <libchimara/chimara-if.h>
 
 /* Use a custom GSettings backend for our preferences file */
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>
 
 #include "error.h"
-#include <libchimara/chimara-glk.h>
-#include <libchimara/chimara-if.h>
-
 #include "preferences.h"
 
 /* Static global pointers to widgets */

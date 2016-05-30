@@ -1,12 +1,13 @@
-#include <stdio.h>
 #include <string.h>
 #include <math.h>
+
 #include "chimara-glk-private.h"
 #include "glk.h"
-#include "style.h"
+#include "hyperlink.h"
 #include "magic.h"
 #include "stream.h"
 #include "strio.h"
+#include "window.h"
 
 extern GPrivate glk_data_key;
 

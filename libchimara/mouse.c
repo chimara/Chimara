@@ -1,5 +1,9 @@
-#include "mouse.h"
+#include <gtk/gtk.h>
+
+#include "chimara-glk.h"
+#include "event.h"
 #include "magic.h"
+#include "window.h"
 
 /**
  * glk_request_mouse_event:

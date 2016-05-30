@@ -1,29 +1,28 @@
 /* licensing and copyright information here */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include "config.h"
+
 #include <errno.h>
+#include <fcntl.h>
 #include <math.h>
-#include <gtk/gtk.h>
-#include <config.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include <glib-object.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
-#include <pango/pango.h>
-#include <gio/gio.h>
-#include "chimara-glk.h"
+#include <gtk/gtk.h>
+
 #include "chimara-glk-private.h"
 #include "chimara-marshallers.h"
+#include "event.h"
 #include "glk.h"
-#include "abort.h"
-#include "stream.h"
-#include "window.h"
-#include "glkstart.h"
 #include "glkunix.h"
+#include "graphics.h"
 #include "init.h"
 #include "magic.h"
 #include "style.h"
+#include "window.h"
 
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
