@@ -5,8 +5,6 @@
 
 #include "chimara-glk-private.h"
 #include "fileref.h"
-#include "glk.h"
-#include "gi_blorb.h"
 #include "magic.h"
 #include "resource.h"
 #include "stream.h"

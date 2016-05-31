@@ -1,7 +1,6 @@
 #include <glib.h>
 
 #include "abort.h"
-#include "chimara-glk.h"
 #include "chimara-glk-private.h"
 #include "strio.h"
 #include "ui-message.h"

@@ -1,10 +1,9 @@
-#include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "chimara-glk-private.h"
 #include "graphics.h"
 #include "magic.h"
 #include "resource.h"
-#include "strio.h"
 #include "ui-message.h"
 #include "window.h"
 
@@ -440,16 +439,6 @@ glk_window_set_background_color(winid_t win, glui32 color)
 	win->background_color = color;
 }
 
-void
-glkcairo_set_source_glkcolor(cairo_t *cr, glui32 val)
-{
-	double r, g, b;
-	r = ((val & 0xff0000) >> 16) / 256.0;
-	g = ((val & 0x00ff00) >> 8) / 256.0;
-	b = (val & 0x0000ff) / 256.0;
-	cairo_set_source_rgb(cr, r, g, b);
-}
-
 /**
  * glk_window_fill_rect:
  * @win: A graphics window.
@@ -476,17 +465,6 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
 	msg->uintval2 = width;
 	msg->uintval2 = height;
 	ui_message_queue(msg);
-}
-
-void
-ui_graphics_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height)
-{
-	cairo_t *cr = cairo_create(win->backing_store);
-	glkcairo_set_source_glkcolor(cr, color);
-	cairo_rectangle(cr, (double)left, (double)top, (double)width, (double)height);
-	cairo_fill(cr);
-	gtk_widget_queue_draw(win->widget);
-	cairo_destroy(cr);
 }
 
 /**
@@ -550,56 +528,4 @@ glk_window_erase_rect(winid_t win, glsi32 left, glsi32 top, glui32 width, glui32
 void glk_window_flow_break(winid_t win)
 {
 	VALID_WINDOW(win, return);
-}
-
-/* Called when the graphics window is resized, restacked, or moved. Resize the
-backing store if necessary. */
-gboolean
-on_graphics_configure(GtkWidget *widget, GdkEventConfigure *event, winid_t win)
-{
-	int oldwidth = 0, oldheight = 0;
-
-	/* Determine whether the backing store can stay the same size */
-	gboolean needs_resize = FALSE;
-	if(win->backing_store == NULL)
-		needs_resize = TRUE;
-	else {
-		oldwidth = cairo_image_surface_get_width(win->backing_store);
-		oldheight = cairo_image_surface_get_height(win->backing_store);
-		if(oldwidth != event->width || oldheight != event->height)
-			needs_resize = TRUE;
-	}
-
-	if(needs_resize) {
-		/* Create a new backing store */
-		cairo_surface_t *new_backing_store = gdk_window_create_similar_surface( gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, gtk_widget_get_allocated_width(widget), gtk_widget_get_allocated_height(widget) );
-		cairo_t *cr = cairo_create(new_backing_store);
-
-		/* Clear to background color */
-		glkcairo_set_source_glkcolor(cr, win->background_color);
-		cairo_paint(cr);
-
-		if(win->backing_store != NULL) {
-			/* Copy the contents of the old backing store */
-			cairo_set_source_surface(cr, win->backing_store, 0, 0);
-			cairo_paint(cr);
-			cairo_surface_destroy(win->backing_store);
-		}
-
-		cairo_destroy(cr);
-		/* Use the new backing store */
-		win->backing_store = new_backing_store;
-	}
-
-	return TRUE; /* Event handled, stop processing */
-}
-
-/* Draw the backing store to the screen. Called whenever the drawing area is
-exposed. */
-gboolean
-on_graphics_draw(GtkWidget *widget, cairo_t *cr, winid_t win)
-{
-	cairo_set_source_surface(cr, win->backing_store, 0, 0);
-	cairo_paint(cr);
-	return FALSE;
 }

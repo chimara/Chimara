@@ -1,20 +1,38 @@
 #include <string.h>
 
+#include <glib.h>
+
 #include "charset.h"
 #include "chimara-glk-private.h"
-#include "event.h"
-#include "glk.h"
 #include "garglk.h"
 #include "magic.h"
-#include "input.h"
-#include "pager.h"
 #include "ui-message.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
 
-/* Forward declarations */
-static void cancel_old_input_request(winid_t win);
+/* Internal function: cancels any pending input requests on the window and
+ * presents a warning if not INPUT_REQUEST_NONE */
+static void
+cancel_old_input_request(winid_t win)
+{
+	switch(win->input_request_type) {
+	case INPUT_REQUEST_NONE:
+		break; /* All is well */
+	case INPUT_REQUEST_CHARACTER:
+	case INPUT_REQUEST_CHARACTER_UNICODE:
+		glk_cancel_char_event(win);
+		WARNING("Cancelling pending char event");
+		break;
+	case INPUT_REQUEST_LINE:
+	case INPUT_REQUEST_LINE_UNICODE:
+		glk_cancel_line_event(win, NULL);
+		WARNING("Cancelling pending line event");
+		break;
+	default:
+		WARNING("Could not cancel pending input request: unknown input request");
+	}
+}
 
 /* Internal function: code common to both flavors of char event request */
 void
@@ -28,28 +46,6 @@ request_char_event_common(winid_t win, gboolean unicode)
 	UiMessage *msg = ui_message_new(UI_MESSAGE_REQUEST_CHAR_INPUT, win);
 	msg->boolval = unicode;
 	ui_message_queue(msg);
-}
-
-void
-ui_window_request_char_input(ChimaraGlk *glk, winid_t win, gboolean unicode)
-{
-	if(win->type == wintype_TextBuffer) {
-		/* Move the input_position mark to the end of the window_buffer */
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
-		GtkTextIter end_iter;
-		gtk_text_buffer_get_end_iter(buffer, &end_iter);
-		gtk_text_buffer_move_mark(buffer, input_position, &end_iter);
-	}
-
-
-	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
-	g_signal_handler_unblock( win->widget, win->char_input_keypress_handler );
-
-	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
-
-	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	g_signal_emit_by_name(glk, "waiting");
 }
 
 /**
@@ -97,117 +93,6 @@ glk_cancel_char_event(winid_t win)
 	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
 
 	ui_message_queue(ui_message_new(UI_MESSAGE_CANCEL_CHAR_INPUT, win));
-}
-
-/* Internal function: Request either latin-1 or unicode line input, in a text grid window. */
-static void
-ui_grid_request_line_event(winid_t win, glui32 maxlen, gboolean insert, const char *inserttext)
-{
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-
-    GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
-    GtkTextIter start_iter, end_iter;
-    gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, cursor);
-
-    /* Determine the maximum length of the line input */
-    gint cursorpos = gtk_text_iter_get_line_offset(&start_iter);
-    /* Odd; the Glk spec says the maximum input length is
-    windowwidth - 1 - cursorposition. I say no, because if cursorposition is
-    zero, then the input should fill the whole line. FIXME??? */
-	g_mutex_lock(&win->lock);
-    win->input_length = MIN(win->width - cursorpos, win->line_input_buffer_max_len);
-	g_mutex_unlock(&win->lock);
-    end_iter = start_iter;
-    gtk_text_iter_set_line_offset(&end_iter, cursorpos + win->input_length);
-
-	/* If the buffer currently has a selection with one bound in the middle of
-	the input field, then deselect it. Otherwise the input field gets trashed */
-	GtkTextIter start_sel, end_sel;
-	if( gtk_text_buffer_get_selection_bounds(buffer, &start_sel, &end_sel) )
-	{
-		if( gtk_text_iter_in_range(&start_sel, &start_iter, &end_iter) )
-			gtk_text_buffer_place_cursor(buffer, &end_sel);
-		if( gtk_text_iter_in_range(&end_sel, &start_iter, &end_iter) )
-			gtk_text_buffer_place_cursor(buffer, &start_sel);
-	}
-
-    /* Erase the text currently in the input field and replace it with a GtkEntry */
-    gtk_text_buffer_delete(buffer, &start_iter, &end_iter);
-    win->input_anchor = gtk_text_buffer_create_child_anchor(buffer, &start_iter);
-    win->input_entry = gtk_entry_new();
-
-	/* Set the color of the entry, and make it as small as possible in order to
-	fit with the text */
-	gtk_entry_set_has_frame(GTK_ENTRY(win->input_entry), FALSE);
-	GtkStyleContext *entry_style = gtk_widget_get_style_context(win->input_entry);
-#ifdef GTK_STYLE_CLASS_FLAT /* COMPAT: available in 3.14 */
-	gtk_style_context_add_class(entry_style, GTK_STYLE_CLASS_FLAT);
-#endif /* GTK_STYLE_CLASS_FLAT */
-	GtkCssProvider *css_provider = gtk_css_provider_new();
-	gtk_css_provider_load_from_data(css_provider,
-		".entry {"
-		"    background-image: none;"
-		"    background-color: #d3d7cf;"
-		"    border: 0 none;"
-		"    border-radius: 0;"
-		"    outline: 0 none;"
-		"    margin: 0;"
-		"    padding: 0;"
-		"}", -1, NULL);
-	gtk_style_context_add_provider(entry_style, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    gtk_entry_set_max_length(GTK_ENTRY(win->input_entry), win->input_length);
-    gtk_entry_set_width_chars(GTK_ENTRY(win->input_entry), win->input_length);
-
-    /* Insert pre-entered text if needed */
-    if(insert)
-    	gtk_entry_set_text(GTK_ENTRY(win->input_entry), inserttext);
-
-    g_signal_connect(win->input_entry, "activate", G_CALLBACK(on_input_entry_activate), win);
-    g_signal_connect(win->input_entry, "key-press-event", G_CALLBACK(on_input_entry_key_press_event), win);
-    win->line_input_entry_changed = g_signal_connect(win->input_entry, "changed", G_CALLBACK(on_input_entry_changed), win);
-
-    gtk_widget_show(win->input_entry);
-    gtk_text_view_add_child_at_anchor(GTK_TEXT_VIEW(win->widget), win->input_entry, win->input_anchor);
-
-	gtk_widget_grab_focus(win->input_entry);
-}
-
-/* Internal function: Request either latin-1 or unicode line input, in a text buffer window. */
-void
-ui_buffer_request_line_event(winid_t win, glui32 maxlen, gboolean insert, const char *inserttext)
-{
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-
-    /* Move the input_position mark to the end of the window_buffer */
-    GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
-    GtkTextIter end_iter;
-    gtk_text_buffer_get_end_iter(buffer, &end_iter);
-    gtk_text_buffer_move_mark(buffer, input_position, &end_iter);
-
-    /* Set the entire contents of the window_buffer as uneditable
-     * (so input can only be entered at the end) */
-    GtkTextIter start_iter;
-    gtk_text_buffer_get_start_iter(buffer, &start_iter);
-    gtk_text_buffer_remove_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
-    gtk_text_buffer_apply_tag_by_name(buffer, "uneditable", &start_iter, &end_iter);
-
-    /* Insert pre-entered text if needed */
-    if(insert) {
-        gtk_text_buffer_insert(buffer, &end_iter, inserttext, -1);
-		gtk_text_buffer_get_end_iter(buffer, &end_iter); /* update after text insertion */
-	}
-
-	/* Apply the correct style to the input prompt */
-	GtkTextIter input_iter;
-    gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
-    gtk_text_buffer_apply_tag_by_name(buffer, "default", &input_iter, &end_iter);
-    gtk_text_buffer_apply_tag_by_name(buffer, "input", &input_iter, &end_iter);
-    gtk_text_buffer_apply_tag_by_name(buffer, "glk-input", &input_iter, &end_iter);
-
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), TRUE);
-
-	g_signal_handler_unblock(buffer, win->insert_text_handler);
-	gtk_widget_grab_focus(win->widget);
 }
 
 /**
@@ -264,24 +149,6 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 	msg->boolval = initlen > 0;
 	msg->strval = inserttext;
 	ui_message_queue(msg);
-}
-
-void
-ui_window_request_line_input(ChimaraGlk *glk, winid_t win, glui32 maxlen, gboolean insert, const char *inserttext)
-{
-	switch(win->type)
-	{
-	    case wintype_TextBuffer:
-			ui_buffer_request_line_event(win, maxlen, insert, inserttext);
-	        break;
-	    case wintype_TextGrid:
-			ui_grid_request_line_event(win, maxlen, insert, inserttext);
-	        break;
-    }
-	g_signal_handler_unblock(win->widget, win->line_input_keypress_handler);
-
-	/* Emit the "waiting" signal to let listeners know we are ready for input */
-	g_signal_emit_by_name(glk, "waiting");
 }
 
 /**
@@ -406,443 +273,6 @@ glk_cancel_line_event(winid_t win, event_t *event)
 	}
 }
 
-/* Helper function: Turn off shutdown key-press-event signal handler */
-static gboolean
-turn_off_handler(GNode *node)
-{
-	winid_t win = node->data;
-	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
-	return FALSE; /* don't stop */
-}
-
-/* Internal function: Callback for signal key-press-event while waiting for shutdown. */
-gboolean
-on_shutdown_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
-{
-	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	
-	/* Turn off all the signal handlers */
-	if(priv->root_window)
-		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
-	
-	/* Signal the Glk library that it can shut everything down now */
-	g_mutex_lock(&priv->shutdown_lock);
-	g_cond_signal(&priv->shutdown_key_pressed);
-	g_mutex_unlock(&priv->shutdown_lock);
-
-	return TRUE; /* block the event */
-}
-
-/* Internal function: General callback for signal key-press-event on a text buffer or text grid window. Used in character input on both text buffers and grids. Blocked when not in use. */
-gboolean
-on_char_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
-{
-	/* Ignore modifier keys, otherwise the char input will already trigger on 
-	the shift key when the user tries to type a capital letter */
-	if(event->is_modifier)
-		return FALSE; /* don't stop the event */
-
-	/* All text up to the input position is now regarded as being read by the user */
-	if(win->type == wintype_TextBuffer)
-		pager_update(win);
-	
-	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
-
-	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	event_throw(glk, evtype_CharInput, win, keycode, 0);
-	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, event->keyval);
-
-	/* Only one keypress will be handled */
-	win->input_request_type = INPUT_REQUEST_NONE;
-	g_signal_handler_block(win->widget, win->char_input_keypress_handler);
-
-	return TRUE;
-}
-
-gboolean
-on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
-{
-	switch(win->type)
-	{
-		case wintype_TextBuffer:
-		{
-			GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
-			GtkTextMark *input_position_mark = gtk_text_buffer_get_mark(buffer, "input_position");
-			GtkTextIter input_position_iter;
-			gtk_text_buffer_get_iter_at_mark(buffer, &input_position_iter, input_position_mark);
-			GtkTextIter end_iter;
-			gtk_text_buffer_get_end_iter(buffer, &end_iter);
-
-			/* Check whether the cursor is at the prompt or somewhere else in the text */
-			GtkTextIter selection_start, selection_end;
-			gtk_text_buffer_get_selection_bounds(buffer, &selection_start, &selection_end);
-			if(gtk_text_iter_compare(&selection_start, &input_position_iter) < 0) {
-				// Cursor is somewhere else in the text, place it at the end if the user starts typing
-				if(event->keyval >= GDK_KEY_space && event->keyval <= GDK_KEY_asciitilde) {
-					gtk_text_buffer_place_cursor(buffer, &end_iter);
-				} else {
-					// User is walking around, let him be.
-					return FALSE;
-				}
-			}
-
-			/* All text up to the input position is now regarded as being read by the user */
-			pager_update(win);
-
-			/* History up/down */
-			if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up
-				|| event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
-			{
-				/* Prevent falling off the end of the history list */
-				if(win->history == NULL)
-					return TRUE;
-				if( (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
-					&& win->history_pos && win->history_pos->next == NULL)
-					return TRUE;
-				if( (event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
-					&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
-					return TRUE;
-
-				/* Erase any text that was already typed */
-				if(win->history_pos == NULL) {
-					gchar *current_input = gtk_text_buffer_get_text(buffer, &input_position_iter, &end_iter, FALSE);
-					win->history = g_list_prepend(win->history, current_input);
-					win->history_pos = win->history;
-				}
-
-				gtk_text_buffer_delete(buffer, &input_position_iter, &end_iter);
-
-				if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
-				{
-					if(win->history_pos)
-						win->history_pos = g_list_next(win->history_pos);
-					else
-						win->history_pos = win->history;
-				}
-				else /* down */
-					win->history_pos = g_list_previous(win->history_pos);
-
-				/* Insert the history item into the window */
-				gtk_text_buffer_get_end_iter(buffer, &end_iter);
-
-				g_signal_handler_block(buffer, win->insert_text_handler);
-				gtk_text_buffer_insert_with_tags_by_name(buffer, &end_iter, win->history_pos->data, -1, "default", "input", "glk-input", NULL);
-				g_signal_handler_unblock(buffer, win->insert_text_handler);
-
-				return TRUE;
-			}
-
-			/* Move to beginning/end of input field */
-			else if(event->keyval == GDK_KEY_Home) {
-				GtkTextIter input_iter;
-				GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
-				gtk_text_buffer_get_iter_at_mark(buffer, &input_iter, input_position);
-				gtk_text_buffer_place_cursor(buffer, &input_iter);
-				return TRUE;
-			}
-			else if(event->keyval == GDK_KEY_End) {
-				gtk_text_buffer_place_cursor(buffer, &end_iter);
-				return TRUE;
-			}
-
-			/* Handle the line terminators */
-			else if(event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter
-			   || g_slist_find(win->current_extra_line_terminators, GUINT_TO_POINTER(event->keyval)))
-			{
-				/* Remove signal handlers */
-				g_signal_handler_block(buffer, win->insert_text_handler);
-				g_signal_handler_block(win->widget, win->line_input_keypress_handler);
-
-				/* Insert a newline (even if line input was terminated with a different key */
-				gtk_text_buffer_get_end_iter(buffer, &end_iter);
-				gtk_text_buffer_insert(buffer, &end_iter, "\n", 1);
-				gtk_text_buffer_place_cursor(buffer, &end_iter);
-
-				/* Make the window uneditable again and retrieve the text that was input */
-				gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-
-				int chars_written = ui_buffer_finish_line_input(win, TRUE);
-				ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-				event_throw(glk, evtype_LineInput, win, chars_written, 0);
-				return TRUE;
-			}
-		}
-			return FALSE;
-
-		/* If this is a text grid window, then redirect the key press to the line input GtkEntry */
-		case wintype_TextGrid:
-		{
-			if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up
-				|| event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down
-				|| event->keyval == GDK_KEY_Left || event->keyval == GDK_KEY_KP_Left
-				|| event->keyval == GDK_KEY_Right || event->keyval == GDK_KEY_KP_Right
-				|| event->keyval == GDK_KEY_Tab || event->keyval == GDK_KEY_KP_Tab
-				|| event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_KP_Page_Up
-				|| event->keyval == GDK_KEY_Page_Down || event->keyval == GDK_KEY_KP_Page_Down
-				|| event->keyval == GDK_KEY_Home || event->keyval == GDK_KEY_KP_Home
-				|| event->keyval == GDK_KEY_End || event->keyval == GDK_KEY_KP_End)
-				return FALSE; /* Don't redirect these keys */
-			gtk_widget_grab_focus(win->input_entry);
-			gtk_editable_set_position(GTK_EDITABLE(win->input_entry), -1);
-			gboolean retval = TRUE;
-			g_signal_emit_by_name(win->input_entry, "key-press-event", event, &retval);
-			return retval; /* Block this key event if the entry handled it */
-		}
-	}
-	return FALSE;
-}
-
-/* Internal function: finish handling a line input request, for both text grid and text buffer windows. */
-static int
-write_to_window_buffer(winid_t win, const gchar *inserted_text)
-{
-	int copycount = 0;
-
-    /* Convert the string from UTF-8 to Latin-1 or Unicode */
-    if(win->input_request_type == INPUT_REQUEST_LINE)
-    {
-        gsize bytes_written;
-        gchar *latin1 = convert_utf8_to_latin1(inserted_text, &bytes_written);
-
-        if(latin1 == NULL)
-            return 0;
-
-        /* Place input in the echo stream */
-        if(win->echo_stream != NULL)
-            glk_put_string_stream(win->echo_stream, latin1);
-
-        /* Copy the string (bytes_written does not include the NULL at the end) */
-        copycount = MIN(win->line_input_buffer_max_len, bytes_written);
-        memcpy(win->line_input_buffer, latin1, copycount);
-        g_free(latin1);
-    }
-    else if(win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
-    {
-        glong items_written;
-        gunichar *unicode = convert_utf8_to_ucs4(inserted_text, &items_written);
-
-        if(unicode == NULL)
-            return 0;
-
-        /* Place input in the echo stream */
-        if(win->echo_stream != NULL)
-            glk_put_string_stream_uni(win->echo_stream, unicode);
-
-        /* Copy the string (but not the NULL at the end) */
-        copycount = MIN(win->line_input_buffer_max_len, items_written);
-        memcpy(win->line_input_buffer_unicode, unicode, copycount * sizeof(gunichar));
-        g_free(unicode);
-    }
-    else
-        WARNING("Wrong input request type");
-
-    win->input_request_type = INPUT_REQUEST_NONE;
-	return copycount;
-}
-
-/* Internal function: Retrieves the input of a TextBuffer window and stores it in the window buffer.
- * Returns the number of characters written, suitable for inclusion in a line input event. */
-int
-ui_buffer_finish_line_input(winid_t win, gboolean emit_signal)
-{
-	VALID_WINDOW(win, return 0);
-	g_return_val_if_fail(win->type == wintype_TextBuffer, 0);
-
-	GtkTextIter start_iter, end_iter;
-
-	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
-	gtk_text_buffer_get_iter_at_mark(window_buffer, &start_iter, input_position);
-	gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-
-	gchar *inserted_text = gtk_text_buffer_get_text(window_buffer, &start_iter, &end_iter, FALSE);
-
-	/* If echoing is turned off, remove the text from the window */
-	if(!win->echo_current_line_input)
-		gtk_text_buffer_delete(window_buffer, &start_iter, &end_iter);
-
-	/* Don't include the newline in the input */
-	char *last_char = inserted_text + strlen(inserted_text) - 1;
-	if(*last_char == '\n')
-		*last_char = '\0';
-
-	int chars_written = write_to_window_buffer(win, inserted_text);
-	if(emit_signal)
-	{
-		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-		g_assert(glk);
-		g_signal_emit_by_name(glk, "line-input", win->rock, win->librock, inserted_text);
-	}
-
-	/* Add the text to the window input history */
-	if(win->history_pos != NULL)
-	{
-		g_free(win->history->data);
-		win->history = g_list_delete_link(win->history, win->history);
-	}
-	if(*inserted_text != 0)
-		win->history = g_list_prepend(win->history, g_strdup(inserted_text));
-
-	win->history_pos = NULL;
-
-	g_free(inserted_text);
-
-	return chars_written;
-}
-
-/* Internal function: Retrieves the input of a TextGrid window and stores it in the window buffer.
- * Returns the number of characters written, suitable for inclusion in a line input event. */
-int
-ui_grid_finish_line_input(winid_t win, gboolean emit_signal)
-{
-	VALID_WINDOW(win, return 0);
-	g_return_val_if_fail(win->type == wintype_TextGrid, 0);
-
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-
-	gchar *text = g_strdup( gtk_entry_get_text(GTK_ENTRY(win->input_entry)) );
-	/* Move the focus back into the text view */
-	gtk_widget_grab_focus(win->widget);
-	/* Remove entry widget from text view */
-	/* Should be ok even though this is the widget's own signal handler */
-	gtk_container_remove( GTK_CONTAINER(win->widget), GTK_WIDGET(win->input_entry) );
-	win->input_entry = NULL;
-	/* Delete the child anchor */
-	GtkTextIter start, end;
-	gtk_text_buffer_get_iter_at_child_anchor(buffer, &start, win->input_anchor);
-	end = start;
-	gtk_text_iter_forward_char(&end); /* Point after the child anchor */
-	gtk_text_buffer_delete(buffer, &start, &end);
-	win->input_anchor = NULL;
-
-    gchar *spaces = g_strnfill(win->input_length - g_utf8_strlen(text, -1), ' ');
-    gchar *text_to_insert = g_strconcat(text, spaces, NULL);
-	g_free(spaces);
-    gtk_text_buffer_insert(buffer, &start, text_to_insert, -1);
-    g_free(text_to_insert);
-
-    int chars_written = write_to_window_buffer(win, text);
-    if(emit_signal)
-    {
-		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-		g_assert(glk);
-		g_signal_emit_by_name(glk, "line-input", win->rock, win->librock, text);
-    }
-
-	/* Add the text to the window input history */
-	if(win->history_pos != NULL)
-	{
-		g_free(win->history->data);
-		win->history = g_list_delete_link(win->history, win->history);
-	}
-	if(*text != 0)
-		win->history = g_list_prepend(win->history, g_strdup(text));
-	win->history_pos = NULL;
-
-	g_free(text);
-	return chars_written;
-}
-
-/* Internal function: Callback for signal insert-text on a text buffer window.
-Runs after the default handler has already inserted the text. */
-void
-after_window_insert_text(GtkTextBuffer *textbuffer, GtkTextIter *location, gchar *text, gint len, winid_t win)
-{
-	GtkTextBuffer *window_buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-
-	/* Set the history position to NULL and erase the text we were already editing */
-	if(win->history_pos != NULL)
-	{
-		g_free(win->history->data);
-		win->history = g_list_delete_link(win->history, win->history);
-		win->history_pos = NULL;
-	}
-
-	/* Apply the 'input' style to the text that was entered */
-	GtkTextIter end_iter;
-	gtk_text_buffer_get_end_iter(window_buffer, &end_iter);
-	GtkTextIter input_iter;
-	GtkTextMark *input_position = gtk_text_buffer_get_mark(window_buffer, "input_position");
-	gtk_text_buffer_get_iter_at_mark(window_buffer, &input_iter, input_position);
-	gtk_text_buffer_apply_tag_by_name(window_buffer, "default", &input_iter, &end_iter);
-	gtk_text_buffer_apply_tag_by_name(window_buffer, "input", &input_iter, &end_iter);
-	gtk_text_buffer_apply_tag_by_name(window_buffer, "glk-input", &input_iter, &end_iter);
-}
-
-/* Internal function: Callback for signal activate on the line input GtkEntry
-in a text grid window. */
-void
-on_input_entry_activate(GtkEntry *input_entry, winid_t win)
-{
-	g_signal_handler_block(win->widget, win->line_input_keypress_handler);
-
-	int chars_written = ui_grid_finish_line_input(win, TRUE);
-	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-	event_throw(glk, evtype_LineInput, win, chars_written, 0);
-}
-
-/* Internal function: Callback for signal key-press-event on the line input
-GtkEntry in a text grid window. */
-gboolean
-on_input_entry_key_press_event(GtkEntry *input_entry, GdkEventKey *event, winid_t win)
-{
-	if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up
-		|| event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
-	{
-		/* Prevent falling off the end of the history list */
-		if( (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
-			&& win->history_pos && win->history_pos->next == NULL)
-			return TRUE;
-		if( (event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_KP_Down)
-			&& (win->history_pos == NULL || win->history_pos->prev == NULL) )
-			return TRUE;
-
-		if(win->history_pos == NULL)
-		{
-			const gchar *current_input = gtk_entry_get_text(input_entry);
-			win->history = g_list_prepend(win->history, g_strdup(current_input));
-			win->history_pos = win->history;
-		}
-
-		if(event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_KP_Up)
-		{
-			if(win->history_pos)
-				win->history_pos = g_list_next(win->history_pos);
-			else
-				win->history_pos = win->history;
-		}
-		else /* down */
-			win->history_pos = g_list_previous(win->history_pos);
-
-		/* Insert the history item into the window */
-		g_signal_handler_block(input_entry, win->line_input_entry_changed);
-		gtk_entry_set_text(input_entry, win->history_pos->data);
-		g_signal_handler_unblock(input_entry, win->line_input_entry_changed);
-		return TRUE;
-	}
-	else if(g_slist_find(win->current_extra_line_terminators, GUINT_TO_POINTER(event->keyval)))
-	{
-		/* If this key was a line terminator, pretend we pressed enter */
-		on_input_entry_activate(input_entry, win);
-	}
-	return FALSE;
-}
-
-void
-on_input_entry_changed(GtkEditable *editable, winid_t win)
-{
-	/* Set the history position to NULL and erase the text we were already editing */
-	if(win->history_pos != NULL)
-	{
-		g_free(win->history->data);
-		win->history = g_list_delete_link(win->history, win->history);
-		win->history_pos = NULL;
-	}
-}
-
 glui32
 keyval_to_glk_keycode(guint keyval, gboolean unicode)
 {
@@ -932,72 +362,6 @@ force_line_input_from_queue(winid_t win, event_t *event)
 	event->win = win;
 	event->val1 = chars_written;
 	event->val2 = 0;
-}
-
-int
-ui_window_force_line_input(winid_t win, const char *text)
-{
-	int chars_written = 0;
-	if(win->type == wintype_TextBuffer)
-	{
-		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextIter start, end;
-
-		/* Remove signal handlers so the line input doesn't get picked up again */
-		g_signal_handler_block(buffer, win->insert_text_handler);
-		g_signal_handler_block(win->widget, win->line_input_keypress_handler);
-
-		/* Erase any text that was already typed */
-		GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
-		gtk_text_buffer_get_iter_at_mark(buffer, &start, input_position);
-		gtk_text_buffer_get_end_iter(buffer, &end);
-		gtk_text_buffer_delete(buffer, &start, &end);
-
-		/* Make the window uneditable again */
-		gtk_text_view_set_editable(GTK_TEXT_VIEW(win->widget), FALSE);
-
-		/* Insert the forced input into the window */
-		if(win->echo_current_line_input)
-		{
-			gtk_text_buffer_get_end_iter(buffer, &end);
-			gchar *text_to_insert = g_strconcat(text, "\n", NULL);
-			gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", "glk-input", NULL);
-		}
-
-		chars_written = ui_buffer_finish_line_input(win, TRUE);
-	}
-	else if(win->type == wintype_TextGrid)
-	{
-		/* Remove signal handlers so the line input doesn't get picked up again */
-		g_signal_handler_block(win->widget, win->char_input_keypress_handler);
-
-		/* Insert the forced input into the window */
-		gtk_entry_set_text(GTK_ENTRY(win->input_entry), text);
-		chars_written = ui_grid_finish_line_input(win, TRUE);
-	}
-	return (int)chars_written;
-}
-
-/*** Internal function: cancels any pending input requests on the window and presents a warning if not INPUT_REQUEST_NONE ***/
-void
-cancel_old_input_request(winid_t win)
-{
-	switch(win->input_request_type) {
-	case INPUT_REQUEST_NONE:
-		break; /* All is well */
-	case INPUT_REQUEST_CHARACTER:
-	case INPUT_REQUEST_CHARACTER_UNICODE:
-		glk_cancel_char_event(win);
-		WARNING("Cancelling pending char event");
-		break;
-	case INPUT_REQUEST_LINE:
-	case INPUT_REQUEST_LINE_UNICODE:
-		glk_cancel_line_event(win, NULL);
-		WARNING("Cancelling pending line event");
-		break;
-	default:
-		WARNING("Could not cancel pending input request: unknown input request");
-	}
 }
 
 /**

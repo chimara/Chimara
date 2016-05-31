@@ -23,11 +23,11 @@ libchimara_la_SOURCES = \
 	glk.c glk.h \
 	glkstart.h \
 	glkunix.c glkunix.h \
-	hyperlink.c hyperlink.h \
+	hyperlink.c \
 	init.c init.h \
 	input.c input.h \
 	magic.c magic.h \
-	mouse.c mouse.h \
+	mouse.c \
 	pager.c pager.h \
 	resource.c resource.h \
 	schannel.c schannel.h \
@@ -39,6 +39,9 @@ libchimara_la_SOURCES = \
 	ui-graphics.c ui-graphics.h \
 	ui-grid.c ui-grid.h \
 	ui-message.c ui-message.h \
+	ui-misc.c ui-misc.h \
+	ui-style.c ui-style.h \
+	ui-textwin.c ui-textwin.h \
 	ui-window.c ui-window.h \
 	window.c window.h \
 	$(NULL)

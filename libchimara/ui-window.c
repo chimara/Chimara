@@ -1,11 +1,10 @@
 #include <gtk/gtk.h>
-#include <pango/pango.h>
 
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
+#include "event.h"
 #include "glk.h"
-#include "pager.h"
-#include "strio.h"
+#include "input.h"
 #include "ui-buffer.h"
 #include "ui-graphics.h"
 #include "ui-grid.h"
@@ -22,18 +21,6 @@ ui_window_arrange(ChimaraGlk *glk, gboolean suppress_next_arrange_event)
 	priv->needs_rearrange = TRUE;
 	priv->ignore_next_arrange_event = suppress_next_arrange_event;
 	gtk_widget_queue_resize(GTK_WIDGET(priv->self));
-}
-
-/* Determine the size of a "0" character in pixels. The size of a "0" character
-is how Glk measures its text grid and text buffer window sizes. Returns width
-and height of the character in *width and *height. */
-void
-calculate_zero_character_size(GtkWidget *widget, PangoFontDescription *font, int *width, int *height)
-{
-	PangoLayout *zero = gtk_widget_create_pango_layout(widget, "0");
-	pango_layout_set_font_description(zero, font);
-	pango_layout_get_pixel_size(zero, width, height);
-	g_object_unref(zero);
 }
 
 /* Creates the widgets for and fills in the fields of @win.
@@ -77,6 +64,91 @@ ui_window_create(winid_t win, ChimaraGlk *glk)
 }
 
 void
+ui_window_clear(winid_t win)
+{
+	if(win->type == wintype_TextBuffer)
+		ui_buffer_clear(win);
+	else if(win->type == wintype_TextGrid)
+		ui_grid_clear(win);
+	else if(win->type == wintype_Graphics)
+		ui_graphics_clear(win);
+}
+
+/* Helper function: Turn off shutdown key-press-event signal handler */
+static gboolean
+turn_off_handler(GNode *node)
+{
+	winid_t win = node->data;
+	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
+	return FALSE; /* don't stop */
+}
+
+/* Callback for signal key-press-event while waiting for shutdown. */
+gboolean
+ui_window_handle_shutdown_key_press(GtkWidget *widget, GdkEventKey *event, winid_t win)
+{
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+
+	/* Turn off all the signal handlers */
+	if(priv->root_window)
+		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
+
+	/* Signal the Glk library that it can shut everything down now */
+	g_mutex_lock(&priv->shutdown_lock);
+	g_cond_signal(&priv->shutdown_key_pressed);
+	g_mutex_unlock(&priv->shutdown_lock);
+
+	return GDK_EVENT_STOP;
+}
+
+void
+ui_window_request_char_input(ChimaraGlk *glk, winid_t win, gboolean unicode)
+{
+	if(win->type == wintype_TextBuffer) {
+		/* Move the input_position mark to the end of the window_buffer */
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
+		GtkTextMark *input_position = gtk_text_buffer_get_mark(buffer, "input_position");
+		GtkTextIter end_iter;
+		gtk_text_buffer_get_end_iter(buffer, &end_iter);
+		gtk_text_buffer_move_mark(buffer, input_position, &end_iter);
+	}
+
+	win->input_request_type = unicode? INPUT_REQUEST_CHARACTER_UNICODE : INPUT_REQUEST_CHARACTER;
+	g_signal_handler_unblock( win->widget, win->char_input_keypress_handler );
+
+	gtk_widget_grab_focus( GTK_WIDGET(win->widget) );
+
+	/* Emit the "waiting" signal to let listeners know we are ready for input */
+	g_signal_emit_by_name(glk, "waiting");
+}
+
+/* Internal function: General callback for signal key-press-event on a text
+ * buffer or text grid window. Used in character input on both text buffers and
+ * grids. Blocked when not in use. */
+gboolean
+ui_window_handle_char_input_key_press(GtkWidget *widget, GdkEventKey *event, winid_t win) {
+	/* Ignore modifier keys, otherwise the char input will already trigger on
+	the shift key when the user tries to type a capital letter */
+	if(event->is_modifier)
+		return GDK_EVENT_PROPAGATE;
+
+	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
+
+	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
+	g_assert(glk);
+	event_throw(glk, evtype_CharInput, win, keycode, 0);
+	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, event->keyval);
+
+	/* Only one keypress will be handled */
+	win->input_request_type = INPUT_REQUEST_NONE;
+	g_signal_handler_block(win->widget, win->char_input_keypress_handler);
+
+	return GDK_EVENT_STOP;
+}
+
+void
 ui_window_cancel_char_input(winid_t win)
 {
 	if(win->input_request_type == INPUT_REQUEST_CHARACTER || win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE)
@@ -90,11 +162,4 @@ void
 ui_window_force_char_input(winid_t win, ChimaraGlk *glk, unsigned keyval)
 {
 	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, keyval);
-}
-
-void
-ui_window_set_style(winid_t win, unsigned styl)
-{
-	win->style_tagname = (char *) chimara_glk_get_tag_name(styl);
-	win->glk_style_tagname = (char *) chimara_glk_get_glk_tag_name(styl);
 }

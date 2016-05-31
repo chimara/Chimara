@@ -6,7 +6,6 @@
 #include "graphics.h"
 #include "input.h"
 #include "magic.h"
-#include "mouse.h"
 #include "pager.h"
 #include "stream.h"
 #include "strio.h"

@@ -1,10 +1,8 @@
-#include "config.h"
-
 #include <errno.h>
+#include <string.h>
 
-#include <gtk/gtk.h>
+#include <glib.h>
 #include <glib/gstdio.h>
-#include <glib/gi18n-lib.h>
 
 #include "chimara-glk-private.h"
 #include "fileref.h"
@@ -235,102 +233,6 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	frefid_t f = fileref_new(filename, NULL, rock, usage, fmode);
 	g_free(filename);
 	return f;
-}
-
-/* Prompts the user for a file to open or save to.
- * Called as a result of glk_fileref_create_by_prompt(). */
-char *
-ui_prompt_for_file(ChimaraGlk *glk, unsigned usage, unsigned fmode, const char *current_dir)
-{
-	GtkWindow *toplevel = GTK_WINDOW( gtk_widget_get_toplevel( GTK_WIDGET(glk) ) );
-	GtkWidget *chooser;
-
-	switch(fmode)
-	{
-		case filemode_Read:
-			chooser = gtk_file_chooser_dialog_new("Select a file to open", toplevel,
-				GTK_FILE_CHOOSER_ACTION_OPEN,
-				_("_Cancel"), GTK_RESPONSE_CANCEL,
-				_("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
-			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_OPEN);
-			break;
-		case filemode_Write:
-			chooser = gtk_file_chooser_dialog_new("Select a file to save to", toplevel,
-				GTK_FILE_CHOOSER_ACTION_SAVE,
-				_("_Cancel"), GTK_RESPONSE_CANCEL,
-				_("_Save"), GTK_RESPONSE_ACCEPT,
-				NULL);
-			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
-			gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(chooser), TRUE);
-			break;
-		case filemode_ReadWrite:
-		case filemode_WriteAppend:
-			chooser = gtk_file_chooser_dialog_new("Select a file to save to", toplevel,
-				GTK_FILE_CHOOSER_ACTION_SAVE,
-				_("_Cancel"), GTK_RESPONSE_CANCEL,
-				_("_Save"), GTK_RESPONSE_ACCEPT,
-				NULL);
-			gtk_file_chooser_set_action(GTK_FILE_CHOOSER(chooser), GTK_FILE_CHOOSER_ACTION_SAVE);
-			break;
-		default:
-			ILLEGAL_PARAM("Unknown file mode: %u", fmode);
-			return NULL;
-	}
-	
-	/* Set up a file filter with suggested extensions */
-	GtkFileFilter *filter = gtk_file_filter_new();
-	switch(usage & fileusage_TypeMask)
-	{
-		case fileusage_Data:
-			gtk_file_filter_set_name(filter, _("Data files (*.glkdata)"));
-			gtk_file_filter_add_pattern(filter, "*.glkdata");
-			break;
-		case fileusage_SavedGame:
-			gtk_file_filter_set_name(filter, _("Saved games (*.glksave)"));
-			gtk_file_filter_add_pattern(filter, "*.glksave");
-			break;
-		case fileusage_InputRecord:
-			gtk_file_filter_set_name(filter, _("Text files (*.txt)"));
-			gtk_file_filter_add_pattern(filter, "*.txt");
-			break;
-		case fileusage_Transcript:
-			gtk_file_filter_set_name(filter, _("Transcript files (*.txt)"));
-			gtk_file_filter_add_pattern(filter, "*.txt");
-			break;
-		default:
-			ILLEGAL_PARAM("Unknown file usage: %u", usage);
-			return NULL;
-	}
-	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
-
-	/* Add a "text mode" filter for text files */
-	if((usage & fileusage_TypeMask) == fileusage_InputRecord || (usage & fileusage_TypeMask) == fileusage_Transcript)
-	{
-		filter = gtk_file_filter_new();
-		gtk_file_filter_set_name(filter, _("All text files"));
-		gtk_file_filter_add_mime_type(filter, "text/plain");
-		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
-	}
-
-	/* Add another non-restricted filter */
-	filter = gtk_file_filter_new();
-	gtk_file_filter_set_name(filter, _("All files"));
-	gtk_file_filter_add_pattern(filter, "*");
-	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(chooser), filter);
-
-	if(current_dir)
-		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), current_dir);
-
-	if(gtk_dialog_run( GTK_DIALOG(chooser) ) != GTK_RESPONSE_ACCEPT)
-	{
-		gtk_widget_destroy(chooser);
-		return NULL;
-	}
-	gchar *filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER(chooser) );
-	gtk_widget_destroy(chooser);
-
-	return filename;
 }
 
 /**

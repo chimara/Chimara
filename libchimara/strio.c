@@ -5,12 +5,9 @@
 #include <gtk/gtk.h>
 
 #include "charset.h"
-#include "chimara-glk.h"
 #include "magic.h"
 #include "stream.h"
-#include "style.h"
 #include "ui-message.h"
-#include "ui-window.h"
 #include "window.h"
 
 /* Internal function: ensure that an fseek() is called on a file pointer in
@@ -89,77 +86,6 @@ flush_window_buffer(winid_t win)
 	UiMessage *msg = flush_window_buffer_internal(win);
 	if (msg)
 		ui_message_queue_and_await(msg);
-}
-
-void
-ui_window_print_string(winid_t win, const char *text)
-{
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-
-	switch(win->type) {
-	case wintype_TextBuffer:
-	{
-		GtkTextIter start, end;
-		gtk_text_buffer_get_end_iter(buffer, &end);
-		gint start_offset;
-
-		start_offset = gtk_text_iter_get_offset(&end);
-		gtk_text_buffer_insert(buffer, &end, text, -1);
-		gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
-		style_apply(win, &start, &end);
-
-		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-		g_assert(glk);
-		g_signal_emit_by_name(glk, "text-buffer-output", win->rock, win->librock, text);
-	}
-		break;
-
-	case wintype_TextGrid:
-	{
-		/* Number of characters to insert */
-		long length = strlen(text);
-		glong chars_left = length;
-		
-		GtkTextMark *cursor = gtk_text_buffer_get_mark(buffer, "cursor_position");
-		
-		/* Get cursor position */
-		GtkTextIter start, insert;
-		gint start_offset;
-
-		gtk_text_buffer_get_iter_at_mark(buffer, &insert, cursor);
-
-		g_mutex_lock(&win->lock);
-
-		while(chars_left > 0 && !gtk_text_iter_is_end(&insert))
-		{
-			/* Spaces available on this line */
-			gint available_space = win->width - gtk_text_iter_get_line_offset(&insert);
-		
-			GtkTextIter end = insert;
-			if(chars_left <= available_space)
-				gtk_text_iter_forward_chars(&end, chars_left);
-			else
-				gtk_text_iter_forward_to_line_end(&end);
-
-			gtk_text_buffer_delete(buffer, &insert, &end);
-
-			start_offset = gtk_text_iter_get_offset(&insert);
-			gtk_text_buffer_insert(buffer, &insert, text + (length - chars_left), MIN(chars_left, available_space));
-			gtk_text_buffer_get_iter_at_offset(buffer, &start, start_offset);
-			style_apply(win, &start, &insert);
-			
-			chars_left -= available_space;
-
-			if(gtk_text_iter_get_line_offset(&insert) >= win->width)
-				gtk_text_iter_forward_line(&insert);
-		}
-
-		g_mutex_unlock(&win->lock);
-
-		gtk_text_buffer_move_mark(buffer, cursor, &insert);
-	}
-		break;
-	}
 }
 
 /* Internal function: write a Latin-1 buffer with length to a stream. */

@@ -1,11 +1,9 @@
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #include "chimara-glk-private.h"
 #include "event.h"
-#include "hyperlink.h"
 #include "magic.h"
 #include "stream.h"
-#include "strio.h"
 #include "ui-message.h"
 #include "window.h"
 
@@ -75,60 +73,6 @@ glk_set_hyperlink_stream(strid_t str, glui32 linkval)
 	ui_message_queue(msg);
 }
 
-/* Sets the text grid or text buffer window @win to output hyperlink text which
- * returns @linkval when clicked.
- * Called as a result of glk_set_hyperlink_stream() and glk_set_hyperlink(). */
-void
-ui_window_set_hyperlink(winid_t win, unsigned linkval)
-{
-	if(linkval == 0) {
-		/* Turn off hyperlink mode */
-		win->current_hyperlink = NULL;
-		return;
-	}
-
-	/* Check whether a tag with the needed value already exists */
-	hyperlink_t *new_hyperlink = g_hash_table_lookup(win->hyperlinks, &linkval);
-	if(new_hyperlink == NULL) {
-		/* Create a new hyperlink with the requested value */
-		new_hyperlink = g_new0(struct hyperlink, 1);
-		new_hyperlink->value = linkval;
-
-		new_hyperlink->tag = gtk_text_tag_new(NULL);
-		new_hyperlink->event_handler = g_signal_connect( new_hyperlink->tag, "event", G_CALLBACK(on_hyperlink_clicked), new_hyperlink );
-		if(!win->hyperlink_event_requested)
-			g_signal_handler_block(new_hyperlink->tag, new_hyperlink->event_handler);
-		new_hyperlink->window = win;
-
-		/* Add the new tag to the tag table of the textbuffer */
-		GtkTextBuffer *textbuffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-		GtkTextTagTable *tags = gtk_text_buffer_get_tag_table(textbuffer);
-		gtk_text_tag_table_add(tags, new_hyperlink->tag);
-
-		gint *linkval_pointer = g_new0(gint, 1);
-		*linkval_pointer = linkval;
-		g_hash_table_insert(win->hyperlinks, linkval_pointer, new_hyperlink);
-	}
-
-	win->current_hyperlink = new_hyperlink;
-}
-
-/* Internal function used to iterate over all the hyperlinks, unblocking the event handler */
-void
-hyperlink_unblock_event_handler(gpointer key, gpointer value, gpointer user_data)
-{
-	hyperlink_t *link = (hyperlink_t *) value;
-	g_signal_handler_unblock(link->tag, link->event_handler);
-}
-
-/* Internal function used to iterate over all the hyperlinks, blocking the event handler */
-void
-hyperlink_block_event_handler(gpointer key, gpointer value, gpointer user_data)
-{
-	hyperlink_t *link = (hyperlink_t *) value;
-	g_signal_handler_block(link->tag, link->event_handler);
-}
-
 /**
  * glk_request_hyperlink_event:
  * @win: The window to request a hyperlink event on.
@@ -161,19 +105,6 @@ glk_request_hyperlink_event(winid_t win)
 	ui_message_queue(ui_message_new(UI_MESSAGE_REQUEST_HYPERLINK_INPUT, win));
 }
 
-void
-ui_window_request_hyperlink_input(winid_t win)
-{
-	if(win->hyperlink_event_requested) {
-		WARNING("Tried to request a hyperlink event on a window that already had a hyperlink request");
-		return;
-	}
-
-	win->hyperlink_event_requested = TRUE;
-	g_hash_table_foreach(win->hyperlinks, hyperlink_unblock_event_handler, NULL);
-
-}
-
 /**
  * glk_cancel_hyperlink_event:
  * @win: The window in which to cancel the hyperlink event request.
@@ -189,31 +120,4 @@ glk_cancel_hyperlink_event(winid_t win)
 	g_return_if_fail(win->type == wintype_TextBuffer || win->type == wintype_TextGrid);
 
 	ui_message_queue(ui_message_new(UI_MESSAGE_CANCEL_HYPERLINK_INPUT, win));
-}
-
-void
-ui_window_cancel_hyperlink_input(winid_t win)
-{
-	if(!win->hyperlink_event_requested) {
-		WARNING("Tried to cancel a nonexistent hyperlink request");
-		return;
-	}
-
-	win->hyperlink_event_requested = FALSE;
-	g_hash_table_foreach(win->hyperlinks, hyperlink_block_event_handler, NULL);
-}
-
-gboolean
-on_hyperlink_clicked(GtkTextTag *tag, GObject *object, GdkEvent *event, GtkTextIter *iter, hyperlink_t *link)
-{
-	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(link->window->widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-
-	if(event->type == GDK_BUTTON_PRESS) {
-		link->window->hyperlink_event_requested = FALSE;
-		g_hash_table_foreach(link->window->hyperlinks, hyperlink_block_event_handler, NULL);
-		event_throw(glk, evtype_Hyperlink, link->window, link->value, 0);
-	}
-
-	return FALSE;
 }

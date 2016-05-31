@@ -1,24 +1,18 @@
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
-#include "fileref.h"
-#include "graphics.h"
-#include "hyperlink.h"
-#include "input.h"
 #include "strio.h"
-#include "style.h"
 #include "ui-buffer.h"
 #include "ui-graphics.h"
 #include "ui-grid.h"
 #include "ui-message.h"
+#include "ui-misc.h"
+#include "ui-style.h"
+#include "ui-textwin.h"
 #include "ui-window.h"
 #include "window.h"
 
 extern GPrivate glk_data_key;
-
-/* These don't go into garglk.h because that's an external header file */
-extern void ui_window_set_zcolors(winid_t window, unsigned fg, unsigned bg);
-extern void ui_window_set_reverse_video(winid_t win, gboolean reverse);
 
 struct SyncArrangeCallbackData {
 	UiMessage *msg;
@@ -209,22 +203,6 @@ ui_message_respond_string(UiMessage *msg, char *response)
 	g_mutex_unlock(&msg->lock);
 }
 
-/* Internal ChimaraGlk method: prompt whether to overwrite the file
- * @display_name.
- * This seemed like the best place to put this function for now.
- * Returns the GTK_RESPONSE constant given by the dialog. */
-static int
-ui_confirm_file_overwrite(ChimaraGlk *glk, const char *display_name)
-{
-	GtkWidget *toplevel = gtk_widget_get_toplevel(GTK_WIDGET(glk));
-	GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(toplevel), 0,
-		GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-		"File '%s' already exists. Overwrite?", display_name);
-	int response = gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(dialog);
-	return response;
-}
-
 /* Callback for responding to UI_MESSAGE_SYNC_ARRANGE below */
 static void
 respond_after_size_allocate(ChimaraGlk *glk, GtkAllocation *allocation, struct SyncArrangeCallbackData *data)
@@ -246,7 +224,7 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 
 	switch(msg->type) {
 	case UI_MESSAGE_PRINT_STRING:
-		ui_window_print_string(msg->win, msg->strval);
+		ui_textwin_print_string(msg->win, msg->strval);
 		ui_message_respond(msg, 1);
 		break;
 	case UI_MESSAGE_CREATE_WINDOW:
@@ -275,15 +253,7 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 
 		return;  /* not break, msg is freed in the callback! */
 	case UI_MESSAGE_CLEAR_WINDOW:
-		if(msg->win->type == wintype_TextBuffer)
-			ui_buffer_clear(msg->win);
-		else if(msg->win->type == wintype_TextGrid)
-			ui_grid_clear(msg->win);
-		else if(msg->win->type == wintype_Graphics)
-			ui_graphics_clear(msg->win);
-		else
-			g_assert_not_reached();
-			/* Message should not be sent with an invalid window type */
+		ui_window_clear(msg->win);
 		break;
 	case UI_MESSAGE_MOVE_CURSOR:
 		ui_grid_move_cursor(msg->win, msg->uintval1, msg->uintval2);
@@ -292,13 +262,13 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 		ui_grid_newline_cursor(msg->win);
 		break;
 	case UI_MESSAGE_SET_STYLE:
-		ui_window_set_style(msg->win, msg->uintval1);
+		ui_textwin_set_style(msg->win, msg->uintval1);
 		break;
 	case UI_MESSAGE_SET_ZCOLORS:
-		ui_window_set_zcolors(msg->win, msg->uintval1, msg->uintval2);
+		ui_textwin_set_zcolors(msg->win, msg->uintval1, msg->uintval2);
 		break;
 	case UI_MESSAGE_SET_REVERSE_VIDEO:
-		ui_window_set_reverse_video(msg->win, msg->boolval);
+		ui_textwin_set_reverse_video(msg->win, msg->boolval);
 		break;
 	case UI_MESSAGE_SET_STYLEHINT:
 		ui_style_set_hint(glk, msg->uintval1, msg->uintval2, msg->uintval3, msg->intval);
@@ -325,27 +295,22 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 		ui_window_force_char_input(msg->win, glk, msg->uintval1);
 		break;
 	case UI_MESSAGE_REQUEST_LINE_INPUT:
-		ui_window_request_line_input(glk, msg->win, msg->uintval1, msg->boolval, msg->strval);
+		ui_textwin_request_line_input(glk, msg->win, msg->uintval1, msg->boolval, msg->strval);
 		break;
 	case UI_MESSAGE_CANCEL_LINE_INPUT:
-		if(msg->win->type == wintype_TextBuffer)
-			ui_message_respond(msg, ui_buffer_cancel_line_input(msg->win));
-		else if(msg->win->type == wintype_TextGrid)
-			ui_message_respond(msg, ui_grid_cancel_line_input(msg->win));
-		else
-			g_assert_not_reached();
+		ui_message_respond(msg, ui_textwin_cancel_line_input(msg->win));
 		break;
 	case UI_MESSAGE_FORCE_LINE_INPUT:
-		ui_message_respond(msg, ui_window_force_line_input(msg->win, msg->strval));
+		ui_message_respond(msg, ui_textwin_force_line_input(msg->win, msg->strval));
 		break;
 	case UI_MESSAGE_SET_HYPERLINK:
-		ui_window_set_hyperlink(msg->win, msg->uintval1);
+		ui_textwin_set_hyperlink(msg->win, msg->uintval1);
 		break;
 	case UI_MESSAGE_REQUEST_HYPERLINK_INPUT:
-		ui_window_request_hyperlink_input(msg->win);
+		ui_textwin_request_hyperlink_input(msg->win);
 		break;
 	case UI_MESSAGE_CANCEL_HYPERLINK_INPUT:
-		ui_window_cancel_hyperlink_input(msg->win);
+		ui_textwin_cancel_hyperlink_input(msg->win);
 		break;
 	case UI_MESSAGE_GRAPHICS_DRAW_IMAGE:
 		ui_graphics_draw_image(msg->win, GDK_PIXBUF(msg->ptrval), msg->x, msg->y);

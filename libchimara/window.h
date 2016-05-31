@@ -15,6 +15,14 @@ enum InputRequestType
 	INPUT_REQUEST_LINE_UNICODE
 };
 
+struct hyperlink {
+	uint32_t value;
+	GtkTextTag *tag;
+	unsigned long event_handler;
+	winid_t window;
+};
+typedef struct hyperlink hyperlink_t;
+
 struct glk_window_struct
 {
 	/*< private >*/

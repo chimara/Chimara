@@ -1,7 +1,7 @@
 # List of source files containing translatable strings.
 
-libchimara/fileref.c
 libchimara/ui-buffer.c
+libchimara/ui-misc.c
 player/callbacks.c
 player/chimara.ui
 player/player.py
