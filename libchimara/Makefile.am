@@ -34,7 +34,7 @@ libchimara_la_SOURCES = \
 	stream.c stream.h \
 	strio.c strio.h \
 	style.c style.h \
-	timer.c timer.h \
+	timer.c \
 	ui-buffer.c ui-buffer.h \
 	ui-graphics.c ui-graphics.h \
 	ui-grid.c ui-grid.h \

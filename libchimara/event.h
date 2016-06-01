@@ -5,7 +5,6 @@
 #include "glk.h"
 #include "chimara-glk.h"
 
-#define EVENT_QUEUE_MAX_LENGTH (100)
 #define evtype_Abort (-1)
 #define evtype_ForcedCharInput (-2)
 #define evtype_ForcedLineInput (-3)

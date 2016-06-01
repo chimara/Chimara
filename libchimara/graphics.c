@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "chimara-glk-private.h"
@@ -8,6 +10,14 @@
 #include "window.h"
 
 #define BUFFER_SIZE (1024)
+#define IMAGE_CACHE_MAX_NUM 10
+
+struct image_info {
+	uint32_t resource_number;
+	int width, height;
+	GdkPixbuf* pixbuf;
+	gboolean scaled;
+};
 
 extern GPrivate glk_data_key;
 void on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info);
@@ -169,12 +179,19 @@ on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 	g_mutex_unlock(&glk_data->resource_lock);
 }
 
-
-void
-clear_image_cache(struct image_info *data, gpointer user_data)
+static void
+clear_image_cache_iterate(struct image_info *data, gpointer user_data)
 {
 	g_object_unref(data->pixbuf);
 	g_free(data);
+}
+
+void
+clear_image_cache(void)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+	g_slist_foreach(glk_data->image_cache, (GFunc)clear_image_cache_iterate, NULL);
+	g_slist_free(glk_data->image_cache);
 }
 
 static struct image_info*

@@ -3,9 +3,16 @@
 #include "chimara-glk-private.h"
 #include "event.h"
 #include "glk.h"
-#include "timer.h"
 
 extern GPrivate glk_data_key;
+
+/* Internal function: push a new timer event on the event stack. */
+static gboolean
+push_timer_event(ChimaraGlk *glk)
+{
+	event_throw(glk, evtype_Timer, NULL, 0, 0);
+	return G_SOURCE_CONTINUE;
+}
 
 /**
  * glk_request_timer_events:
@@ -63,16 +70,4 @@ glk_request_timer_events(glui32 millisecs)
 		return;
 	
 	glk_data->timer_id = g_timeout_add(millisecs, (GSourceFunc)push_timer_event, glk_data->self);
-}
-
-/*
- * Internal function: push a new timer event on the event stack.
- * Will always return TRUE
- */
-gboolean
-push_timer_event(ChimaraGlk *glk)
-{
-	event_throw(glk, evtype_Timer, NULL, 0, 0);
-
-	return TRUE;
 }

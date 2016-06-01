@@ -11,6 +11,7 @@
 extern GPrivate glk_data_key;
 
 #define EVENT_TIMEOUT_MICROSECONDS (3000000)
+#define EVENT_QUEUE_MAX_LENGTH (100)
 
 /* Internal function: push an event onto the event queue. If the event queue is
 full, wait for max three seconds and then drop the event. If the event queue is

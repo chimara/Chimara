@@ -100,6 +100,7 @@ struct giblorb_map_struct {
         in map->resources -- sorted by usage and resource number. */
 };
 
+#ifdef DEBUG
 void
 giblorb_print_contents(giblorb_map_t *map)
 {
@@ -120,6 +121,7 @@ giblorb_print_contents(giblorb_map_t *map)
             chunk.type & 0xFF);
 	}
 }
+#endif /* DEBUG */
 
 const char *
 giblorb_get_error_message(giblorb_err_t err)
