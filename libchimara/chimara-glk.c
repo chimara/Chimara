@@ -1452,10 +1452,10 @@ chimara_glk_stop(ChimaraGlk *glk)
     g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
     CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
-    /* Don't do anything if not running a program */
-    if(!priv->running)
-    	return;
-    
+	/* Don't do anything if not running a program */
+	if(!priv->running)
+		return;
+
 	if(!priv->after_finalize) {
 		g_mutex_lock(&priv->abort_lock);
 		priv->abort_signalled = TRUE;
@@ -1481,11 +1481,11 @@ chimara_glk_stop(ChimaraGlk *glk)
 void
 chimara_glk_wait(ChimaraGlk *glk)
 {
-    g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    CHIMARA_GLK_USE_PRIVATE(glk, priv);
-    /* Don't do anything if not running a program */
-    if(!priv->running)
-    	return;
+	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
+	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	/* Don't do anything if not running a program */
+	if(!priv->running)
+		return;
 
 	/* Empty UI message queue first, so that the Glk thread isn't waiting on any
 	UI operations; then it's safe to wait for the Glk thread to finish */

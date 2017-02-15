@@ -83,11 +83,11 @@ main(int argc, char *argv[])
 	if(argc < 2)
 		g_error("Must provide a plugin\n");
 
-    GFile *plugin_file;
-    if( g_str_has_suffix(argv[1], ".la") )
-        plugin_file = libname_from_la_file(argv[1]);
-    else
-        plugin_file = g_file_new_for_commandline_arg(argv[1]);
+	GFile *plugin_file;
+	if( g_str_has_suffix(argv[1], ".la") )
+		plugin_file = libname_from_la_file(argv[1]);
+	else
+		plugin_file = g_file_new_for_commandline_arg(argv[1]);
 
 	chimara_glk_set_resource_load_callback(CHIMARA_GLK(glk), (ChimaraResourceLoadFunc)resource_load, NULL, NULL);
 

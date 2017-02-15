@@ -22,9 +22,9 @@ void glk_main(void)
 	/* Define some custom styles */
 	glk_stylehint_set(wintype_AllTypes, style_User1, stylehint_TextColor, 0x00FF0000);
 
-    mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 0);
-    if(!mainwin)
-        return;
+	mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 0);
+	if(!mainwin)
+		return;
 
 	statuswin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed, 3, wintype_TextGrid, 1);
     
