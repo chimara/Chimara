@@ -252,7 +252,7 @@ ui_buffer_create(winid_t win, ChimaraGlk *glk)
 
 	/* Set up the appropriate text buffer or text grid font */
 	PangoFontDescription *font = ui_style_get_current_font(glk, win->type);
-	gtk_widget_override_font(win->widget, font);
+	ui_window_override_font(win, win->widget, font);
 	ui_calculate_zero_character_size(win->widget, font, &(win->unit_width), &(win->unit_height));
 	pango_font_description_free(font);
 

@@ -74,6 +74,60 @@ ui_window_clear(winid_t win)
 		ui_graphics_clear(win);
 }
 
+void
+ui_window_override_font(winid_t win, GtkWidget *widget, PangoFontDescription *font)
+{
+	GtkStyleContext *style = gtk_widget_get_style_context(widget);
+
+	if (win->font_override) {
+		gtk_style_context_remove_provider(style, GTK_STYLE_PROVIDER(win->font_override));
+	} else {
+		win->font_override = gtk_css_provider_new();
+	}
+
+	char *font_string = pango_font_description_to_string(font);
+	char *css = g_strdup_printf("*{ font: %s; }", font_string);
+
+	GError *error = NULL;
+	if (!gtk_css_provider_load_from_data(win->font_override, css, -1, &error)) {
+		g_critical("Error overriding font to %s: %s", font_string, error->message);
+		g_clear_error(&error);
+	}
+
+	g_free(font_string);
+	g_free(css);
+
+	gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(win->font_override),
+		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
+void
+ui_window_override_background_color(winid_t win, GtkWidget *widget, GdkRGBA *color)
+{
+	GtkStyleContext *style = gtk_widget_get_style_context(widget);
+
+	if (win->background_override) {
+		gtk_style_context_remove_provider(style, GTK_STYLE_PROVIDER(win->background_override));
+	} else {
+		win->background_override = gtk_css_provider_new();
+	}
+
+	char *color_string = gdk_rgba_to_string(color);
+	char *css = g_strdup_printf("*{ background-color: %s; }", color_string);
+
+	GError *error = NULL;
+	if (!gtk_css_provider_load_from_data(win->background_override, css, -1, &error)) {
+		g_critical("Error overriding background color to %s: %s", color_string, error->message);
+		g_clear_error(&error);
+	}
+
+	g_free(color_string);
+	g_free(css);
+
+	gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(win->background_override),
+		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
 /* Helper function: Turn off shutdown key-press-event signal handler */
 static gboolean
 turn_off_handler(GNode *node)

@@ -106,6 +106,8 @@ struct glk_window_struct
 	GtkTextTag *zcolor_reversed;
 	char *style_tagname;  /* Name of the current style */
 	char *glk_style_tagname;  /* Name of the current glk style override */
+	GtkCssProvider *font_override;
+	GtkCssProvider *background_override;
 	/* Hyperlinks */
 	GHashTable *hyperlinks;
 	struct hyperlink *current_hyperlink;

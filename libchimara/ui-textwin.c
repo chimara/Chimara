@@ -14,6 +14,7 @@
 #include "ui-misc.h"
 #include "ui-style.h"
 #include "ui-textwin.h"
+#include "ui-window.h"
 #include "window.h"
 
 #define ZCOLOR_NAME_TEMPLATE "zcolor:%s/%s"
@@ -411,6 +412,6 @@ ui_textwin_set_reverse_video(winid_t win, gboolean reverse)
 
 	// Update the background of the gtktextview to correspond with the current background color
 	if(current_background != NULL) {
-		gtk_widget_override_background_color(win->widget, GTK_STATE_FLAG_NORMAL, current_background);
+		ui_window_override_background_color(win, win->widget, current_background);
 	}
 }

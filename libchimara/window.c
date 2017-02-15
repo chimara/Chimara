@@ -81,6 +81,8 @@ window_close_common(winid_t win, gboolean destroy_node)
 
 	if(win->backing_store)
 		cairo_surface_destroy(win->backing_store);
+	g_clear_object(&win->font_override);
+	g_clear_object(&win->background_override);
 
 	g_mutex_clear(&win->lock);
 
