@@ -142,12 +142,7 @@ create_window(void)
 	g_settings_bind(state_settings, "show-toolbar-default",
 		toolbar, "visible", G_SETTINGS_BIND_SET);
 
-	GMenuModel *menumodel = G_MENU_MODEL(gtk_builder_get_object(builder, "menubar"));
-	GtkWidget *menubar = gtk_menu_bar_new_from_model(menumodel);
-	g_object_unref(menumodel);
-
 	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
-	gtk_box_pack_start(vbox, menubar, FALSE, FALSE, 0);
 	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
 
 	gtk_builder_connect_signals(builder, glk);

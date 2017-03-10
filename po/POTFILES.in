@@ -6,3 +6,4 @@ player/callbacks.c
 player/player.py
 player/preferences.c
 player/resources/chimara.ui
+player/resources/gtk/menus.ui
