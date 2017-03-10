@@ -26,7 +26,7 @@ LT_VERSION_INFO="$CHIMARA_CURRENT:$CHIMARA_REVISION:$CHIMARA_AGE"
 AC_SUBST(LT_VERSION_INFO)
 
 ### REQUIREMENTS ##############################################################
-GTK_REQUIRED_VERSION=3.4
+GTK_REQUIRED_VERSION=3.10
 GLIB_REQUIRED_VERSION=2.40
 GTK_DOC_REQUIRED_VERSION=1.20
 AC_SUBST(GTK_REQUIRED_VERSION)
@@ -54,6 +54,7 @@ AC_PROG_AWK
 AC_PATH_PROG([PERL], [perl]) # Perl
 AC_PATH_PROG([TEST], [test]) # Test
 AC_PATH_PROG([ECHO], [echo]) # Echo
+AC_PATH_PROG([GLIB_COMPILE_RESOURCES], [glib-compile-resources])
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
 ### TYPES #####################################################################

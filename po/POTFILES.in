@@ -3,6 +3,6 @@
 libchimara/ui-buffer.c
 libchimara/ui-misc.c
 player/callbacks.c
-player/chimara.ui
 player/player.py
 player/preferences.c
+player/resources/chimara.ui

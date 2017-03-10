@@ -94,19 +94,7 @@ create_window(void)
 {
 	GError *error = NULL;
 
-   	builder = gtk_builder_new();
-	if( !gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/chimara.ui", &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/chimara.ui", &error) ) {
-#endif /* DEBUG */
-			return FALSE;
-#ifdef DEBUG
-		}
-#endif /* DEBUG */
-	}
-
+	builder = gtk_builder_new_from_resource("/org/chimara-if/player/chimara.ui");
 	window = GTK_WIDGET(load_object("chimara"));
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
@@ -117,15 +105,17 @@ create_window(void)
 	    "ignore-errors", TRUE,
 	    /*"interpreter-number", CHIMARA_IF_ZMACHINE_TANDY_COLOR,*/
 	    NULL);
-	if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_DATA_DIR "/style.css", &error) ) {
-#ifdef DEBUG
-		g_error_free(error);
-		error = NULL;
-		if( !chimara_glk_set_css_from_file(CHIMARA_GLK(glk), PACKAGE_SRC_DIR "/style.css", &error) )
-#endif /* DEBUG */
-			return FALSE;
-	}
-	
+
+	GBytes *css_bytes = g_resources_lookup_data("/org/chimara-if/player/style.css",
+		G_RESOURCE_LOOKUP_FLAGS_NONE, &error);
+	if (!css_bytes)
+		return FALSE;
+
+	size_t len;
+	char *css = g_bytes_unref_to_data(css_bytes, &len);
+	chimara_glk_set_css_from_string(CHIMARA_GLK(glk), css);
+	g_free(css);
+
 	/* DON'T UNCOMMENT THIS your eyes will burn
 	 but it is a good test of programmatically altering just one style
 	chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
