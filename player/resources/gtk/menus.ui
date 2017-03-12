@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <menu id="app-menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+      </item>
+    </section>
+  </menu>
   <menu id="menubar">
     <submenu>
       <attribute name="label" translatable="yes">_Game</attribute>
@@ -21,11 +39,6 @@
           <attribute name="action">win.stop</attribute>
           <attribute name="icon">media-playback-stop-symbolic</attribute>
         </item>
-        <item>
-          <attribute name="label" translatable="yes">_Quit Chimara</attribute>
-          <attribute name="action">app.quit</attribute>
-          <attribute name="icon">application-exit-symbolic</attribute>
-        </item>
       </section>
     </submenu>
     <submenu>
@@ -42,11 +55,6 @@
           <attribute name="icon">edit-paste-symbolic</attribute>
         </item>
       </section>
-      <item>
-        <attribute name="label" translatable="yes">P_references</attribute>
-        <attribute name="action">app.preferences</attribute>
-        <attribute name="icon">preferences-system-symbolic</attribute>
-      </item>
     </submenu>
     <submenu>
       <attribute name="label" translatable="yes">_View</attribute>
@@ -84,14 +92,6 @@
         <attribute name="label" translatable="yes">_Quit</attribute>
         <attribute name="action">win.quit</attribute>
         <attribute name="icon">media-playback-stop-symbolic</attribute>
-      </item>
-    </submenu>
-    <submenu>
-      <attribute name="label" translatable="yes">_Help</attribute>
-      <item>
-        <attribute name="label" translatable="yes">_About…</attribute>
-        <attribute name="action">app.about</attribute>
-        <attribute name="icon">help-about-symbolic</attribute>
       </item>
     </submenu>
   </menu>
