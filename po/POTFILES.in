@@ -4,7 +4,6 @@ libchimara/ui-buffer.c
 libchimara/ui-misc.c
 player/callbacks.c
 player/main.c
-player/player.py
 player/preferences.c
 player/resources/chimara.ui
 player/resources/gtk/menus.ui

@@ -248,7 +248,6 @@ interpreters/bocfel/Makefile
 tests/Makefile
 tests/unit/Makefile
 player/Makefile
-player/config.py
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
