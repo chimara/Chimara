@@ -3,6 +3,7 @@
   <gresource prefix="/org/chimara-if/player">
     <file preprocess="xml-stripblanks" compressed="true">chimara.ui</file>
     <file preprocess="xml-stripblanks" compressed="true">gtk/menus.ui</file>
+    <file preprocess="xml-stripblanks">icons/scalable/apps/chimara.svg</file>
     <file compressed="true">style.css</file>
   </gresource>
 </gresources>
