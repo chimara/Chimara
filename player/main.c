@@ -156,6 +156,15 @@ create_window(void)
 }
 
 static void
+on_startup(GApplication *gapp)
+{
+	if( !create_window() ) {
+		error_dialog(NULL, NULL, "Error while building interface.");
+		g_error("Error while building interface.");
+	}
+}
+
+static void
 on_activate(GApplication *gapp)
 {
 	gtk_application_add_window(app, GTK_WINDOW(window));
@@ -213,13 +222,9 @@ main(int argc, char *argv[])
 	g_free(keyfile);
 
 	app = gtk_application_new("org.chimara-if.player", G_APPLICATION_HANDLES_OPEN);
+	g_signal_connect(app, "startup", G_CALLBACK(on_startup), NULL);
 	g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
 	g_signal_connect(app, "open", G_CALLBACK(on_open), NULL);
-
-	if( !create_window() ) {
-		error_dialog(NULL, NULL, "Error while building interface.");
-		return 1;
-	}
 
 	int status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
