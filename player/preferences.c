@@ -167,8 +167,6 @@ preferences_create(GtkBuilder *builder, ChimaraGlk *glk)
 
 	/* Bind the preferences to the entries in the preferences file */
 	extern GSettings *prefs_settings;
-	GObject *flep = G_OBJECT(load_object(builder, "flep"));
-	g_settings_bind(prefs_settings, "flep", flep, "active", G_SETTINGS_BIND_DEFAULT);
 	GtkFileChooser *blorb_chooser = GTK_FILE_CHOOSER(load_object(builder, "blorb_file_chooser") );
 	GtkFileChooser *css_chooser = GTK_FILE_CHOOSER(load_object(builder, "css-filechooser") );
 	char *filename;

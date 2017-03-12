@@ -10,14 +10,6 @@
 
   <schema id="org.chimara-if.player.preferences" path="/org/chimara-if/player/preferences/">
 
-    <key name="flep" type="b"> 
-      <default>false</default>
-      <summary>Flepping</summary>
-      <description>
-        Whether to flep or not while gronking a bloop.
-      </description>
-    </key>
-
     <key name="css-file" type="ms">
       <default>nothing</default>
       <summary>CSS style file</summary>
