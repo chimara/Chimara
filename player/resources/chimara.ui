@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="3.4"/>
+  <requires lib="gtk+" version="3.14"/>
   <object class="GtkAboutDialog" id="aboutwindow">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -76,15 +76,79 @@ Philip Chimento</property>
   </object>
   <object class="GtkApplicationWindow" id="chimara">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Chimara</property>
     <property name="default_width">600</property>
     <property name="default_height">800</property>
-    <child>
-      <object class="GtkVBox" id="vbox">
+    <property name="show_menubar">False</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="titlebar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="title">Chimara</property>
+        <property name="subtitle">Interactive Fiction Player</property>
+        <property name="show_close_button">True</property>
         <child>
-          <placeholder/>
+          <object class="GtkMenuButton" id="open_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="tooltip_text">Open a game</property>
+            <property name="valign">center</property>
+            <child>
+              <object class="GtkGrid" id="open_grid">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="open_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="label" translatable="yes">_Open</property>
+                    <property name="use_underline">True</property>
+                    <property name="track_visited_links">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="open_arrow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="icon_name">pan-down-symbolic</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+            <style>
+              <class name="text-button"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="hamburger_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="valign">center</property>
+            <child>
+              <object class="GtkImage" id="hamburger_image">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">open-menu-symbolic</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
         </child>
       </object>
     </child>
@@ -106,6 +170,54 @@ Philip Chimento</property>
       <pattern>*.blb</pattern>
       <pattern>*.blorb</pattern>
     </patterns>
+  </object>
+  <object class="GtkPopover" id="open_menu">
+    <property name="can_focus">False</property>
+    <property name="border_width">6</property>
+    <child>
+      <object class="GtkGrid" id="open_menu_grid">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkRecentChooserWidget" id="recent_list">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="filter">recentfilter</property>
+            <property name="limit">10</property>
+            <property name="show_tips">True</property>
+            <property name="sort_type">mru</property>
+            <signal name="item-activated" handler="on_recent_item_activated" swapped="no"/>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="open_dialog_button">
+            <property name="label" translatable="yes">Other _Games...</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="margin_top">6</property>
+            <property name="hexpand">True</property>
+            <property name="action_name">win.open</property>
+            <property name="use_underline">True</property>
+            <style>
+              <class name="text-button"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
   <object class="GtkRecentChooserDialog" id="recentwindow">
     <property name="can_focus">False</property>
@@ -867,65 +979,5 @@ Philip Chimento</property>
     <action-widgets>
       <action-widget response="0">button-close</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkToolbar" id="toolbar">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="no_show_all">True</property>
-    <child>
-      <object class="GtkToolButton" id="toolbar-open">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Quit the current game and load a new one</property>
-        <property name="action_name">win.open</property>
-        <property name="label">_Open</property>
-        <property name="use_underline">True</property>
-        <property name="icon_name">media-playback-start-symbolic</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkSeparatorToolItem" id="toolbar-separator">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">False</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToolButton" id="toolbar-restore">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Restore a previously saved game</property>
-        <property name="action_name">win.restore</property>
-        <property name="label">_Restore</property>
-        <property name="use_underline">True</property>
-        <property name="icon_name">document-open-symbolic</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToolButton" id="toolbar-save">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Save the game</property>
-        <property name="action_name">win.save</property>
-        <property name="label">_Save</property>
-        <property name="use_underline">True</property>
-        <property name="icon_name">document-save-symbolic</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
   </object>
 </interface>

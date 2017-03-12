@@ -18,81 +18,37 @@
       </item>
     </section>
   </menu>
-  <menu id="menubar">
-    <submenu>
-      <attribute name="label" translatable="yes">_Game</attribute>
-      <section>
-        <item>
-          <attribute name="label" translatable="yes">_Open…</attribute>
-          <attribute name="action">win.open</attribute>
-          <attribute name="accel">&lt;primary&gt;o</attribute>
-          <attribute name="icon">media-playback-start-symbolic</attribute>
-        </item>
-        <item>
-          <attribute name="label" translatable="yes">Open _Recent</attribute>
-          <attribute name="action">win.open-recent</attribute>
-        </item>
-      </section>
-      <section>
-        <item>
-          <attribute name="label" translatable="yes">_Stop Game</attribute>
-          <attribute name="action">win.stop</attribute>
-          <attribute name="icon">media-playback-stop-symbolic</attribute>
-        </item>
-      </section>
-    </submenu>
-    <submenu>
-      <attribute name="label" translatable="yes">_Edit</attribute>
-      <section>
-        <item>
-          <attribute name="label" translatable="yes">_Copy</attribute>
-          <attribute name="action">win.copy</attribute>
-          <attribute name="icon">edit-copy-symbolic</attribute>
-        </item>
-        <item>
-          <attribute name="label" translatable="yes">_Paste</attribute>
-          <attribute name="action">win.paste</attribute>
-          <attribute name="icon">edit-paste-symbolic</attribute>
-        </item>
-      </section>
-    </submenu>
-    <submenu>
-      <attribute name="label" translatable="yes">_View</attribute>
-      <item>
-        <attribute name="label" translatable="yes">_Toolbar</attribute>
-        <attribute name="action">win.toolbar</attribute>
-      </item>
-    </submenu>
-    <submenu>
-      <attribute name="label" translatable="yes">_Command</attribute>
+  <menu id="hamburger-menu">
+    <section>
       <item>
         <attribute name="label" translatable="yes">_Undo</attribute>
         <attribute name="action">win.undo</attribute>
         <attribute name="accel">&lt;primary&gt;z</attribute>
-        <attribute name="icon">edit-undo-symbolic</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Save…</attribute>
         <attribute name="action">win.save</attribute>
         <attribute name="accel">&lt;primary&gt;s</attribute>
-        <attribute name="icon">document-save-symbolic</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Restore…</attribute>
         <attribute name="action">win.restore</attribute>
         <attribute name="accel">&lt;primary&gt;r</attribute>
-        <attribute name="icon">document-open-symbolic</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Res_tart</attribute>
         <attribute name="action">win.restart</attribute>
-        <attribute name="icon">media-skip-backward-symbolic</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Quit</attribute>
         <attribute name="action">win.quit</attribute>
-        <attribute name="icon">media-playback-stop-symbolic</attribute>
       </item>
-    </submenu>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Abort Game</attribute>
+        <attribute name="action">win.stop</attribute>
+      </item>
+    </section>
   </menu>
 </interface>

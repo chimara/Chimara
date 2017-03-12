@@ -54,7 +54,7 @@ static GtkWidget *glk = NULL;
 GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
-GtkWidget *recentwindow = NULL;
+GtkWidget *open_menu = NULL;
 GSettings *prefs_settings = NULL;
 GSettings *state_settings = NULL;
 
@@ -98,7 +98,6 @@ create_window(void)
 	window = GTK_WIDGET(load_object("chimara"));
 	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
 	prefswindow = GTK_WIDGET(load_object("prefswindow"));
-	recentwindow = GTK_WIDGET(load_object("recentwindow"));
 
 	glk = chimara_if_new();
 	g_object_set(glk,
@@ -120,30 +119,19 @@ create_window(void)
 	 but it is a good test of programmatically altering just one style
 	chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
 	    "buffer { font-family: 'Comic Sans MS'; }");*/
-	
-	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
-	if(vbox == NULL)
-		return FALSE;
 
 	create_app_actions(G_ACTION_MAP(app), glk);
 	create_window_actions(G_ACTION_MAP(window), glk);
 
-	GtkWidget *toolbar = GTK_WIDGET(gtk_builder_get_object(builder, "toolbar"));
+	GtkWidget *hamburger_button = GTK_WIDGET(load_object("hamburger_button"));
+	gtk_menu_button_set_menu_model(GTK_MENU_BUTTON(hamburger_button),
+		G_MENU_MODEL(gtk_application_get_menu_by_id(app, "hamburger-menu")));
 
-	/* Set the default value of the "View/Toolbar" menu item upon creation of a
-	 new window to the "show-toolbar-default" setting, but bind the setting
-	 one-way only - we don't want toolbars to disappear suddenly */
-	GPropertyAction *toolbar_action = g_property_action_new("toolbar", toolbar, "visible");
-	g_action_map_add_action(G_ACTION_MAP(window), G_ACTION(toolbar_action));
-	if (g_settings_get_boolean(state_settings, "show-toolbar-default"))
-		gtk_widget_show(toolbar);
-	else
-		gtk_widget_hide(toolbar);
-	g_settings_bind(state_settings, "show-toolbar-default",
-		toolbar, "visible", G_SETTINGS_BIND_SET);
+	GtkWidget *open_button = GTK_WIDGET(load_object("open_button"));
+	open_menu = GTK_WIDGET(load_object("open_menu"));
+	gtk_menu_button_set_popover(GTK_MENU_BUTTON(open_button), GTK_WIDGET(open_menu));
 
-	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
-	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(window), glk);
 
 	gtk_builder_connect_signals(builder, glk);
 	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);

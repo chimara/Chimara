@@ -9,12 +9,9 @@
 G_BEGIN_DECLS
 
 void on_open_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk);
-void on_open_recent_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk);
 void on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk);
 void on_stop_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk);
 void on_quit_chimara_activate(GSimpleAction *action, GVariant *param, GtkApplication *app);
-void on_copy_activate(GSimpleAction *action, GVariant *param, GtkWindow *toplevel);
-void on_paste_activate(GSimpleAction *action, GVariant *param, GtkWindow *toplevel);
 void on_preferences_activate(GSimpleAction *action, GVariant *param, GtkApplication *app);
 void on_undo_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk);
 void on_save_activate(GSimpleAction *action, GVariant *value, ChimaraGlk *glk);

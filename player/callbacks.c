@@ -112,8 +112,15 @@ search_for_graphics_file(const char *filename, ChimaraIF *glk)
 void
 on_open_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 {
+	extern GtkWidget *open_menu;
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
-	
+
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_popover_popdown(GTK_POPOVER(open_menu));
+#else
+	gtk_widget_hide(open_menu);
+#endif
+
 	if(!confirm_open_new_game(glk))
 		return;
 
@@ -169,23 +176,20 @@ on_open_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 }
 
 void
-on_open_recent_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
-{
-	extern GtkWidget *recentwindow;
-
-	gtk_dialog_run(GTK_DIALOG(recentwindow));
-	gtk_widget_hide(recentwindow);
-}
-
-void
 on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
 {
+	extern GtkWidget *open_menu;
+
 	GError *error = NULL;
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
 	gchar *uri = gtk_recent_chooser_get_current_uri(chooser);
 	gchar *filename;
 
-	gtk_widget_hide(GTK_WIDGET(chooser));
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_popover_popdown(GTK_POPOVER(open_menu));
+#else
+	gtk_widget_hide(open_menu);
+#endif
 
 	if(!(filename = g_filename_from_uri(uri, NULL, &error))) {
 		error_dialog(window, error, _("Could not open game file '%s': "), uri);
@@ -223,26 +227,6 @@ on_quit_chimara_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk
 {
 	GtkWidget *toplevel = gtk_widget_get_toplevel(GTK_WIDGET(glk));
 	gtk_widget_destroy(toplevel);
-}
-
-void
-on_copy_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
-{
-	GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
-	GtkWidget *focus = gtk_window_get_focus(toplevel);
-	/* Call "copy clipboard" on any widget that defines it */
-	if(GTK_IS_LABEL(focus) || GTK_IS_ENTRY(focus) || GTK_IS_TEXT_VIEW(focus))
-		g_signal_emit_by_name(focus, "copy-clipboard");
-}
-
-void
-on_paste_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
-{
-	GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
-	GtkWidget *focus = gtk_window_get_focus(toplevel);
-	/* Call "paste clipboard" on any widget that defines it */
-	if(GTK_IS_ENTRY(focus) || GTK_IS_TEXT_VIEW(focus))
-		g_signal_emit_by_name(focus, "paste-clipboard");
 }
 
 void

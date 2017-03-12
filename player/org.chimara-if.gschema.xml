@@ -62,13 +62,5 @@
       </description>
     </key>
 
-    <key name="show-toolbar-default" type="b">
-      <default>true</default>
-      <summary>Show toolbar by default</summary>
-      <description>
-        Whether to show or hide the toolbar by default in new game windows.
-      </description>
-    </key>
-
   </schema>
 </schemalist>
