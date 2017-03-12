@@ -39,7 +39,7 @@
 
 #include "error.h"
 
-GObject *load_object(const gchar *name);
+GObject *load_object(GtkBuilder *builder, const gchar *name);
 static GtkTextTag *current_tag;
 static GtkListStore *preferred_list;
 
@@ -139,10 +139,10 @@ interpreter_to_display_string(ChimaraIFInterpreter interp)
 
 /* Create the preferences dialog. */
 void
-preferences_create(ChimaraGlk *glk)
+preferences_create(GtkBuilder *builder, ChimaraGlk *glk)
 {
 	/* Initialize the tree of style names */
-	GtkTreeStore *style_list = GTK_TREE_STORE( load_object("style-list") );
+	GtkTreeStore *style_list = GTK_TREE_STORE(load_object(builder, "style-list"));
 	GtkTreeIter buffer, grid, buffer_child, grid_child;
 
 	gtk_tree_store_append(style_list, &buffer, NULL);
@@ -160,17 +160,17 @@ preferences_create(ChimaraGlk *glk)
 	}
 
 	/* Set selection mode to single select */
-	GtkTreeView *view = GTK_TREE_VIEW( load_object("style-treeview") );
+	GtkTreeView *view = GTK_TREE_VIEW(load_object(builder, "style-treeview"));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(view);
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 	g_signal_connect(selection, "changed", G_CALLBACK(style_tree_select_callback), glk);
 
 	/* Bind the preferences to the entries in the preferences file */
 	extern GSettings *prefs_settings;
-	GObject *flep = G_OBJECT( load_object("flep") );
+	GObject *flep = G_OBJECT(load_object(builder, "flep"));
 	g_settings_bind(prefs_settings, "flep", flep, "active", G_SETTINGS_BIND_DEFAULT);
-	GtkFileChooser *blorb_chooser = GTK_FILE_CHOOSER( load_object("blorb_file_chooser") );
-	GtkFileChooser *css_chooser = GTK_FILE_CHOOSER( load_object("css-filechooser") );
+	GtkFileChooser *blorb_chooser = GTK_FILE_CHOOSER(load_object(builder, "blorb_file_chooser") );
+	GtkFileChooser *css_chooser = GTK_FILE_CHOOSER(load_object(builder, "css-filechooser") );
 	char *filename;
 	g_settings_get(prefs_settings, "resource-path", "ms", &filename);
 	if(filename) {
@@ -190,7 +190,7 @@ preferences_create(ChimaraGlk *glk)
 	}
 
 	/* Populate the list of available interpreters */
-	GtkListStore *interp_list = GTK_LIST_STORE( load_object("available_interpreters") );
+	GtkListStore *interp_list = GTK_LIST_STORE(load_object(builder, "available_interpreters"));
 	unsigned int count;
 	GtkTreeIter tree_iter;
 	for(count = 0; count < CHIMARA_IF_NUM_INTERPRETERS; count++) {
@@ -216,7 +216,7 @@ preferences_create(ChimaraGlk *glk)
 	g_variant_iter_free(iter);
 
 	/* Display it all in the list */
-	preferred_list = GTK_LIST_STORE( load_object("interpreters") );
+	preferred_list = GTK_LIST_STORE(load_object(builder, "interpreters"));
 	for(count = 0; count < CHIMARA_IF_NUM_FORMATS; count++) {
 		gtk_list_store_append(preferred_list, &tree_iter);
 		gtk_list_store_set(preferred_list, &tree_iter,

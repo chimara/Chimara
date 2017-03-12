@@ -51,7 +51,6 @@ static GtkWidget *window = NULL;
 static GtkWidget *glk = NULL;
 
 /* Global global pointers */
-GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
 GtkWidget *open_menu = NULL;
@@ -59,7 +58,7 @@ GSettings *prefs_settings = NULL;
 GSettings *state_settings = NULL;
 
 GObject *
-load_object(const gchar *name)
+load_object(GtkBuilder *builder, const gchar *name)
 {
 	GObject *retval;
 	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
@@ -94,10 +93,10 @@ create_window(void)
 {
 	GError *error = NULL;
 
-	builder = gtk_builder_new_from_resource("/org/chimara-if/player/chimara.ui");
-	window = GTK_WIDGET(load_object("chimara"));
-	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
-	prefswindow = GTK_WIDGET(load_object("prefswindow"));
+	GtkBuilder *builder = gtk_builder_new_from_resource("/org/chimara-if/player/chimara.ui");
+	window = GTK_WIDGET(load_object(builder, "chimara"));
+	aboutwindow = GTK_WIDGET(load_object(builder, "aboutwindow"));
+	prefswindow = GTK_WIDGET(load_object(builder, "prefswindow"));
 
 	glk = chimara_if_new();
 	g_object_set(glk,
@@ -123,12 +122,12 @@ create_window(void)
 	create_app_actions(G_ACTION_MAP(app), glk);
 	create_window_actions(G_ACTION_MAP(window), glk);
 
-	GtkWidget *hamburger_button = GTK_WIDGET(load_object("hamburger_button"));
+	GtkWidget *hamburger_button = GTK_WIDGET(load_object(builder, "hamburger_button"));
 	gtk_menu_button_set_menu_model(GTK_MENU_BUTTON(hamburger_button),
 		G_MENU_MODEL(gtk_application_get_menu_by_id(app, "hamburger-menu")));
 
-	GtkWidget *open_button = GTK_WIDGET(load_object("open_button"));
-	open_menu = GTK_WIDGET(load_object("open_menu"));
+	GtkWidget *open_button = GTK_WIDGET(load_object(builder, "open_button"));
+	open_menu = GTK_WIDGET(load_object(builder, "open_menu"));
 	gtk_menu_button_set_popover(GTK_MENU_BUTTON(open_button), GTK_WIDGET(open_menu));
 
 	gtk_container_add(GTK_CONTAINER(window), glk);
@@ -138,7 +137,9 @@ create_window(void)
 	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
 	
 	/* Create preferences window */
-	preferences_create(CHIMARA_GLK(glk));
+	preferences_create(builder, CHIMARA_GLK(glk));
+
+	g_object_unref(builder);
 
 	return TRUE;
 }
@@ -219,8 +220,6 @@ main(int argc, char *argv[])
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
-
-	g_object_unref( G_OBJECT(builder) );
 
 	return status;
 }
