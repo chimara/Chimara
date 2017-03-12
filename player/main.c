@@ -30,8 +30,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "config.h"
+
 #include <sys/stat.h>
 
+#include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
@@ -69,23 +72,14 @@ load_object(GtkBuilder *builder, const gchar *name)
 }
 
 static void
-change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkWindow *window)
+change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkHeaderBar *titlebar)
 {
-	gchar *program_name, *story_name, *title;
+	char *program_name, *story_name;
 	g_object_get(glk, "program-name", &program_name, "story-name", &story_name, NULL);
-	if(!program_name) {
-		gtk_window_set_title(window, "Chimara");
-		return;
-	}
-	else if(!story_name)
-		title = g_strdup_printf("%s - Chimara", program_name);
-	else
-		title = g_strdup_printf("%s - %s - Chimara", program_name, story_name);
-		
+	gtk_header_bar_set_title(titlebar, story_name ? story_name : _("Chimara"));
+	gtk_header_bar_set_subtitle(titlebar, program_name ? program_name : _("Interactive Fiction Player"));
 	g_free(program_name);
 	g_free(story_name);
-	gtk_window_set_title(window, title);
-	g_free(title);
 }
 
 static gboolean
@@ -133,8 +127,9 @@ create_window(void)
 	gtk_container_add(GTK_CONTAINER(window), glk);
 
 	gtk_builder_connect_signals(builder, glk);
-	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);
-	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
+	GtkWidget *titlebar = GTK_WIDGET(load_object(builder, "titlebar"));
+	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), titlebar);
+	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), titlebar);
 	
 	/* Create preferences window */
 	preferences_create(builder, CHIMARA_GLK(glk));
