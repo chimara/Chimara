@@ -1,19 +1,46 @@
 ---
-sudo: required
-dist: trusty
+sudo: false
 language: c
-script: ./autogen.sh && ./configure --enable-gtk-doc --with-xvfb-tests && make all check distcheck
+os: linux
+services:
+  - docker
+
+compiler: gcc
+env:
+  - DISTRO=debian:stretch GST=no
+  - DISTRO=debian:stretch GST=gstreamer1.0
+  - DISTRO=debian:jessie GST=gstreamer0.10
+# Do one build on clang
+matrix:
+  include:
+    - sudo: false
+      dist: trusty
+      compiler: clang
+      env: DISTRO=debian:stretch GST=gstreamer1.0
+
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq xvfb gtk-doc-tools texinfo texlive valac libgirepository1.0-dev libgtk-3-dev libpango1.0-dev libgstreamer1.0-dev gstreamer1.0-tools gstreamer1.0-plugins-bad gstreamer1.0-plugins-good
-  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gettext/autopoint_0.19.4-1ubuntu3_all.deb
-  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gettext/gettext_0.19.4-1ubuntu3_amd64.deb
-  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gcc-4.9/libgomp1_4.9.2-10ubuntu13_amd64.deb
-  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/gcc-4.9/gcc-4.9-base_4.9.2-10ubuntu13_amd64.deb
-  - sudo dpkg -i gcc-4.9-base_4.9.2-10ubuntu13_amd64.deb libgomp1_4.9.2-10ubuntu13_amd64.deb gettext_0.19.4-1ubuntu3_amd64.deb autopoint_0.19.4-1ubuntu3_all.deb
-compiler:
-  - clang
-  - gcc
+  - docker pull $DISTRO
+  - echo FROM $DISTRO >Dockerfile
+  - echo ADD . /root/ci >>Dockerfile
+  - echo WORKDIR /root/ci >>Dockerfile
+  - echo RUN apt-get update -qq >>Dockerfile
+  - echo RUN apt-get install -qq -y bison gtk-doc-tools libgirepository1.0-dev \
+    libgtk-3-dev texinfo texlive valac xvfb >>Dockerfile
+  - if test $GST != no; then
+    echo RUN apt-get install -qq -y lib$GST-dev $GST-tools $GST-plugins-bad \
+      $GST-plugins-good >>Dockerfile;
+    fi
+  - echo ENV CFLAGS -fdiagnostics-color >>Dockerfile
+  - echo RUN ./autogen.sh >>Dockerfile
+  - echo RUN ./configure --enable-gtk-doc --with-xvfb-tests --with-sound=$GST >>Dockerfile
+  - echo RUN make >>Dockerfile
+  - echo RUN make check >>Dockerfile
+  - echo RUN make distcheck >>Dockerfile
+
+script:
+  - docker build .
+
 after_failure:
-  - test -f tests/unit/test-suite.log && cat tests/unit/test-suite.log
-  - test -f chimara-*/_build/tests/unit/test-suite.log && cat chimara-*/_build/tests/unit/test-suite.log
+  - COMMIT=$(docker commit $(docker ps -l --format '{{.ID}}') | cut -f2 -d:)
+  - docker run -it --security-opt label:disable $COMMIT test -f /root/ci/tests/unit/test-suite.log && cat /root/ci/tests/unit/test-suite.log
+  - docker run -it --security-opt label:disable $COMMIT test -f /root/ci/chimara-*/_build/tests/unit/test-suite.log && cat /root/ci/chimara-*/_build/tests/unit/test-suite.log
