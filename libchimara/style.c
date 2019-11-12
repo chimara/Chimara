@@ -94,8 +94,6 @@ style_accept(GScanner *scanner, GTokenType token)
 static gboolean
 style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
 	GtkTextTag *current_tag;
 	gchar *field;
 	GTokenType token = g_scanner_get_next_token(scanner);
@@ -110,14 +108,12 @@ style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 	}
 
 	field = g_strdup(value.v_identifier);
+	uint32_t wintype = strcmp(field, "buffer") == 0 ? CHIMARA_GLK_TEXT_BUFFER : CHIMARA_GLK_TEXT_GRID;
 
 	/* Parse the tag name to change */
 	if( g_scanner_peek_next_token(scanner) == '{') {
 		style_accept(scanner, '{');
-		if( !strcmp(field, "buffer") )
-			current_tag = g_hash_table_lookup(priv->styles->text_buffer, "default");
-		else
-			current_tag = g_hash_table_lookup(priv->styles->text_grid, "default");
+		current_tag = chimara_glk_get_tag(glk, wintype, "default");
 	} else {
 		if( !style_accept(scanner, '.') )
 			return FALSE;
@@ -130,10 +126,7 @@ style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 			return FALSE;
 		}
 
-		if( !strcmp(field, "buffer") )
-			current_tag = g_hash_table_lookup(priv->styles->text_buffer, value.v_identifier);
-		else
-			current_tag = g_hash_table_lookup(priv->styles->text_grid, value.v_identifier);
+		current_tag = chimara_glk_get_tag(glk, wintype, value.v_identifier);
 
 		if(current_tag == NULL) {
 			g_scanner_error(scanner, "CSS Error: invalid style identifier");

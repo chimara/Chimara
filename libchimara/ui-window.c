@@ -11,18 +11,6 @@
 #include "ui-window.h"
 #include "window.h"
 
-/* Queues a size reallocation for the entire window hierarchy. If
- * @suppress_next_arrange_event is TRUE, an evtype_Arrange event will not be
- * sent back to the Glk thread as a result of this resize. */
-void
-ui_window_arrange(ChimaraGlk *glk, gboolean suppress_next_arrange_event)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	priv->needs_rearrange = TRUE;
-	priv->ignore_next_arrange_event = suppress_next_arrange_event;
-	gtk_widget_queue_resize(GTK_WIDGET(priv->self));
-}
-
 /* Creates the widgets for and fills in the fields of @win.
  * Called as a result of glk_window_open(). */
 void
@@ -205,32 +193,12 @@ ui_window_override_background_color(winid_t win, GtkWidget *widget, GdkRGBA *col
 		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
-/* Helper function: Turn off shutdown key-press-event signal handler */
-static gboolean
-turn_off_handler(GNode *node)
-{
-	winid_t win = node->data;
-	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
-	return FALSE; /* don't stop */
-}
-
 /* Callback for signal key-press-event while waiting for shutdown. */
 gboolean
 ui_window_handle_shutdown_key_press(GtkWidget *widget, GdkEventKey *event, winid_t win)
 {
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	/* Turn off all the signal handlers */
-	if(priv->root_window)
-		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
-
-	/* Signal the Glk library that it can shut everything down now */
-	g_mutex_lock(&priv->shutdown_lock);
-	g_cond_signal(&priv->shutdown_key_pressed);
-	g_mutex_unlock(&priv->shutdown_lock);
-
+	chimara_glk_clear_shutdown(glk);
 	return GDK_EVENT_STOP;
 }
 
@@ -268,8 +236,7 @@ ui_window_handle_char_input_key_press(GtkWidget *widget, GdkEventKey *event, win
 	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
 
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	event_throw(glk, evtype_CharInput, win, keycode, 0);
+	chimara_glk_push_event(glk, evtype_CharInput, win, keycode, 0);
 	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, event->keyval);
 
 	/* Only one keypress will be handled */

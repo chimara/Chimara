@@ -10,7 +10,7 @@ extern GPrivate glk_data_key;
 static gboolean
 push_timer_event(ChimaraGlk *glk)
 {
-	event_throw(glk, evtype_Timer, NULL, 0, 0);
+	chimara_glk_push_event(glk, evtype_Timer, NULL, 0, 0);
 	return G_SOURCE_CONTINUE;
 }
 

@@ -51,7 +51,6 @@ ui_style_apply_hint_to_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, u
 {
 	g_return_if_fail(tag != NULL);
 
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 	GObject *tag_object = G_OBJECT(tag);
 
 	int reverse_color = GPOINTER_TO_INT( g_object_get_data(tag_object, "reverse-color") );
@@ -127,7 +126,7 @@ ui_style_apply_hint_to_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, u
 			break;
 		}
 
-		GtkTextTag *font_tag = g_hash_table_lookup(priv->styles->text_buffer, val? "default" : "preformatted");
+		GtkTextTag *font_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_BUFFER, val? "default" : "preformatted");
 		g_object_get(font_tag, "family", &font_family, "family-set", &family_set, NULL);
 		g_object_set(tag_object, "family", font_family, "family-set", family_set, NULL);
 		g_free(font_family);
@@ -164,15 +163,10 @@ ui_style_apply_hint_to_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, u
 		GdkRGBA *current_foreground = &foreground;
 		GdkRGBA *current_background = &background;
 
-		if(wintype == wintype_TextBuffer) {
-			GtkTextTag *default_tag = g_hash_table_lookup(priv->styles->text_buffer, "default");
-			GtkTextTag *base_tag = g_hash_table_lookup(priv->styles->text_buffer, chimara_glk_get_tag_name(styl));
-			style_cascade_colors(base_tag, tag, default_tag, &current_foreground, &current_background);
-		} else if(wintype == wintype_TextGrid) {
-			GtkTextTag *default_tag = g_hash_table_lookup(priv->styles->text_grid, "default");
-			GtkTextTag *base_tag = g_hash_table_lookup(priv->styles->text_grid, chimara_glk_get_tag_name(styl));
-			style_cascade_colors(base_tag, tag, default_tag, &current_foreground, &current_background);
-		}
+		ChimaraGlkWindowType chimara_wintype = wintype == wintype_TextBuffer? CHIMARA_GLK_TEXT_BUFFER : CHIMARA_GLK_TEXT_GRID;
+		GtkTextTag *default_tag = chimara_glk_get_tag(glk, chimara_wintype, "default");
+		GtkTextTag *base_tag = chimara_glk_get_tag(glk, chimara_wintype, chimara_glk_get_tag_name(styl));
+		style_cascade_colors(base_tag, tag, default_tag, &current_foreground, &current_background);
 
 		if(val) {
 			/* Flip the fore- and background colors */
@@ -203,16 +197,14 @@ ui_style_apply_hint_to_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, u
 void
 ui_style_set_hint(ChimaraGlk *glk, unsigned wintype, unsigned styl, unsigned hint, int val)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
 	GtkTextTag *to_change;
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
-		to_change = g_hash_table_lookup( priv->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
+		to_change = chimara_glk_get_glk_tag(glk, CHIMARA_GLK_TEXT_BUFFER, chimara_glk_get_glk_tag_name(styl));
 		ui_style_apply_hint_to_tag(glk, to_change, wintype_TextBuffer, styl, hint, val);
 	}
 
 	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
-		to_change = g_hash_table_lookup( priv->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
+		to_change = chimara_glk_get_glk_tag(glk, CHIMARA_GLK_TEXT_GRID, chimara_glk_get_glk_tag_name(styl));
 		ui_style_apply_hint_to_tag(glk, to_change, wintype_TextGrid, styl, hint, val);
 	}
 }
@@ -236,8 +228,6 @@ ui_style_query_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, unsigned 
 	GdkRGBA *colval;
 
 	g_return_val_if_fail(tag != NULL, 0);
-
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
 
 	switch(hint) {
 	case stylehint_Indentation:
@@ -281,9 +271,8 @@ ui_style_query_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, unsigned 
 		/* Use pango_font_family_is_monospace()? */
 	{
 		char *font_family, *query_font_family;
-		GtkTextTag *font_tag = g_hash_table_lookup(
-		    wintype == wintype_TextBuffer? priv->styles->text_buffer : priv->styles->text_grid,
-		    "preformatted");
+		ChimaraGlkWindowType chimara_wintype = wintype == wintype_TextBuffer? CHIMARA_GLK_TEXT_BUFFER : CHIMARA_GLK_TEXT_GRID;
+		GtkTextTag *font_tag = chimara_glk_get_tag(glk, chimara_wintype, "preformatted");
 		g_object_get(font_tag, "family", &font_family, NULL);
 		g_object_get(tag, "family", &query_font_family, NULL);
 		int retval = strcmp(font_family, query_font_family)? 0 : 1;
@@ -316,12 +305,10 @@ ui_style_query_tag(ChimaraGlk *glk, GtkTextTag *tag, unsigned wintype, unsigned 
 void
 ui_style_clear_hint(ChimaraGlk *glk, unsigned wintype, unsigned styl, unsigned hint)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
 	GtkTextTag *tag;
 
 	if(wintype == wintype_TextBuffer || wintype == wintype_AllTypes) {
-		tag = g_hash_table_lookup( priv->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
+		tag = chimara_glk_get_glk_tag(glk, CHIMARA_GLK_TEXT_BUFFER, chimara_glk_get_glk_tag_name(styl));
 		if(tag) {
 			glsi32 val = ui_style_query_tag(glk, tag, wintype_TextBuffer, hint);
 			ui_style_apply_hint_to_tag(glk, tag, wintype_TextBuffer, styl, hint, val);
@@ -329,7 +316,7 @@ ui_style_clear_hint(ChimaraGlk *glk, unsigned wintype, unsigned styl, unsigned h
 	}
 
 	if(wintype == wintype_TextGrid || wintype == wintype_AllTypes) {
-		tag = g_hash_table_lookup( priv->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
+		tag = chimara_glk_get_glk_tag(glk, CHIMARA_GLK_TEXT_GRID, chimara_glk_get_glk_tag_name(styl));
 		if(tag) {
 			glsi32 val = ui_style_query_tag(glk, tag, wintype_TextGrid, hint);
 			ui_style_apply_hint_to_tag(glk, tag, wintype_TextGrid, styl, hint, val);
@@ -345,18 +332,16 @@ ui_style_clear_hint(ChimaraGlk *glk, unsigned wintype, unsigned styl, unsigned h
 int64_t
 ui_window_measure_style(winid_t win, ChimaraGlk *glk, unsigned styl, unsigned hint)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
 	GtkTextTag *tag;
 	int64_t result;
 
 	switch(win->type) {
 	case wintype_TextBuffer:
-		tag = g_hash_table_lookup( priv->glk_styles->text_buffer, chimara_glk_get_glk_tag_name(styl) );
+		tag = chimara_glk_get_glk_tag(glk, CHIMARA_GLK_TEXT_BUFFER, chimara_glk_get_glk_tag_name(styl));
 		result = ui_style_query_tag(glk, tag, win->type, hint);
 		break;
 	case wintype_TextGrid:
-		tag = g_hash_table_lookup( priv->glk_styles->text_grid, chimara_glk_get_glk_tag_name(styl) );
+		tag = chimara_glk_get_glk_tag(glk, CHIMARA_GLK_TEXT_GRID, chimara_glk_get_glk_tag_name(styl));
 		result = ui_style_query_tag(glk, tag, win->type, hint);
 	default:
 		return (int64_t)1 << 32;
@@ -435,19 +420,16 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 PangoFontDescription *
 ui_style_get_current_font(ChimaraGlk *glk, unsigned wintype)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	GHashTable *styles, *glk_styles;
 	PangoFontDescription *font;
+	ChimaraGlkWindowType chimara_wintype;
 
 	switch(wintype) {
 	case wintype_TextGrid:
-		styles = priv->styles->text_grid;
-		glk_styles = priv->glk_styles->text_grid;
+		chimara_wintype = CHIMARA_GLK_TEXT_BUFFER;
 		font = pango_font_description_from_string("Monospace");
 		break;
 	case wintype_TextBuffer:
-		styles = priv->styles->text_buffer;
-		glk_styles = priv->glk_styles->text_buffer;
+		chimara_wintype = CHIMARA_GLK_TEXT_GRID;
 		font = pango_font_description_from_string("Serif");
 		break;
 	default:
@@ -456,17 +438,17 @@ ui_style_get_current_font(ChimaraGlk *glk, unsigned wintype)
 
 	PangoAttrList *list = pango_attr_list_new();
 
-	text_tag_to_attr_list( g_hash_table_lookup(styles, "default"), list );
+	text_tag_to_attr_list(chimara_glk_get_tag(glk, chimara_wintype, "default"), list);
 	PangoAttrIterator *it = pango_attr_list_get_iterator(list);
 	pango_attr_iterator_get_font(it, font, NULL, NULL);
 	pango_attr_iterator_destroy(it);
 
-	text_tag_to_attr_list( g_hash_table_lookup(styles, "normal"), list );
+	text_tag_to_attr_list(chimara_glk_get_tag(glk, chimara_wintype, "normal"), list);
 	it = pango_attr_list_get_iterator(list);
 	pango_attr_iterator_get_font(it, font, NULL, NULL);
 	pango_attr_iterator_destroy(it);
 
-	text_tag_to_attr_list( g_hash_table_lookup(glk_styles, "glk-normal"), list );
+	text_tag_to_attr_list(chimara_glk_get_glk_tag(glk, chimara_wintype, "glk-normal"), list );
 	it = pango_attr_list_get_iterator(list);
 	pango_attr_iterator_get_font(it, font, NULL, NULL);
 	pango_attr_iterator_destroy(it);

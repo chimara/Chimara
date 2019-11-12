@@ -26,6 +26,8 @@
 #define CHIMARA_GLK_MIN_WIDTH 0
 #define CHIMARA_GLK_MIN_HEIGHT 0
 #define CHIMARA_NUM_STYLES 12
+#define EVENT_TIMEOUT_MICROSECONDS 3000000
+#define EVENT_QUEUE_MAX_LENGTH 100
 
 /**
  * SECTION:chimara-glk
@@ -153,7 +155,7 @@ enum {
 
 static guint chimara_glk_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE(ChimaraGlk, chimara_glk, GTK_TYPE_CONTAINER);
+G_DEFINE_TYPE_WITH_PRIVATE(ChimaraGlk, chimara_glk, GTK_TYPE_CONTAINER);
 
 /* Reset the style hints set from the Glk program to be blank. Call this when
 starting a new game so that style hints from the previous game don't carry
@@ -161,7 +163,7 @@ over. */
 static void
 chimara_glk_reset_glk_styles(ChimaraGlk *self)
 {
-	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
 	GHashTable *glk_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *glk_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
@@ -191,7 +193,7 @@ chimara_glk_reset_default_styles(ChimaraGlk *self)
 static void
 chimara_glk_init_styles(ChimaraGlk *self)
 {
-	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
 	GHashTable *default_text_grid_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
 	GHashTable *default_text_buffer_styles = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_object_unref);
@@ -300,6 +302,79 @@ chimara_glk_init_styles(ChimaraGlk *self)
 	chimara_glk_reset_glk_styles(self);
 }
 
+/* Internal function that copies a text tag */
+GtkTextTag *
+text_tag_copy(GtkTextTag *tag)
+{
+	g_return_val_if_fail(tag != NULL, NULL);
+
+	g_autofree char *tag_name = NULL;
+	g_object_get(tag, "name", &tag_name, NULL);
+	GtkTextTag *copy = gtk_text_tag_new(tag_name);
+
+	/* Copy all the original tag's properties to the new tag */
+	unsigned nprops;
+	g_autofree GParamSpec **properties = g_object_class_list_properties(G_OBJECT_GET_CLASS(tag), &nprops);
+	for (unsigned count = 0; count < nprops; count++) {
+
+		/* Only copy properties that are readable, writable, not construct-only,
+		and not deprecated */
+		GParamFlags flags = properties[count]->flags;
+		if (flags & G_PARAM_CONSTRUCT_ONLY
+			|| flags & G_PARAM_DEPRECATED
+			|| !(flags & G_PARAM_READABLE)
+			|| !(flags & G_PARAM_WRITABLE))
+			continue;
+
+		const char *prop_name = g_param_spec_get_name(properties[count]);
+		GValue prop_value = G_VALUE_INIT;
+
+		g_value_init(&prop_value, G_PARAM_SPEC_VALUE_TYPE(properties[count]));
+		g_object_get_property(G_OBJECT(tag), prop_name, &prop_value);
+		/* Don't copy the PangoTabArray if it is NULL, that prints a warning */
+		if(strcmp(prop_name, "tabs") == 0 && g_value_get_boxed(&prop_value) == NULL) {
+			g_value_unset(&prop_value);
+			continue;
+		}
+		g_object_set_property(G_OBJECT(copy), prop_name, &prop_value);
+		g_value_unset(&prop_value);
+	}
+
+	/* Copy the data that was added manually */
+	void *reverse_color = g_object_get_data(G_OBJECT(tag), "reverse-color");
+
+	if (reverse_color)
+		g_object_set_data(G_OBJECT(copy), "reverse-color", reverse_color);
+
+	return copy;
+}
+
+/* Internal function used to iterate over a style table, copying it */
+static void
+copy_tag_to_textbuffer(void *key, void *tag, void *target_table)
+{
+	gtk_text_tag_table_add(target_table, text_tag_copy(GTK_TEXT_TAG(tag)));
+}
+
+/* Private method: initialize the default styles to a textbuffer. */
+void
+chimara_glk_init_textbuffer_styles(ChimaraGlk *self, ChimaraGlkWindowType wintype, GtkTextBuffer *buffer)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+	GtkTextTagTable *tag_table = gtk_text_buffer_get_tag_table(buffer);
+
+	/* Place the default text tags in the textbuffer's tag table */
+	GHashTable *style_table = wintype == CHIMARA_GLK_TEXT_BUFFER ? priv->styles->text_buffer : priv->styles->text_grid;
+	g_hash_table_foreach(style_table, copy_tag_to_textbuffer, tag_table);
+
+	/* Copy the override text tags to the textbuffer's tag table */
+	style_table = wintype == CHIMARA_GLK_TEXT_BUFFER ? priv->glk_styles->text_buffer : priv->glk_styles->text_grid;
+	g_hash_table_foreach(style_table, copy_tag_to_textbuffer, tag_table);
+
+	/* Assign the 'default' tag the lowest priority */
+	gtk_text_tag_set_priority(gtk_text_tag_table_lookup(tag_table, "default"), 0);
+}
+
 static void
 chimara_glk_init(ChimaraGlk *self)
 {
@@ -307,8 +382,8 @@ chimara_glk_init(ChimaraGlk *self)
 
     gtk_widget_set_has_window(GTK_WIDGET(self), FALSE);
 
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(self);
-    
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
     priv->self = self;
     priv->interactive = TRUE;
 	priv->styles = g_new0(StyleSet,1);
@@ -358,8 +433,8 @@ chimara_glk_set_property(GObject *object, guint prop_id, const GValue *value, GP
 static void
 chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(object);
-    
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(CHIMARA_GLK(object));
+
     switch(prop_id)
     {
         case PROP_INTERACTIVE:
@@ -392,7 +467,7 @@ static void
 chimara_glk_finalize(GObject *object)
 {
     ChimaraGlk *self = CHIMARA_GLK(object);
-	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	priv->after_finalize = TRUE;
 
 	/* Free widget properties */
@@ -722,9 +797,10 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
     g_return_if_fail(widget);
     g_return_if_fail(allocation);
     g_return_if_fail(CHIMARA_IS_GLK(widget));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(widget);
-    
+
+	ChimaraGlk *self = CHIMARA_GLK(widget);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
     gtk_widget_set_allocation(widget, allocation);
 
     if(priv->root_window) {
@@ -739,7 +815,7 @@ chimara_glk_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 		if(!priv->ignore_next_arrange_event)
 		{
 			if(arrange)
-				event_throw(CHIMARA_GLK(widget), evtype_Arrange, arrange == priv->root_window->data? NULL : arrange, 0, 0);
+				chimara_glk_push_event(self, evtype_Arrange, arrange == priv->root_window->data? NULL : arrange, 0, 0);
 		}
 		else
 			priv->ignore_next_arrange_event = FALSE;
@@ -766,9 +842,9 @@ chimara_glk_forall(GtkContainer *container, gboolean include_internals, GtkCallb
 {
     g_return_if_fail(container);
     g_return_if_fail(CHIMARA_IS_GLK(container));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(container);
-    
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(CHIMARA_GLK(container));
+
 	/* All the children are "internal" */
 	if(!include_internals)
 		return;
@@ -782,7 +858,7 @@ chimara_glk_forall(GtkContainer *container, gboolean include_internals, GtkCallb
 static void
 chimara_glk_stopped(ChimaraGlk *self)
 {
-    CHIMARA_GLK_USE_PRIVATE(self, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
     priv->running = FALSE;
     priv->program_name = NULL;
     g_object_notify(G_OBJECT(self), "program-name");
@@ -795,7 +871,7 @@ chimara_glk_stopped(ChimaraGlk *self)
 static void
 chimara_glk_started(ChimaraGlk *self)
 {
-	CHIMARA_GLK_USE_PRIVATE(self, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	priv->running = TRUE;
 }
 
@@ -1034,9 +1110,6 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		"Whether there is a program currently running",
 		FALSE,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
-
-	/* Private data */
-    g_type_class_add_private(klass, sizeof(ChimaraGlkPrivate));
 }
 
 /* PUBLIC FUNCTIONS */
@@ -1073,73 +1146,73 @@ chimara_glk_new(void)
 
 /**
  * chimara_glk_set_interactive:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @interactive: whether the widget should expect user input
  *
- * Sets the #ChimaraGlk:interactive property of @glk. 
+ * Sets the #ChimaraGlk:interactive property of @self. 
  */
 void 
-chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive)
+chimara_glk_set_interactive(ChimaraGlk *self, gboolean interactive)
 {
-    g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    g_return_if_fail(self || CHIMARA_IS_GLK(self));
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
     priv->interactive = interactive;
-    g_object_notify(G_OBJECT(glk), "interactive");
+    g_object_notify(G_OBJECT(self), "interactive");
 }
 
 /**
  * chimara_glk_get_interactive:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
- * Returns whether @glk is interactive (expecting user input). See 
+ * Returns whether @self is interactive (expecting user input). See 
  * #ChimaraGlk:interactive.
  *
- * Return value: %TRUE if @glk is interactive.
+ * Return value: %TRUE if @self is interactive.
  */
 gboolean 
-chimara_glk_get_interactive(ChimaraGlk *glk)
+chimara_glk_get_interactive(ChimaraGlk *self)
 {
-    g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
     return priv->interactive;
 }
 
 /**
  * chimara_glk_set_protect:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @protect: whether the widget should allow the Glk program to do file 
  * operations
  *
- * Sets the #ChimaraGlk:protect property of @glk. In protect mode, the Glk 
+ * Sets the #ChimaraGlk:protect property of @self. In protect mode, the Glk 
  * program is not allowed to do file operations.
  */
 void 
-chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect)
+chimara_glk_set_protect(ChimaraGlk *self, gboolean protect)
 {
-    g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    g_return_if_fail(self || CHIMARA_IS_GLK(self));
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
     priv->protect = protect;
-    g_object_notify(G_OBJECT(glk), "protect");
+    g_object_notify(G_OBJECT(self), "protect");
 }
 
 /**
  * chimara_glk_get_protect:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
- * Returns whether @glk is in protect mode (banned from doing file operations).
+ * Returns whether @self is in protect mode (banned from doing file operations).
  * See #ChimaraGlk:protect.
  *
- * Return value: %TRUE if @glk is in protect mode.
+ * Return value: %TRUE if @self is in protect mode.
  */
 gboolean 
-chimara_glk_get_protect(ChimaraGlk *glk)
+chimara_glk_get_protect(ChimaraGlk *self)
 {
-    g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+    g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
     return priv->protect;
 }
 
@@ -1225,36 +1298,36 @@ chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css)
 
 /**
  * chimara_glk_set_spacing:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @spacing: the number of pixels to put between Glk windows
  *
- * Sets the #ChimaraGlk:spacing property of @glk, which is the border width in
+ * Sets the #ChimaraGlk:spacing property of @self, which is the border width in
  * pixels between Glk windows.
  */
 void 
-chimara_glk_set_spacing(ChimaraGlk *glk, guint spacing)
+chimara_glk_set_spacing(ChimaraGlk *self, guint spacing)
 {
-	g_return_if_fail( glk || CHIMARA_IS_GLK(glk) );
-	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	g_return_if_fail(self || CHIMARA_IS_GLK(self));
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	priv->spacing = spacing;
-	g_object_notify(G_OBJECT(glk), "spacing");
+	g_object_notify(G_OBJECT(self), "spacing");
 }
 
 /**
  * chimara_glk_get_spacing:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
  * Gets the value set by chimara_glk_set_spacing().
  *
  * Return value: pixels of spacing between Glk windows
  */
 guint 
-chimara_glk_get_spacing(ChimaraGlk *glk)
+chimara_glk_get_spacing(ChimaraGlk *self)
 {
-	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), 0);
-	
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), 0);
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	return priv->spacing;
 }
 
@@ -1317,9 +1390,27 @@ glk_enter(struct StartupData *startup)
 	return NULL;
 }
 
+/* Private method. Fetches a UI message from the message queue, and if there is
+ * one, carries out the instructions therein.
+ * This function must be called from the UI thread.
+ * Always returns %G_SOURCE_CONTINUE (this is meant to be called as an idle
+ * function.) */
+gboolean
+chimara_glk_process_queue(ChimaraGlk *self)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
+	UiMessage *msg = g_async_queue_try_pop(priv->ui_message_queue);
+	if (msg == NULL)
+		return G_SOURCE_CONTINUE;
+
+	ui_message_perform(self, msg);
+	return G_SOURCE_CONTINUE;
+}
+
 /**
  * chimara_glk_run:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @plugin: path to a plugin module compiled with `glk.h`
  * @argc: Number of command line arguments in @argv
  * @argv: Array of command line arguments to pass to the plugin
@@ -1336,26 +1427,26 @@ glk_enter(struct StartupData *startup)
  * Return value: %TRUE if the Glk program was started successfully.
  */
 gboolean
-chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GError **error)
+chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], GError **error)
 {
-    g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
+	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
     g_return_val_if_fail(plugin, FALSE);
 	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
-	
-	if(chimara_glk_get_running(glk)) {
+
+	if(chimara_glk_get_running(self)) {
 		g_set_error(error, CHIMARA_ERROR, CHIMARA_PLUGIN_ALREADY_RUNNING,
 			"There was already a plugin running.");
 		return FALSE;
 	}
-    
-    ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
+
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
 	struct StartupData *startup = g_slice_new0(struct StartupData);
 
     g_assert( g_module_supported() );
 	/* If there is already a module loaded, free it first -- you see, we want to
 	 * keep modules loaded as long as possible to avoid crashes in stack unwinding */
-	chimara_glk_unload_plugin(glk);
+	chimara_glk_unload_plugin(self);
 	/* Open the module to run */
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
@@ -1391,17 +1482,17 @@ chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GE
 	
 	/* Set the program name */
 	priv->program_name = g_path_get_basename(plugin);
-	g_object_notify(G_OBJECT(glk), "program-name");
+	g_object_notify(G_OBJECT(self), "program-name");
 
 	/* Set Glk styles to defaults */
-	chimara_glk_reset_glk_styles(glk);
+	chimara_glk_reset_glk_styles(self);
 
 	/* Reset arrangement mechanism */
 	priv->needs_rearrange = FALSE;
 	priv->ignore_next_arrange_event = FALSE;
 
 	/* Start listening for UI messages */
-	priv->ui_message_handler_id = gdk_threads_add_idle((GSourceFunc)ui_message_process_queue, glk);
+	priv->ui_message_handler_id = gdk_threads_add_idle((GSourceFunc)chimara_glk_process_queue, self);
 
     /* Run in a separate thread */
 	priv->thread = g_thread_try_new("glk", (GThreadFunc)glk_enter, startup, error);
@@ -1438,19 +1529,19 @@ chimara_glk_run_file(ChimaraGlk *self, GFile *plugin_file, int argc, char *argv[
 
 /**
  * chimara_glk_stop:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
- * Signals the Glk program running in @glk to abort. Note that if the program is
+ * Signals the Glk program running in @self to abort. Note that if the program is
  * caught in an infinite loop in which glk_tick() is not called, this may not
  * work.
  *
  * This function does nothing if no Glk program is running.
  */
 void
-chimara_glk_stop(ChimaraGlk *glk)
+chimara_glk_stop(ChimaraGlk *self)
 {
-    g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_if_fail(self || CHIMARA_IS_GLK(self));
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
 	/* Don't do anything if not running a program */
 	if(!priv->running)
@@ -1461,7 +1552,7 @@ chimara_glk_stop(ChimaraGlk *glk)
 		priv->abort_signalled = TRUE;
 		g_mutex_unlock(&priv->abort_lock);
 		/* Stop blocking on the event queue condition */
-		event_throw(glk, evtype_Abort, NULL, 0, 0);
+		chimara_glk_push_event(self, evtype_Abort, NULL, 0, 0);
 		/* Stop blocking on the shutdown key press condition */
 		g_mutex_lock(&priv->shutdown_lock);
 		g_cond_signal(&priv->shutdown_key_pressed);
@@ -1469,46 +1560,65 @@ chimara_glk_stop(ChimaraGlk *glk)
 	}
 }
 
+/* Private method. Processes all the remaining instructions in the message
+ * queue, only returning when the shutdown message is received. (If you haven't
+ * signalled the Glk program to stop, then this function might not ever return.)
+ */
+void
+chimara_glk_drain_queue(ChimaraGlk *self)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
+	while (TRUE) {
+		if (priv->ui_message_handler_id == 0)
+			return;
+		UiMessage *msg = g_async_queue_pop(priv->ui_message_queue);
+		ui_message_perform (self, msg);
+		while (gtk_events_pending())
+			gtk_main_iteration();
+	}
+}
+
 /**
  * chimara_glk_wait:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
- * Holds up the main thread and waits for the Glk program running in @glk to 
+ * Holds up the main thread and waits for the Glk program running in @self to
  * finish.
  *
  * This function does nothing if no Glk program is running.
  */
 void
-chimara_glk_wait(ChimaraGlk *glk)
+chimara_glk_wait(ChimaraGlk *self)
 {
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_if_fail(self || CHIMARA_IS_GLK(self));
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	/* Don't do anything if not running a program */
 	if(!priv->running)
 		return;
 
 	/* Empty UI message queue first, so that the Glk thread isn't waiting on any
 	UI operations; then it's safe to wait for the Glk thread to finish */
-	ui_message_drain_queue(glk);
+	chimara_glk_drain_queue(self);
     g_thread_join(priv->thread);
 }
 
 /**
  * chimara_glk_unload_plugin:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
  * The plugin containing the Glk program is unloaded as late as possible before
  * loading a new plugin, in order to prevent crashes while printing stack
  * backtraces during debugging. Sometimes this behavior is not desirable. This
- * function forces @glk to unload the plugin running in it.
+ * function forces @self to unload the plugin running in it.
  *
  * This function does nothing if there is no plugin loaded.
  */
 void
-chimara_glk_unload_plugin(ChimaraGlk *glk)
+chimara_glk_unload_plugin(ChimaraGlk *self)
 {
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-    CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_if_fail(self || CHIMARA_IS_GLK(self));
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	if( priv->program && !g_module_close(priv->program) )
 		g_warning( "Error closing module :%s", g_module_error() );
 	priv->program = NULL;
@@ -1516,24 +1626,24 @@ chimara_glk_unload_plugin(ChimaraGlk *glk)
 
 /**
  * chimara_glk_get_running:
- * @glk: a #ChimaraGlk widget
- * 
+ * @self: a #ChimaraGlk widget
+ *
  * Use this function to tell whether a program is currently running in the
  * widget.
- * 
- * Returns: %TRUE if @glk is executing a Glk program, %FALSE otherwise.
+ *
+ * Returns: %TRUE if @self is executing a Glk program, %FALSE otherwise.
  */
 gboolean
-chimara_glk_get_running(ChimaraGlk *glk)
+chimara_glk_get_running(ChimaraGlk *self)
 {
-	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	return priv->running;
 }
 
 /**
  * chimara_glk_feed_char_input:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @keyval: a key symbol as defined in `gdk/gdkkeysyms.h`
  * 
  * Pretend that a key was pressed in the Glk program as a response to a 
@@ -1543,18 +1653,18 @@ chimara_glk_get_running(ChimaraGlk *glk)
  * that if more than one window has requested character input, it is arbitrary 
  * which one gets the key press.
  */
-void 
-chimara_glk_feed_char_input(ChimaraGlk *glk, guint keyval)
+void
+chimara_glk_feed_char_input(ChimaraGlk *self, uint32_t keyval)
 {
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_if_fail(self || CHIMARA_IS_GLK(self));
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	g_async_queue_push(priv->char_input_queue, GUINT_TO_POINTER(keyval));
-	event_throw(glk, evtype_ForcedCharInput, NULL, 0, 0);
+	chimara_glk_push_event(self, evtype_ForcedCharInput, NULL, 0, 0);
 }
 
 /**
  * chimara_glk_feed_line_input:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @text: text to pass to the next line input request
  * 
  * Pretend that @text was typed in the Glk program as a response to a line input
@@ -1564,19 +1674,19 @@ chimara_glk_feed_char_input(ChimaraGlk *glk, guint keyval)
  * disadvantage that if more than one window has requested line input, it is
  * arbitrary which one gets the text.
  */
-void 
-chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text)
+void
+chimara_glk_feed_line_input(ChimaraGlk *self, const char *text)
 {
-	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
+	g_return_if_fail(self || CHIMARA_IS_GLK(self));
 	g_return_if_fail(text);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	g_async_queue_push(priv->line_input_queue, g_strdup(text));
-	event_throw(glk, evtype_ForcedLineInput, NULL, 0, 0);
+	chimara_glk_push_event(self, evtype_ForcedLineInput, NULL, 0, 0);
 }
 
 /**
  * chimara_glk_is_char_input_pending:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
  * Use this function to tell if character input forced by 
  * chimara_glk_feed_char_input() has been passed to an input request or not.
@@ -1584,16 +1694,16 @@ chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text)
  * Returns: %TRUE if forced character input is pending, %FALSE otherwise.
  */
 gboolean
-chimara_glk_is_char_input_pending(ChimaraGlk *glk)
+chimara_glk_is_char_input_pending(ChimaraGlk *self)
 {
-	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	return g_async_queue_length(priv->char_input_queue) > 0;
 }
 
 /**
  * chimara_glk_is_line_input_pending:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  *
  * Use this function to tell if line input forced by 
  * chimara_glk_feed_line_input() has been passed to an input request or not.
@@ -1601,16 +1711,16 @@ chimara_glk_is_char_input_pending(ChimaraGlk *glk)
  * Returns: %TRUE if forced line input is pending, %FALSE otherwise.
  */
 gboolean
-chimara_glk_is_line_input_pending(ChimaraGlk *glk)
+chimara_glk_is_line_input_pending(ChimaraGlk *self)
 {
-	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 	return g_async_queue_length(priv->line_input_queue) > 0;
 }
 
 /**
  * chimara_glk_get_tag:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @window: The type of window to retrieve the tag for
  * @name: The name of the tag to retrieve
  *
@@ -1643,9 +1753,9 @@ chimara_glk_is_line_input_pending(ChimaraGlk *glk)
  * styles of @window.
  */
 GtkTextTag *
-chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name)
+chimara_glk_get_tag(ChimaraGlk *self, ChimaraGlkWindowType window, const char *name)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
 	switch(window) {
 	case CHIMARA_GLK_TEXT_BUFFER:
@@ -1653,6 +1763,25 @@ chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *n
 		break;
 	case CHIMARA_GLK_TEXT_GRID:
 		return GTK_TEXT_TAG( g_hash_table_lookup(priv->styles->text_grid, name) );
+		break;
+	default:
+		ILLEGAL_PARAM("Unknown window type: %u", window);
+		return NULL;
+	}
+}
+
+/* Private method. Version of the above that returns the Glk-defined style */
+GtkTextTag *
+chimara_glk_get_glk_tag(ChimaraGlk *self, ChimaraGlkWindowType window, const char *name)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
+	switch(window) {
+	case CHIMARA_GLK_TEXT_BUFFER:
+		return GTK_TEXT_TAG(g_hash_table_lookup(priv->glk_styles->text_buffer, name));
+		break;
+	case CHIMARA_GLK_TEXT_GRID:
+		return GTK_TEXT_TAG(g_hash_table_lookup(priv->glk_styles->text_grid, name));
 		break;
 	default:
 		ILLEGAL_PARAM("Unknown window type: %u", window);
@@ -1704,7 +1833,7 @@ chimara_glk_get_glk_tag_name(unsigned style)
 
 /**
  * chimara_glk_set_resource_load_callback:
- * @glk: a #ChimaraGlk widget
+ * @self: a #ChimaraGlk widget
  * @func: a function to call for loading resources, or %NULL
  * @user_data: user data to pass to @func, or %NULL
  * @destroy_user_data: a function to call for freeing @user_data, or %NULL
@@ -1720,7 +1849,7 @@ chimara_glk_get_glk_tag_name(unsigned style)
  * Note that @func is only called if no Blorb resource map has been set; having
  * a resource map in place overrides this function.
  *
- * If you pass non-%NULL for @destroy_user_data, then @glk takes ownership of
+ * If you pass non-%NULL for @destroy_user_data, then @self takes ownership of
  * @user_data. When it is not needed anymore, it will be freed by calling
  * @destroy_user_data on it. If you wish to retain ownership of @user_data, pass
  * %NULL for @destroy_user_data.
@@ -1728,9 +1857,9 @@ chimara_glk_get_glk_tag_name(unsigned style)
  * To deactivate the callback, call this function with @func set to %NULL.
  */
 void
-chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data, GDestroyNotify destroy_user_data)
+chimara_glk_set_resource_load_callback(ChimaraGlk *self, ChimaraResourceLoadFunc func, void *user_data, GDestroyNotify destroy_user_data)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
 	if(priv->resource_load_callback == func
 		&& priv->resource_load_callback_data == user_data
@@ -1743,4 +1872,110 @@ chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc 
 	priv->resource_load_callback = func;
 	priv->resource_load_callback_data = user_data;
 	priv->resource_load_callback_destroy_data = destroy_user_data;
+}
+
+/* Private method: set story name */
+void
+chimara_glk_set_story_name(ChimaraGlk *self, const char *story_name)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+    g_clear_pointer(&priv->story_name, g_free);
+    priv->story_name = g_strdup(story_name);
+    g_object_notify(G_OBJECT(self), "story-name");
+}
+
+/* Private method: push an event onto the event queue. If the event queue is
+full, wait for max three seconds and then drop the event. If the event queue is
+NULL, i.e. freed, then fail silently. */
+void
+chimara_glk_push_event(ChimaraGlk *self, uint32_t type, winid_t win, uint32_t val1, uint32_t val2)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
+	if (!priv->event_queue)
+		return;
+
+	gint64 timeout = g_get_monotonic_time() + EVENT_TIMEOUT_MICROSECONDS;
+
+	g_mutex_lock(&priv->event_lock);
+
+	/* Wait for room in the event queue */
+	while (g_queue_get_length(priv->event_queue) >= EVENT_QUEUE_MAX_LENGTH)
+	{
+		if (!g_cond_wait_until(&priv->event_queue_not_full, &priv->event_lock, timeout))
+		{
+			/* Drop the event if the event queue is still not emptying */
+			g_mutex_unlock(&priv->event_lock);
+			return;
+		}
+	}
+
+	event_t *event = g_new0(event_t, 1);
+	event->type = type;
+	event->win = win;
+	event->val1 = val1;
+	event->val2 = val2;
+	g_queue_push_head(priv->event_queue, event);
+
+	/* Signal that there is an event */
+	g_cond_signal(&priv->event_queue_not_empty);
+
+	g_mutex_unlock(&priv->event_lock);
+}
+
+/* Private method */
+gboolean
+chimara_glk_needs_rearrange(ChimaraGlk *self)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+	return priv->needs_rearrange;
+}
+
+/* Private method. Queues a size reallocation for the entire Glk window
+ * hierarchy. If @suppress_next_arrange_event is %TRUE, an %evtype_Arrange event
+ * will not be sent back to the Glk thread as a result of this resize. */
+void
+chimara_glk_queue_arrange(ChimaraGlk *self, gboolean suppress_next_arrange_event)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+	priv->needs_rearrange = TRUE;
+	priv->ignore_next_arrange_event = suppress_next_arrange_event;
+	gtk_widget_queue_resize(GTK_WIDGET(self));
+}
+
+/* Private method */
+void
+chimara_glk_stop_processing_queue(ChimaraGlk *self)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+	if (priv->ui_message_handler_id)
+	{
+		g_source_remove(priv->ui_message_handler_id);
+		priv->ui_message_handler_id = 0;
+	}
+}
+
+/* Helper function: Turn off shutdown key-press-event signal handler */
+static gboolean
+turn_off_handler(GNode *node)
+{
+	winid_t win = node->data;
+	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
+	return FALSE; /* don't stop */
+}
+
+/* Private method */
+void
+chimara_glk_clear_shutdown(ChimaraGlk *self)
+{
+	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
+
+	/* Turn off all the signal handlers */
+	if(priv->root_window)
+		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
+
+	/* Signal the Glk library that it can shut everything down now */
+	g_mutex_lock(&priv->shutdown_lock);
+	g_cond_signal(&priv->shutdown_key_pressed);
+	g_mutex_unlock(&priv->shutdown_lock);
 }

@@ -7,7 +7,6 @@
 #include "chimara-glk.h"
 #include "glk.h"
 
-G_GNUC_INTERNAL void ui_window_arrange(ChimaraGlk *glk, gboolean suppress_next_arrange_event);
 G_GNUC_INTERNAL void ui_window_create(winid_t win, ChimaraGlk *glk);
 G_GNUC_INTERNAL void ui_window_clear(winid_t win);
 G_GNUC_INTERNAL void ui_window_override_font(winid_t win, GtkWidget *widget, PangoFontDescription *font);

@@ -10,46 +10,6 @@
 
 extern GPrivate glk_data_key;
 
-#define EVENT_TIMEOUT_MICROSECONDS (3000000)
-#define EVENT_QUEUE_MAX_LENGTH (100)
-
-/* Internal function: push an event onto the event queue. If the event queue is
-full, wait for max three seconds and then drop the event. If the event queue is
-NULL, i.e. freed, then fail silently. */
-void
-event_throw(ChimaraGlk *glk, glui32 type, winid_t win, glui32 val1, glui32 val2)
-{
-	ChimaraGlkPrivate *priv = CHIMARA_GLK_PRIVATE(glk);
-	
-	if(!priv->event_queue)
-		return;
-
-	gint64 timeout = g_get_monotonic_time() + EVENT_TIMEOUT_MICROSECONDS;
-
-	g_mutex_lock(&priv->event_lock);
-
-	/* Wait for room in the event queue */
-	while( g_queue_get_length(priv->event_queue) >= EVENT_QUEUE_MAX_LENGTH )
-		if( !g_cond_wait_until(&priv->event_queue_not_full, &priv->event_lock, timeout) )
-		{
-			/* Drop the event if the event queue is still not emptying */
-			g_mutex_unlock(&priv->event_lock);
-			return;
-		}
-
-	event_t *event = g_new0(event_t, 1);
-	event->type = type;
-	event->win = win;
-	event->val1 = val1;
-	event->val2 = val2;
-	g_queue_push_head(priv->event_queue, event);
-
-	/* Signal that there is an event */
-	g_cond_signal(&priv->event_queue_not_empty);
-
-	g_mutex_unlock(&priv->event_lock);
-}
-
 /* Helper function: Wait for an event in the event queue. If it is a forced
  * input event, but no windows have an input request of that type, then wait
  * for the next event and put the forced input event back on top of the queue.
