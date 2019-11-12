@@ -464,6 +464,13 @@ chimara_glk_get_property(GObject *object, guint prop_id, GValue *value, GParamSp
 }
 
 static void
+clear_image_cache_iterate(struct image_info *data, gpointer user_data)
+{
+	g_object_unref(data->pixbuf);
+	g_free(data);
+}
+
+static void
 chimara_glk_finalize(GObject *object)
 {
     ChimaraGlk *self = CHIMARA_GLK(object);
@@ -512,7 +519,9 @@ chimara_glk_finalize(GObject *object)
 	g_cond_clear(&priv->resource_info_available);
 	g_mutex_unlock(&priv->resource_lock);
 	g_mutex_clear(&priv->resource_lock);
-	clear_image_cache();
+	g_slist_foreach(priv->image_cache, (GFunc)clear_image_cache_iterate, NULL);
+	g_slist_free(priv->image_cache);
+
 	/* Unref input queues (this should destroy them since any Glk thread has stopped by now */
 	g_async_queue_unref(priv->char_input_queue);
 	g_async_queue_unref(priv->line_input_queue);
