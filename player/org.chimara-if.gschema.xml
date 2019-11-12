@@ -10,14 +10,6 @@
 
   <schema id="org.chimara-if.player.preferences" path="/org/chimara-if/player/preferences/">
 
-    <key name="flep" type="b"> 
-      <default>false</default>
-      <summary>Flepping</summary>
-      <description>
-        Whether to flep or not while gronking a bloop.
-      </description>
-    </key>
-
     <key name="css-file" type="ms">
       <default>nothing</default>
       <summary>CSS style file</summary>
@@ -59,14 +51,6 @@
       <description>
         The path in which a game was last opened. The next Open dialog will
         start in this path.
-      </description>
-    </key>
-
-    <key name="show-toolbar-default" type="b">
-      <default>true</default>
-      <summary>Show toolbar by default</summary>
-      <description>
-        Whether to show or hide the toolbar by default in new game windows.
       </description>
     </key>
 

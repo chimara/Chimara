@@ -30,16 +30,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/stat.h>
+#include "config.h"
 
-#include <glib/gstdio.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 #include <libchimara/chimara-if.h>
-
-/* Use a custom GSettings backend for our preferences file */
-#define G_SETTINGS_ENABLE_BACKEND
-#include <gio/gsettingsbackend.h>
 
 #include "actions.h"
 #include "error.h"
@@ -51,15 +47,14 @@ static GtkWidget *window = NULL;
 static GtkWidget *glk = NULL;
 
 /* Global global pointers */
-GtkBuilder *builder = NULL;
 GtkWidget *aboutwindow = NULL;
 GtkWidget *prefswindow = NULL;
-GtkWidget *recentwindow = NULL;
+GtkWidget *open_menu = NULL;
 GSettings *prefs_settings = NULL;
 GSettings *state_settings = NULL;
 
 GObject *
-load_object(const gchar *name)
+load_object(GtkBuilder *builder, const gchar *name)
 {
 	GObject *retval;
 	if( (retval = gtk_builder_get_object(builder, name)) == NULL) {
@@ -70,23 +65,14 @@ load_object(const gchar *name)
 }
 
 static void
-change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkWindow *window)
+change_window_title(ChimaraGlk *glk, GParamSpec *pspec, GtkHeaderBar *titlebar)
 {
-	gchar *program_name, *story_name, *title;
+	char *program_name, *story_name;
 	g_object_get(glk, "program-name", &program_name, "story-name", &story_name, NULL);
-	if(!program_name) {
-		gtk_window_set_title(window, "Chimara");
-		return;
-	}
-	else if(!story_name)
-		title = g_strdup_printf("%s - Chimara", program_name);
-	else
-		title = g_strdup_printf("%s - %s - Chimara", program_name, story_name);
-		
+	gtk_header_bar_set_title(titlebar, story_name ? story_name : _("Chimara"));
+	gtk_header_bar_set_subtitle(titlebar, program_name ? program_name : _("Interactive Fiction Player"));
 	g_free(program_name);
 	g_free(story_name);
-	gtk_window_set_title(window, title);
-	g_free(title);
 }
 
 static gboolean
@@ -94,11 +80,10 @@ create_window(void)
 {
 	GError *error = NULL;
 
-	builder = gtk_builder_new_from_resource("/org/chimara-if/player/chimara.ui");
-	window = GTK_WIDGET(load_object("chimara"));
-	aboutwindow = GTK_WIDGET(load_object("aboutwindow"));
-	prefswindow = GTK_WIDGET(load_object("prefswindow"));
-	recentwindow = GTK_WIDGET(load_object("recentwindow"));
+	GtkBuilder *builder = gtk_builder_new_from_resource("/org/chimara-if/player/chimara.ui");
+	window = GTK_WIDGET(load_object(builder, "chimara"));
+	aboutwindow = GTK_WIDGET(load_object(builder, "aboutwindow"));
+	prefswindow = GTK_WIDGET(load_object(builder, "prefswindow"));
 
 	glk = chimara_if_new();
 	g_object_set(glk,
@@ -120,39 +105,40 @@ create_window(void)
 	 but it is a good test of programmatically altering just one style
 	chimara_glk_set_css_from_string(CHIMARA_GLK(glk),
 	    "buffer { font-family: 'Comic Sans MS'; }");*/
-	
-	GtkBox *vbox = GTK_BOX( gtk_builder_get_object(builder, "vbox") );			
-	if(vbox == NULL)
-		return FALSE;
 
 	create_app_actions(G_ACTION_MAP(app), glk);
 	create_window_actions(G_ACTION_MAP(window), glk);
 
-	GtkWidget *toolbar = GTK_WIDGET(gtk_builder_get_object(builder, "toolbar"));
+	GtkWidget *hamburger_button = GTK_WIDGET(load_object(builder, "hamburger_button"));
+	gtk_menu_button_set_menu_model(GTK_MENU_BUTTON(hamburger_button),
+		G_MENU_MODEL(gtk_application_get_menu_by_id(app, "hamburger-menu")));
 
-	/* Set the default value of the "View/Toolbar" menu item upon creation of a
-	 new window to the "show-toolbar-default" setting, but bind the setting
-	 one-way only - we don't want toolbars to disappear suddenly */
-	GPropertyAction *toolbar_action = g_property_action_new("toolbar", toolbar, "visible");
-	g_action_map_add_action(G_ACTION_MAP(window), G_ACTION(toolbar_action));
-	if (g_settings_get_boolean(state_settings, "show-toolbar-default"))
-		gtk_widget_show(toolbar);
-	else
-		gtk_widget_hide(toolbar);
-	g_settings_bind(state_settings, "show-toolbar-default",
-		toolbar, "visible", G_SETTINGS_BIND_SET);
+	GtkWidget *open_button = GTK_WIDGET(load_object(builder, "open_button"));
+	open_menu = GTK_WIDGET(load_object(builder, "open_menu"));
+	gtk_menu_button_set_popover(GTK_MENU_BUTTON(open_button), GTK_WIDGET(open_menu));
 
-	gtk_box_pack_end(vbox, glk, TRUE, TRUE, 0);
-	gtk_box_pack_start(vbox, toolbar, FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(window), glk);
 
 	gtk_builder_connect_signals(builder, glk);
-	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), window);
-	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), window);
+	GtkWidget *titlebar = GTK_WIDGET(load_object(builder, "titlebar"));
+	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), titlebar);
+	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), titlebar);
 	
 	/* Create preferences window */
-	preferences_create(CHIMARA_GLK(glk));
+	preferences_create(builder, CHIMARA_GLK(glk));
+
+	g_object_unref(builder);
 
 	return TRUE;
+}
+
+static void
+on_startup(GApplication *gapp)
+{
+	if( !create_window() ) {
+		error_dialog(NULL, NULL, "Error while building interface.");
+		g_error("Error while building interface.");
+	}
 }
 
 static void
@@ -193,41 +179,19 @@ main(int argc, char *argv[])
 
 	gtk_init(&argc, &argv);
 
-	/* Create configuration dir ~/.chimara */
-	gchar *configdir = g_build_filename(g_get_home_dir(), ".chimara", NULL);
-	if(!g_file_test(configdir, G_FILE_TEST_IS_DIR)
-		&& g_mkdir(configdir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
-		g_error("Cannot create configuration directory ~/.chimara");
-	g_free(configdir);
-
-	/* Initialize settings file; it can be overridden by a "chimara-config" file
-	 in the current directory */
-	gchar *keyfile;
-	if(g_file_test("chimara-config", G_FILE_TEST_IS_REGULAR))
-		keyfile = g_strdup("chimara-config");
-	else
-		keyfile = g_build_filename(g_get_home_dir(), ".chimara", "config", NULL);
-	GSettingsBackend *backend = g_keyfile_settings_backend_new(keyfile, "/org/chimara-if/player/", NULL);
-	prefs_settings = g_settings_new_with_backend("org.chimara-if.player.preferences", backend);
-	state_settings = g_settings_new_with_backend("org.chimara-if.player.state", backend);
-	g_free(keyfile);
+	prefs_settings = g_settings_new("org.chimara-if.player.preferences");
+	state_settings = g_settings_new("org.chimara-if.player.state");
 
 	app = gtk_application_new("org.chimara-if.player", G_APPLICATION_HANDLES_OPEN);
+	g_signal_connect(app, "startup", G_CALLBACK(on_startup), NULL);
 	g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
 	g_signal_connect(app, "open", G_CALLBACK(on_open), NULL);
-
-	if( !create_window() ) {
-		error_dialog(NULL, NULL, "Error while building interface.");
-		return 1;
-	}
 
 	int status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
-
-	g_object_unref( G_OBJECT(builder) );
 
 	return status;
 }

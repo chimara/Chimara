@@ -20,10 +20,7 @@ void
 create_window_actions(GActionMap *actionmap, gpointer data)
 {
 	const GActionEntry actions[] = {
-		{ "copy", (ActionCallback)on_copy_activate },
-		{ "paste", (ActionCallback)on_paste_activate },
 		{ "open", (ActionCallback)on_open_activate },
-		{ "open-recent", (ActionCallback)on_open_recent_activate },
 		{ "stop", (ActionCallback)on_stop_activate },
 		{ "undo", (ActionCallback)on_undo_activate },
 		{ "save", (ActionCallback)on_save_activate },

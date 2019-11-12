@@ -31,14 +31,11 @@ gsettings_SCHEMAS = org.chimara-if.gschema.xml
 @GSETTINGS_RULES@
 
 BUILT_SOURCES = resources.c
-CLEANFILES = config.pyc
-DISTCLEANFILES = config.py
 
 EXTRA_DIST = \
 	$(gsettings_SCHEMAS) \
 	$(resource_file) \
 	$(resource_deps) \
-	config.py \
-	player.py
+	$(NULL)
 
 -include $(top_srcdir)/git.mk
