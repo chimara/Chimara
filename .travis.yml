@@ -8,15 +8,14 @@ services:
 compiler: gcc
 env:
   - DISTRO=debian:stretch GST=no
-  - DISTRO=debian:stretch GST=gstreamer1.0
-  - DISTRO=debian:jessie GST=gstreamer0.10
+  - DISTRO=debian:stretch GST=yes
 # Do one build on clang
 matrix:
   include:
     - sudo: false
       dist: trusty
       compiler: clang
-      env: DISTRO=debian:stretch GST=gstreamer1.0
+      env: DISTRO=debian:stretch GST=yes
 
 before_install:
   - docker pull $DISTRO
@@ -27,8 +26,8 @@ before_install:
   - echo RUN apt-get install -qq -y bison gtk-doc-tools libgirepository1.0-dev \
     libgtk-3-dev texinfo texlive valac xvfb >>Dockerfile
   - if test $GST != no; then
-    echo RUN apt-get install -qq -y lib$GST-dev $GST-tools $GST-plugins-bad \
-      $GST-plugins-good >>Dockerfile;
+    echo RUN apt-get install -qq -y libgstreamer1.0-dev gstreamer1.0-tools \
+      gstreamer1.0-plugins-bad gstreamer1.0-plugins-good >>Dockerfile;
     fi
   - echo ENV CFLAGS -fdiagnostics-color >>Dockerfile
   - echo RUN ./autogen.sh >>Dockerfile
