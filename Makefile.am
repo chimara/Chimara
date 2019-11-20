@@ -8,7 +8,6 @@ dist_chimaradoc_DATA = \
 	README\
 	COPYING\
 	AUTHORS\
-	ChangeLog\
 	NEWS
 
 pkgconfigdir = $(libdir)/pkgconfig
