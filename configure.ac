@@ -27,7 +27,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 ### REQUIREMENTS ##############################################################
 GTK_REQUIRED_VERSION=3.14
-GLIB_REQUIRED_VERSION=2.40
+GLIB_REQUIRED_VERSION=2.44
 GTK_DOC_REQUIRED_VERSION=1.20
 AC_SUBST(GTK_REQUIRED_VERSION)
 AC_SUBST(GLIB_REQUIRED_VERSION)
@@ -88,41 +88,29 @@ AC_ARG_ENABLE([rpm],
 	[enable_rpm=no])
 AM_CONDITIONAL(BUILDING_RPM, $TEST "x$enable_rpm" = xyes)
 
-### SOUND LIBRARY TO USE ######################################################
+### SOUND SUPPORT ##############################################################
 
-AC_ARG_WITH([sound],
-	[AS_HELP_STRING([--with-sound=@<:@no/auto/gstreamer0.10/gstreamer1.0@:>@],
-		[Choose library with which to implement Glk sound])],
+AC_ARG_ENABLE([sound],
+	[AS_HELP_STRING([--enable-sound=@<:@yes/no/auto@:>@],
+		[Enable support for Glk sound])],
 	[],
-	[with_sound=auto])
+	[enable_sound=auto])
 
-have_gstreamer0_10=no
 have_gstreamer1_0=no
-AS_IF([test "x$with_sound" != "xno"], [
-	PKG_CHECK_EXISTS([gstreamer-1.0], [have_gstreamer1_0=yes])
-	PKG_CHECK_EXISTS([gstreamer-0.10], [have_gstreamer0_10=yes])])
+AS_IF([test "x$enable_sound" != "xno"], [
+	PKG_CHECK_EXISTS([gstreamer-1.0], [have_gstreamer1_0=yes])])
 SOUND_MODULE=
 # Autodetect sound library
-AS_IF([test "x$with_sound" = "xauto"], [
-	AC_MSG_CHECKING([which sound library to use])
-	AS_IF([test "x$have_gstreamer1_0" = "xyes"], [with_sound=gstreamer1.0], [
-		AS_IF([test "x$have_gstreamer0_10" = "xyes"],
-			[with_sound=gstreamer0.10],
-			[with_sound=no])])
-	AC_MSG_RESULT([$with_sound])])
+AS_IF([test "x$enable_sound" = "xauto"], [
+	AC_MSG_CHECKING([whether the GStreamer library is available])
+	AS_IF([test "x$have_gstreamer1_0" = "xyes"], [enable_sound=yes],
+		[enable_sound=no])
+	AC_MSG_RESULT([$enable_sound])])
 # Sound library to use in the end
-AS_CASE([$with_sound],
-	[gstreamer0.10], [
-		AC_DEFINE([GSTREAMER_0_10_SOUND], [1],
-			[Define to enable sound support with GStreamer 0.10])
-		SOUND_MODULE="gstreamer-0.10 >= 0.10.12"],
-	[gstreamer1.0], [
-		AC_DEFINE([GSTREAMER_1_0_SOUND], [1],
-			[Define to enable sound support with GStreamer 1.0])
-		SOUND_MODULE="gstreamer-1.0"],
-	[])
-AS_IF([test "x$with_sound" != "xno"],
-	[AC_DEFINE([HAVE_SOUND], [1], [Define if any sound support is enabled])])
+AS_IF([test "x$enable_sound" != "xno"], [
+	AC_DEFINE([HAVE_SOUND], [1],
+		[Define to enable sound support])
+	SOUND_MODULE="gstreamer-1.0"])
 
 ### WHETHER TO GENERATE A .VAPI FILE ##########################################
 # Requires vapigen
@@ -171,56 +159,30 @@ PKG_CHECK_MODULES([TEST], [
 m4_pattern_allow([AM_GST_ELEMENT_CHECK])
 dnl In the case that gstreamer-0.10 isn't installed, AM_GST_ELEMENT_CHECK will
 dnl be flagged as an undefined Automake macro
-AS_CASE([$with_sound],
-	[gstreamer0.10], [
-		have_all_elements=yes
-		m4_ifdef([AM_GST_ELEMENT_CHECK], [
-			m4_map_args_w([
-				giostreamsrc
-				typefind
-				audioconvert
-				volume
-				oggdemux
-				vorbisdec
-				autoaudiosink
-				aiffparse
-				modplug],
-				[AM_GST_ELEMENT_CHECK(], [, [], [have_all_elements=no])])
-			AS_IF([test "x$have_all_elements" = "xno"],
-				[AC_MSG_ERROR([One or more required GStreamer elements were not found.
-You will have to install your system's "base", "good", and "bad" plugins
-pacakges. Try looking for names such as: gstreamer-plugins-base,
-gstreamer-plugins-good, gstreamer-plugins-bad-free,
-gstreamer-plugins-bad-free-extras, gstreamer0.10-plugins-base,
-gstreamer0.10-plugins-good, gstreamer0.10-plugins-bad])])],
-		[AC_MSG_ERROR([AM_GST_ELEMENT_CHECK not found. Install the development package
-for GStreamer 0.10 and rerun autogen.sh.])])
-	],
-	[gstreamer1.0], [
-		have_all_elements=yes
-		m4_ifdef([GST_ELEMENT_CHECK], [
-			m4_map_args_w([
-				giostreamsrc
-				typefind
-				audioconvert
-				volume
-				oggdemux
-				vorbisdec
-				autoaudiosink
-				aiffparse
-				modplug],
-				[GST_ELEMENT_CHECK(], [, [1.0], [], [have_all_elements=no])])
-			AS_IF([test "x$have_all_elements" = "xno"],
-				[AC_MSG_ERROR([One or more required GStreamer elements were not found.
+AS_IF([test "x$enable_sound" != "xno"], [
+	have_all_elements=yes
+	m4_ifdef([GST_ELEMENT_CHECK], [
+		m4_map_args_w([
+			giostreamsrc
+			typefind
+			audioconvert
+			volume
+			oggdemux
+			vorbisdec
+			autoaudiosink
+			aiffparse
+			modplug],
+			[GST_ELEMENT_CHECK(], [, [1.0], [], [have_all_elements=no])])
+		AS_IF([test "x$have_all_elements" = "xno"],
+			[AC_MSG_ERROR([One or more required GStreamer elements were not found.
 You will have to install your system's "base", "good", and "bad" plugins
 packages. Try looking for names such as: gstreamer1-plugins-base,
 gstreamer1-plugins-good, gstreamer1-plugins-bad-free,
 gstreamer1-plugins-bad-free-extras, gstreamer1.0-plugins-base,
 gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad])])],
-			[AC_MSG_ERROR([GST_ELEMENT_CHECK not found. Install the development package
+		[AC_MSG_ERROR([GST_ELEMENT_CHECK not found. Install the development package
 for GStreamer 1.0 and rerun autogen.sh.])])
-	],
-	[])
+	])
 
 # Plugin flags; include '-module' in each Makefile.am, because AC_SUBSTed
 # variables are black boxes to Automake, so it has to know about it being a

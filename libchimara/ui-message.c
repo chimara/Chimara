@@ -213,11 +213,9 @@ respond_after_size_allocate(ChimaraGlk *glk, GtkAllocation *allocation, struct S
 	g_slice_free(struct SyncArrangeCallbackData, data);
 }
 
-static void
+void
 ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 {
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
 #ifdef DEBUG_MESSAGES
 	debug_ui_message(msg, FALSE);
 #endif
@@ -235,13 +233,13 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 		gtk_widget_unparent(GTK_WIDGET(msg->ptrval));
 		break;
 	case UI_MESSAGE_ARRANGE:
-		ui_window_arrange(glk, FALSE);
+		chimara_glk_queue_arrange(glk, FALSE);
 		break;
 	case UI_MESSAGE_ARRANGE_SILENTLY:
-		ui_window_arrange(glk, TRUE);
+		chimara_glk_queue_arrange(glk, TRUE);
 		break;
 	case UI_MESSAGE_SYNC_ARRANGE:
-		if (!priv->needs_rearrange) {
+		if (!chimara_glk_needs_rearrange(glk)) {
 			ui_message_respond(msg, 1);
 			break;
 		}
@@ -322,46 +320,9 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 		ui_buffer_draw_image(msg->win, GDK_PIXBUF(msg->ptrval), msg->uintval1);
 		break;
 	case UI_MESSAGE_SHUTDOWN:
-		g_source_remove(priv->ui_message_handler_id);
-		priv->ui_message_handler_id = 0;
+		chimara_glk_stop_processing_queue(glk);
 		ui_message_respond(msg, 1);
 		break;
 	}
 	ui_message_free(msg);
-}
-
-/* Fetches a UI message from the message queue, and if there is one, carries out
- * the instructions therein.
- * This function must be called from the UI thread.
- * Always returns G_SOURCE_CONTINUE (this is meant to be called as an idle
- * function.) */
-gboolean
-ui_message_process_queue (ChimaraGlk *glk)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	UiMessage *msg = g_async_queue_try_pop(priv->ui_message_queue);
-	if(msg == NULL)
-		return G_SOURCE_CONTINUE;
-
-	ui_message_perform (glk, msg);
-	return G_SOURCE_CONTINUE;
-}
-
-/* Processes all the remaining instructions in the message queue, only returning
- * when the shutdown message is received. (If you haven't signalled the Glk
- * program to stop, then this function might not ever return.) */
-void
-ui_message_drain_queue (ChimaraGlk *glk)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	while (TRUE) {
-		if (priv->ui_message_handler_id == 0)
-			return;
-		UiMessage *msg = g_async_queue_pop(priv->ui_message_queue);
-		ui_message_perform (glk, msg);
-		while (gtk_events_pending())
-			gtk_main_iteration();
-	}
 }

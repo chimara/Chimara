@@ -194,7 +194,6 @@ G_GNUC_INTERNAL void ui_message_free(UiMessage *msg);
 G_GNUC_INTERNAL void ui_message_queue(UiMessage *msg);
 G_GNUC_INTERNAL gint64 ui_message_queue_and_await(UiMessage *msg);
 G_GNUC_INTERNAL char *ui_message_queue_and_await_string(UiMessage *msg);
-G_GNUC_INTERNAL gboolean ui_message_process_queue(ChimaraGlk *glk);
-G_GNUC_INTERNAL void ui_message_drain_queue(ChimaraGlk *glk);
+G_GNUC_INTERNAL void ui_message_perform(ChimaraGlk *glk, UiMessage *msg);
 
 #endif /* UI_MESSAGE_H */

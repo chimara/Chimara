@@ -324,9 +324,9 @@ on_background_color_set(GtkColorButton *button, ChimaraGlk *glk)
 void
 on_font_set(GtkFontButton *button, ChimaraGlk *glk)
 {
-	const gchar *font_name = gtk_font_button_get_font_name(button);
-	PangoFontDescription *font_description = pango_font_description_from_string(font_name);
+	PangoFontDescription *font_description = gtk_font_chooser_get_font_desc(GTK_FONT_CHOOSER(button));
 	g_object_set(current_tag, "font-desc", font_description, NULL);
+	pango_font_description_free(font_description);
 }
 
 void

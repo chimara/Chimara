@@ -3,7 +3,6 @@
 #include "chimara-glk-private.h"
 #include "glk.h"
 #include "gi_dispa.h"
-#include "graphics.h"
 #include "input.h"
 #include "magic.h"
 #include "pager.h"

@@ -1,8 +1,17 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include <glib.h>
+#include <stdint.h>
 
-G_GNUC_INTERNAL void clear_image_cache(void);
+#include <glib.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
+struct image_info {
+	uint32_t resource_number;
+	int width;
+	int height;
+	GdkPixbuf *pixbuf;
+	gboolean scaled;
+};
 
 #endif

@@ -16,29 +16,6 @@
 #include "ui-window.h"
 #include "window.h"
 
-/* Internal function used to iterate over a style table, copying it */
-static void
-copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table)
-{
-	gtk_text_tag_table_add(target_table, ui_text_tag_copy( GTK_TEXT_TAG(tag) ));
-}
-
-/* Internal function: initialize the default styles to a textbuffer. */
-static void
-ui_buffer_init_styles(ChimaraGlk *glk, GtkTextBuffer *screen)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	/* Place the default text tags in the textbuffer's tag table */
-	g_hash_table_foreach(priv->styles->text_buffer, copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(screen));
-
-	/* Copy the override text tags to the textbuffers's tag table */
-	g_hash_table_foreach(priv->glk_styles->text_buffer, copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(screen));
-
-	/* Assign the 'default' tag the lowest priority */
-	gtk_text_tag_set_priority( gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(screen), "default"), 0 );
-}
-
 /* Internal function: Callback for signal key-press-event on a text buffer
  * window. Used in character input. Blocked when not in use. */
 static gboolean
@@ -185,7 +162,7 @@ on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win
 
 		int chars_written = ui_buffer_finish_line_input(win, TRUE);
 		ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-		event_throw(glk, evtype_LineInput, win, chars_written, 0);
+		chimara_glk_push_event(glk, evtype_LineInput, win, chars_written, 0);
 		return GDK_EVENT_STOP;
 	}
 
@@ -248,7 +225,7 @@ ui_buffer_create(winid_t win, ChimaraGlk *glk)
 
 	/* Create the styles available to the window stream */
 	GtkTextBuffer *screen = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-	ui_buffer_init_styles(glk, screen);
+	chimara_glk_init_textbuffer_styles(glk, CHIMARA_GLK_TEXT_BUFFER, screen);
 
 	/* Set up the appropriate text buffer or text grid font */
 	PangoFontDescription *font = ui_style_get_current_font(glk, win->type);
@@ -273,7 +250,7 @@ ui_buffer_create(winid_t win, ChimaraGlk *glk)
 	g_signal_handler_block(screen, win->insert_text_handler);
 
 	/* Shutdown key press */
-	win->shutdown_keypress_handler = g_signal_connect( win->widget, "key-press-event", G_CALLBACK(ui_window_handle_shutdown_key_press), win );
+	win->shutdown_keypress_handler = g_signal_connect(win->widget, "key-press-event", G_CALLBACK(ui_window_handle_shutdown_key_press), glk);
 	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
 
 	/* Create an editable tag to indicate uneditable parts of the window

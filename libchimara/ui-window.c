@@ -11,18 +11,6 @@
 #include "ui-window.h"
 #include "window.h"
 
-/* Queues a size reallocation for the entire window hierarchy. If
- * @suppress_next_arrange_event is TRUE, an evtype_Arrange event will not be
- * sent back to the Glk thread as a result of this resize. */
-void
-ui_window_arrange(ChimaraGlk *glk, gboolean suppress_next_arrange_event)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-	priv->needs_rearrange = TRUE;
-	priv->ignore_next_arrange_event = suppress_next_arrange_event;
-	gtk_widget_queue_resize(GTK_WIDGET(priv->self));
-}
-
 /* Creates the widgets for and fills in the fields of @win.
  * Called as a result of glk_window_open(). */
 void
@@ -74,6 +62,83 @@ ui_window_clear(winid_t win)
 		ui_graphics_clear(win);
 }
 
+static const char *
+enum_value_get_nick(GType enum_type, unsigned value)
+{
+	GEnumClass *enum_class = g_type_class_ref(enum_type);
+	GEnumValue *enum_value = g_enum_get_value(enum_class, value);
+	const char *retval = enum_value->value_nick;
+	g_type_class_unref(enum_class);
+	return retval;
+}
+
+static char *
+pango_font_description_to_css(PangoFontDescription *font)
+{
+	GString *builder = g_string_new("*{");
+	PangoFontMask mask = pango_font_description_get_set_fields(font);
+
+	if (mask & PANGO_FONT_MASK_FAMILY)
+		g_string_append_printf(builder, "font-family: %s;",
+			pango_font_description_get_family(font));
+
+	if (mask & PANGO_FONT_MASK_SIZE) {
+		int size = pango_font_description_get_size(font) / PANGO_SCALE;
+		const char *unit = pango_font_description_get_size_is_absolute(font)? "pt" : "px";
+		g_string_append_printf(builder, "font-size: %d%s;", size, unit);
+	}
+
+	if (mask & PANGO_FONT_MASK_STYLE) {
+		PangoStyle style = pango_font_description_get_style(font);
+		g_string_append_printf(builder, "font-style: %s;",
+			enum_value_get_nick(PANGO_TYPE_STYLE, style));
+	}
+
+	if (mask & PANGO_FONT_MASK_VARIANT) {
+		PangoVariant variant = pango_font_description_get_variant(font);
+		g_string_append_printf(builder, "font-variant: %s;",
+			enum_value_get_nick(PANGO_TYPE_VARIANT, variant));
+	}
+
+	if (mask & PANGO_FONT_MASK_WEIGHT) {
+		PangoWeight weight = pango_font_description_get_weight(font);
+		unsigned val;
+		/* CSS weights do not quite correspond to Pango weights */
+		switch (weight) {
+		case PANGO_WEIGHT_THIN:
+		case PANGO_WEIGHT_ULTRALIGHT:
+		case PANGO_WEIGHT_LIGHT:
+		case PANGO_WEIGHT_NORMAL:
+		case PANGO_WEIGHT_MEDIUM:
+		case PANGO_WEIGHT_SEMIBOLD:
+		case PANGO_WEIGHT_BOLD:
+		case PANGO_WEIGHT_ULTRABOLD:
+		case PANGO_WEIGHT_HEAVY:
+			val = weight;
+			break;
+		case PANGO_WEIGHT_SEMILIGHT:
+		case PANGO_WEIGHT_BOOK:
+			val = 400;
+			break;
+		case PANGO_WEIGHT_ULTRAHEAVY:
+			val = 900;
+			break;
+		default:
+			val = CLAMP(weight - (weight % 100), 100, 900);
+		}
+		g_string_append_printf(builder, "font-weight: %u;", val);
+	}
+
+	if (mask & PANGO_FONT_MASK_STRETCH) {
+		PangoStretch stretch = pango_font_description_get_stretch(font);
+		g_string_append_printf(builder, "font-stretch: %s;",
+			enum_value_get_nick(PANGO_TYPE_STRETCH, stretch));
+	}
+
+	g_string_append_c(builder, '}');
+	return g_string_free(builder, FALSE);
+}
+
 void
 ui_window_override_font(winid_t win, GtkWidget *widget, PangoFontDescription *font)
 {
@@ -85,16 +150,16 @@ ui_window_override_font(winid_t win, GtkWidget *widget, PangoFontDescription *fo
 		win->font_override = gtk_css_provider_new();
 	}
 
-	char *font_string = pango_font_description_to_string(font);
-	char *css = g_strdup_printf("*{ font: %s; }", font_string);
+	char *css = pango_font_description_to_css(font);
 
 	GError *error = NULL;
 	if (!gtk_css_provider_load_from_data(win->font_override, css, -1, &error)) {
+		char *font_string = pango_font_description_to_string(font);
 		g_critical("Error overriding font to %s: %s", font_string, error->message);
+		g_free(font_string);
 		g_clear_error(&error);
 	}
 
-	g_free(font_string);
 	g_free(css);
 
 	gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(win->font_override),
@@ -128,32 +193,12 @@ ui_window_override_background_color(winid_t win, GtkWidget *widget, GdkRGBA *col
 		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
-/* Helper function: Turn off shutdown key-press-event signal handler */
-static gboolean
-turn_off_handler(GNode *node)
-{
-	winid_t win = node->data;
-	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
-	return FALSE; /* don't stop */
-}
-
 /* Callback for signal key-press-event while waiting for shutdown. */
 gboolean
 ui_window_handle_shutdown_key_press(GtkWidget *widget, GdkEventKey *event, winid_t win)
 {
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	/* Turn off all the signal handlers */
-	if(priv->root_window)
-		g_node_traverse(priv->root_window, G_IN_ORDER, G_TRAVERSE_LEAVES, -1, (GNodeTraverseFunc)turn_off_handler, NULL);
-
-	/* Signal the Glk library that it can shut everything down now */
-	g_mutex_lock(&priv->shutdown_lock);
-	g_cond_signal(&priv->shutdown_key_pressed);
-	g_mutex_unlock(&priv->shutdown_lock);
-
+	chimara_glk_clear_shutdown(glk);
 	return GDK_EVENT_STOP;
 }
 
@@ -191,8 +236,7 @@ ui_window_handle_char_input_key_press(GtkWidget *widget, GdkEventKey *event, win
 	glui32 keycode = keyval_to_glk_keycode(event->keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
 
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(widget, CHIMARA_TYPE_GLK));
-	g_assert(glk);
-	event_throw(glk, evtype_CharInput, win, keycode, 0);
+	chimara_glk_push_event(glk, evtype_CharInput, win, keycode, 0);
 	g_signal_emit_by_name(glk, "char-input", win->rock, win->librock, event->keyval);
 
 	/* Only one keypress will be handled */

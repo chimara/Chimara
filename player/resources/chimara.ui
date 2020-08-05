@@ -287,8 +287,6 @@ Philip Chimento</property>
                     <property name="margin_left">12</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="propagate_natural_width">True</property>
-                    <property name="propagate_natural_height">True</property>
                     <child>
                       <object class="GtkTreeView" id="interpreters_view">
                         <property name="visible">True</property>

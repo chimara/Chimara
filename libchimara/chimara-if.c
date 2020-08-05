@@ -75,9 +75,6 @@ typedef struct {
 	gboolean active;
 } InputResponse;
 
-#define CHIMARA_IF_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE((o), CHIMARA_TYPE_IF, ChimaraIFPrivate))
-#define CHIMARA_IF_USE_PRIVATE(o, n) ChimaraIFPrivate *n = CHIMARA_IF_PRIVATE(o)
-
 enum {
 	PROP_0,
 	PROP_PIRACY_MODE,
@@ -98,7 +95,7 @@ enum {
 
 static guint chimara_if_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE(ChimaraIF, chimara_if, CHIMARA_TYPE_GLK);
+G_DEFINE_TYPE_WITH_PRIVATE(ChimaraIF, chimara_if, CHIMARA_TYPE_GLK);
 
 static InputResponse *
 input_response_new(void)
@@ -133,7 +130,7 @@ ensure_input_response_object(ChimaraIFPrivate *priv, char *string_id)
 static void
 emit_command_signal_on_active_inputs(char *window_librock, ChimaraGlk *glk)
 {
-	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(glk));
 	InputResponse *inp = g_hash_table_lookup(priv->active_inputs, window_librock);
 	if(!inp->active)
 		return;
@@ -152,14 +149,14 @@ emit_command_signal_on_active_inputs(char *window_librock, ChimaraGlk *glk)
 static void
 chimara_if_waiting(ChimaraGlk *glk)
 {
-	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(glk));
 	g_slist_foreach(priv->window_librock_list, (GFunc)emit_command_signal_on_active_inputs, glk);
 }
 
 static void
 chimara_if_stopped(ChimaraGlk *glk)
 {
-	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(glk));
 
 	/* Send one last command signal for any active inputs */
 	g_slist_foreach(priv->window_librock_list, (GFunc)emit_command_signal_on_active_inputs, glk);
@@ -171,7 +168,7 @@ chimara_if_stopped(ChimaraGlk *glk)
 static void
 chimara_if_char_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, unsigned keysym)
 {
-	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(glk));
 	InputResponse *inp = ensure_input_response_object(priv, string_id);
 	g_assert(!inp->active);
 
@@ -184,7 +181,7 @@ chimara_if_char_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, unsign
 static void
 chimara_if_line_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *input)
 {
-	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(glk));
 	InputResponse *inp = ensure_input_response_object(priv, string_id);
 	g_assert(!inp->active);
 	inp->input = g_strdup(input);
@@ -194,7 +191,7 @@ chimara_if_line_input(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *
 static void
 chimara_if_text_buffer_output(ChimaraGlk *glk, guint32 win_rock, char *string_id, char *output)
 {
-	CHIMARA_IF_USE_PRIVATE(glk, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(glk));
 	InputResponse *inp = ensure_input_response_object(priv, string_id);
 	g_string_append(inp->response, output);
 	inp->active = TRUE;
@@ -205,7 +202,7 @@ chimara_if_init(ChimaraIF *self)
 {
 	chimara_init(); /* This is a library entry point */
 
-	CHIMARA_IF_USE_PRIVATE(self, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z5] = CHIMARA_IF_INTERPRETER_FROTZ;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z6] = CHIMARA_IF_INTERPRETER_NITFOL;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z8] = CHIMARA_IF_INTERPRETER_FROTZ;
@@ -232,7 +229,7 @@ chimara_if_init(ChimaraIF *self)
 static void
 chimara_if_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
-	CHIMARA_IF_USE_PRIVATE(object, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(object));
     switch(prop_id)
     {
     	case PROP_PIRACY_MODE:
@@ -279,7 +276,7 @@ chimara_if_set_property(GObject *object, guint prop_id, const GValue *value, GPa
 static void
 chimara_if_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	CHIMARA_IF_USE_PRIVATE(object, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(object));
     switch(prop_id)
     {
     	case PROP_PIRACY_MODE:
@@ -317,7 +314,7 @@ chimara_if_get_property(GObject *object, guint prop_id, GValue *value, GParamSpe
 static void
 chimara_if_finalize(GObject *object)
 {
-	CHIMARA_IF_USE_PRIVATE(object, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(CHIMARA_IF(object));
 	g_free(priv->graphics_file);
 	g_hash_table_destroy(priv->active_inputs);
 	g_slist_free(priv->window_librock_list); /* values are already freed in hashtable */
@@ -518,8 +515,6 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	    g_param_spec_string("graphics-file", "Graphics file",
 	    "Location in which to look for a separate graphics Blorb file", NULL,
 	    G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS));
-	/* Private data */
-	g_type_class_add_private(klass, sizeof(ChimaraIFPrivate));
 }
 
 /* PUBLIC FUNCTIONS */
@@ -558,7 +553,7 @@ chimara_if_set_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format, Ch
 	g_return_if_fail(format < CHIMARA_IF_NUM_FORMATS);
 	g_return_if_fail(interpreter < CHIMARA_IF_NUM_INTERPRETERS);
 
-	CHIMARA_IF_USE_PRIVATE(self, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
 
 	if(supported_formats[format][interpreter])
 		priv->preferred_interpreter[format] = interpreter;
@@ -582,7 +577,7 @@ chimara_if_get_preferred_interpreter(ChimaraIF *self, ChimaraIFFormat format)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), -1);
 	g_return_val_if_fail(format < CHIMARA_IF_NUM_FORMATS, -1);
-	CHIMARA_IF_USE_PRIVATE(self, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
 	return priv->preferred_interpreter[format];
 }
 
@@ -607,7 +602,7 @@ chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 	g_return_val_if_fail(game_path, FALSE);
 	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
-	CHIMARA_IF_USE_PRIVATE(self, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
 
 	/* Find out what format the game is */
 	/* TODO: Look inside the file instead of just looking at the extension */
@@ -728,12 +723,9 @@ chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 		argv[count] = g_strdup(ptr->data);
 
 	/* Set the story name */
-	/* We peek into ChimaraGlk's private data here, because GObject has no
-	equivalent to "protected" */
-	CHIMARA_GLK_USE_PRIVATE(self, glk_priv);
-	glk_priv->story_name = g_path_get_basename(game_path);
-	g_object_notify(G_OBJECT(self), "story-name");
-	
+	g_autofree char *story_name = g_path_get_basename(game_path);
+	chimara_glk_set_story_name(CHIMARA_GLK(self), story_name);
+
 	gboolean retval = chimara_glk_run(CHIMARA_GLK(self), pluginpath, argc, argv, error);
 	g_strfreev(argv);
 	if(terpnumstr)
@@ -788,7 +780,7 @@ ChimaraIFFormat
 chimara_if_get_format(ChimaraIF *self)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), CHIMARA_IF_FORMAT_NONE);
-	CHIMARA_IF_USE_PRIVATE(self, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
 	return priv->format;
 }
 
@@ -804,6 +796,6 @@ ChimaraIFInterpreter
 chimara_if_get_interpreter(ChimaraIF *self)
 {
 	g_return_val_if_fail(self && CHIMARA_IS_IF(self), CHIMARA_IF_INTERPRETER_NONE);
-	CHIMARA_IF_USE_PRIVATE(self, priv);
+	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
 	return priv->interpreter;
 }

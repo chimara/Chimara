@@ -2,6 +2,7 @@
 
 #include <gtk/gtk.h>
 
+#include "chimara-glk-private.h"
 #include "event.h"
 #include "glk.h"
 #include "ui-window.h"
@@ -14,7 +15,7 @@ on_graphics_button_press(GtkWidget *widget, GdkEventButton *event, winid_t win)
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 	g_assert(glk);
 
-	event_throw(glk, evtype_MouseInput, win, event->x, event->y);
+	chimara_glk_push_event(glk, evtype_MouseInput, win, event->x, event->y);
 	g_signal_handler_block(win->widget, win->button_press_event_handler);
 
 	return GDK_EVENT_STOP;

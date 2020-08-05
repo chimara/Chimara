@@ -59,32 +59,16 @@ gli_date_to_tm(glkdate_t *date, struct tm *tm)
 
 /* Convert a GTimeVal, along with a microseconds value, to a glktimeval. */
 static void
-gli_timestamp_to_time(long sec, long microsec, glktimeval_t *time)
+gli_timestamp_to_time(int64_t sec, int64_t microsec, glktimeval_t *time)
 {
-    if (sizeof(sec) <= 4) {
-        /* This platform has 32-bit time, but we can't do anything
-		 about that. Hope it's not 2038 yet. */
-        if (sec >= 0)
-            time->high_sec = 0;
-        else
-            time->high_sec = -1;
-        time->low_sec = sec;
-    }
-    else {
-        /* The cast to gint64 shouldn't be necessary, but it
-		 suppresses a pointless warning in the 32-bit case.
-		 (Remember that we won't be executing this line in the
-		 32-bit case.) */
-        time->high_sec = (((gint64)sec) >> 32) & 0xFFFFFFFF;
-        time->low_sec = sec & 0xFFFFFFFF;
-    }
-
+	time->high_sec = (sec >> 32) & 0xFFFFFFFF;
+	time->low_sec = sec & 0xFFFFFFFF;
     time->microsec = microsec;
 }
 
 /* Divide a Unix timestamp by a (positive) value. */
 static glsi32
-gli_simplify_time(long timestamp, glui32 factor)
+gli_simplify_time(int64_t timestamp, glui32 factor)
 {
     /* We want to round towards negative infinity, which takes a little
 	 bit of fussing. */
@@ -92,7 +76,7 @@ gli_simplify_time(long timestamp, glui32 factor)
         return timestamp / (time_t)factor;
     }
     else {
-        return -1 - (((long)-1 - timestamp) / (long)factor);
+		return -1 - (((int64_t)-1 - timestamp) / (int64_t)factor);
     }
 }
 
@@ -120,9 +104,8 @@ glk_current_time(glktimeval_t *time)
 {
 	g_return_if_fail(time != NULL);
 
-	GTimeVal tv;
-	g_get_current_time(&tv);
-	gli_timestamp_to_time(tv.tv_sec, tv.tv_usec, time);
+	int64_t ts = g_get_real_time();
+	gli_timestamp_to_time(ts / G_USEC_PER_SEC, ts % G_USEC_PER_SEC, time);
 }
 
 /**
@@ -142,10 +125,9 @@ glsi32
 glk_current_simple_time(glui32 factor)
 {
 	g_return_val_if_fail(factor != 0, 0);
-	
-	GTimeVal tv;
-	g_get_current_time(&tv);
-    return gli_simplify_time(tv.tv_sec, factor);
+
+	int64_t ts = g_get_real_time();
+	return gli_simplify_time(ts / G_USEC_PER_SEC, factor);
 }
 
 /**

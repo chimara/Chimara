@@ -129,6 +129,8 @@ create_window(void)
 
 	g_object_unref(builder);
 
+	g_object_ref(glk);
+
 	return TRUE;
 }
 
@@ -192,6 +194,8 @@ main(int argc, char *argv[])
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
+
+	g_object_unref(glk);
 
 	return status;
 }

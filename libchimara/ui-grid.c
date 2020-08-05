@@ -11,29 +11,6 @@
 #include "ui-window.h"
 #include "window.h"
 
-/* Internal function used to iterate over a style table, copying it */
-static void
-copy_tag_to_textbuffer(gpointer key, gpointer tag, gpointer target_table)
-{
-	gtk_text_tag_table_add(target_table, ui_text_tag_copy( GTK_TEXT_TAG(tag) ));
-}
-
-/* Internal function: initialize the default styles to a textgrid. */
-static void
-ui_grid_init_styles(ChimaraGlk *glk, GtkTextBuffer *screen)
-{
-	CHIMARA_GLK_USE_PRIVATE(glk, priv);
-
-	/* Place the default text tags in the textbuffer's tag table */
-	g_hash_table_foreach(priv->styles->text_grid, copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(screen));
-
-	/* Copy the current text tags to the textbuffers's tag table */
-	g_hash_table_foreach(priv->glk_styles->text_grid, copy_tag_to_textbuffer, gtk_text_buffer_get_tag_table(screen));
-
-	/* Assign the 'default' tag the lowest priority */
-	gtk_text_tag_set_priority( gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(screen), "default"), 0 );
-}
-
 /* Redirect the key press to the line input GtkEntry */
 static gboolean
 on_line_input_key_press_event(GtkWidget *widget, GdkEventKey *event, winid_t win)
@@ -62,7 +39,7 @@ on_grid_button_press(GtkWidget *widget, GdkEventButton *event, winid_t win)
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
 	g_assert(glk);
 
-	event_throw(glk, evtype_MouseInput, win,
+	chimara_glk_push_event(glk, evtype_MouseInput, win,
 		event->x / win->unit_width,
 		event->y / win->unit_height);
 	g_signal_handler_block(win->widget, win->button_press_event_handler);
@@ -82,7 +59,7 @@ ui_grid_create(winid_t win, ChimaraGlk *glk)
 
 	/* Create the styles available to the window stream */
 	GtkTextBuffer *screen = gtk_text_view_get_buffer( GTK_TEXT_VIEW(win->widget) );
-	ui_grid_init_styles(glk, screen);
+	chimara_glk_init_textbuffer_styles(glk, CHIMARA_GLK_TEXT_GRID, screen);
 
 	/* Set up the appropriate text buffer or text grid font */
 	PangoFontDescription *font = ui_style_get_current_font(glk, win->type);
@@ -263,7 +240,7 @@ on_input_entry_activate(GtkEntry *input_entry, winid_t win)
 
 	int chars_written = ui_grid_finish_line_input(win, TRUE);
 	ChimaraGlk *glk = CHIMARA_GLK(gtk_widget_get_ancestor(win->widget, CHIMARA_TYPE_GLK));
-	event_throw(glk, evtype_LineInput, win, chars_written, 0);
+	chimara_glk_push_event(glk, evtype_LineInput, win, chars_written, 0);
 }
 
 /* Internal function: Callback for signal key-press-event on the line input

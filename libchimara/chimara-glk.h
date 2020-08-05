@@ -3,6 +3,8 @@
 #ifndef __CHIMARA_GLK_H__
 #define __CHIMARA_GLK_H__
 
+#include <stdint.h>
+
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
@@ -110,28 +112,28 @@ typedef gchar * (*ChimaraResourceLoadFunc)(ChimaraResourceType usage, guint32 re
 GQuark chimara_error_quark(void);
 GType chimara_glk_get_type(void) G_GNUC_CONST;
 GtkWidget *chimara_glk_new(void);
-void chimara_glk_set_interactive(ChimaraGlk *glk, gboolean interactive);
-gboolean chimara_glk_get_interactive(ChimaraGlk *glk);
-void chimara_glk_set_protect(ChimaraGlk *glk, gboolean protect);
-gboolean chimara_glk_get_protect(ChimaraGlk *glk);
+void chimara_glk_set_interactive(ChimaraGlk *self, gboolean interactive);
+gboolean chimara_glk_get_interactive(ChimaraGlk *self);
+void chimara_glk_set_protect(ChimaraGlk *self, gboolean protect);
+gboolean chimara_glk_get_protect(ChimaraGlk *self);
 void chimara_glk_set_css_to_default(ChimaraGlk *glk);
 gboolean chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **error);
 void chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css);
-void chimara_glk_set_spacing(ChimaraGlk *glk, guint spacing);
-guint chimara_glk_get_spacing(ChimaraGlk *glk);
-gboolean chimara_glk_run(ChimaraGlk *glk, const gchar *plugin, int argc, char *argv[], GError **error);
+void chimara_glk_set_spacing(ChimaraGlk *self, guint spacing);
+guint chimara_glk_get_spacing(ChimaraGlk *self);
+gboolean chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], GError **error);
 gboolean chimara_glk_run_file(ChimaraGlk *self, GFile *plugin_file, int argc, char *argv[], GError **error);
-void chimara_glk_stop(ChimaraGlk *glk);
-void chimara_glk_wait(ChimaraGlk *glk);
-void chimara_glk_unload_plugin(ChimaraGlk *glk);
-gboolean chimara_glk_get_running(ChimaraGlk *glk);
-void chimara_glk_feed_char_input(ChimaraGlk *glk, guint32 keyval);
-void chimara_glk_feed_line_input(ChimaraGlk *glk, const gchar *text);
-gboolean chimara_glk_is_char_input_pending(ChimaraGlk *glk);
-gboolean chimara_glk_is_line_input_pending(ChimaraGlk *glk);
-GtkTextTag *chimara_glk_get_tag(ChimaraGlk *glk, ChimaraGlkWindowType window, const gchar *name);
+void chimara_glk_stop(ChimaraGlk *self);
+void chimara_glk_wait(ChimaraGlk *self);
+void chimara_glk_unload_plugin(ChimaraGlk *self);
+gboolean chimara_glk_get_running(ChimaraGlk *self);
+void chimara_glk_feed_char_input(ChimaraGlk *self, uint32_t keyval);
+void chimara_glk_feed_line_input(ChimaraGlk *self, const char *text);
+gboolean chimara_glk_is_char_input_pending(ChimaraGlk *self);
+gboolean chimara_glk_is_line_input_pending(ChimaraGlk *self);
+GtkTextTag *chimara_glk_get_tag(ChimaraGlk *self, ChimaraGlkWindowType window, const char *name);
 const char * const *chimara_glk_get_tag_names(ChimaraGlk *glk, unsigned *num_tags);
-void chimara_glk_set_resource_load_callback(ChimaraGlk *glk, ChimaraResourceLoadFunc func, gpointer user_data, GDestroyNotify destroy_user_data);
+void chimara_glk_set_resource_load_callback(ChimaraGlk *self, ChimaraResourceLoadFunc func, void *user_data, GDestroyNotify destroy_user_data);
 
 G_END_DECLS
 

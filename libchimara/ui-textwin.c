@@ -157,7 +157,7 @@ on_hyperlink_clicked(GtkTextTag *tag, GObject *object, GdkEvent *event, GtkTextI
 	if(event->type == GDK_BUTTON_PRESS) {
 		link->window->hyperlink_event_requested = FALSE;
 		g_hash_table_foreach(link->window->hyperlinks, hyperlink_block_event_handler, NULL);
-		event_throw(glk, evtype_Hyperlink, link->window, link->value, 0);
+		chimara_glk_push_event(glk, evtype_Hyperlink, link->window, link->value, 0);
 	}
 
 	return FALSE;

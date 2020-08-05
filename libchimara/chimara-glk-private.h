@@ -116,11 +116,19 @@ struct _ChimaraGlkPrivate {
 	gchar *current_dir;
 };
 
-#define CHIMARA_GLK_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), CHIMARA_TYPE_GLK, ChimaraGlkPrivate))
-#define CHIMARA_GLK_USE_PRIVATE(o, n) ChimaraGlkPrivate *n = CHIMARA_GLK_PRIVATE(o)
-
 G_GNUC_INTERNAL const char *chimara_glk_get_tag_name(unsigned style);
 G_GNUC_INTERNAL const char *chimara_glk_get_glk_tag_name(unsigned style);
+
+G_GNUC_INTERNAL void chimara_glk_set_story_name(ChimaraGlk *self, const char *story_name);
+G_GNUC_INTERNAL void chimara_glk_push_event(ChimaraGlk *self, uint32_t type, winid_t win, uint32_t val1, uint32_t val2);
+G_GNUC_INTERNAL void chimara_glk_init_textbuffer_styles(ChimaraGlk *self, ChimaraGlkWindowType wintype, GtkTextBuffer *buffer);
+G_GNUC_INTERNAL GtkTextTag *chimara_glk_get_glk_tag(ChimaraGlk *self, ChimaraGlkWindowType window, const char *name);
+G_GNUC_INTERNAL gboolean chimara_glk_needs_rearrange(ChimaraGlk *self);
+G_GNUC_INTERNAL void chimara_glk_queue_arrange(ChimaraGlk *self, gboolean suppress_next_arrange_event);
+G_GNUC_INTERNAL gboolean chimara_glk_process_queue(ChimaraGlk *self);
+G_GNUC_INTERNAL void chimara_glk_drain_queue(ChimaraGlk *self);
+G_GNUC_INTERNAL void chimara_glk_stop_processing_queue(ChimaraGlk *self);
+G_GNUC_INTERNAL void chimara_glk_clear_shutdown(ChimaraGlk *self);
 
 G_END_DECLS
 
