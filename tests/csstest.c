@@ -90,7 +90,10 @@ main(int argc, char **argv)
 	gtk_widget_show_all(win);
 	g_object_ref(glk);
 	char *plugin_argv[] = { "styletest" };
-	chimara_glk_run(CHIMARA_GLK(glk), ".libs/styletest.so", 1, plugin_argv, NULL);
+#ifndef LT_OBJDIR
+#define LT_OBJDIR ".libs"
+#endif
+	chimara_glk_run(CHIMARA_GLK(glk), BUILDDIR "/" LT_OBJDIR "/styletest.so", 1, plugin_argv, NULL);
 
 	gtk_main();
 

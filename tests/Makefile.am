@@ -22,6 +22,7 @@ noinst_PROGRAMS = \
 	$(NULL)
 
 test_multisession_SOURCES = test-multisession.c
+test_multisession_CPPFLAGS = $(AM_CPPFLAGS) -DBUILDDIR=\""$(abs_builddir)"\"
 test_multisession_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_multisession_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
@@ -35,10 +36,12 @@ plugin_loader_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 plugin_loader_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 test_close_SOURCES = test-close.c
+test_close_CPPFLAGS = $(AM_CPPFLAGS) -DPACKAGE_SRC_DIR=\""$(srcdir)"\"
 test_close_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 test_close_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
 csstest_SOURCES = csstest.c
+csstest_CPPFLAGS = $(AM_CPPFLAGS) -DBUILDDIR=\""$(abs_builddir)"\"
 csstest_CFLAGS = @TEST_CFLAGS@ $(AM_CFLAGS)
 csstest_LDADD = @TEST_LIBS@ $(top_builddir)/libchimara/libchimara.la
 
