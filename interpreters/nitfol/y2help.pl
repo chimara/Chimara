@@ -47,7 +47,7 @@ while(<>) {
 open("MYTEXINFO", ">dbg_help.texi") || die "Unable to write to dbg_help.texi";
 select "MYTEXINFO";
 
-foreach $helpcommand ( keys %helptable) {
+foreach $helpcommand (sort keys %helptable) {
     my $tag = "\@item ";
     foreach my $helparg (@{ $helptable{$helpcommand}[0] }) {
 	print $tag, @{$helptable{$helpcommand}[2]}[0], " $helparg\n";
