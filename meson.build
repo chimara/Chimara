@@ -130,12 +130,6 @@ pkgconfig.generate(libchimara, filebase: 'chimara', name: 'Chimara',
     description: 'Multi-session Glk library, with interactive fiction plugins',
     url: 'http://no.public.website.yet', requires: [glib, gtk],
     requires_private: [gthread, gmodule], subdirs: 'chimara')
-pkgconfig.generate(filebase: 'chimara-plugin', name: 'Chimara',
-    description: 'Multi-session Glk library, with interactive fiction plugins',
-    url: 'http://no.public.website.yet',
-    libraries: ['-module', '-shared', '-avoid-version',
-        '-export-symbols-regex "^glk(_main|unix_(arguments|startup_code))$$"'],
-    subdirs: 'chimara')
 
 install_data('AUTHORS', 'COPYING', 'NEWS', 'README',
     install_dir: datadir / 'doc' / libname)
