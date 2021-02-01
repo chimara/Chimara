@@ -767,10 +767,9 @@ volume_glk_to_gstreamer(glui32 volume_glk)
 static gboolean
 volume_change_timeout(schanid_t chan)
 {
-	GTimeVal now;
-	g_get_current_time(&now);
+	int64_t now = g_get_monotonic_time();
 
-	if(now.tv_sec >= chan->target_time_sec && now.tv_usec >= chan->target_time_usec) {
+	if(now >= chan->target_time) {
 		/* We're done - make sure the volume is at the requested level */
 		g_object_set(chan->filter, "volume", chan->target_volume, NULL);
 
@@ -783,8 +782,7 @@ volume_change_timeout(schanid_t chan)
 
 	/* Calculate the appropriate step every time - a busy system may delay or
 	 * drop	timer ticks */
-	double time_left_msec = (chan->target_time_sec - now.tv_sec) * 1000.0
-		+ (chan->target_time_usec - now.tv_usec) / 1000.0;
+	double time_left_msec = (chan->target_time - now) / 1000.0;
 	double steps_left = time_left_msec / VOLUME_TIMER_RESOLUTION;
 	double current_volume;
 	g_object_get(chan->filter, "volume", &current_volume, NULL);
@@ -851,13 +849,11 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 		return;
 	}
 
-	GTimeVal target_time;
-	g_get_current_time(&target_time);
-	g_time_val_add(&target_time, (long)duration * 1000);
+	int64_t target_time = g_get_monotonic_time();
+	target_time += (long)duration * 1000;
 
 	chan->target_volume = target_volume;
-	chan->target_time_sec = target_time.tv_sec;
-	chan->target_time_usec = target_time.tv_usec;
+	chan->target_time = target_time;
 	chan->volume_notify = notify;
 
 	/* Set up a timer for the volume */

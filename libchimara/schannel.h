@@ -30,7 +30,7 @@ struct glk_schannel_struct
 	
 	/* Volume change information */
 	double target_volume;
-	long target_time_sec, target_time_usec;
+	int64_t target_time;
 	guint volume_timer_id;
 	glui32 volume_notify;
 
