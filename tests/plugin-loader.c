@@ -33,8 +33,6 @@
 #include <gtk/gtk.h>
 #include <libchimara/chimara-glk.h>
 
-#include "plugin-utils.h"
-
 /* Global pointers to widgets */
 GtkWidget *window = NULL;
 GtkWidget *glk = NULL;
@@ -83,18 +81,13 @@ main(int argc, char *argv[])
 	if(argc < 2)
 		g_error("Must provide a plugin\n");
 
-	GFile *plugin_file;
-	if( g_str_has_suffix(argv[1], ".la") )
-		plugin_file = libname_from_la_file(argv[1]);
-	else
-		plugin_file = g_file_new_for_commandline_arg(argv[1]);
+	g_autoptr(GFile) plugin_file = g_file_new_for_commandline_arg(argv[1]);
 
 	chimara_glk_set_resource_load_callback(CHIMARA_GLK(glk), (ChimaraResourceLoadFunc)resource_load, NULL, NULL);
 
     if( !chimara_glk_run_file(CHIMARA_GLK(glk), plugin_file,
         argc - 1, argv + 1, &error) )
    		g_error("Error starting Glk library: %s\n", error->message);
-    g_object_unref(plugin_file);
 
 	gtk_main();
 

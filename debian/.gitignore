@@ -1,10 +1,11 @@
 chimara-player
 files
+gir1.2-chimara-1.0
 libchimara-dev
 libchimara-doc
 libchimara0
 tmp
-stamp*
+*stamp*
 *.debhelper.log
 *.substvars
 *.debhelper

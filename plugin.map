@@ -1,0 +1,9 @@
+{
+  global:
+    glk_main;
+    glkunix_arguments;
+    glkunix_startup_code;
+
+  local:
+    *;
+};

@@ -1,7 +1,7 @@
 #ifndef __SCHANNEL_H__
 #define __SCHANNEL_H__
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 #include <gst/gst.h>
 #endif
 #include <glib.h>
@@ -34,7 +34,7 @@ struct glk_schannel_struct
 	guint volume_timer_id;
 	glui32 volume_notify;
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	/* Each sound channel is represented as a GStreamer pipeline.  */
 	GstElement *pipeline, *source, *typefind, *demux, *decode, *convert, *filter, *sink;
 #endif

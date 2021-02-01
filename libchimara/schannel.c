@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include <glib.h>
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 #include <gst/gst.h>
 #endif
 
@@ -14,14 +14,11 @@
 #include "schannel.h"
 
 #define VOLUME_TIMER_RESOLUTION 1.0 /* In milliseconds */
-
-#ifdef HAVE_SOUND
 #define OGG_MIMETYPE "audio/ogg"
-#endif
 
 extern GPrivate glk_data_key;
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 /* Stop any currently playing sound on this channel, and remove any
  format-specific GStreamer elements from the channel. */
 static void
@@ -267,7 +264,7 @@ glk_schannel_create(glui32 rock)
 schanid_t
 glk_schannel_create_ext(glui32 rock, glui32 volume)
 {
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	schanid_t s = g_slice_new0(struct glk_schannel_struct);
@@ -340,7 +337,7 @@ glk_schannel_destroy(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
 	if(!gst_element_set_state(chan->pipeline, GST_STATE_NULL))
@@ -382,7 +379,7 @@ glk_schannel_iterate(schanid_t chan, glui32 *rockptr)
 {
 	VALID_SCHANNEL_OR_NULL(chan, return NULL);
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
 	
@@ -488,7 +485,7 @@ glui32
 glk_schannel_play_ext(schanid_t chan, glui32 snd, glui32 repeats, glui32 notify)
 {
 	VALID_SCHANNEL(chan, return 0);
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	/* Stop the previous sound */
 	clean_up_after_playing_sound(chan);
 
@@ -570,7 +567,7 @@ glk_schannel_play_multi(schanid_t *chanarray, glui32 chancount, glui32 *sndarray
 	for(count = 0; count < chancount; count++)
 		VALID_SCHANNEL(chanarray[count], return 0);
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	if(!glk_data->resource_map && !glk_data->resource_load_callback) {
 		WARNING("No resource map has been loaded yet");
@@ -638,7 +635,7 @@ void
 glk_schannel_stop(schanid_t chan)
 {
 	VALID_SCHANNEL(chan, return);
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	clean_up_after_playing_sound(chan);
 #endif
 }
@@ -666,7 +663,7 @@ glk_schannel_pause(schanid_t chan)
 	/* Mark the channel as paused even if there is no sound playing yet */
 	chan->paused = TRUE;
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING("Could not get GstElement state");
@@ -707,7 +704,7 @@ glk_schannel_unpause(schanid_t chan)
 	/* Mark the channel as not paused in any case */
 	chan->paused = FALSE;
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	GstState state;
 	if(gst_element_get_state(chan->pipeline, &state, NULL, GST_CLOCK_TIME_NONE) != GST_STATE_CHANGE_SUCCESS) {
 		WARNING("Could not get GstElement state");
@@ -757,7 +754,7 @@ glk_schannel_set_volume(schanid_t chan, glui32 vol)
 	glk_schannel_set_volume_ext(chan, vol, 0, 0);
 }
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 static double
 volume_glk_to_gstreamer(glui32 volume_glk)
 {
@@ -833,7 +830,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 	VALID_SCHANNEL(chan, return);
 	/* Silently ignore out-of-range volume values */
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	/* Interrupt a previous volume change */
 	if(chan->volume_timer_id > 0)
 		g_source_remove(chan->volume_timer_id);
@@ -877,7 +874,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 void 
 glk_sound_load_hint(glui32 snd, glui32 flag)
 {
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	giblorb_result_t resource;
 	giblorb_err_t result;

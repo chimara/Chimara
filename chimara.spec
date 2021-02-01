@@ -1,31 +1,32 @@
-# @configure_input@
-#
-# Spec file for chimara and chimara-devel
+# Spec file for chimara, chimara-devel, and chimara-player
 #
 
-Name:           @PACKAGE_TARNAME@
-Version:        @PACKAGE_VERSION@
+Name:           chimara
+Version:        0.9.1
 Release:        1%{?dist}
 Summary:        A GTK+ widget implementation of the Glk library
-URL:            http://lassie.student.utwente.nl/chimara/
-License:        MIT
+URL:            http://chimara.github.io/Chimara/
+License:        BSD
 
 Group:          Development/Libraries
-Source:         %{name}-%{version}.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source:         %{name}-%{version}.tar.xz
 
-Requires:       glib2 >= @GLIB_REQUIRED_VERSION@
-Requires:       gtk2 >= @GTK_REQUIRED_VERSION@
-Requires:       pango
 Requires(post): info
 Requires(preun): info
+
+BuildRequires:  meson >= 0.50
 BuildRequires:  bison
 # byacc is allowed instead of bison, but stoopid RPM doesn't let you specify alternative pkgs
-BuildRequires:  perl gettext libtool pkgconfig
-BuildRequires:  gtk-doc >= @GTK_DOC_REQUIRED_VERSION@
-BuildRequires:  glib2-devel >= @GLIB_REQUIRED_VERSION@
-BuildRequires:  gtk2-devel >= @GTK_REQUIRED_VERSION@
+BuildRequires:  gettext perl-interpreter pkgconfig texinfo
+BuildRequires:  gtk-doc >= 1.20
+BuildRequires:  glib2-devel >= 2.44
+BuildRequires:  gtk3-devel >= 3.14
 BuildRequires:  pango-devel
+BuildRequires:  gstreamer1-devel
+BuildRequires:  gstreamer1-plugins-base
+BuildRequires:  gstreamer1-plugins-good
+BuildRequires:  gstreamer1-plugins-bad-free
+BuildRequires:  gstreamer1-plugins-bad-free-extras
 
 %description
 A GTK+ widget that loads and runs Glk programs as plugins. Glk is an
@@ -49,26 +50,33 @@ Requires:       %{name} = %{version}-%{release}
 The %{name}-player package contains the default interactive fiction player 
 using %{name}.
 
+# wat, definition of meson macro has builddir and srcdir swapped?!
+%global _vpath_srcdir %{name}-%{version}
+
 %prep
-%setup -q
+%autosetup -c
 
 %build
-%configure --disable-static --disable-schemas-compile
-make %{?_smp_mflags}
+%set_build_flags
+%{shrink:%{__meson} --buildtype=plain --prefix=%{_prefix} --libdir=%{_libdir}
+   --libexecdir=%{_libexecdir} --bindir=%{_bindir} --sbindir=%{_sbindir}
+   --includedir=%{_includedir} --datadir=%{_datadir} --mandir=%{_mandir}
+   --infodir=%{_infodir} --localedir=%{_datadir}/locale
+   --sysconfdir=%{_sysconfdir} --localstatedir=%{_localstatedir}
+   --sharedstatedir=%{_sharedstatedir} --wrap-mode=%{__meson_wrap_mode}
+   --auto-features=%{__meson_auto_features} -Dgtk_doc=true -Dvapi=enabled
+   %{_vpath_builddir} %{_vpath_srcdir}}
+%meson_build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-# not macro makeinstall, this breaks stoopid GSETTINGS_RULES
-make install DESTDIR=$RPM_BUILD_ROOT
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-rm -f $RPM_BUILD_ROOT/usr/share/info/dir
+%meson_install
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+%check
+%meson_test
 
-%post 
+%post
 /sbin/ldconfig
-/sbin/install-info %{_infodir}/nitfol.info %{_infodir}/dir || :
+/sbin/install-info %{_infodir}/nitfol.info || :
 
 %post player
 if [ $1 -eq 1 ] ; then
@@ -77,16 +85,17 @@ fi
 
 %preun
 if [ $1 = 0 ] ; then
-  /sbin/install-info --delete %{_infodir}/nitfol.info %{_infodir}/dir || :
+  /sbin/install-info --delete %{_infodir}/nitfol.info || :
 fi
 
 %postun -p /sbin/ldconfig
 
-%postun player
+%posttrans player
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files
 %defattr(-,root,root,-)
+%doc %{_datadir}/doc/chimara/bocfel/*
 %doc %{_datadir}/doc/chimara/frotz/*
 %doc %{_datadir}/doc/chimara/git/*
 %doc %{_datadir}/doc/chimara/glulxe/*
@@ -94,7 +103,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %doc %{_infodir}/*.info*
 %{_libdir}/libchimara.so.*
 %{_libdir}/chimara/*.so
-%{_libexecdir}/chimara/profile-analyze.py
+%{_libdir}/girepository-1.0/Chimara-1.0.typelib
 
 %files devel
 %defattr(-,root,root,-)
@@ -102,21 +111,22 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_includedir}/chimara/libchimara/*.h
 %{_libdir}/libchimara.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/gir-1.0/Chimara-1.0.gir
+%{_datadir}/vala/vapi/chimara.*
+%{_libexecdir}/chimara/profile-analyze.py
 
 %files player
 %defattr(-,root,root,-)
 %doc %{_datadir}/doc/chimara/README 
 %doc %{_datadir}/doc/chimara/COPYING 
 %doc %{_datadir}/doc/chimara/AUTHORS 
-%doc %{_datadir}/doc/chimara/ChangeLog 
 %doc %{_datadir}/doc/chimara/NEWS
 %{_bindir}/chimara
-%{_datadir}/chimara/chimara.ui
-%{_datadir}/chimara/chimara.menus
-%{_datadir}/chimara/style.css
 %{_datadir}/glib-2.0/schemas/org.chimara-if.gschema.xml
 
 %changelog
+* Mon Feb 1 2021 Philip Chimento <philip.chimento@gmail.com> - 0.9.1-1
+- Changed build system to Meson.
 * Mon Mar 7 2011 P. F. Chimento <philip.chimento@gmail.com>
 - Added glib-compile-schemas invocations.
 * Fri Dec 4 2009 P. F. Chimento <philip.chimento@gmail.com>

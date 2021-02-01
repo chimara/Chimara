@@ -626,11 +626,8 @@ chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 
 	gchar *pluginpath;
 #ifdef DEBUG
-#ifndef LT_OBJDIR
-#define LT_OBJDIR ".libs" /* Pre-2.2 libtool, so take a wild guess */
-#endif /* LT_OBJDIR */
 	/* If there is a plugin in the source tree, use that */
-	pluginpath = g_build_filename(PLUGINSOURCEDIR, plugin_names[interpreter], LT_OBJDIR, pluginfile, NULL);
+	pluginpath = g_build_filename(PLUGINSOURCEDIR, plugin_names[interpreter], pluginfile, NULL);
 	if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) )
 	{
 		g_free(pluginpath);

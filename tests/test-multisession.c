@@ -55,15 +55,12 @@ main(int argc, char **argv)
 
 	gtk_widget_show_all(window);
 
-#ifndef LT_OBJDIR
-#define LT_OBJDIR ".libs"
-#endif
 	GError *error = NULL;
-	if(!chimara_glk_run(CHIMARA_GLK(frotz), BUILDDIR "/../interpreters/frotz/" LT_OBJDIR "/frotz.so", argc, argv, &error)) {
+	if(!chimara_glk_run(CHIMARA_GLK(frotz), BUILDDIR "/../interpreters/frotz/frotz.so", argc, argv, &error)) {
 		g_printerr("%s\n", error->message);
 		return 1;
 	}
-	if(!chimara_glk_run(CHIMARA_GLK(nitfol), BUILDDIR "/../interpreters/nitfol/" LT_OBJDIR "/nitfol.so", argc, argv, &error)) {
+	if(!chimara_glk_run(CHIMARA_GLK(nitfol), BUILDDIR "/../interpreters/nitfol/nitfol.so", argc, argv, &error)) {
 		g_printerr("%s\n", error->message);
 		return 1;
 	}
