@@ -13,8 +13,8 @@
 #define IMAGE_CACHE_MAX_NUM 10
 
 extern GPrivate glk_data_key;
-void on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info);
-void on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data);
+static void on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info);
+static void on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data);
 glui32 draw_image_common(winid_t win, GdkPixbuf *pixbuf, glsi32 val1, glsi32 val2);
 
 static gboolean image_loaded;
@@ -148,7 +148,7 @@ load_image_in_cache(glui32 image, gint width, gint height)
 	return info;
 }
 
-void
+static void
 on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_info *info)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -161,7 +161,7 @@ on_size_prepared(GdkPixbufLoader *loader, gint width, gint height, struct image_
 	g_mutex_unlock(&glk_data->resource_lock);
 }
 
-void
+static void
 on_pixbuf_closed(GdkPixbufLoader *loader, gpointer data)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);

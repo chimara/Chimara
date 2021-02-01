@@ -303,7 +303,7 @@ chimara_glk_init_styles(ChimaraGlk *self)
 }
 
 /* Internal function that copies a text tag */
-GtkTextTag *
+static GtkTextTag *
 text_tag_copy(GtkTextTag *tag)
 {
 	g_return_val_if_fail(tag != NULL, NULL);
