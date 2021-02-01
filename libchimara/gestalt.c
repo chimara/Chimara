@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <stddef.h> /* Surprisingly, the only symbol needed is NULL */
 
 #include "glk.h"

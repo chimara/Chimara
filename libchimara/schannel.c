@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <glib.h>
 #ifdef HAVE_SOUND
 #include <gst/gst.h>
