@@ -93,7 +93,7 @@ on_pipeline_message(GstBus *bus, GstMessage *message, schanid_t s)
 			clean_up_after_playing_sound(s);
 			/* Sound ended normally, send a notification if requested */
 			if(s->notify)
-				event_throw(s->glk, evtype_SoundNotify, NULL, s->resource, s->notify);
+				chimara_glk_push_event(s->glk, evtype_SoundNotify, NULL, s->resource, s->notify);
 		}
 		break;
 	default:
@@ -773,7 +773,7 @@ volume_change_timeout(schanid_t chan)
 		g_object_set(chan->filter, "volume", chan->target_volume, NULL);
 
 		if(chan->volume_notify)
-			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, chan->volume_notify);
+			chimara_glk_push_event(chan->glk, evtype_VolumeNotify, NULL, 0, chan->volume_notify);
 
 		chan->volume_timer_id = 0;
 		return FALSE;
@@ -844,7 +844,7 @@ glk_schannel_set_volume_ext(schanid_t chan, glui32 vol, glui32 duration, glui32 
 		g_object_set(chan->filter, "volume", target_volume, NULL);
 
 		if(notify != 0)
-			event_throw(chan->glk, evtype_VolumeNotify, NULL, 0, notify);
+			chimara_glk_push_event(chan->glk, evtype_VolumeNotify, NULL, 0, notify);
 
 		return;
 	}
