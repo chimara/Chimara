@@ -1,9 +1,9 @@
 Source: chimara
 Section: libs
-Priority: extra
+Priority: optional
 Maintainer: Philip Chimento <philip.chimento@gmail.com>
 Build-Depends: bison,
-               debhelper (>= 10),
+               debhelper (>= 13),
                gobject-introspection,
                gstreamer1.0-plugins-bad,
                gstreamer1.0-plugins-base,
@@ -19,29 +19,31 @@ Build-Depends: bison,
                texinfo,
                valac,
                xvfb
-Standards-Version: 3.7.3
-Homepage: http://lassie.student.utwente.nl/chimara
+Standards-Version: 4.5.1
+Homepage: http://chimara.github.io/Chimara/
 
 Package: libchimara0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, 
          ${misc:Depends}
-Description: A GTK+ widget implementation of the Glk library
- Chimara is a GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+Description: GTK widget implementation of the Glk library
+ Chimara is a GTK widget that loads and runs Glk programs as plugins. Glk is an
  input/output specification specifically designed for interactive fiction.
  
 Package: libchimara-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
+         gir1.2-chimara-1.0 (= ${binary:Version}),
          libchimara0 (= ${binary:Version}),
          libglib2.0-dev,
          libgstreamer1.0-dev,
-         libgtk-3-dev
+         libgtk-3-dev,
+         python2
 Suggests: libchimara-doc
 Description: Development files for the Chimara Glk library
- Chimara is a GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+ Chimara is a GTK widget that loads and runs Glk programs as plugins. Glk is an
  input/output specification specifically designed for interactive fiction.
  .
  This package contains the header files required if you wish to develop software
@@ -52,7 +54,7 @@ Section: doc
 Architecture: all
 Depends: ${misc:Depends}
 Description: Documentation for the Chimara Glk library
- Chimara is a GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+ Chimara is a GTK widget that loads and runs Glk programs as plugins. Glk is an
  input/output specification specifically designed for interactive fiction.
  .
  This package contains the Chimara reference manual.
@@ -64,7 +66,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          libchimara0 (= ${binary:Version})
 Description: Interactive fiction player using the Chimara Glk library
- Chimara is a GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+ Chimara is a GTK widget that loads and runs Glk programs as plugins. Glk is an
  input/output specification specifically designed for interactive fiction.
  .
  This package contains a default interactive fiction player that uses Chimara.
@@ -76,7 +78,7 @@ Multi-Arch: same
 Depends: ${gir:Depends},
          ${misc:Depends}
 Description: GObject introspection data for the Chimara Glk library
- Chimara is a GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+ Chimara is a GTK widget that loads and runs Glk programs as plugins. Glk is an
  input/output specification specifically designed for interactive fiction.
  .
  This package contains introspection data for the Chimara library.
