@@ -29,13 +29,14 @@ BuildRequires:  gstreamer1-plugins-bad-free
 BuildRequires:  gstreamer1-plugins-bad-free-extras
 
 %description
-A GTK+ widget that loads and runs Glk programs as plugins. Glk is an
+A GTK widget that loads and runs Glk programs as plugins. Glk is an
 input/output specification specifically designed for interactive fiction.
 
 %package        devel
 Summary:        Development files for %{name}
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       python2
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -78,8 +79,8 @@ using %{name}.
 /sbin/ldconfig
 /sbin/install-info %{_infodir}/nitfol.info || :
 
-%post player
-if [ $1 -eq 1 ] ; then
+%postun player
+if [ $1 -eq 0 ] ; then
   glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 fi
 
