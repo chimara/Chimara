@@ -49,7 +49,7 @@ Description: Documentation for the Chimara Glk library
 Package: chimara-player
 Section: games
 Architecture: any
-Depends: ${misc:Depends}
+Depends: ${misc:Depends},
          libchimara0 (= ${binary:Version}),
          libglib2.0-dev,
          libgtk2.0-dev
