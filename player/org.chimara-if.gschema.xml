@@ -29,10 +29,10 @@
     </key>
 
     <key name="preferred-interpreters" type="a{ss}">
-      <default>{'z5': 'frotz',
-                'z6': 'nitfol',
-                'z8': 'frotz',
-                'zblorb': 'frotz',
+      <default>{'z5': 'bocfel',
+                'z6': 'bocfel',
+                'z8': 'bocfel',
+                'zblorb': 'bocfel',
                 'glulx': 'glulxe',
                 'gblorb': 'glulxe'}</default>
       <summary>Preferred interpreters</summary>
