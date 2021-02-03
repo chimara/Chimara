@@ -1,5 +1,5 @@
 /*-
- * Copyright 2009-2012 Chris Spiegel.
+ * Copyright 2009-2016 Chris Spiegel.
  *
  * This file is part of Bocfel.
  *
@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <ctype.h>
-#include <signal.h>
 #include <limits.h>
 
 #include "zterp.h"
@@ -29,7 +29,9 @@
 #include "branch.h"
 #include "io.h"
 #include "memory.h"
+#include "meta.h"
 #include "osdep.h"
+#include "patches.h"
 #include "process.h"
 #include "random.h"
 #include "screen.h"
@@ -45,49 +47,45 @@
 #define MAX_LINE	2048
 #define MAX_PATH	4096
 
-#define ZTERP_VERSION	"0.6.3.2"
-
 const char *game_file;
 struct options options = {
   .eval_stack_size = DEFAULT_STACK_SIZE,
   .call_stack_size = DEFAULT_CALL_DEPTH,
-  .disable_color = 0,
-  .disable_config = 0,
-  .disable_sound = 0,
-  .disable_timed = 0,
-  .enable_escape = 0,
+  .disable_color = false,
+  .disable_config = false,
+  .disable_timed = false,
+  .disable_sound = false,
+  .enable_escape = false,
   .escape_string = NULL,
-  .disable_fixed = 0,
-  .assume_fixed = 0,
-  .disable_graphics_font = 0,
-  .enable_alt_graphics = 0,
-  .show_id = 0,
-  .disable_term_keys = 0,
-  .disable_utf8 = 0,
-  .force_utf8 = 0,
-  .disable_meta_commands = 0,
+  .disable_fixed = false,
+  .assume_fixed = false,
+  .disable_graphics_font = false,
+  .enable_alt_graphics = false,
+  .disable_history_playback = false,
+  .show_id = false,
+  .disable_term_keys = false,
+  .username = NULL,
+  .disable_meta_commands = false,
   .int_number = 1, /* DEC */
   .int_version = 'C',
-  .replay_on = 0,
+  .disable_patches = false,
+  .replay_on = false,
   .replay_name = NULL,
-  .record_on = 0,
+  .record_on = false,
   .record_name = NULL,
-  .transcript_on = 0,
+  .transcript_on = false,
   .transcript_name = NULL,
   .max_saves = 100,
-  .disable_undo_compression = 0,
-  .show_version = 0,
-  .disable_abbreviations = 0,
-  .enable_censorship = 0,
-  .overwrite_transcript = 0,
-  .override_undo = 0,
+  .show_version = false,
+  .disable_abbreviations = false,
+  .enable_censorship = false,
+  .overwrite_transcript = false,
+  .override_undo = false,
   .random_seed = -1,
   .random_device = NULL,
 };
 
 static char story_id[64];
-
-uint32_t pc;
 
 /* zversion stores the Z-machine version of the story: 1–6.
  *
@@ -130,26 +128,21 @@ uint8_t atable[26 * 3] =
   ',', '!', '?', '_', '#', '\'','"', '/', '\\','-', ':', '(', ')',
 };
 
-uint32_t unpack(uint16_t addr, int string)
+static unsigned long unpack_multiplier;
+
+uint32_t unpack_routine(uint16_t addr)
 {
-  switch(zwhich)
-  {
-    case 1: case 2: case 3:
-      return addr * 2UL;
-    case 4: case 5:
-      return addr * 4UL;
-    case 6: case 7:
-      return (addr * 4UL) + (string ? header.S_O : header.R_O);
-    case 8:
-      return addr * 8UL;
-    default:
-      die("unhandled z-machine version: %d", zwhich);
-  }
+  return (addr * unpack_multiplier) + header.R_O;
+}
+
+uint32_t unpack_string(uint16_t addr)
+{
+  return (addr * unpack_multiplier) + header.S_O;
 }
 
 void store(uint16_t v)
 {
-  store_variable(BYTE(pc++), v);
+  store_variable(byte(pc++), v);
 }
 
 /* Find a story ID roughly in the form of an IFID according to §2.2.2.1
@@ -184,57 +177,52 @@ static void find_id(void)
   }
 }
 
-static int is_story(const char *id)
+static bool is_story(const char *id)
 {
   return strcmp(story_id, id) == 0;
 }
 
-int is_beyond_zork(void)
+bool is_beyond_zork(void)
 {
   return is_story("47-870915") || is_story("49-870917") || is_story("51-870923") || is_story("57-871221");
 }
 
-int is_journey(void)
+bool is_journey(void)
 {
   return is_story("83-890706");
 }
 
-int is_sherlock(void)
-{
-  return is_story("97-871026") || is_story("21-871214") || is_story("22-880112") || is_story("26-880127");
-}
-
-int is_infocom_v1234;
+bool is_infocom_v1234;
 static void check_infocom(void)
 {
   /* All V1234 games from the Infocom fact sheet for which both a
    * release and serial number are available.
    */
   const char *v1234[] = {
-    "1-841226",   "47-850313",  "64-850404",  "84-850516",  "105-850605", "131-850628", 
-    "132-850702", "143-850711", "77-850814",  "79-851122",  "97-851218",  "99-861014",  
-    "86-870212",  "116-870602", "160-880521", "23-840809",  "25-840917",  "18-820311",  
-    "19-820427",  "21-820512",  "22-820809",  "26-821108",  "27-831005",  "28-850129",  
-    "10-830810",  "15-831107",  "16-831118",  "16-840518",  "24-851118",  "29-860820",  
-    "62-840706",  "108-840809", "119-840822", "47-840914",  "56-841221",  "58-851002",  
-    "59-851108",  "60-861002",  "235-861118", "37-861215",  "22-830916",  "22-840522",  
-    "48-860103",  "57-860121",  "118-860325", "160-860521", "50-860711",  "59-860730",  
-    "203-870506", "219-870912", "221-870918", "4-860918",   "9-861022",   "13-880501",  
-    "70-870423",  "77-870428",  "117-870512", "19-870722",  "20-870722",  "1-830306",   
-    "1-830517",   "1-830614",   "6-830619",   "20-830708",  "26-831014",  "29-840118",  
-    "37-851003",  "39-880501",  "26-870730",  "86-840320",  "15-840501",  "15-840522",  
-    "15-840612",  "15-840716",  "17-850208",  "16-850515",  "16-850603",  "18-850919",  
-    "17-831001",  "67-831208",  "85-840106",  "4-840131",   "6-840508",   "13-851021",  
-    "15-851108",  "18-860904",  "63-850916",  "87-860904",  "15-820901",  "17-821021",  
-    "18-830114",  "28-861221",  "36-870106",  "63-870218",  "87-870326",  "107-870430", 
-    "14-841005",  "14-841005",  "18-850222",  "5-830222",   "7-830419",   "8-830521",   
-    "8-840521",   "1-851202",   "1-860221",   "14-860313",  "11-860509",  "12-860926",  
-    "15-870628",  "68-850501",  "69-850920",  "13-830524",  "18-830910",  "20-831119",  
-    "21-831208",  "22-840924",  "23-840925",  "2-AS000C",   "15-UG3AU5",  "23-820428",  
-    "25-820515",  "26-820803",  "28-821013",  "30-830330",  "75-830929",  "76-840509",  
-    "88-840726",  "119-880429", "7-UG3AU5",   "15-820308",  "17-820427",  "18-820512",  
-    "19-820721",  "22-830331",  "23-830411",  "22-840518",  "48-840904",  "63-860811",  
-    "10-820818",  "12-821025",  "15-830331",  "16-830410",  "15-840518",  "17-840727",  
+    "1-841226",   "47-850313",  "64-850404",  "84-850516",  "105-850605", "131-850628",
+    "132-850702", "143-850711", "77-850814",  "79-851122",  "97-851218",  "99-861014",
+    "86-870212",  "116-870602", "160-880521", "23-840809",  "25-840917",  "18-820311",
+    "19-820427",  "21-820512",  "22-820809",  "26-821108",  "27-831005",  "28-850129",
+    "10-830810",  "15-831107",  "16-831118",  "16-840518",  "24-851118",  "29-860820",
+    "62-840706",  "108-840809", "119-840822", "47-840914",  "56-841221",  "58-851002",
+    "59-851108",  "60-861002",  "235-861118", "37-861215",  "22-830916",  "22-840522",
+    "48-860103",  "57-860121",  "118-860325", "160-860521", "50-860711",  "59-860730",
+    "203-870506", "219-870912", "221-870918", "4-860918",   "9-861022",   "13-880501",
+    "70-870423",  "77-870428",  "117-870512", "19-870722",  "20-870722",  "1-830306",
+    "1-830517",   "1-830614",   "6-830619",   "20-830708",  "26-831014",  "29-840118",
+    "37-851003",  "39-880501",  "26-870730",  "86-840320",  "15-840501",  "15-840522",
+    "15-840612",  "15-840716",  "17-850208",  "16-850515",  "16-850603",  "18-850919",
+    "17-831001",  "67-831208",  "85-840106",  "4-840131",   "6-840508",   "13-851021",
+    "15-851108",  "18-860904",  "63-850916",  "87-860904",  "15-820901",  "17-821021",
+    "18-830114",  "28-861221",  "36-870106",  "63-870218",  "87-870326",  "107-870430",
+    "14-841005",  "14-841005",  "18-850222",  "5-830222",   "7-830419",   "8-830521",
+    "8-840521",   "1-851202",   "1-860221",   "14-860313",  "11-860509",  "12-860926",
+    "15-870628",  "68-850501",  "69-850920",  "13-830524",  "18-830910",  "20-831119",
+    "21-831208",  "22-840924",  "23-840925",  "2-AS000C",   "15-UG3AU5",  "23-820428",
+    "25-820515",  "26-820803",  "28-821013",  "30-830330",  "75-830929",  "76-840509",
+    "88-840726",  "119-880429", "7-UG3AU5",   "15-820308",  "17-820427",  "18-820512",
+    "19-820721",  "22-830331",  "23-830411",  "22-840518",  "48-840904",  "63-860811",
+    "10-820818",  "12-821025",  "15-830331",  "16-830410",  "15-840518",  "17-840727",
     "25-860811",
   };
 
@@ -242,63 +230,11 @@ static void check_infocom(void)
   {
     if(is_story(v1234[i]))
     {
-      is_infocom_v1234 = 1;
+      is_infocom_v1234 = true;
       return;
     }
   }
 }
-
-#ifndef ZTERP_NO_CHEAT
-/* The index into these arrays is the address to freeze.
- * The first array tracks whether the address is frozen, while the
- * second holds the frozen value.
- */
-static char     freezew_cheat[UINT16_MAX + 1];
-static uint16_t freezew_val  [UINT16_MAX + 1];
-
-static void cheat(char *how)
-{
-  char *p;
-
-  p = strtok(how, ":");
-  if(p == NULL) return;
-
-  if(strcmp(p, "freezew") == 0)
-  {
-    uint16_t addr;
-
-    p = strtok(NULL, ":");
-    if(p == NULL) return;
-
-    if(*p == 'G')
-    {
-      addr = strtoul(p + 1, NULL, 16);
-      if(addr > 239) return;
-
-      addr = header.globals + (addr * 2);
-    }
-    else
-    {
-      addr = strtoul(p, NULL, 16);
-    }
-
-    p = strtok(NULL, ":");
-    if(p == NULL) return;
-
-    freezew_cheat[addr] = 1;
-    freezew_val  [addr] = strtoul(p, NULL, 0);
-  }
-}
-
-int cheat_find_freezew(uint32_t addr, uint16_t *val)
-{
-  if(addr > UINT16_MAX || !freezew_cheat[addr]) return 0;
-
-  *val = freezew_val[addr];
-
-  return 1;
-}
-#endif
 
 static void read_config(void)
 {
@@ -307,7 +243,7 @@ static void read_config(void)
   char line[MAX_LINE];
   char *key, *val, *p;
   long n;
-  int story_matches = 1;
+  bool story_matches = true;
 
   zterp_os_rcfile(file, sizeof file);
 
@@ -326,10 +262,10 @@ static void read_config(void)
       {
         *p = 0;
 
-        story_matches = 0;
+        story_matches = false;
         for(p = strtok(line + 1, " ,"); p != NULL; p = strtok(NULL, " ,"))
         {
-          if(is_story(p)) story_matches = 1;
+          if(is_story(p)) story_matches = true;
         }
       }
 
@@ -353,15 +289,15 @@ static void read_config(void)
 
 #define BOOL(name)	else if(strcmp(key, #name) == 0) options.name = (n != 0)
 #define NUMBER(name)	else if(strcmp(key, #name) == 0) options.name = n
-#define STRING(name)	else if(strcmp(key, #name) == 0) do { free(options.name); options.name = xstrdup(val); } while(0)
+#define STRING(name)	else if(strcmp(key, #name) == 0) do { free(options.name); options.name = xstrdup(val); } while(false)
 #define CHAR(name)	else if(strcmp(key, #name) == 0) options.name = val[0]
-#ifdef GARGLK
+#ifdef GLK_MODULE_GARGLKTEXT
 #define COLOR(name, num)else if(strcmp(key, "color_" #name) == 0) update_color(num, strtol(val, NULL, 16))
 #else
-#define COLOR(name, num)else if(0)
+#define COLOR(name, num)else if(false)
 #endif
 
-    if(0);
+    if(false);
 
     NUMBER(eval_stack_size);
     NUMBER(call_stack_size);
@@ -374,14 +310,14 @@ static void read_config(void)
     BOOL  (assume_fixed);
     BOOL  (disable_graphics_font);
     BOOL  (enable_alt_graphics);
+    BOOL  (disable_history_playback);
     BOOL  (disable_term_keys);
-    BOOL  (disable_utf8);
-    BOOL  (force_utf8);
+    STRING(username);
     BOOL  (disable_meta_commands);
     NUMBER(max_saves);
-    BOOL  (disable_undo_compression);
     NUMBER(int_number);
     CHAR  (int_version);
+    BOOL  (disable_patches);
     BOOL  (replay_on);
     STRING(replay_name);
     BOOL  (record_on);
@@ -405,7 +341,7 @@ static void read_config(void)
     COLOR(white,   9);
 
 #ifndef ZTERP_NO_CHEAT
-    else if(strcmp(key, "cheat") == 0) cheat(val);
+    else if(strcmp(key, "cheat") == 0) cheat_add(val, false);
 #endif
 
 #undef BOOL
@@ -418,8 +354,8 @@ static void read_config(void)
   fclose(fp);
 }
 
-static int have_statuswin = 0;
-static int have_upperwin  = 0;
+static bool have_statuswin = false;
+static bool have_upperwin  = false;
 
 /* Various parts of the header (those marked “Rst” in §11) should be
  * updated by the interpreter.  This function does that.  This is also
@@ -430,7 +366,7 @@ void write_header(void)
 {
   uint8_t flags1;
 
-  flags1 = BYTE(0x01);
+  flags1 = byte(0x01);
 
   if(zversion == 3)
   {
@@ -461,7 +397,7 @@ void write_header(void)
 
 #ifdef ZTERP_GLK
     if(glk_gestalt(gestalt_Timer, 0)) flags1 |= FLAGS1_TIMED;
-#ifdef GARGLK
+#ifdef GLK_MODULE_GARGLKTEXT
     if(zversion >= 5) flags1 |= FLAGS1_COLORS;
 #endif
 #else
@@ -475,11 +411,11 @@ void write_header(void)
     if(options.disable_fixed) flags1 &= ~FLAGS1_FIXED;
   }
 
-  STORE_BYTE(0x01, flags1);
+  store_byte(0x01, flags1);
 
   if(zversion >= 5)
   {
-    uint16_t flags2 = WORD(0x10);
+    uint16_t flags2 = word(0x10);
 
     flags2 &= ~FLAGS2_MOUSE;
     if(!sound_loaded()) flags2 &= ~FLAGS2_SOUND;
@@ -489,7 +425,7 @@ void write_header(void)
 
     if(options.max_saves == 0) flags2 &= ~FLAGS2_UNDO;
 
-    STORE_WORD(0x10, flags2);
+    store_word(0x10, flags2);
   }
 
   if(zversion >= 4)
@@ -498,59 +434,82 @@ void write_header(void)
 
     /* Interpreter number & version. */
     if(options.int_number < 1 || options.int_number > 11) options.int_number = 1; /* DEC */
-    STORE_BYTE(0x1e, options.int_number);
-    STORE_BYTE(0x1f, options.int_version);
+    store_byte(0x1e, options.int_number);
+    store_byte(0x1f, options.int_version);
 
     get_screen_size(&width, &height);
 
     /* Screen height and width.
      * A height of 255 means infinite, so cap at 254.
      */
-    STORE_BYTE(0x20, height > 254 ? 254 : height);
-    STORE_BYTE(0x21, width > 255 ? 255 : width);
+    store_byte(0x20, height > 254 ? 254 : height);
+    store_byte(0x21, width > 255 ? 255 : width);
 
     if(zversion >= 5)
     {
       /* Screen width and height in units. */
-      STORE_WORD(0x22, width > UINT16_MAX ? UINT16_MAX : width);
-      STORE_WORD(0x24, height > UINT16_MAX ? UINT16_MAX : height);
+      store_word(0x22, width > UINT16_MAX ? UINT16_MAX : width);
+      store_word(0x24, height > UINT16_MAX ? UINT16_MAX : height);
 
       /* Font width and height in units. */
-      STORE_BYTE(0x26, 1);
-      STORE_BYTE(0x27, 1);
+      store_byte(0x26, 1);
+      store_byte(0x27, 1);
 
       /* Default background and foreground colors. */
-      STORE_BYTE(0x2c, 1);
-      STORE_BYTE(0x2d, 1);
+      store_byte(0x2c, 1);
+      store_byte(0x2d, 1);
     }
   }
 
   /* Standard revision # */
-  STORE_BYTE(0x32, 1);
-  STORE_BYTE(0x33, 1);
+  store_byte(0x32, 1);
+  store_byte(0x33, 1);
+
+  if(options.username != NULL)
+  {
+    for(size_t i = 0; i < 8 && options.username[i] != 0; i++)
+    {
+      store_byte(0x38 + i, options.username[i]);
+    }
+  }
 }
 
 static void process_story(void)
 {
-  if(zterp_io_seek(story.io, story.offset, SEEK_SET) == -1) die("unable to rewind story");
+  if(!zterp_io_seek(story.io, story.offset, SEEK_SET)) die("unable to rewind story");
 
-  if(zterp_io_read(story.io, memory, memory_size) != memory_size) die("unable to read from story file");
+  if(!zterp_io_read_exact(story.io, memory, memory_size)) die("unable to read from story file");
 
-  zversion =		BYTE(0x00);
+  zversion =		byte(0x00);
   if(zversion < 1 || zversion > 8) die("only z-code versions 1-8 are supported");
 
   zwhich = zversion;
   if(zversion == 7 || zversion == 8) zversion = 5;
 
-  pc =			WORD(0x06);
+  switch(zwhich)
+  {
+    case 1: case 2: case 3:
+      unpack_multiplier = 2;
+      break;
+    case 4: case 5: case 6: case 7:
+      unpack_multiplier = 4;
+      break;
+    case 8:
+      unpack_multiplier = 8;
+      break;
+    default:
+      die("unhandled z-machine version: %d", zwhich);
+  }
+
+  pc =			word(0x06);
   if(pc >= memory_size) die("corrupted story: initial pc out of range");
 
-  header.release =	WORD(0x02);
-  header.dictionary =	WORD(0x08);
-  header.objects =	WORD(0x0a);
-  header.globals =	WORD(0x0c);
-  header.static_start =	WORD(0x0e);
-  header.abbr =		WORD(0x18);
+  header.release =	word(0x02);
+  header.dictionary =	word(0x08);
+  header.objects =	word(0x0a);
+  header.globals =	word(0x0c);
+  header.static_start =	word(0x0e);
+  header.abbr =		word(0x18);
 
   memcpy(header.serial, &memory[0x12], sizeof header.serial);
 
@@ -582,15 +541,15 @@ static void process_story(void)
 
   if(header.abbr >= memory_size)                    die("corrupted story: abbreviation table out of range");
 
-  header.file_length = WORD(0x1a) * (zwhich <= 3 ? 2UL : zwhich <= 5 ? 4UL : 8UL);
+  header.file_length = word(0x1a) * (zwhich <= 3 ? 2UL : zwhich <= 5 ? 4UL : 8UL);
   if(header.file_length > memory_size)              die("story's reported size (%lu) greater than file size (%lu)", (unsigned long)header.file_length, (unsigned long)memory_size);
 
-  header.checksum = WORD(0x1c);
+  header.checksum = word(0x1c);
 
   if(zwhich == 6 || zwhich == 7)
   {
-    header.R_O = WORD(0x28) * 8UL;
-    header.S_O = WORD(0x2a) * 8UL;
+    header.R_O = word(0x28) * 8UL;
+    header.S_O = word(0x2a) * 8UL;
   }
 
   if(dynamic_memory == NULL)
@@ -603,11 +562,11 @@ static void process_story(void)
 #ifdef GLK_MODULE_LINE_TERMINATORS
   if(!options.disable_term_keys)
   {
-    if(zversion >= 5 && WORD(0x2e) != 0)
+    if(zversion >= 5 && word(0x2e) != 0)
     {
       term_keys_reset();
 
-      for(uint32_t i = WORD(0x2e); i < memory_size && memory[i] != 0; i++)
+      for(uint32_t i = word(0x2e); i < memory_size && memory[i] != 0; i++)
       {
         term_keys_add(memory[i]);
       }
@@ -619,11 +578,11 @@ static void process_story(void)
   {
     memcpy(&atable[26 * 2], " 0123456789.,!?_#'\"/\\<-:()", 26);
   }
-  else if(zversion >= 5 && WORD(0x34) != 0)
+  else if(zversion >= 5 && word(0x34) != 0)
   {
-    if(WORD(0x34) + 26 * 3 >= memory_size) die("corrupted story: alphabet table out of range");
+    if(word(0x34) + 26 * 3 > memory_size) die("corrupted story: alphabet table out of range");
 
-    memcpy(atable, &memory[WORD(0x34)], 26 * 3);
+    memcpy(atable, &memory[word(0x34)], 26 * 3);
 
     /* Even with a new alphabet table, characters 6 and 7 from A2 must
      * remain the same (§3.5.5.1).
@@ -635,28 +594,28 @@ static void process_story(void)
   /* Check for a header extension table. */
   if(zversion >= 5)
   {
-    uint16_t etable = WORD(0x36);
+    uint16_t etable = word(0x36);
 
     if(etable != 0)
     {
       uint16_t nentries = user_word(etable);
 
-      if(etable + (2 * nentries) >= memory_size) die("corrupted story: header extension table out of range");
+      if(etable + (2 * nentries) > memory_size) die("corrupted story: header extension table out of range");
 
       /* Unicode table. */
-      if(nentries >= 3 && WORD(etable + (2 * 3)) != 0)
+      if(nentries >= 3 && word(etable + (2 * 3)) != 0)
       {
-        uint16_t utable = WORD(etable + (2 * 3));
+        uint16_t utable = word(etable + (2 * 3));
 
         parse_unicode_table(utable);
       }
 
       /* Flags3. */
-      if(nentries >= 4) STORE_WORD(etable + (2 * 4), 0);
+      if(nentries >= 4) store_word(etable + (2 * 4), 0);
       /* True default foreground color. */
-      if(nentries >= 5) STORE_WORD(etable + (2 * 5), 0x0000);
+      if(nentries >= 5) store_word(etable + (2 * 5), 0x0000);
       /* True default background color. */
-      if(nentries >= 6) STORE_WORD(etable + (2 * 6), 0x7fff);
+      if(nentries >= 6) store_word(etable + (2 * 6), 0x7fff);
     }
   }
 
@@ -670,40 +629,23 @@ static void process_story(void)
   /* Prevent the configuration file from unexpectedly being reread after
    * @restart or @restore.
    */
-  options.disable_config = 1;
+  options.disable_config = true;
 
   /* Most options directly set their respective variables, but a few
    * require intervention.  Delay that intervention until here so that
    * the configuration file is taken into account.
    */
-  if(options.disable_utf8)
-  {
-#ifndef ZTERP_GLK
-    /* If Glk is not being used, the ZSCII to Unicode table needs to be
-     * aligned with the IO character set.
-     */
-    have_unicode = 0;
-#endif
-    use_utf8_io = 0;
-  }
-  if(options.force_utf8)
-  {
-#ifndef ZTERP_GLK
-    /* See above. */
-    have_unicode = 1;
-#endif
-    use_utf8_io = 1;
-  }
   if(options.escape_string == NULL) options.escape_string = xstrdup("1m");
 
-  /* If the offset is not zero, then this must be a Blorb file. */
-  if(!options.disable_sound) init_sound(story.offset > 0);
+  if(!options.disable_sound) init_sound();
 
   /* Now that we have a Unicode table and the user’s Unicode
    * preferences, build the ZSCII to Unicode and Unicode to ZSCII
    * tables.
    */
   setup_tables();
+
+  if(!options.disable_patches) apply_patches();
 
   if(zversion <= 3) have_statuswin = create_statuswin();
   if(zversion >= 3) have_upperwin  = create_upperwin();
@@ -726,33 +668,34 @@ static void process_story(void)
    */
   if(options.int_number == 6 && is_beyond_zork())
   {
-    STORE_WORD(0x10, WORD(0x10) | FLAGS2_PICTURES);
+    store_word(0x10, word(0x10) | FLAGS2_PICTURES);
   }
 
   if(options.transcript_on)
   {
-    STORE_WORD(0x10, WORD(0x10) | FLAGS2_TRANSCRIPT);
-    options.transcript_on = 0;
+    store_word(0x10, word(0x10) | FLAGS2_TRANSCRIPT);
+    options.transcript_on = false;
   }
 
   if(options.record_on)
   {
     output_stream(OSTREAM_RECORD, 0);
-    options.record_on = 0;
+    options.record_on = false;
   }
 
   if(options.replay_on)
   {
     input_stream(ISTREAM_FILE);
-    options.replay_on = 0;
+    options.replay_on = false;
   }
 
   check_infocom();
 
   if(zversion == 6)
   {
+    if(pc == 0) die("corrupted story: packed address 0 is invalid for initial pc");
     zargs[0] = pc;
-    call(0);
+    start_v6();
   }
 }
 
@@ -763,13 +706,13 @@ void znop(void)
 void zrestart(void)
 {
   /* §6.1.3: Flags2 is preserved on a restart. */
-  uint16_t flags2 = WORD(0x10);
+  uint16_t flags2 = word(0x10);
 
   process_story();
 
-  STORE_WORD(0x10, flags2);
+  store_word(0x10, flags2);
 
-  interrupt_reset();
+  interrupt_reset(false);
 }
 
 void zquit(void)
@@ -782,9 +725,9 @@ void zverify(void)
   uint16_t checksum = 0;
   uint32_t remaining = header.file_length - 0x40;
 
-  if(zterp_io_seek(story.io, story.offset + 0x40, SEEK_SET) == -1)
+  if(!zterp_io_seek(story.io, story.offset + 0x40, SEEK_SET))
   {
-    branch_if(0);
+    branch_if(false);
     return;
   }
 
@@ -793,9 +736,9 @@ void zverify(void)
     uint8_t buf[8192];
     uint32_t to_read = remaining < sizeof buf ? remaining : sizeof buf;
 
-    if(zterp_io_read(story.io, buf, to_read) != to_read)
+    if(!zterp_io_read_exact(story.io, buf, to_read))
     {
-      branch_if(0);
+      branch_if(false);
       return;
     }
 
@@ -819,7 +762,7 @@ void zsave5(void)
   }
 
   /* This should be able to suggest a filename, but Glk doesn’t support that. */
-  savefile = zterp_io_open(NULL, ZTERP_IO_WRONLY | ZTERP_IO_SAVE);
+  savefile = zterp_io_open(NULL, ZTERP_IO_WRONLY, ZTERP_IO_SAVE);
   if(savefile == NULL)
   {
     store(0);
@@ -846,7 +789,7 @@ void zrestore5(void)
     return;
   }
 
-  savefile = zterp_io_open(NULL, ZTERP_IO_RDONLY | ZTERP_IO_SAVE);
+  savefile = zterp_io_open(NULL, ZTERP_IO_RDONLY, ZTERP_IO_SAVE);
   if(savefile == NULL)
   {
     store(0);
@@ -856,6 +799,7 @@ void zrestore5(void)
   buf = malloc(zargs[1]);
   if(buf == NULL)
   {
+    zterp_io_close(savefile);
     store(0);
     return;
   }
@@ -872,11 +816,10 @@ void zrestore5(void)
 
 void zpiracy(void)
 {
-  branch_if(1);
+  branch_if(true);
 }
 
 #ifdef ZTERP_GLK
-zexternally_visible
 void glk_main(void)
 #else
 int main(int argc, char **argv)
@@ -884,16 +827,17 @@ int main(int argc, char **argv)
 {
   zterp_blorb *blorb;
 
+  /* It’s too early to properly set up all tables (neither the alphabet
+   * nor Unicode table has been read from the story file), but it’s
+   * possible for messages to be displayed to the user before a story is
+   * even loaded, so at least the basic tables need to be created so
+   * that non-Unicode platforms have proper translations available.
+   */
+  setup_tables();
+
 #ifdef ZTERP_GLK
   if(!create_mainwin()) return;
-#ifdef GLK_MODULE_UNICODE
-  have_unicode = glk_gestalt(gestalt_Unicode, 0);
 #endif
-#else
-  have_unicode = zterp_os_have_unicode();
-#endif
-
-  use_utf8_io = zterp_os_have_unicode();
 
 #ifndef ZTERP_GLK
   process_arguments(argc, argv);
@@ -901,13 +845,6 @@ int main(int argc, char **argv)
 
   if(arg_status != ARG_OK)
   {
-    /* It’s too early to properly set up all tables (neither the
-     * alphabet nor Unicode table has been read from the story file),
-     * but since help() prints to the screen, it needs to at least have
-     * the basic tables created so that non-Unicode platforms have
-     * proper translations available.
-     */
-    setup_tables();
     help();
 #ifdef ZTERP_GLK
     glk_exit();
@@ -923,7 +860,7 @@ int main(int argc, char **argv)
 
   if(options.show_version)
   {
-    char config[MAX_PATH] = "Configuration file: ";
+    char config[MAX_PATH];
 
     screen_puts("Bocfel " ZTERP_VERSION);
 #ifdef ZTERP_NO_SAFETY_CHECKS
@@ -942,8 +879,8 @@ int main(int argc, char **argv)
     screen_puts("The Tandy bit cannot be set");
 #endif
 
-    zterp_os_rcfile(config + strlen(config), sizeof config - strlen(config));
-    screen_puts(config);
+    zterp_os_rcfile(config, sizeof config);
+    screen_printf("Configuration file: %s\n", config);
 
 #ifdef ZTERP_GLK
     glk_exit();
@@ -952,27 +889,13 @@ int main(int argc, char **argv)
 #endif
   }
 
-#ifdef GARGLK
-  if(game_file == NULL)
-  {
-    frefid_t ref;
-
-    ref = glk_fileref_create_by_prompt(fileusage_Data | fileusage_BinaryMode, filemode_Read, 0);
-    if(ref != NULL)
-    {
-      game_file = xstrdup(garglk_fileref_get_name(ref));
-      glk_fileref_destroy(ref);
-    }
-  }
-#endif
-
   if(game_file == NULL)
   {
     help();
     die("no story provided");
   }
 
-  story.io = zterp_io_open(game_file, ZTERP_IO_RDONLY);
+  story.io = zterp_io_open(game_file, ZTERP_IO_RDONLY, ZTERP_IO_DATA);
   if(story.io == NULL) die("cannot open file %s", game_file);
 
   blorb = zterp_blorb_parse(story.io);
@@ -1042,7 +965,7 @@ int main(int argc, char **argv)
     /* If header transcript/fixed bits have been set, either by the
      * story or by the user, this will activate them.
      */
-    user_store_word(0x10, WORD(0x10));
+    user_store_word(0x10, word(0x10));
 
     setup_opcodes();
     process_instructions();

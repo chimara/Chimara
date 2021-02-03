@@ -1,5 +1,5 @@
 /*-
- * Copyright 2010-2012 Chris Spiegel.
+ * Copyright 2010-2015 Chris Spiegel.
  *
  * This file is part of Bocfel.
  *
@@ -17,7 +17,9 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "memory.h"
 #include "branch.h"
@@ -29,15 +31,41 @@
 uint8_t *memory, *dynamic_memory;
 uint32_t memory_size;
 
+bool in_globals(uint16_t addr)
+{
+  return addr >= header.globals && addr < header.globals + 480;
+}
+
+bool is_global(uint16_t addr)
+{
+  return in_globals(addr) && (addr - header.globals) % 2 == 0;
+}
+
+static unsigned long addr_to_global(uint16_t addr)
+{
+  return (addr - header.globals) / 2;
+}
+
+const char *addrstring(uint16_t addr)
+{
+  static char str[8];
+
+  if(is_global(addr)) snprintf(str, sizeof str, "G%02lx", addr_to_global(addr));
+  else                snprintf(str, sizeof str, "0x%lx", (unsigned long)addr);
+
+  return str;
+}
+
 void user_store_byte(uint16_t addr, uint8_t v)
 {
   /* If safety checks are off, there’s no point in checking these
-   * special cases. */
+   * special cases.
+   */
 #ifndef ZTERP_NO_SAFETY_CHECKS
 #ifdef ZTERP_TANDY
   if(addr == 0x01)
   {
-    ZASSERT(v == BYTE(addr) || (BYTE(addr) ^ v) == 8, "not allowed to modify any bits but 3 at 0x0001");
+    ZASSERT(v == byte(addr) || (byte(addr) ^ v) == 8, "not allowed to modify any bits but 3 at 0x0001");
   }
   else
 #endif
@@ -47,7 +75,7 @@ void user_store_byte(uint16_t addr, uint8_t v)
    * flags at 0x10 are stored in a word, so the story possibly could use
    * @storew at 0x10 to modify the bits in 0x11.
    */
-  if(addr == 0x10 && BYTE(addr) == v)
+  if(addr == 0x10 && byte(addr) == v)
   {
     return;
   }
@@ -56,12 +84,17 @@ void user_store_byte(uint16_t addr, uint8_t v)
 
   if(addr == 0x11)
   {
-    ZASSERT((BYTE(addr) ^ v) < 8, "not allowed to modify bits 3-7 at 0x0011");
+    uint8_t existing = byte(addr);
+
+    ZASSERT((existing ^ v) < 8, "not allowed to modify bits 3-7 at 0x0011");
 
     if(!output_stream((v & FLAGS2_TRANSCRIPT) ? OSTREAM_SCRIPT : -OSTREAM_SCRIPT, 0)) v &= ~FLAGS2_TRANSCRIPT;
 
-    header_fixed_font = v & FLAGS2_FIXED;
-    set_current_style();
+    /* If the fixed flag is being flipped... */
+    if((existing ^ v) & FLAGS2_FIXED)
+    {
+      screen_set_header_bit(v & FLAGS2_FIXED);
+    }
   }
 
   else
@@ -69,11 +102,15 @@ void user_store_byte(uint16_t addr, uint8_t v)
     ZASSERT(addr >= 0x40 && addr < header.static_start, "attempt to write to read-only address 0x%lx", (unsigned long)addr);
   }
 
-  STORE_BYTE(addr, v);
+  store_byte(addr, v);
 }
 
 void user_store_word(uint16_t addr, uint16_t v)
 {
+#ifndef ZTERP_NO_WATCHPOINTS
+  watch_check(addr, user_word(addr), v);
+#endif
+
   user_store_byte(addr + 0, v >> 8);
   user_store_byte(addr + 1, v & 0xff);
 }
@@ -111,7 +148,7 @@ void zscan_table(void)
       )
     {
       store(addr);
-      branch_if(1);
+      branch_if(true);
       return;
     }
 
@@ -119,7 +156,7 @@ void zscan_table(void)
   }
 
   store(0);
-  branch_if(0);
+  branch_if(false);
 }
 
 void zloadw(void)
