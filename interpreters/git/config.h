@@ -83,6 +83,7 @@ typedef unsigned long git_uint32;
 
 typedef float git_float;
 
+
 #if defined(__GNUC__)
 // GCC and compatible compilers such as clang
 #  define maybe_unused  __attribute__((__unused__))

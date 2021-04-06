@@ -1,48 +1,53 @@
+// vim: set ft=c:
+
 #ifndef ZTERP_ZTERP_H
 #define ZTERP_ZTERP_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 struct options
 {
   long eval_stack_size;
   long call_stack_size;
-  int disable_color;
-  int disable_config;
-  int disable_timed;
-  int disable_sound;
-  int enable_escape;
+  bool disable_color;
+  bool disable_config;
+  bool disable_timed;
+  bool disable_sound;
+  bool enable_escape;
   char *escape_string;
-  int disable_fixed;
-  int assume_fixed;
-  int disable_graphics_font;
-  int enable_alt_graphics;
-  int show_id;
-  int disable_term_keys;
-  int disable_utf8;
-  int force_utf8;
-  int disable_meta_commands;
+  bool disable_fixed;
+  bool assume_fixed;
+  bool disable_graphics_font;
+  bool enable_alt_graphics;
+  bool disable_history_playback;
+  bool show_id;
+  bool disable_term_keys;
+  char *username;
+  bool disable_meta_commands;
   long int_number;
-  int int_version;
-  int replay_on;
+  bool disable_patches;
+  unsigned char int_version;
+  bool replay_on;
   char *replay_name;
-  int record_on;
+  bool record_on;
   char *record_name;
-  int transcript_on;
+  bool transcript_on;
   char *transcript_name;
   long max_saves;
-  int disable_undo_compression;
-  int show_version;
-  int disable_abbreviations;
-  int enable_censorship;
-  int overwrite_transcript;
-  int override_undo;
+  bool show_version;
+  bool disable_abbreviations;
+  bool enable_censorship;
+  bool overwrite_transcript;
+  bool override_undo;
   long random_seed;
   char *random_device;
 };
 
 extern const char *game_file;
 extern struct options options;
+
+#define ZTERP_VERSION	"1.2.1"
 
 /* v3 */
 #define FLAGS1_STATUSTYPE	(1U << 1)
@@ -71,8 +76,8 @@ extern struct options options;
 #define FLAGS2_SOUND		(1U << 7)
 #define FLAGS2_MENUS		(1U << 8)
 
-#define status_is_time()	(zversion == 3 && (BYTE(0x01) & FLAGS1_STATUSTYPE))
-#define timer_available()	(zversion >= 4 && (BYTE(0x01) & FLAGS1_TIMED))
+#define status_is_time()	(zversion == 3 && (byte(0x01) & FLAGS1_STATUSTYPE))
+#define timer_available()	(zversion >= 4 && (byte(0x01) & FLAGS1_TIMED))
 
 struct header
 {
@@ -90,24 +95,19 @@ struct header
   uint32_t S_O;
 };
 
-extern uint32_t pc;
 extern int zversion;
 extern struct header header;
 extern uint8_t atable[];
-extern int is_infocom_v1234;
+extern bool is_infocom_v1234;
 
-int is_beyond_zork(void);
-int is_journey(void);
-int is_sherlock(void);
+bool is_beyond_zork(void);
+bool is_journey(void);
 
 void write_header(void);
 
-uint32_t unpack(uint16_t, int);
+uint32_t unpack_routine(uint16_t);
+uint32_t unpack_string(uint16_t);
 void store(uint16_t);
-
-#ifndef ZTERP_NO_CHEAT
-int cheat_find_freezew(uint32_t, uint16_t *);
-#endif
 
 void znop(void);
 void zrestart(void);

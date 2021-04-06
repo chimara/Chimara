@@ -1,23 +1,42 @@
+// vim: set ft=c:
+
 #ifndef ZTERP_SCREEN_H
 #define ZTERP_SCREEN_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifdef ZTERP_GLK
 #include <glk.h>
 #endif
 
-/* Boolean flag describing whether the header bit meaning “fixed font” is set. */
-extern int header_fixed_font;
+#include "io.h"
+#include "util.h"
+
+/* Represents a Z-machine color.
+ *
+ * If mode is ColorModeANSI, value is a color in the range [1, 12],
+ * representing the colors as described in §8.3.1.
+ *
+ * If mode is ColorModeTrue, value is a 15-bit color as described in
+ * §8.3.7 and §15.
+ */
+struct color
+{
+  enum ColorMode { ColorModeANSI, ColorModeTrue } mode;
+  uint16_t value;
+};
 
 void init_screen(void);
 
-int create_mainwin(void);
-int create_statuswin(void);
-int create_upperwin(void);
+bool create_mainwin(void);
+bool create_statuswin(void);
+bool create_upperwin(void);
 void get_screen_size(unsigned int *, unsigned int *);
 void close_upper_window(void);
 void cancel_all_events(void);
+
+uint32_t screen_convert_color(uint16_t);
 
 /* Text styles. */
 #define STYLE_NONE	(0U     )
@@ -26,16 +45,20 @@ void cancel_all_events(void);
 #define STYLE_ITALIC	(1U << 2)
 #define STYLE_FIXED	(1U << 3)
 
+zprintflike(1, 2)
 void show_message(const char *, ...);
 void screen_print(const char *);
+zprintflike(1, 2)
+void screen_printf(const char *, ...);
 void screen_puts(const char *);
+void screen_message_prompt(const char *);
 
 #ifdef GLK_MODULE_LINE_TERMINATORS
 void term_keys_reset(void);
 void term_keys_add(uint8_t);
 #endif
 
-#ifdef GARGLK
+#ifdef GLK_MODULE_GARGLKTEXT
 void update_color(int, unsigned long);
 #endif
 
@@ -49,14 +72,19 @@ void update_color(int, unsigned long);
 #define ISTREAM_KEYBOARD	0
 #define ISTREAM_FILE		1
 
-int output_stream(int16_t, uint16_t);
-int input_stream(int);
+void screen_set_header_bit(bool);
 
-void set_current_style(void);
+bool output_stream(int16_t, uint16_t);
+bool input_stream(int);
 
 int print_handler(uint32_t, void (*)(uint8_t));
-void put_char_u(uint16_t);
 void put_char(uint8_t);
+
+void screen_format_time(char (*)[64], long, long);
+bool screen_read_scrn(zterp_io *, uint32_t, char *, size_t);
+char (*screen_write_scrn(zterp_io *))[5];
+void screen_read_bfhs(zterp_io *);
+char (*screen_write_bfhs(zterp_io *))[5];
 
 void zoutput_stream(void);
 void zinput_stream(void);

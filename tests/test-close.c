@@ -24,7 +24,7 @@ void
 on_go(GtkButton *button, ChimaraIF *glk)
 {
 	on_stop(button, glk);
-	g_assert(chimara_if_run_game(CHIMARA_IF(glk), "unicodetest.ulx", NULL));
+	g_assert(chimara_if_run_game(CHIMARA_IF(glk), PACKAGE_SRC_DIR "/unicodetest.ulx", NULL));
 }
 
 int
@@ -64,7 +64,7 @@ main(int argc, char *argv[])
     g_object_ref(glk);
     
     /* Start the plugin */
-    g_assert(chimara_if_run_game(CHIMARA_IF(glk), "unicodetest.ulx", NULL));
+    g_assert(chimara_if_run_game(CHIMARA_IF(glk), PACKAGE_SRC_DIR "/unicodetest.ulx", NULL));
 
     gtk_main();
 

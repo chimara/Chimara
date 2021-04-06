@@ -35,7 +35,7 @@ cancel_old_input_request(winid_t win)
 }
 
 /* Internal function: code common to both flavors of char event request */
-void
+static void
 request_char_event_common(winid_t win, gboolean unicode)
 {
 	VALID_WINDOW(win, return);

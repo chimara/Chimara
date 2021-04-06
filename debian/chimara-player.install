@@ -1,5 +1,2 @@
-debian/tmp/usr/bin/chimara
-debian/tmp/usr/share/chimara/chimara.ui
-debian/tmp/usr/share/chimara/chimara.menus
-debian/tmp/usr/share/chimara/style.css
-debian/tmp/usr/share/glib-2.0/schemas/org.chimara-if.gschema.xml
+usr/bin/chimara
+usr/share/glib-2.0/schemas/org.chimara-if.gschema.xml

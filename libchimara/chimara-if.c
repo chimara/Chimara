@@ -203,10 +203,10 @@ chimara_if_init(ChimaraIF *self)
 	chimara_init(); /* This is a library entry point */
 
 	ChimaraIFPrivate *priv = chimara_if_get_instance_private(self);
-	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z5] = CHIMARA_IF_INTERPRETER_FROTZ;
-	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z6] = CHIMARA_IF_INTERPRETER_NITFOL;
-	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z8] = CHIMARA_IF_INTERPRETER_FROTZ;
-	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z_BLORB] = CHIMARA_IF_INTERPRETER_FROTZ;
+	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z5] = CHIMARA_IF_INTERPRETER_BOCFEL;
+	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z6] = CHIMARA_IF_INTERPRETER_BOCFEL;
+	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z8] = CHIMARA_IF_INTERPRETER_BOCFEL;
+	priv->preferred_interpreter[CHIMARA_IF_FORMAT_Z_BLORB] = CHIMARA_IF_INTERPRETER_BOCFEL;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_GLULX] = CHIMARA_IF_INTERPRETER_GLULXE;
 	priv->preferred_interpreter[CHIMARA_IF_FORMAT_GLULX_BLORB] = CHIMARA_IF_INTERPRETER_GLULXE;
 	priv->format = CHIMARA_IF_FORMAT_NONE;
@@ -626,11 +626,8 @@ chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 
 	gchar *pluginpath;
 #ifdef DEBUG
-#ifndef LT_OBJDIR
-#define LT_OBJDIR ".libs" /* Pre-2.2 libtool, so take a wild guess */
-#endif /* LT_OBJDIR */
 	/* If there is a plugin in the source tree, use that */
-	pluginpath = g_build_filename(PLUGINSOURCEDIR, plugin_names[interpreter], LT_OBJDIR, pluginfile, NULL);
+	pluginpath = g_build_filename(PLUGINSOURCEDIR, plugin_names[interpreter], pluginfile, NULL);
 	if( !g_file_test(pluginpath, G_FILE_TEST_EXISTS) )
 	{
 		g_free(pluginpath);

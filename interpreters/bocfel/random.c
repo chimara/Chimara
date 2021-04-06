@@ -1,5 +1,5 @@
 /*-
- * Copyright 2010-2012 Chris Spiegel.
+ * Copyright 2010-2013 Chris Spiegel.
  *
  * This file is part of Bocfel.
  *
@@ -16,7 +16,6 @@
  * along with Bocfel.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <limits.h>

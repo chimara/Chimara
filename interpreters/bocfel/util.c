@@ -1,5 +1,5 @@
 /*-
- * Copyright 2010-2012 Chris Spiegel.
+ * Copyright 2010-2016 Chris Spiegel.
  *
  * This file is part of Bocfel.
  *
@@ -20,8 +20,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include "util.h"
+#include "process.h"
 #include "screen.h"
 #include "unicode.h"
 #include "zterp.h"
@@ -31,8 +33,6 @@
 #endif
 
 #ifndef ZTERP_NO_SAFETY_CHECKS
-unsigned long zassert_pc;
-
 void assert_fail(const char *fmt, ...)
 {
   va_list ap;
@@ -42,7 +42,7 @@ void assert_fail(const char *fmt, ...)
   vsnprintf(str, sizeof str, fmt, ap);
   va_end(ap);
 
-  snprintf(str + strlen(str), sizeof str - strlen(str), " (pc = 0x%lx)", zassert_pc);
+  snprintf(str + strlen(str), sizeof str - strlen(str), " (pc = 0x%lx)", current_instruction);
 
   die("%s", str);
 }
@@ -57,7 +57,7 @@ void warning(const char *fmt, ...)
   vsnprintf(str, sizeof str, fmt, ap);
   va_end(ap);
 
-  show_message("WARNING: %s", str);
+  show_message("Warning: %s", str);
 }
 
 void die(const char *fmt, ...)
@@ -69,11 +69,11 @@ void die(const char *fmt, ...)
   vsnprintf(str, sizeof str, fmt, ap);
   va_end(ap);
 
-  show_message("fatal error: %s", str);
+  show_message("Fatal error: %s", str);
 
 #ifdef ZTERP_GLK
 #ifdef GARGLK
-  fprintf(stderr, "%s\n", str);
+  fprintf(stderr, "Fatal error: %s\n", str);
 #endif
   glk_exit();
 #endif
@@ -93,6 +93,10 @@ void help(void)
   flags[] = {
 #include "help.h"
   };
+
+#ifdef ZTERP_GLK
+  glk_set_style(style_Preformatted);
+#endif
 
   screen_puts("Usage: bocfel [args] filename");
   for(size_t i = 0; i < sizeof flags / sizeof *flags; i++)
@@ -166,7 +170,9 @@ char *xstrdup(const char *s)
   n = strlen(s) + 1;
 
   r = malloc(n);
-  if(r != NULL) memcpy(r, s, n);
+  if(r == NULL) die("unable to allocate memory");
+
+  memcpy(r, s, n);
 
   return r;
 }
@@ -176,7 +182,7 @@ void process_arguments(int argc, char **argv)
 {
   int c;
 
-  while( (c = zgetopt(argc, argv, "a:A:cCdDeE:fFgGhiklLmn:N:rR:sS:tT:u:UvxXyYz:Z:")) != -1 )
+  while( (c = zgetopt(argc, argv, "a:A:cCdDeE:fFgGhHikl:mn:N:prR:sS:tT:u:vxXyYz:Z:")) != -1 )
   {
     switch(c)
     {
@@ -187,52 +193,52 @@ void process_arguments(int argc, char **argv)
         options.call_stack_size = strtol(zoptarg, NULL, 10);
         break;
       case 'c':
-        options.disable_color = 1;
+        options.disable_color = true;
         break;
       case 'C':
-        options.disable_config = 1;
+        options.disable_config = true;
         break;
       case 'd':
-        options.disable_timed = 1;
+        options.disable_timed = true;
         break;
       case 'D':
-        options.disable_sound = 1;
+        options.disable_sound = true;
         break;
       case 'e':
-        options.enable_escape = 1;
+        options.enable_escape = true;
         break;
       case 'E':
         options.escape_string = xstrdup(zoptarg);
         break;
       case 'f':
-        options.disable_fixed = 1;
+        options.disable_fixed = true;
         break;
       case 'F':
-        options.assume_fixed = 1;
+        options.assume_fixed = true;
         break;
       case 'g':
-        options.disable_graphics_font = 1;
+        options.disable_graphics_font = true;
         break;
       case 'G':
-        options.enable_alt_graphics = 1;
+        options.enable_alt_graphics = true;
         break;
       case 'h':
         arg_status = ARG_HELP;
         return;
+      case 'H':
+        options.disable_history_playback = true;
+        break;
       case 'i':
-        options.show_id = 1;
+        options.show_id = true;
         break;
       case 'k':
-        options.disable_term_keys = 1;
+        options.disable_term_keys = true;
         break;
       case 'l':
-        options.disable_utf8 = 1;
-        break;
-      case 'L':
-        options.force_utf8 = 1;
+        options.username = xstrdup(zoptarg);
         break;
       case 'm':
-        options.disable_meta_commands = 1;
+        options.disable_meta_commands = true;
         break;
       case 'n':
         options.int_number = strtol(zoptarg, NULL, 10);
@@ -240,20 +246,23 @@ void process_arguments(int argc, char **argv)
       case 'N':
         options.int_version = zoptarg[0];
         break;
+      case 'p':
+        options.disable_patches = true;
+        break;
       case 'r':
-        options.replay_on = 1;
+        options.replay_on = true;
         break;
       case 'R':
         options.replay_name = xstrdup(zoptarg);
         break;
       case 's':
-        options.record_on = 1;
+        options.record_on = true;
         break;
       case 'S':
         options.record_name = xstrdup(zoptarg);
         break;
       case 't':
-        options.transcript_on = 1;
+        options.transcript_on = true;
         break;
       case 'T':
         options.transcript_name = xstrdup(zoptarg);
@@ -261,23 +270,20 @@ void process_arguments(int argc, char **argv)
       case 'u':
         options.max_saves = strtol(zoptarg, NULL, 10);
         break;
-      case 'U':
-        options.disable_undo_compression = 1;
-        break;
       case 'v':
-        options.show_version = 1;
+        options.show_version = true;
         break;
       case 'x':
-        options.disable_abbreviations = 1;
+        options.disable_abbreviations = true;
         break;
       case 'X':
-        options.enable_censorship = 1;
+        options.enable_censorship = true;
         break;
       case 'y':
-        options.overwrite_transcript = 1;
+        options.overwrite_transcript = true;
         break;
       case 'Y':
-        options.override_undo = 1;
+        options.override_undo = true;
         break;
       case 'z':
         options.random_seed = strtol(zoptarg, NULL, 10);

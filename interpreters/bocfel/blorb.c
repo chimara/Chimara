@@ -1,5 +1,5 @@
 /*-
- * Copyright 2010-2012 Chris Spiegel.
+ * Copyright 2010-2014 Chris Spiegel.
  *
  * This file is part of Bocfel.
  *
@@ -69,11 +69,11 @@ struct zterp_blorb *zterp_blorb_parse(zterp_io *io)
     saved = zterp_io_tell(io);
     if(saved == -1) goto err;
 
-    if(zterp_io_seek(io, start, SEEK_SET) == -1) goto err;
+    if(!zterp_io_seek(io, start, SEEK_SET)) goto err;
 
     if(!zterp_io_read32(io, &type) || !zterp_io_read32(io, &size)) goto err;
 
-    if(zterp_io_seek(io, saved, SEEK_SET) == -1) goto err;
+    if(!zterp_io_seek(io, saved, SEEK_SET)) goto err;
 
     if(type == STRID("FORM"))
     {
@@ -82,7 +82,7 @@ struct zterp_blorb *zterp_blorb_parse(zterp_io *io)
     }
 
     /* Not really efficient, but does it matter? */
-    new = realloc(blorb->chunks, sizeof *new * ++blorb->nchunks);
+    new = realloc(blorb->chunks, (sizeof *new) * ++blorb->nchunks);
     if(new == NULL) goto err;
     blorb->chunks = new;
 

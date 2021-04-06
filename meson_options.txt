@@ -1,0 +1,22 @@
+option('player', type: 'boolean', value: true,
+    description: 'Build reference IF player')
+option('bocfel', type: 'boolean', value: true,
+    description: 'Build Bocfel interpreter plugin')
+option('frotz', type: 'boolean', value: true,
+    description: 'Build GlkFrotz interpreter plugin')
+option('git', type: 'boolean', value: true,
+    description: 'Build Git interpreter plugin')
+option('glulxe', type: 'boolean', value: true,
+    description: 'Build Glulxe interpreter plugin')
+option('nitfol', type: 'boolean', value: true,
+    description: 'Build Nitfol interpreter plugin')
+option('sound', type: 'feature', value: 'enabled',
+    description: 'Enable sound effects')
+option('introspection', type: 'boolean', value: true, yield: true,
+    description: 'Build introspection data (requires gobject-introspection)')
+option('vapi', type: 'feature', value: 'disabled', yield: true,
+    description: 'Build vala bindings (requires vapigen, -Dintrospection=true')
+option('gtk_doc', type: 'boolean', value: false, yield: true,
+    description: 'Generate the API reference')
+option('plugindir', type: 'string', value: 'default',
+    description: 'Directory to install plugins (default: $libdir/chimara)')

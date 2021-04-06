@@ -2,7 +2,7 @@
 
 #include <glib.h>
 #include <glib/gi18n-lib.h>
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 #include <gst/gst.h>
 #endif
 
@@ -19,7 +19,7 @@ chimara_init(void)
 		bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 		bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 
-#ifdef HAVE_SOUND
+#if HAVE_SOUND
 		/* Make sure GStreamer has been initialized if it hasn't been already;
 		in particular, if you want your program to parse GStreamer command line
 		options then you should do it yourself, before gtk_init(). */

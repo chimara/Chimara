@@ -1,3 +1,9 @@
+chimara (0.9.1-1) unstable; urgency=low
+
+  * Change build system to Meson.
+
+ -- Philip Chimento <philip.chimento@gmail.com>  Mon, 01 Feb 2021 14:12:59 -0800
+
 chimara (0.9-1) unstable; urgency=low
 
   * Initial release (Closes: #36) 
