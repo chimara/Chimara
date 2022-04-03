@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Creating and Destroying Sound Channels</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Creating and Destroying Sound Channels: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-sound.html" title="Sound">
 <link rel="prev" href="chimara-Sound-Resources.html" title="Sound Resources">
 <link rel="next" href="chimara-Playing-Sounds.html" title="Playing Sounds">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Sound-Resources.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Playing-Sounds.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Creating-and-Destroying-Sound-Channels"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,28 +31,28 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Creating-and-Destroying-Sound-Channels.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="function_type">
-<a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+<a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
 </td>
 <td class="function_name">
-<a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()">glk_schannel_create</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()">glk_schannel_create</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
 <td class="function_type">
-<a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+<a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
 </td>
 <td class="function_name">
-<a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()">glk_schannel_create_ext</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()">glk_schannel_create_ext</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -60,32 +60,32 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-destroy" title="glk_schannel_destroy ()">glk_schannel_destroy</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-destroy" title="glk_schannel_destroy ()">glk_schannel_destroy</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Creating-and-Destroying-Sound-Channels.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Creating-and-Destroying-Sound-Channels.description"></a><h2>Description</h2>
 <p>Sounds in Glk are played through sound channels. Sound channels are another
 type of opaque object, like windows, streams, and file references.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Creating-and-Destroying-Sound-Channels.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-schannel-create"></a><h3>glk_schannel_create ()</h3>
-<pre class="programlisting"><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
-glk_schannel_create (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+glk_schannel_create (<em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
 <p>This creates a sound channel, about as you'd expect.</p>
 <p>Remember that it is possible that the library will be unable to create a new
-channel, in which case <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a> will return <code class="literal">NULL</code>.</p>
-<p>When you create a channel using <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a>, it has full volume,
+channel, in which case <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a> will return <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
+<p>When you create a channel using <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a>, it has full volume,
 represented by the value 0x10000. Half volume would be 0x8000, three-quarters
 volume would be 0xC000, and so on. A volume of zero represents silence.</p>
 <p>You can overdrive the volume of a channel by setting a volume greater than 
@@ -93,22 +93,19 @@ volume would be 0xC000, and so on. A volume of zero represents silence.</p>
 increase the volume past full, or the sound may become distorted. You should 
 always create sound resources with the maximum volume you will need, and then
 reduce the volume when appropriate using the channel-volume calls.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Mathematically, these volume changes should be taken as linear
   multiplication of a waveform represented as linear samples. As I
   understand it, linear PCM encodes the sound pressure, and therefore a
   volume of 0x8000 should represent a 6 dB drop.
-</p>
-</div>
-<div class="refsect3" lang="en">
+</p></div>
+<div class="refsect3">
 <a name="glk-schannel-create.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>rock</p></td>
@@ -117,29 +114,29 @@ reduce the volume when appropriate using the channel-volume calls.</p>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-schannel-create.returns"></a><h4>Returns</h4>
-<p> A new sound channel, or <code class="literal">NULL</code>.</p>
+<p> A new sound channel, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-schannel-create-ext"></a><h3>glk_schannel_create_ext ()</h3>
-<pre class="programlisting"><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
-glk_schannel_create_ext (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>,
-                         <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> volume</code></em>);</pre>
-<p>The <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a> call lets you create a channel with the volume
+<pre class="programlisting"><a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="returnvalue">schanid_t</span></a>
+glk_schannel_create_ext (<em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>,
+                         <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> volume</code></em>);</pre>
+<p>The <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a> call lets you create a channel with the volume
 already set at a given level.</p>
-<p>Not all libraries support <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a>. You should test the
-<a href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> selector before you rely on it; see <a href="chimara-Testing-for-Sound-Capabilities.html" title="Testing for Sound Capabilities">Testing for Sound
+<p>Not all libraries support <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a>. You should test the
+<a class="link" href="chimara-The-Gestalt-System.html#gestalt-Sound2" title="gestalt_Sound2"><code class="literal">gestalt_Sound2</code></a> selector before you rely on it; see <a class="link" href="chimara-Testing-for-Sound-Capabilities.html" title="Testing for Sound Capabilities">Testing for Sound
 Capabilities</a>.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-schannel-create-ext.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -155,25 +152,25 @@ Capabilities</a>.</p>
 </tbody>
 </table></div>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-schannel-create-ext.returns"></a><h4>Returns</h4>
-<p> A new sound channel, or <code class="literal">NULL</code>.</p>
+<p> A new sound channel, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-schannel-destroy"></a><h3>glk_schannel_destroy ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_schannel_destroy (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a> chan</code></em>);</pre>
+glk_schannel_destroy (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a> chan</code></em>);</pre>
 <p>Destroys the channel. If the channel is playing a sound, the sound stops 
 immediately (with no notification event).</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-schannel-destroy.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>chan</p></td>
@@ -184,11 +181,8 @@ immediately (with no notification event).</p>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-Creating-and-Destroying-Sound-Channels.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

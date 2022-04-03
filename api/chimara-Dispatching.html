@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Dispatching</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Dispatching: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
 <link rel="prev" href="chimara-Interrogating-the-Interface.html" title="Interrogating the Interface">
 <link rel="next" href="chimara-Getting-Argument-Prototypes.html" title="Getting Argument Prototypes">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Interrogating-the-Interface.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Getting-Argument-Prototypes.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Dispatching"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,65 +31,65 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Dispatching.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody><tr>
 <td class="function_type">
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()">gidispatch_call</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()">gidispatch_call</a> <span class="c_punctuation">()</span>
 </td>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Dispatching.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="other_proto_type">
+<col class="other_proto_name">
 </colgroup>
 <tbody><tr>
 <td class="datatype_keyword"> </td>
-<td class="function_name"><a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t">gluniversal_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t">gluniversal_t</a></td>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Dispatching.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 #include &lt;libchimara/gi-dispa.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Dispatching.description"></a><h2>Description</h2>
-<p>The function <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> invokes a function from the Glk library.</p>
+<p>The function <a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> invokes a function from the Glk library.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Dispatching.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="gidispatch-call"></a><h3>gidispatch_call ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-gidispatch_call (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> funcnum</code></em>,
-                 <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> numargs</code></em>,
-                 <em class="parameter"><code><a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> *arglist</code></em>);</pre>
+gidispatch_call (<em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> funcnum</code></em>,
+                 <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> numargs</code></em>,
+                 <em class="parameter"><code><a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> *arglist</code></em>);</pre>
 <p><em class="parameter"><code>funcnum</code></em>
- is the function number to invoke; see <a href="chimara-Table-of-Selectors.html" title="Table of Selectors">Table of
+ is the function number to invoke; see <a class="link" href="chimara-Table-of-Selectors.html" title="Table of Selectors">Table of
 Selectors</a>.
 <em class="parameter"><code>arglist</code></em>
  is the list of arguments, and <em class="parameter"><code>numargs</code></em>
  is the length of the list.</p>
-<p>The arguments are all stored as <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects.</p>
-<div class="refsect3" lang="en">
+<p>The arguments are all stored as <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects.</p>
+<div class="refsect3">
 <a name="chimara-Basic-Dispatch-Types"></a><h4>Basic Dispatch Types</h4>
 <p>Numeric arguments are passed in the obvious way — one argument per
-<a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a>, with the <em class="parameter"><code>uint</code></em>
+<a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a>, with the <em class="parameter"><code>uint</code></em>
  or <em class="parameter"><code>sint</code></em>
  field set to the numeric value.
 Characters and strings are also passed in this way — <span class="type">char</span>s in
@@ -106,17 +106,17 @@ opaque pointer types.)</p>
 life.
 So do return values.</p>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="chimara-References"></a><h4>References</h4>
 <p>A reference to a numeric type or object reference — that is,
-<a href="chimara-Basic-Types.html#glui32" title="glui32"><code class="literal">glui32*</code></a>, <a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><code class="literal">winid_t*</code></a>, and so on — takes
-<span class="emphasis"><em>one or two</em></span> <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects. The first is a flag
-indicating whether the reference argument is <code class="literal">NULL</code> or not. The <em class="parameter"><code>ptrflag</code></em>
+<a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><code class="literal">glui32*</code></a>, <a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><code class="literal">winid_t*</code></a>, and so on — takes
+<span class="emphasis"><em>one or two</em></span> <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects. The first is a flag
+indicating whether the reference argument is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> or not. The <em class="parameter"><code>ptrflag</code></em>
  field
-of this <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> should be <code class="literal">FALSE</code> (0) if the reference is <code class="literal">NULL</code>, and
-<code class="literal">TRUE</code> (1) otherwise. If <code class="literal">FALSE</code>, that is the end of the argument; you should
-not use a <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> to explicitly store the <code class="literal">NULL</code> reference. If the flag
-is <code class="literal">TRUE</code>, you must then put a <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> storing the base type of the
+of this <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> should be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> (0) if the reference is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, and
+<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> (1) otherwise. If <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>, that is the end of the argument; you should
+not use a <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> to explicitly store the <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> reference. If the flag
+is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>, you must then put a <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> storing the base type of the
 reference.</p>
 <p>For example, consider a hypothetical function, with selector <code class="literal">0xABCD</code>:</p>
 <div class="informalexample">
@@ -124,7 +124,7 @@ reference.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">void</span> glk_glomp(glui32 num, winid_t win, glui32 *numref, strid_t *strref);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="kt">void</span> <span class="nf">glk_glomp</span><span class="p">(</span><span class="n">glui32</span> <span class="n">num</span><span class="p">,</span> <span class="n">winid_t</span> <span class="n">win</span><span class="p">,</span> <span class="n">glui32</span> <span class="o">*</span><span class="n">numref</span><span class="p">,</span> <span class="n">strid_t</span> <span class="o">*</span><span class="n">strref</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -140,17 +140,17 @@ reference.</p>
 2
 3
 4</pre></td>
-        <td class="listing_code"><pre class="programlisting">glui32 value;
-winid_t mainwin;
-strid_t gamefile;
-glk_glomp(<span class="number">5</span>, mainwin, &amp;value, &amp;gamefile);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glui32</span> <span class="n">value</span><span class="p">;</span>
+<span class="n">winid_t</span> <span class="n">mainwin</span><span class="p">;</span>
+<span class="n">strid_t</span> <span class="n">gamefile</span><span class="p">;</span>
+<span class="n">glk_glomp</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">mainwin</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">value</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">gamefile</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <p></p>
-<p>To perform this through <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>, you would do the following:</p>
+<p>To perform this through <a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>, you would do the following:</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -165,16 +165,16 @@ glk_glomp(<span class="number">5</span>, mainwin, &amp;value, &amp;gamefile);</p
 8
 9
 10</pre></td>
-        <td class="listing_code"><pre class="programlisting">gluniversal_t arglist[<span class="number">6</span>];
-arglist[<span class="number">0</span>].uint = <span class="number">5</span>;
-arglist[<span class="number">1</span>].opaqueref = mainwin;
-arglist[<span class="number">2</span>].ptrflag = TRUE;
-arglist[<span class="number">3</span>].uint = value;
-arglist[<span class="number">4</span>].ptrflag = TRUE;
-arglist[<span class="number">5</span>].opaqueref = gamefile;
-gidispatch_call(<span class="number">0xABCD</span>, <span class="number">6</span>, arglist);
-value = arglist[<span class="number">3</span>].uint;
-gamefile = arglist[<span class="number">5</span>].opaqueref;</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="n">mainwin</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">5</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="n">gamefile</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0xABCD</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">uint</span><span class="p">;</span>
+<span class="n">gamefile</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">5</span><span class="p">].</span><span class="n">opaqueref</span><span class="p">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -184,7 +184,7 @@ gamefile = arglist[<span class="number">5</span>].opaqueref;</pre></td>
 <p>Note that you copy the value of the reference arguments into and out of
 <em class="parameter"><code>arglist</code></em>
 .
-Of course, it may be that <code class="literal">glk_glomp()</code> only uses these as pass-out
+Of course, it may be that <code class="literal">glk_glomp&lt;!----&gt;()</code> only uses these as pass-out
 references or pass-in references; if so, you could skip copying in or out.</p>
 <p>For further examples:</p>
 <div class="informalexample">
@@ -199,14 +199,14 @@ references or pass-in references; if so, you could skip copying in or out.</p>
 6
 7
 8</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_glomp(<span class="number">7</span>, mainwin, <span class="number">NULL</span>, <span class="number">NULL</span>);
-...or...
-gluniversal_t arglist[<span class="number">4</span>];
-arglist[<span class="number">0</span>].uint = <span class="number">7</span>;
-arglist[<span class="number">1</span>].opaqueref = mainwin;
-arglist[<span class="number">2</span>].ptrflag = FALSE;
-arglist[<span class="number">3</span>].ptrflag = FALSE;
-gidispatch_call(<span class="number">0xABCD</span>, <span class="number">4</span>, arglist);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_glomp</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">mainwin</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">...</span><span class="n">or</span><span class="p">...</span>
+<span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="n">mainwin</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0xABCD</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -227,16 +227,16 @@ gidispatch_call(<span class="number">0xABCD</span>, <span class="number">4</span
 8
 9
 10</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_glomp(<span class="number">13</span>, <span class="number">NULL</span>, <span class="number">NULL</span>, &amp;gamefile);
-...or...
-gluniversal_t arglist[<span class="number">5</span>];
-arglist[<span class="number">0</span>].uint = <span class="number">13</span>;
-arglist[<span class="number">1</span>].opaqueref = <span class="number">NULL</span>;
-arglist[<span class="number">2</span>].ptrflag = FALSE;
-arglist[<span class="number">3</span>].ptrflag = TRUE;
-arglist[<span class="number">4</span>].opaqueref = gamefile;
-gidispatch_call(<span class="number">0xABCD</span>, <span class="number">5</span>, arglist);
-gamefile = arglist[<span class="number">4</span>].opaqueref;</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_glomp</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">gamefile</span><span class="p">);</span>
+<span class="p">...</span><span class="n">or</span><span class="p">...</span>
+<span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="n">gamefile</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0xABCD</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span>
+<span class="n">gamefile</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="n">opaqueref</span><span class="p">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -257,16 +257,16 @@ gamefile = arglist[<span class="number">4</span>].opaqueref;</pre></td>
 8
 9
 10</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_glomp(<span class="number">17</span>, <span class="number">NULL</span>, &amp;value, <span class="number">NULL</span>);
-...or...
-gluniversal_t arglist[<span class="number">5</span>];
-arglist[<span class="number">0</span>].uint = <span class="number">17</span>;
-arglist[<span class="number">1</span>].opaqueref = <span class="number">NULL</span>;
-arglist[<span class="number">2</span>].ptrflag = TRUE;
-arglist[<span class="number">3</span>].uint = value;
-arglist[<span class="number">4</span>].ptrflag = FALSE;
-gidispatch_call(<span class="number">0xABCD</span>, <span class="number">5</span>, arglist);
-value = arglist[<span class="number">3</span>].uint;</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_glomp</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">value</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">...</span><span class="n">or</span><span class="p">...</span>
+<span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="mi">17</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0xABCD</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">uint</span><span class="p">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -275,19 +275,19 @@ value = arglist[<span class="number">3</span>].uint;</pre></td>
 <p></p>
 <p>As you see, the length of <em class="parameter"><code>arglist</code></em>
  depends on how many of the reference
-arguments are <code class="literal">NULL</code>.</p>
+arguments are <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="chimara-Structures"></a><h4>Structures</h4>
 <p>A structure pointer is represented by a single <em class="parameter"><code>ptrflag</code></em>
 , possibly followed by
-a sequence of <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects (one for each field of the structure.)
-Again, if the structure pointer is non-<code class="literal">NULL</code>, the <em class="parameter"><code>ptrflag</code></em>
- should be <code class="literal">TRUE</code>
+a sequence of <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects (one for each field of the structure.)
+Again, if the structure pointer is non-<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, the <em class="parameter"><code>ptrflag</code></em>
+ should be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>
 and be followed by values; if not, the <em class="parameter"><code>ptrflag</code></em>
- should be <code class="literal">NULL</code> and stands
+ should be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> and stands
 alone.</p>
-<p>For example, the function <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> can be invoked as follows:</p>
+<p>For example, the function <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> can be invoked as follows:</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -300,47 +300,44 @@ alone.</p>
 6
 7
 8</pre></td>
-        <td class="listing_code"><pre class="programlisting">event_t ev;
-gluniversal_t arglist[<span class="number">5</span>];
-arglist[<span class="number">0</span>].ptrflag = TRUE;
-gidispatch_call(<span class="number">0x00C0</span>, <span class="number">5</span>, arglist);
-ev.type = arglist[<span class="number">1</span>].uint;
-ev.win = arglist[<span class="number">2</span>].opaqueref;
-ev.val1 = arglist[<span class="number">3</span>].uint;
-ev.val2 = arglist[<span class="number">4</span>].uint;</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">event_t</span> <span class="n">ev</span><span class="p">;</span>
+<span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0x00C0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span>
+<span class="n">ev</span><span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">uint</span><span class="p">;</span>
+<span class="n">ev</span><span class="p">.</span><span class="n">win</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">opaqueref</span><span class="p">;</span>
+<span class="n">ev</span><span class="p">.</span><span class="n">val1</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">uint</span><span class="p">;</span>
+<span class="n">ev</span><span class="p">.</span><span class="n">val2</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="n">uint</span><span class="p">;</span></pre></td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <p></p>
-<p>Since the structure passed to <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> is a pass-out reference (the entry
+<p>Since the structure passed to <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> is a pass-out reference (the entry
 values are ignored), you don't need to fill in <code class="literal">arglist[1..4]</code> before calling
-<a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  Theoretically, you would invoke <code class="code"><a href="chimara-Events.html#glk-select" title="glk_select ()"><span class="type">glk_select</span></a>(<code class="literal">NULL</code>)</code> by setting'
-  <code class="code">arglist[0].ptrflag</code> to <code class="literal">FALSE</code>, and using a one-element <em class="parameter"><code>arglist</code></em>
-  instead of five-element. But it's illegal to pass <code class="literal">NULL</code> to <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>. So
+<a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>.</p>
+<div class="note"><p>
+  Theoretically, you would invoke <code class="code"><a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><span class="type">glk_select</span></a>(<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>)</code> by setting'
+  <code class="code">arglist[0].ptrflag</code> to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>, and using a one-element <em class="parameter"><code>arglist</code></em>
+  instead of five-element. But it's illegal to pass <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>. So
   you cannot actually do this.
-</p>
+</p></div>
 </div>
-</div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="chimara-Arrays"></a><h4>Arrays</h4>
 <p>In the Glk API, an array argument is always followed by a numeric argument
 giving the array's length. These two C arguments are a single logical
 argument, which is represented by <span class="emphasis"><em>one or three</em></span>
-<a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects. The first is a <em class="parameter"><code>ptrflag</code></em>
+<a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects. The first is a <em class="parameter"><code>ptrflag</code></em>
 , indicating whether the
-argument is <code class="literal">NULL</code> or not. The second is a pointer, stored in the <em class="parameter"><code>array</code></em>
+argument is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> or not. The second is a pointer, stored in the <em class="parameter"><code>array</code></em>
 
 field. The third is the array length, stored in the <em class="parameter"><code>uint</code></em>
  field. And again,
 if the <em class="parameter"><code>ptrflag</code></em>
- is <code class="literal">NULL</code>, the following two are omitted.</p>
-<p>For example, the function <a href="chimara-How-to-Print.html#glk-put-buffer" title="glk_put_buffer ()"><code class="function">glk_put_buffer()</code></a> can be invoked as follows:</p>
+ is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, the following two are omitted.</p>
+<p>For example, the function <a class="link" href="chimara-How-to-Print.html#glk-put-buffer" title="glk_put_buffer ()"><code class="function">glk_put_buffer()</code></a> can be invoked as follows:</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -354,42 +351,39 @@ if the <em class="parameter"><code>ptrflag</code></em>
 7
 8
 9</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">char</span> buf[<span class="number">64</span>];
-glui32 len = <span class="number">64</span>;
-glk_put_buffer(buf, len);
-...or...
-gluniversal_t arglist[<span class="number">3</span>];
-arglist[<span class="number">0</span>].ptrflag = TRUE;
-arglist[<span class="number">1</span>].array = buf;
-arglist[<span class="number">2</span>].uint = len;
-gidispatch_call(<span class="number">0x0084</span>, <span class="number">3</span>, arglist);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<span class="n">glui32</span> <span class="n">len</span> <span class="o">=</span> <span class="mi">64</span><span class="p">;</span>
+<span class="n">glk_put_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+<span class="p">...</span><span class="n">or</span><span class="p">...</span>
+<span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">array</span> <span class="o">=</span> <span class="n">buf</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">uint</span> <span class="o">=</span> <span class="n">len</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0x0084</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <p></p>
-<p>Since you are passing a C char array to <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>, the contents will
+<p>Since you are passing a C char array to <a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>, the contents will
 be read directly from that. There is no need to copy data into <em class="parameter"><code>arglist</code></em>
 , as
 you would for a basic type.</p>
 <p>If you are implementing a VM whose native representation of char arrays is
 more complex, you will have to do more work. You should allocate a C char
 array, copy your characters into it, make the call, and then free the array.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  <a href="chimara-How-to-Print.html#glk-put-buffer" title="glk_put_buffer ()"><code class="function">glk_put_buffer()</code></a> does not modify the array passed to it, so there is no
+<div class="note"><p>
+  <a class="link" href="chimara-How-to-Print.html#glk-put-buffer" title="glk_put_buffer ()"><code class="function">glk_put_buffer()</code></a> does not modify the array passed to it, so there is no
   need to copy the characters out.
-</p>
+</p></div>
 </div>
-</div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="chimara-Return-Values"></a><h4>Return Values</h4>
 <p>The return value of a function is not treated specially. It is simply
-considered to be a pass-out reference argument which may not be <code class="literal">NULL</code>. It
+considered to be a pass-out reference argument which may not be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. It
 comes after all the other arguments of the function.</p>
-<p>For example, the function <a href="chimara-Other-Window-Functions.html#glk-window-get-rock" title="glk_window_get_rock ()"><code class="function">glk_window_get_rock()</code></a> can be invoked as follows:</p>
+<p>For example, the function <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-rock" title="glk_window_get_rock ()"><code class="function">glk_window_get_rock()</code></a> can be invoked as follows:</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -403,15 +397,15 @@ comes after all the other arguments of the function.</p>
 7
 8
 9</pre></td>
-        <td class="listing_code"><pre class="programlisting">glui32 rock;
-winid_t win;
-rock = glk_window_get_rock(win);
-...or...
-gluniversal_t arglist[<span class="number">3</span>];
-arglist[<span class="number">0</span>].opaqueref = win;
-arglist[<span class="number">1</span>].ptrflag = TRUE;
-gidispatch_call(<span class="number">0x0021</span>, <span class="number">3</span>, arglist);
-rock = arglist[<span class="number">2</span>].uint;</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glui32</span> <span class="n">rock</span><span class="p">;</span>
+<span class="n">winid_t</span> <span class="n">win</span><span class="p">;</span>
+<span class="n">rock</span> <span class="o">=</span> <span class="n">glk_window_get_rock</span><span class="p">(</span><span class="n">win</span><span class="p">);</span>
+<span class="p">...</span><span class="n">or</span><span class="p">...</span>
+<span class="n">gluniversal_t</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">opaqueref</span> <span class="o">=</span> <span class="n">win</span><span class="p">;</span>
+<span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">ptrflag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="n">gidispatch_call</span><span class="p">(</span><span class="mh">0x0021</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">arglist</span><span class="p">);</span>
+<span class="n">rock</span> <span class="o">=</span> <span class="n">arglist</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">uint</span><span class="p">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -419,13 +413,13 @@ rock = arglist[<span class="number">2</span>].uint;</pre></td>
 
 <p></p>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="gidispatch-call.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -449,34 +443,34 @@ rock = arglist[<span class="number">2</span>].uint;</pre></td>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Dispatching.other_details"></a><h2>Types and Values</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="gluniversal-t"></a><h3>gluniversal_t</h3>
 <p>This is a union, encompassing all the types that can be passed to Glk
 functions.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="gluniversal-t.members"></a><h4>Members</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="300px" class="union_members_name">
+<col class="union_members_description">
+<col width="200px" class="union_members_annotations">
 </colgroup>
 <tbody>
 <tr>
-<td class="union_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gluniversal-t.uint"></a>uint</code></em>;</p></td>
-<td class="union_member_description"><p>Stores a <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a>.</p></td>
+<td class="union_member_name"><p><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gluniversal-t.uint"></a>uint</code></em>;</p></td>
+<td class="union_member_description"><p>Stores a <a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a>.</p></td>
 <td class="union_member_annotations"> </td>
 </tr>
 <tr>
-<td class="union_member_name"><p><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="gluniversal-t.sint"></a>sint</code></em>;</p></td>
-<td class="union_member_description"><p>Stores a <a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a>.</p></td>
+<td class="union_member_name"><p><a class="link" href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> <em class="structfield"><code><a name="gluniversal-t.sint"></a>sint</code></em>;</p></td>
+<td class="union_member_description"><p>Stores a <a class="link" href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a>.</p></td>
 <td class="union_member_annotations"> </td>
 </tr>
 <tr>
 <td class="union_member_name"><p><span class="type">void</span> *<em class="structfield"><code><a name="gluniversal-t.opaqueref"></a>opaqueref</code></em>;</p></td>
-<td class="union_member_description"><p>Stores a <a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a>, <a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a>, <a href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t"><span class="type">frefid_t</span></a>, or <a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a>.</p></td>
+<td class="union_member_description"><p>Stores a <a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a>, <a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a>, <a class="link" href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t"><span class="type">frefid_t</span></a>, or <a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a>.</p></td>
 <td class="union_member_annotations"> </td>
 </tr>
 <tr>
@@ -500,23 +494,23 @@ functions.</p>
 <td class="union_member_annotations"> </td>
 </tr>
 <tr>
-<td class="union_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *<em class="structfield"><code><a name="gluniversal-t.unicharstr"></a>unicharstr</code></em>;</p></td>
-<td class="union_member_description"><p>Stores a zero-terminated string of <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> values representing
+<td class="union_member_name"><p><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *<em class="structfield"><code><a name="gluniversal-t.unicharstr"></a>unicharstr</code></em>;</p></td>
+<td class="union_member_description"><p>Stores a zero-terminated string of <a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> values representing
 Unicode characters.</p></td>
 <td class="union_member_annotations"> </td>
 </tr>
 <tr>
 <td class="union_member_name"><p><span class="type">void</span> *<em class="structfield"><code><a name="gluniversal-t.array"></a>array</code></em>;</p></td>
 <td class="union_member_description"><p>Stores a pointer to an array, and should be followed by another
-<a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> with the array length stored in the <em class="parameter"><code>uint</code></em>
+<a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> with the array length stored in the <em class="parameter"><code>uint</code></em>
 member.</p></td>
 <td class="union_member_annotations"> </td>
 </tr>
 <tr>
-<td class="union_member_name"><p><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gluniversal-t.ptrflag"></a>ptrflag</code></em>;</p></td>
-<td class="union_member_description"><p>If <code class="literal">FALSE</code>, represents an opaque reference or array that is <code class="literal">NULL</code>,
-in which case it represents the entire argument. If <code class="literal">TRUE</code>, should be followed
-by another <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> with the pointer in its <em class="parameter"><code>opaqueref</code></em>
+<td class="union_member_name"><p><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> <em class="structfield"><code><a name="gluniversal-t.ptrflag"></a>ptrflag</code></em>;</p></td>
+<td class="union_member_description"><p>If <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>, represents an opaque reference or array that is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>,
+in which case it represents the entire argument. If <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>, should be followed
+by another <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> with the pointer in its <em class="parameter"><code>opaqueref</code></em>
 or <em class="parameter"><code>array</code></em>
 field.</p></td>
 <td class="union_member_annotations"> </td>
@@ -528,6 +522,6 @@ field.</p></td>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Other Events</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Other Events: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-events.html" title="Events">
 <link rel="prev" href="chimara-Timer-Events.html" title="Timer Events">
 <link rel="next" href="chimara-glk-spec-streams.html" title="Streams">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,7 +19,7 @@
 <td><a accesskey="p" href="chimara-Timer-Events.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-glk-spec-streams.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Other-Events"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -28,23 +28,19 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
-<a name="idp140340077259136"></a><p>
+<div class="refsect1">
+<a name="id-1.4.7.7.3"></a><p>
 There are currently no other event types defined by Glk.
-(The “<a href="chimara-Events.html#evtype-None" title="evtype_None"><span class="type">evtype_None</span></a>” constant is a placeholder, and is never returned by <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>.)
+(The “<a class="link" href="chimara-Events.html#evtype-None" title="evtype_None"><span class="type">evtype_None</span></a>” constant is a placeholder, and is never returned by <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>.)
 </p>
 <p>
 It is possible that new event types will be defined in the future. 
 </p>
+<div class="note"><p>For example, if video or animation capabilities are added to Glk, there would probably be some sort of completion event for them.
+</p></div>
 <div class="note">
-<h3 class="title"></h3>
-<p>For example, if video or animation capabilities are added to Glk, there would probably be some sort of completion event for them.
-</p>
-</div>
-<div class="note">
-<h3 class="title"></h3>
 <p>
-This is also why you must put calls to <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> in loops. If you tried to read a character by simply writing
+This is also why you must put calls to <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> in loops. If you tried to read a character by simply writing
 </p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
@@ -52,8 +48,8 @@ This is also why you must put calls to <a href="chimara-Events.html#glk-select" 
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_request_char_event(win);
-glk_select(&amp;ev);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_request_char_event</span><span class="p">(</span><span class="n">win</span><span class="p">);</span>
+<span class="n">glk_select</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -64,9 +60,8 @@ you might not get a CharInput event back. You could get some not-yet-defined eve
 </p>
 </div>
 <div class="note">
-<h3 class="title"></h3>
 <p>
-It is not generally necessary to put a call to <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> in a loop. You usually call <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> to update the display or test if an event is available, not to wait for a particular event. However, if you are using sound notification events, and several sounds are playing, it might be important to make sure you knew about all sounds completed at any particular time. You would do this with
+It is not generally necessary to put a call to <a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> in a loop. You usually call <a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> to update the display or test if an event is available, not to wait for a particular event. However, if you are using sound notification events, and several sounds are playing, it might be important to make sure you knew about all sounds completed at any particular time. You would do this with
 </p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
@@ -77,11 +72,11 @@ It is not generally necessary to put a call to <a href="chimara-Events.html#glk-
 3
 4
 5</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_select_poll(&amp;ev);
-<span class="keyword">while</span> (ev.type != evtype_None) {
-    <span class="comment">/*</span><span class="comment"> handle event </span><span class="comment">*/</span>
-    glk_select_poll(&amp;ev);
-}</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_select_poll</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">ev</span><span class="p">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">evtype_None</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* handle event */</span>
+    <span class="n">glk_select_poll</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+<span class="p">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -90,12 +85,12 @@ It is not generally necessary to put a call to <a href="chimara-Events.html#glk-
 <p>
 </p>
 <p>
-Once <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> returns <a href="chimara-Events.html#evtype-None" title="evtype_None"><span class="type">evtype_None</span></a>, you should not call it again immediately. Do some work first. If you want to wait for an event, use <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>, not a loop of <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>.
+Once <a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a> returns <a class="link" href="chimara-Events.html#evtype-None" title="evtype_None"><span class="type">evtype_None</span></a>, you should not call it again immediately. Do some work first. If you want to wait for an event, use <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>, not a loop of <a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>.
 </p>
 </div>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Changing Window Constraints</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Changing Window Constraints: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
 <link rel="prev" href="chimara-Window-Opening-Closing-and-Constraints.html" title="Window Opening, Closing, and Constraints">
 <link rel="next" href="chimara-A-Note-on-Display-Style.html" title="A Note on Display Style">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Window-Opening-Closing-and-Constraints.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-A-Note-on-Display-Style.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Changing-Window-Constraints"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,12 +31,12 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Changing-Window-Constraints.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody>
 <tr>
@@ -44,7 +44,7 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()">glk_window_get_size</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()">glk_window_get_size</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -52,7 +52,7 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Changing-Window-Constraints.html#glk-window-set-arrangement" title="glk_window_set_arrangement ()">glk_window_set_arrangement</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-set-arrangement" title="glk_window_set_arrangement ()">glk_window_set_arrangement</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -60,46 +60,43 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Changing-Window-Constraints.html#glk-window-get-arrangement" title="glk_window_get_arrangement ()">glk_window_get_arrangement</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-arrangement" title="glk_window_get_arrangement ()">glk_window_get_arrangement</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Changing-Window-Constraints.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Changing-Window-Constraints.description"></a><h2>Description</h2>
 <p>There are library functions to change and to measure the size of a window.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Changing-Window-Constraints.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-window-get-size"></a><h3>glk_window_get_size ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_window_get_size (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                     <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *widthptr</code></em>,
-                     <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *heightptr</code></em>);</pre>
+glk_window_get_size (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                     <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *widthptr</code></em>,
+                     <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *heightptr</code></em>);</pre>
 <p>Simply returns the actual size of the window, in its measurement system.
-As described in <a href="chimara-Other-API-Conventions.html" title="Other API Conventions">Other API Conventions</a>,
+As described in <a class="link" href="chimara-Other-API-Conventions.html" title="Other API Conventions">Other API Conventions</a>,
 either <em class="parameter"><code>widthptr</code></em>
  or <em class="parameter"><code>heightptr</code></em>
- can be <code class="literal">NULL</code>, if you only want one
+ can be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, if you only want one
 measurement.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>Or, in fact, both, if you want to waste time.</p>
-</div>
-<div class="refsect3" lang="en">
+<div class="note"><p>Or, in fact, both, if you want to waste time.</p></div>
+<div class="refsect3">
 <a name="glk-window-get-size.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -109,12 +106,12 @@ measurement.</p>
 </tr>
 <tr>
 <td class="parameter_name"><p>widthptr</p></td>
-<td class="parameter_description"><p>Pointer to a location to store the window's width, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_description"><p>Pointer to a location to store the window's width, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>heightptr</p></td>
-<td class="parameter_description"><p>Pointer to a location to store the window's height, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_description"><p>Pointer to a location to store the window's height, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -122,13 +119,13 @@ measurement.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-window-set-arrangement"></a><h3>glk_window_set_arrangement ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_window_set_arrangement (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> method</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> size</code></em>,
-                            <em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> keywin</code></em>);</pre>
+glk_window_set_arrangement (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> method</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> size</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> keywin</code></em>);</pre>
 <p>Changes the size of an existing split — that is, it changes the 
 constraint of a given pair window.</p>
 <p>Consider the example above, where D has collapsed to zero height. Say D was a
@@ -140,9 +137,9 @@ text buffer window. You could make a more useful layout by doing</p>
         <td class="listing_lines" align="right"><pre>1
 2
 3</pre></td>
-        <td class="listing_code"><pre class="programlisting">winid_t o2;
-o2 = glk_window_get_parent(d);
-glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, <span class="number">3</span>, d);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">winid_t</span> <span class="n">o2</span><span class="p">;</span>
+<span class="n">o2</span> <span class="o">=</span> <span class="n">glk_window_get_parent</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+<span class="n">glk_window_set_arrangement</span><span class="p">(</span><span class="n">o2</span><span class="p">,</span> <span class="n">winmethod_Above</span> <span class="o">|</span> <span class="n">winmethod_Fixed</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">d</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -157,7 +154,7 @@ fixed size of 3 rows.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, <span class="number">5</span>, <span class="number">NULL</span>);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_window_set_arrangement</span><span class="p">(</span><span class="n">o2</span><span class="p">,</span> <span class="n">winmethod_Above</span> <span class="o">|</span> <span class="n">winmethod_Fixed</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -166,7 +163,7 @@ fixed size of 3 rows.</p>
 <p>
 That expands D to five rows. Note that, since O2's key window is already set
 to D, it is not necessary to provide the <em class="parameter"><code>keywin</code></em>
- argument; you can pass <code class="literal">NULL</code>
+ argument; you can pass <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>
 to mean “leave the key window unchanged.”</p>
 <p>If you do change the key window of a pair window, the new key window 
 <span class="emphasis"><em>must</em></span> be a descendant of that pair window. In the current
@@ -177,7 +174,7 @@ also cannot be a pair window itself.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, <span class="number">3</span>, <span class="number">NULL</span>);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_window_set_arrangement</span><span class="p">(</span><span class="n">o2</span><span class="p">,</span> <span class="n">winmethod_Below</span> <span class="o">|</span> <span class="n">winmethod_Fixed</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -194,7 +191,7 @@ would do</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_window_set_arrangement(o2, winmethod_Below | winmethod_Fixed, <span class="number">3</span>, a);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_window_set_arrangement</span><span class="p">(</span><span class="n">o2</span><span class="p">,</span> <span class="n">winmethod_Below</span> <span class="o">|</span> <span class="n">winmethod_Fixed</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -207,7 +204,7 @@ would do</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_window_set_arrangement(o2, winmethod_Below | winmethod_Proportional, <span class="number">30</span>, <span class="number">NULL</span>);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_window_set_arrangement</span><span class="p">(</span><span class="n">o2</span><span class="p">,</span> <span class="n">winmethod_Below</span> <span class="o">|</span> <span class="n">winmethod_Proportional</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -220,7 +217,7 @@ or</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting">glk_window_set_arrangement(o2, winmethod_Above | winmethod_Proportional, <span class="number">70</span>, <span class="number">NULL</span>);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glk_window_set_arrangement</span><span class="p">(</span><span class="n">o2</span><span class="p">,</span> <span class="n">winmethod_Above</span> <span class="o">|</span> <span class="n">winmethod_Proportional</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -230,27 +227,24 @@ or</p>
 These do exactly the same thing, since 30% above is the same as
 70% below. You don't need to specify a key window with a proportional
 split, so the <em class="parameter"><code>keywin</code></em>
- argument is <code class="literal">NULL</code>. (You could actually specify either A
+ argument is <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. (You could actually specify either A
 or D as the key window, but it wouldn't affect the result.)</p>
-<p>Whatever constraint you set, <a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> will tell you the actual 
+<p>Whatever constraint you set, <a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> will tell you the actual 
 window size you got.</p>
 <p>Note that you can resize windows, and alter the Border/NoBorder flag. But you
 can't flip or rotate them. You can't move A above D, or change O2 to a
 vertical split where A is left or right of D.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   To get this effect you could close one of the windows, and re-split the 
-  other one with <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>.
-</p>
-</div>
-<div class="refsect3" lang="en">
+  other one with <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>.
+</p></div>
+<div class="refsect3">
 <a name="glk-window-set-arrangement.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -260,25 +254,25 @@ vertical split where A is left or right of D.</p>
 </tr>
 <tr>
 <td class="parameter_name"><p>method</p></td>
-<td class="parameter_description"><p>new method of size computation. One of <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Above" title="winmethod_Above"><code class="literal">winmethod_Above</code></a>,
-<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Below" title="winmethod_Below"><code class="literal">winmethod_Below</code></a>, <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Left" title="winmethod_Left"><code class="literal">winmethod_Left</code></a>, or <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Right" title="winmethod_Right"><code class="literal">winmethod_Right</code></a> OR'ed with
-<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed"><code class="literal">winmethod_Fixed</code></a> or <a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>.</p></td>
+<td class="parameter_description"><p>new method of size computation. One of <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Above" title="winmethod_Above"><code class="literal">winmethod_Above</code></a>,
+<a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Below" title="winmethod_Below"><code class="literal">winmethod_Below</code></a>, <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Left" title="winmethod_Left"><code class="literal">winmethod_Left</code></a>, or <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Right" title="winmethod_Right"><code class="literal">winmethod_Right</code></a> OR'ed with
+<a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Fixed" title="winmethod_Fixed"><code class="literal">winmethod_Fixed</code></a> or <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>size</p></td>
 <td class="parameter_description"><p>new size constraint, in percentage points if <em class="parameter"><code>method</code></em>
 is
-<a href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>, otherwise in characters if <em class="parameter"><code>win</code></em>
+<a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#winmethod-Proportional" title="winmethod_Proportional"><code class="literal">winmethod_Proportional</code></a>, otherwise in characters if <em class="parameter"><code>win</code></em>
 's type is
-<a href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer"><code class="literal">wintype_TextBuffer</code></a> or <a href="chimara-The-Types-of-Windows.html#wintype-TextGrid" title="wintype_TextGrid"><code class="literal">wintype_TextGrid</code></a>, or pixels if <em class="parameter"><code>win</code></em>
+<a class="link" href="chimara-The-Types-of-Windows.html#wintype-TextBuffer" title="wintype_TextBuffer"><code class="literal">wintype_TextBuffer</code></a> or <a class="link" href="chimara-The-Types-of-Windows.html#wintype-TextGrid" title="wintype_TextGrid"><code class="literal">wintype_TextGrid</code></a>, or pixels if <em class="parameter"><code>win</code></em>
 's type is
-<a href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics"><code class="literal">wintype_Graphics</code></a>.</p></td>
+<a class="link" href="chimara-The-Types-of-Windows.html#wintype-Graphics" title="wintype_Graphics"><code class="literal">wintype_Graphics</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>keywin</p></td>
-<td class="parameter_description"><p>new key window, or <code class="literal">NULL</code> to leave the key window unchanged.</p></td>
+<td class="parameter_description"><p>new key window, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to leave the key window unchanged.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -286,21 +280,21 @@ is
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-window-get-arrangement"></a><h3>glk_window_get_arrangement ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_window_get_arrangement (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *methodptr</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *sizeptr</code></em>,
-                            <em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> *keywinptr</code></em>);</pre>
+glk_window_get_arrangement (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *methodptr</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *sizeptr</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> *keywinptr</code></em>);</pre>
 <p>Queries the constraint of a given pair window.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-window-get-arrangement.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -311,19 +305,19 @@ glk_window_get_arrangement (<em class="parameter"><code><a href="chimara-Opaque-
 <tr>
 <td class="parameter_name"><p>methodptr</p></td>
 <td class="parameter_description"><p>return location for the constraint flags of <em class="parameter"><code>win</code></em>
-, or <code class="literal">NULL</code>.</p></td>
+, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>sizeptr</p></td>
 <td class="parameter_description"><p>return location for the constraint size of <em class="parameter"><code>win</code></em>
-, or <code class="literal">NULL</code>.</p></td>
+, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>keywinptr</p></td>
 <td class="parameter_description"><p>return location for the key window of <em class="parameter"><code>win</code></em>
-, or <code class="literal">NULL</code>.</p></td>
+, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -331,11 +325,8 @@ glk_window_get_arrangement (<em class="parameter"><code><a href="chimara-Opaque-
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-Changing-Window-Constraints.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

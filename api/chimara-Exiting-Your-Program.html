@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Exiting Your Program</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Exiting Your Program: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
 <link rel="prev" href="chimara-Your-Programs-Main-Function.html" title="Your Program's Main Function">
 <link rel="next" href="chimara-The-Interrupt-Handler.html" title="The Interrupt Handler">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Your-Programs-Main-Function.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-The-Interrupt-Handler.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Exiting-Your-Program"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,41 +31,41 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Exiting-Your-Program.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody><tr>
 <td class="function_type">
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()">glk_exit</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()">glk_exit</a> <span class="c_punctuation">()</span>
 </td>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Exiting-Your-Program.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Exiting-Your-Program.description"></a><h2>Description</h2>
 <p>A Glk program usually ends when the end of the <code class="function">glk_main()</code> function is 
 reached. You can also terminate it earlier.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Exiting-Your-Program.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-exit"></a><h3>glk_exit ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
 glk_exit (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>If you want to shut down your program in the middle of your <code class="literal"><code class="function">glk_main()</code></code>
-function, you can call <a href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a>.</p>
+function, you can call <a class="link" href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a>.</p>
 <p>This function does not return.</p>
 <p>If you print some text to a window and then shut down your program, you can
 assume that the player will be able to read it. Most likely the Glk library
@@ -73,20 +73,17 @@ will give a “<code class="literal">Hit any key to exit</code>” prompt.
 (There are other possiblities, however.
 A terminal-window version of Glk might simply exit and leave the last screen
 state visible in the terminal window.)</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-You should only shut down your program with <a href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a> or by returning from
+<div class="note"><p>
+You should only shut down your program with <a class="link" href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a> or by returning from
 your <code class="function"><code class="function">glk_main()</code></code> function. If you call the ANSI 
 <code class="function"><code class="function">exit()</code></code> function, bad things may happen. Some versions of
 the Glk library may be designed for multiple sessions, for example, and you
 would be cutting off all the sessions instead of just yours. You would 
 probably also prevent final text from being visible to the player.
-</p>
-</div>
-<div class="blockquote"><blockquote class="blockquote"><div class="refsect2" lang="en">
-<a name="idp140340075408688"></a><h3>Chimara</h3>
-<p>If there are any windows open at the time <a href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a> is called, then
+</p></div>
+<div class="blockquote"><blockquote class="blockquote"><div class="refsect2">
+<a name="id-1.4.4.3.6.2.8.1"></a><h3>Chimara</h3>
+<p>If there are any windows open at the time <a class="link" href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a> is called, then
 Chimara will leave them open.
 This way, the final text remains visible.
 Note that bad things most definitely <span class="emphasis"><em>will</em></span> happen if
@@ -94,11 +91,8 @@ you use the ANSI <code class="literal"><code class="function">exit()</code></cod
 </div></blockquote></div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-Exiting-Your-Program.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

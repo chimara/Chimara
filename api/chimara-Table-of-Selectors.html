@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Table of Selectors</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Table of Selectors: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
 <link rel="prev" href="chimara-Functions-the-Library-Must-Provide.html" title="Functions the Library Must Provide">
 <link rel="next" href="chimara-glk-spec-the-blorb-layer.html" title="Appendix B. The Blorb Layer">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,7 +19,7 @@
 <td><a accesskey="p" href="chimara-Functions-the-Library-Must-Provide.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-glk-spec-the-blorb-layer.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Table-of-Selectors"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -28,751 +28,754 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
-<a name="idp140340079821648"></a><h2>Description</h2>
+<div class="refsect1">
+<a name="id-1.4.15.7.3"></a><h2>Description</h2>
 <p>
 These values, and the values used for future Glk calls, are integers in the range <code class="code">0x0001</code> to <code class="code">0xFFFF</code> (1 to 65535). The values are not sequential; they are divided into groups, roughly by category. Zero is not the selector of any
 Glk call, so it may be used for a null value.
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody>
 <tr>
-<td><span class="term"><code class="code">0x0001</code></span></td>
+<td><p><span class="term"><code class="code">0x0001</code></span></p></td>
 <td><p>
-    <a href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a>
+    <a class="link" href="chimara-Exiting-Your-Program.html#glk-exit" title="glk_exit ()"><code class="function">glk_exit()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0002</code></span></td>
+<td><p><span class="term"><code class="code">0x0002</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Interrupt-Handler.html#glk-set-interrupt-handler" title="glk_set_interrupt_handler ()"><code class="function">glk_set_interrupt_handler()</code></a>
+    <a class="link" href="chimara-The-Interrupt-Handler.html#glk-set-interrupt-handler" title="glk_set_interrupt_handler ()"><code class="function">glk_set_interrupt_handler()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0003</code></span></td>
+<td><p><span class="term"><code class="code">0x0003</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a>
+    <a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0004</code></span></td>
+<td><p><span class="term"><code class="code">0x0004</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Gestalt-System.html#glk-gestalt" title="glk_gestalt ()"><code class="function">glk_gestalt()</code></a>
+    <a class="link" href="chimara-The-Gestalt-System.html#glk-gestalt" title="glk_gestalt ()"><code class="function">glk_gestalt()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0005</code></span></td>
+<td><p><span class="term"><code class="code">0x0005</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Gestalt-System.html#glk-gestalt-ext" title="glk_gestalt_ext ()"><code class="function">glk_gestalt_ext()</code></a>
+    <a class="link" href="chimara-The-Gestalt-System.html#glk-gestalt-ext" title="glk_gestalt_ext ()"><code class="function">glk_gestalt_ext()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0020</code></span></td>
+<td><p><span class="term"><code class="code">0x0020</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-iterate" title="glk_window_iterate ()"><code class="function">glk_window_iterate()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-iterate" title="glk_window_iterate ()"><code class="function">glk_window_iterate()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0021</code></span></td>
+<td><p><span class="term"><code class="code">0x0021</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-get-rock" title="glk_window_get_rock ()"><code class="function">glk_window_get_rock()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-rock" title="glk_window_get_rock ()"><code class="function">glk_window_get_rock()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0022</code></span></td>
+<td><p><span class="term"><code class="code">0x0022</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-get-root" title="glk_window_get_root ()"><code class="function">glk_window_get_root()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-root" title="glk_window_get_root ()"><code class="function">glk_window_get_root()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0023</code></span></td>
+<td><p><span class="term"><code class="code">0x0023</code></span></p></td>
 <td><p>
-    <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>
+    <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0024</code></span></td>
+<td><p><span class="term"><code class="code">0x0024</code></span></p></td>
 <td><p>
-    <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-close" title="glk_window_close ()"><code class="function">glk_window_close()</code></a>
+    <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-close" title="glk_window_close ()"><code class="function">glk_window_close()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0025</code></span></td>
+<td><p><span class="term"><code class="code">0x0025</code></span></p></td>
 <td><p>
-    <a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a>
+    <a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0026</code></span></td>
+<td><p><span class="term"><code class="code">0x0026</code></span></p></td>
 <td><p>
-    <a href="chimara-Changing-Window-Constraints.html#glk-window-set-arrangement" title="glk_window_set_arrangement ()"><code class="function">glk_window_set_arrangement()</code></a>
+    <a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-set-arrangement" title="glk_window_set_arrangement ()"><code class="function">glk_window_set_arrangement()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0027</code></span></td>
+<td><p><span class="term"><code class="code">0x0027</code></span></p></td>
 <td><p>
-    <a href="chimara-Changing-Window-Constraints.html#glk-window-get-arrangement" title="glk_window_get_arrangement ()"><code class="function">glk_window_get_arrangement()</code></a>
+    <a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-arrangement" title="glk_window_get_arrangement ()"><code class="function">glk_window_get_arrangement()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0028</code></span></td>
+<td><p><span class="term"><code class="code">0x0028</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-get-type" title="glk_window_get_type ()"><code class="function">glk_window_get_type()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-type" title="glk_window_get_type ()"><code class="function">glk_window_get_type()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0029</code></span></td>
+<td><p><span class="term"><code class="code">0x0029</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-get-parent" title="glk_window_get_parent ()"><code class="function">glk_window_get_parent()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-parent" title="glk_window_get_parent ()"><code class="function">glk_window_get_parent()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x002A</code></span></td>
+<td><p><span class="term"><code class="code">0x002A</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()"><code class="function">glk_window_clear()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-clear" title="glk_window_clear ()"><code class="function">glk_window_clear()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x002B</code></span></td>
+<td><p><span class="term"><code class="code">0x002B</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Windows.html#glk-window-move-cursor" title="glk_window_move_cursor ()"><code class="function">glk_window_move_cursor()</code></a>
+    <a class="link" href="chimara-The-Types-of-Windows.html#glk-window-move-cursor" title="glk_window_move_cursor ()"><code class="function">glk_window_move_cursor()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x002C</code></span></td>
+<td><p><span class="term"><code class="code">0x002C</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-get-stream" title="glk_window_get_stream ()"><code class="function">glk_window_get_stream()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-stream" title="glk_window_get_stream ()"><code class="function">glk_window_get_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x002D</code></span></td>
+<td><p><span class="term"><code class="code">0x002D</code></span></p></td>
 <td><p>
-    <a href="chimara-Echo-Streams.html#glk-window-set-echo-stream" title="glk_window_set_echo_stream ()"><code class="function">glk_window_set_echo_stream()</code></a>
+    <a class="link" href="chimara-Echo-Streams.html#glk-window-set-echo-stream" title="glk_window_set_echo_stream ()"><code class="function">glk_window_set_echo_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x002E</code></span></td>
+<td><p><span class="term"><code class="code">0x002E</code></span></p></td>
 <td><p>
-    <a href="chimara-Echo-Streams.html#glk-window-get-echo-stream" title="glk_window_get_echo_stream ()"><code class="function">glk_window_get_echo_stream()</code></a>
+    <a class="link" href="chimara-Echo-Streams.html#glk-window-get-echo-stream" title="glk_window_get_echo_stream ()"><code class="function">glk_window_get_echo_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x002F</code></span></td>
+<td><p><span class="term"><code class="code">0x002F</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-set-window" title="glk_set_window ()"><code class="function">glk_set_window()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-set-window" title="glk_set_window ()"><code class="function">glk_set_window()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0030</code></span></td>
+<td><p><span class="term"><code class="code">0x0030</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Window-Functions.html#glk-window-get-sibling" title="glk_window_get_sibling ()"><code class="function">glk_window_get_sibling()</code></a>
+    <a class="link" href="chimara-Other-Window-Functions.html#glk-window-get-sibling" title="glk_window_get_sibling ()"><code class="function">glk_window_get_sibling()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0040</code></span></td>
+<td><p><span class="term"><code class="code">0x0040</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Stream-Functions.html#glk-stream-iterate" title="glk_stream_iterate ()"><code class="function">glk_stream_iterate()</code></a>
+    <a class="link" href="chimara-Other-Stream-Functions.html#glk-stream-iterate" title="glk_stream_iterate ()"><code class="function">glk_stream_iterate()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0041</code></span></td>
+<td><p><span class="term"><code class="code">0x0041</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Stream-Functions.html#glk-stream-get-rock" title="glk_stream_get_rock ()"><code class="function">glk_stream_get_rock()</code></a>
+    <a class="link" href="chimara-Other-Stream-Functions.html#glk-stream-get-rock" title="glk_stream_get_rock ()"><code class="function">glk_stream_get_rock()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0042</code></span></td>
+<td><p><span class="term"><code class="code">0x0042</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Streams.html#glk-stream-open-file" title="glk_stream_open_file ()"><code class="function">glk_stream_open_file()</code></a>
+    <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-file" title="glk_stream_open_file ()"><code class="function">glk_stream_open_file()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0043</code></span></td>
+<td><p><span class="term"><code class="code">0x0043</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory" title="glk_stream_open_memory ()"><code class="function">glk_stream_open_memory()</code></a>
+    <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-memory" title="glk_stream_open_memory ()"><code class="function">glk_stream_open_memory()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0044</code></span></td>
+<td><p><span class="term"><code class="code">0x0044</code></span></p></td>
 <td><p>
-    <a href="chimara-Closing-Streams.html#glk-stream-close" title="glk_stream_close ()"><code class="function">glk_stream_close()</code></a>
+    <a class="link" href="chimara-Closing-Streams.html#glk-stream-close" title="glk_stream_close ()"><code class="function">glk_stream_close()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0045</code></span></td>
+<td><p><span class="term"><code class="code">0x0045</code></span></p></td>
 <td><p>
-    <a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>
+    <a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0046</code></span></td>
+<td><p><span class="term"><code class="code">0x0046</code></span></p></td>
 <td><p>
-    <a href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a>
+    <a class="link" href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0047</code></span></td>
+<td><p><span class="term"><code class="code">0x0047</code></span></p></td>
 <td><p>
-    <a href="chimara-Streams.html#glk-stream-set-current" title="glk_stream_set_current ()"><code class="function">glk_stream_set_current()</code></a>
+    <a class="link" href="chimara-Streams.html#glk-stream-set-current" title="glk_stream_set_current ()"><code class="function">glk_stream_set_current()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0048</code></span></td>
+<td><p><span class="term"><code class="code">0x0048</code></span></p></td>
 <td><p>
-    <a href="chimara-Streams.html#glk-stream-get-current" title="glk_stream_get_current ()"><code class="function">glk_stream_get_current()</code></a>
+    <a class="link" href="chimara-Streams.html#glk-stream-get-current" title="glk_stream_get_current ()"><code class="function">glk_stream_get_current()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0060</code></span></td>
+<td><p><span class="term"><code class="code">0x0060</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-File-References.html#glk-fileref-create-temp" title="glk_fileref_create_temp ()"><code class="function">glk_fileref_create_temp()</code></a>
+    <a class="link" href="chimara-The-Types-of-File-References.html#glk-fileref-create-temp" title="glk_fileref_create_temp ()"><code class="function">glk_fileref_create_temp()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0061</code></span></td>
+<td><p><span class="term"><code class="code">0x0061</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-name" title="glk_fileref_create_by_name ()"><code class="function">glk_fileref_create_by_name()</code></a>
+    <a class="link" href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-name" title="glk_fileref_create_by_name ()"><code class="function">glk_fileref_create_by_name()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0062</code></span></td>
+<td><p><span class="term"><code class="code">0x0062</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-prompt" title="glk_fileref_create_by_prompt ()"><code class="function">glk_fileref_create_by_prompt()</code></a>
+    <a class="link" href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-prompt" title="glk_fileref_create_by_prompt ()"><code class="function">glk_fileref_create_by_prompt()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0063</code></span></td>
+<td><p><span class="term"><code class="code">0x0063</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-File-Reference-Functions.html#glk-fileref-destroy" title="glk_fileref_destroy ()"><code class="function">glk_fileref_destroy()</code></a>
+    <a class="link" href="chimara-Other-File-Reference-Functions.html#glk-fileref-destroy" title="glk_fileref_destroy ()"><code class="function">glk_fileref_destroy()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0064</code></span></td>
+<td><p><span class="term"><code class="code">0x0064</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-File-Reference-Functions.html#glk-fileref-iterate" title="glk_fileref_iterate ()"><code class="function">glk_fileref_iterate()</code></a>
+    <a class="link" href="chimara-Other-File-Reference-Functions.html#glk-fileref-iterate" title="glk_fileref_iterate ()"><code class="function">glk_fileref_iterate()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0065</code></span></td>
+<td><p><span class="term"><code class="code">0x0065</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-File-Reference-Functions.html#glk-fileref-get-rock" title="glk_fileref_get_rock ()"><code class="function">glk_fileref_get_rock()</code></a>
+    <a class="link" href="chimara-Other-File-Reference-Functions.html#glk-fileref-get-rock" title="glk_fileref_get_rock ()"><code class="function">glk_fileref_get_rock()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0066</code></span></td>
+<td><p><span class="term"><code class="code">0x0066</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-File-Reference-Functions.html#glk-fileref-delete-file" title="glk_fileref_delete_file ()"><code class="function">glk_fileref_delete_file()</code></a>
+    <a class="link" href="chimara-Other-File-Reference-Functions.html#glk-fileref-delete-file" title="glk_fileref_delete_file ()"><code class="function">glk_fileref_delete_file()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0067</code></span></td>
+<td><p><span class="term"><code class="code">0x0067</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-File-Reference-Functions.html#glk-fileref-does-file-exist" title="glk_fileref_does_file_exist ()"><code class="function">glk_fileref_does_file_exist()</code></a>
+    <a class="link" href="chimara-Other-File-Reference-Functions.html#glk-fileref-does-file-exist" title="glk_fileref_does_file_exist ()"><code class="function">glk_fileref_does_file_exist()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0068</code></span></td>
+<td><p><span class="term"><code class="code">0x0068</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-File-References.html#glk-fileref-create-from-fileref" title="glk_fileref_create_from_fileref ()"><code class="function">glk_fileref_create_from_fileref()</code></a>
+    <a class="link" href="chimara-The-Types-of-File-References.html#glk-fileref-create-from-fileref" title="glk_fileref_create_from_fileref ()"><code class="function">glk_fileref_create_from_fileref()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0080</code></span></td>
+<td><p><span class="term"><code class="code">0x0080</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-char" title="glk_put_char ()"><code class="function">glk_put_char()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-char" title="glk_put_char ()"><code class="function">glk_put_char()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0081</code></span></td>
+<td><p><span class="term"><code class="code">0x0081</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-char-stream" title="glk_put_char_stream ()"><code class="function">glk_put_char_stream()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-char-stream" title="glk_put_char_stream ()"><code class="function">glk_put_char_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0082</code></span></td>
+<td><p><span class="term"><code class="code">0x0082</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-string" title="glk_put_string ()"><code class="function">glk_put_string()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-string" title="glk_put_string ()"><code class="function">glk_put_string()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0083</code></span></td>
+<td><p><span class="term"><code class="code">0x0083</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-string-stream" title="glk_put_string_stream ()"><code class="function">glk_put_string_stream()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-string-stream" title="glk_put_string_stream ()"><code class="function">glk_put_string_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0084</code></span></td>
+<td><p><span class="term"><code class="code">0x0084</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-buffer" title="glk_put_buffer ()"><code class="function">glk_put_buffer()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-buffer" title="glk_put_buffer ()"><code class="function">glk_put_buffer()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0085</code></span></td>
+<td><p><span class="term"><code class="code">0x0085</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-buffer-stream" title="glk_put_buffer_stream ()"><code class="function">glk_put_buffer_stream()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-buffer-stream" title="glk_put_buffer_stream ()"><code class="function">glk_put_buffer_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0086</code></span></td>
+<td><p><span class="term"><code class="code">0x0086</code></span></p></td>
 <td><p>
-    <a href="chimara-Styles.html#glk-set-style" title="glk_set_style ()"><code class="function">glk_set_style()</code></a>
+    <a class="link" href="chimara-Styles.html#glk-set-style" title="glk_set_style ()"><code class="function">glk_set_style()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0087</code></span></td>
+<td><p><span class="term"><code class="code">0x0087</code></span></p></td>
 <td><p>
-    <a href="chimara-Styles.html#glk-set-style-stream" title="glk_set_style_stream ()"><code class="function">glk_set_style_stream()</code></a>
+    <a class="link" href="chimara-Styles.html#glk-set-style-stream" title="glk_set_style_stream ()"><code class="function">glk_set_style_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0090</code></span></td>
+<td><p><span class="term"><code class="code">0x0090</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Read.html#glk-get-char-stream" title="glk_get_char_stream ()"><code class="function">glk_get_char_stream()</code></a>
+    <a class="link" href="chimara-How-to-Read.html#glk-get-char-stream" title="glk_get_char_stream ()"><code class="function">glk_get_char_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0091</code></span></td>
+<td><p><span class="term"><code class="code">0x0091</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Read.html#glk-get-line-stream" title="glk_get_line_stream ()"><code class="function">glk_get_line_stream()</code></a>
+    <a class="link" href="chimara-How-to-Read.html#glk-get-line-stream" title="glk_get_line_stream ()"><code class="function">glk_get_line_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0092</code></span></td>
+<td><p><span class="term"><code class="code">0x0092</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Read.html#glk-get-buffer-stream" title="glk_get_buffer_stream ()"><code class="function">glk_get_buffer_stream()</code></a>
+    <a class="link" href="chimara-How-to-Read.html#glk-get-buffer-stream" title="glk_get_buffer_stream ()"><code class="function">glk_get_buffer_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00A0</code></span></td>
+<td><p><span class="term"><code class="code">0x00A0</code></span></p></td>
 <td><p>
-    <a href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()"><code class="function">glk_char_to_lower()</code></a>
+    <a class="link" href="chimara-Upper-and-Lower-Case.html#glk-char-to-lower" title="glk_char_to_lower ()"><code class="function">glk_char_to_lower()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00A1</code></span></td>
+<td><p><span class="term"><code class="code">0x00A1</code></span></p></td>
 <td><p>
-    <a href="chimara-Upper-and-Lower-Case.html#glk-char-to-upper" title="glk_char_to_upper ()"><code class="function">glk_char_to_upper()</code></a>
+    <a class="link" href="chimara-Upper-and-Lower-Case.html#glk-char-to-upper" title="glk_char_to_upper ()"><code class="function">glk_char_to_upper()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00B0</code></span></td>
+<td><p><span class="term"><code class="code">0x00B0</code></span></p></td>
 <td><p>
-    <a href="chimara-Suggesting-the-Appearance-of-Styles.html#glk-stylehint-set" title="glk_stylehint_set ()"><code class="function">glk_stylehint_set()</code></a>
+    <a class="link" href="chimara-Suggesting-the-Appearance-of-Styles.html#glk-stylehint-set" title="glk_stylehint_set ()"><code class="function">glk_stylehint_set()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00B1</code></span></td>
+<td><p><span class="term"><code class="code">0x00B1</code></span></p></td>
 <td><p>
-    <a href="chimara-Suggesting-the-Appearance-of-Styles.html#glk-stylehint-clear" title="glk_stylehint_clear ()"><code class="function">glk_stylehint_clear()</code></a>
+    <a class="link" href="chimara-Suggesting-the-Appearance-of-Styles.html#glk-stylehint-clear" title="glk_stylehint_clear ()"><code class="function">glk_stylehint_clear()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00B2</code></span></td>
+<td><p><span class="term"><code class="code">0x00B2</code></span></p></td>
 <td><p>
-    <a href="chimara-Testing-the-Appearance-of-Styles.html#glk-style-distinguish" title="glk_style_distinguish ()"><code class="function">glk_style_distinguish()</code></a>
+    <a class="link" href="chimara-Testing-the-Appearance-of-Styles.html#glk-style-distinguish" title="glk_style_distinguish ()"><code class="function">glk_style_distinguish()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00B3</code></span></td>
+<td><p><span class="term"><code class="code">0x00B3</code></span></p></td>
 <td><p>
-    <a href="chimara-Testing-the-Appearance-of-Styles.html#glk-style-measure" title="glk_style_measure ()"><code class="function">glk_style_measure()</code></a>
+    <a class="link" href="chimara-Testing-the-Appearance-of-Styles.html#glk-style-measure" title="glk_style_measure ()"><code class="function">glk_style_measure()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00C0</code></span></td>
+<td><p><span class="term"><code class="code">0x00C0</code></span></p></td>
 <td><p>
-    <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>
+    <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00C1</code></span></td>
+<td><p><span class="term"><code class="code">0x00C1</code></span></p></td>
 <td><p>
-    <a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>
+    <a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D0</code></span></td>
+<td><p><span class="term"><code class="code">0x00D0</code></span></p></td>
 <td><p>
-    <a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a>
+    <a class="link" href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D1</code></span></td>
+<td><p><span class="term"><code class="code">0x00D1</code></span></p></td>
 <td><p>
-    <a href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a>
+    <a class="link" href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D2</code></span></td>
+<td><p><span class="term"><code class="code">0x00D2</code></span></p></td>
 <td><p>
-    <a href="chimara-Character-Input-Events.html#glk-request-char-event" title="glk_request_char_event ()"><code class="function">glk_request_char_event()</code></a>
+    <a class="link" href="chimara-Character-Input-Events.html#glk-request-char-event" title="glk_request_char_event ()"><code class="function">glk_request_char_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D3</code></span></td>
+<td><p><span class="term"><code class="code">0x00D3</code></span></p></td>
 <td><p>
-    <a href="chimara-Character-Input-Events.html#glk-cancel-char-event" title="glk_cancel_char_event ()"><code class="function">glk_cancel_char_event()</code></a>
+    <a class="link" href="chimara-Character-Input-Events.html#glk-cancel-char-event" title="glk_cancel_char_event ()"><code class="function">glk_cancel_char_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D4</code></span></td>
+<td><p><span class="term"><code class="code">0x00D4</code></span></p></td>
 <td><p>
-    <a href="chimara-Mouse-Input-Events.html#glk-request-mouse-event" title="glk_request_mouse_event ()"><code class="function">glk_request_mouse_event()</code></a>
+    <a class="link" href="chimara-Mouse-Input-Events.html#glk-request-mouse-event" title="glk_request_mouse_event ()"><code class="function">glk_request_mouse_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D5</code></span></td>
+<td><p><span class="term"><code class="code">0x00D5</code></span></p></td>
 <td><p>
-    <a href="chimara-Mouse-Input-Events.html#glk-cancel-mouse-event" title="glk_cancel_mouse_event ()"><code class="function">glk_cancel_mouse_event()</code></a>
+    <a class="link" href="chimara-Mouse-Input-Events.html#glk-cancel-mouse-event" title="glk_cancel_mouse_event ()"><code class="function">glk_cancel_mouse_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00D6</code></span></td>
+<td><p><span class="term"><code class="code">0x00D6</code></span></p></td>
 <td><p>
-    <a href="chimara-Timer-Events.html#glk-request-timer-events" title="glk_request_timer_events ()"><code class="function">glk_request_timer_events()</code></a>
+    <a class="link" href="chimara-Timer-Events.html#glk-request-timer-events" title="glk_request_timer_events ()"><code class="function">glk_request_timer_events()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00E0</code></span></td>
+<td><p><span class="term"><code class="code">0x00E0</code></span></p></td>
 <td><p>
-    <a href="chimara-Image-Resources.html#glk-image-get-info" title="glk_image_get_info ()"><code class="function">glk_image_get_info()</code></a>
+    <a class="link" href="chimara-Image-Resources.html#glk-image-get-info" title="glk_image_get_info ()"><code class="function">glk_image_get_info()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00E1</code></span></td>
+<td><p><span class="term"><code class="code">0x00E1</code></span></p></td>
 <td><p>
-    <a href="chimara-Image-Resources.html#glk-image-draw" title="glk_image_draw ()"><code class="function">glk_image_draw()</code></a>
+    <a class="link" href="chimara-Image-Resources.html#glk-image-draw" title="glk_image_draw ()"><code class="function">glk_image_draw()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00E2</code></span></td>
+<td><p><span class="term"><code class="code">0x00E2</code></span></p></td>
 <td><p>
-    <a href="chimara-Image-Resources.html#glk-image-draw-scaled" title="glk_image_draw_scaled ()"><code class="function">glk_image_draw_scaled()</code></a>
+    <a class="link" href="chimara-Image-Resources.html#glk-image-draw-scaled" title="glk_image_draw_scaled ()"><code class="function">glk_image_draw_scaled()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00E8</code></span></td>
+<td><p><span class="term"><code class="code">0x00E8</code></span></p></td>
 <td><p>
-    <a href="chimara-Graphics-in-Text-Buffer-Windows.html#glk-window-flow-break" title="glk_window_flow_break ()"><code class="function">glk_window_flow_break()</code></a>
+    <a class="link" href="chimara-Graphics-in-Text-Buffer-Windows.html#glk-window-flow-break" title="glk_window_flow_break ()"><code class="function">glk_window_flow_break()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00E9</code></span></td>
+<td><p><span class="term"><code class="code">0x00E9</code></span></p></td>
 <td><p>
-    <a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-erase-rect" title="glk_window_erase_rect ()"><code class="function">glk_window_erase_rect()</code></a>
+    <a class="link" href="chimara-Graphics-in-Graphics-Windows.html#glk-window-erase-rect" title="glk_window_erase_rect ()"><code class="function">glk_window_erase_rect()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00EA</code></span></td>
+<td><p><span class="term"><code class="code">0x00EA</code></span></p></td>
 <td><p>
-    <a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-fill-rect" title="glk_window_fill_rect ()"><code class="function">glk_window_fill_rect()</code></a>
+    <a class="link" href="chimara-Graphics-in-Graphics-Windows.html#glk-window-fill-rect" title="glk_window_fill_rect ()"><code class="function">glk_window_fill_rect()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00EB</code></span></td>
+<td><p><span class="term"><code class="code">0x00EB</code></span></p></td>
 <td><p>
-    <a href="chimara-Graphics-in-Graphics-Windows.html#glk-window-set-background-color" title="glk_window_set_background_color ()"><code class="function">glk_window_set_background_color()</code></a>
+    <a class="link" href="chimara-Graphics-in-Graphics-Windows.html#glk-window-set-background-color" title="glk_window_set_background_color ()"><code class="function">glk_window_set_background_color()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F0</code></span></td>
+<td><p><span class="term"><code class="code">0x00F0</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-iterate" title="glk_schannel_iterate ()"><code class="function">glk_schannel_iterate()</code></a>
+    <a class="link" href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-iterate" title="glk_schannel_iterate ()"><code class="function">glk_schannel_iterate()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F1</code></span></td>
+<td><p><span class="term"><code class="code">0x00F1</code></span></p></td>
 <td><p>
-    <a href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-get-rock" title="glk_schannel_get_rock ()"><code class="function">glk_schannel_get_rock()</code></a>
+    <a class="link" href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-get-rock" title="glk_schannel_get_rock ()"><code class="function">glk_schannel_get_rock()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F2</code></span></td>
+<td><p><span class="term"><code class="code">0x00F2</code></span></p></td>
 <td><p>
-    <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a>
+    <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create" title="glk_schannel_create ()"><code class="function">glk_schannel_create()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F3</code></span></td>
+<td><p><span class="term"><code class="code">0x00F3</code></span></p></td>
 <td><p>
-    <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-destroy" title="glk_schannel_destroy ()"><code class="function">glk_schannel_destroy()</code></a>
+    <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-destroy" title="glk_schannel_destroy ()"><code class="function">glk_schannel_destroy()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F8</code></span></td>
+<td><p><span class="term"><code class="code">0x00F8</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-play" title="glk_schannel_play ()"><code class="function">glk_schannel_play()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-play" title="glk_schannel_play ()"><code class="function">glk_schannel_play()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F9</code></span></td>
+<td><p><span class="term"><code class="code">0x00F9</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-play-ext" title="glk_schannel_play_ext ()"><code class="function">glk_schannel_play_ext()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-play-ext" title="glk_schannel_play_ext ()"><code class="function">glk_schannel_play_ext()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00FA</code></span></td>
+<td><p><span class="term"><code class="code">0x00FA</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-stop" title="glk_schannel_stop ()"><code class="function">glk_schannel_stop()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-stop" title="glk_schannel_stop ()"><code class="function">glk_schannel_stop()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00FB</code></span></td>
+<td><p><span class="term"><code class="code">0x00FB</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-set-volume" title="glk_schannel_set_volume ()"><code class="function">glk_schannel_set_volume()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-set-volume" title="glk_schannel_set_volume ()"><code class="function">glk_schannel_set_volume()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00FC</code></span></td>
+<td><p><span class="term"><code class="code">0x00FC</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-sound-load-hint" title="glk_sound_load_hint ()"><code class="function">glk_sound_load_hint()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-sound-load-hint" title="glk_sound_load_hint ()"><code class="function">glk_sound_load_hint()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F4</code></span></td>
+<td><p><span class="term"><code class="code">0x00F4</code></span></p></td>
 <td><p>
-    <a href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a>
+    <a class="link" href="chimara-Creating-and-Destroying-Sound-Channels.html#glk-schannel-create-ext" title="glk_schannel_create_ext ()"><code class="function">glk_schannel_create_ext()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00F7</code></span></td>
+<td><p><span class="term"><code class="code">0x00F7</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-play-multi" title="glk_schannel_play_multi ()"><code class="function">glk_schannel_play_multi()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-play-multi" title="glk_schannel_play_multi ()"><code class="function">glk_schannel_play_multi()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00FD</code></span></td>
+<td><p><span class="term"><code class="code">0x00FD</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-set-volume-ext" title="glk_schannel_set_volume_ext ()"><code class="function">glk_schannel_set_volume_ext()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-set-volume-ext" title="glk_schannel_set_volume_ext ()"><code class="function">glk_schannel_set_volume_ext()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00FE</code></span></td>
+<td><p><span class="term"><code class="code">0x00FE</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-pause" title="glk_schannel_pause ()"><code class="function">glk_schannel_pause()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-pause" title="glk_schannel_pause ()"><code class="function">glk_schannel_pause()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x00FF</code></span></td>
+<td><p><span class="term"><code class="code">0x00FF</code></span></p></td>
 <td><p>
-    <a href="chimara-Playing-Sounds.html#glk-schannel-unpause" title="glk_schannel_unpause ()"><code class="function">glk_schannel_unpause()</code></a>
+    <a class="link" href="chimara-Playing-Sounds.html#glk-schannel-unpause" title="glk_schannel_unpause ()"><code class="function">glk_schannel_unpause()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0100</code></span></td>
+<td><p><span class="term"><code class="code">0x0100</code></span></p></td>
 <td><p>
-    <a href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink" title="glk_set_hyperlink ()"><code class="function">glk_set_hyperlink()</code></a>
+    <a class="link" href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink" title="glk_set_hyperlink ()"><code class="function">glk_set_hyperlink()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0101</code></span></td>
+<td><p><span class="term"><code class="code">0x0101</code></span></p></td>
 <td><p>
-    <a href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink-stream" title="glk_set_hyperlink_stream ()"><code class="function">glk_set_hyperlink_stream()</code></a>
+    <a class="link" href="chimara-Creating-Hyperlinks.html#glk-set-hyperlink-stream" title="glk_set_hyperlink_stream ()"><code class="function">glk_set_hyperlink_stream()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0102</code></span></td>
+<td><p><span class="term"><code class="code">0x0102</code></span></p></td>
 <td><p>
-    <a href="chimara-Accepting-Hyperlink-Events.html#glk-request-hyperlink-event" title="glk_request_hyperlink_event ()"><code class="function">glk_request_hyperlink_event()</code></a>
+    <a class="link" href="chimara-Accepting-Hyperlink-Events.html#glk-request-hyperlink-event" title="glk_request_hyperlink_event ()"><code class="function">glk_request_hyperlink_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0103</code></span></td>
+<td><p><span class="term"><code class="code">0x0103</code></span></p></td>
 <td><p>
-    <a href="chimara-Accepting-Hyperlink-Events.html#glk-cancel-hyperlink-event" title="glk_cancel_hyperlink_event ()"><code class="function">glk_cancel_hyperlink_event()</code></a>
+    <a class="link" href="chimara-Accepting-Hyperlink-Events.html#glk-cancel-hyperlink-event" title="glk_cancel_hyperlink_event ()"><code class="function">glk_cancel_hyperlink_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0120</code></span></td>
+<td><p><span class="term"><code class="code">0x0120</code></span></p></td>
 <td><p>
-    <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>
+    <a class="link" href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0121</code></span></td>
+<td><p><span class="term"><code class="code">0x0121</code></span></p></td>
 <td><p>
-    <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-upper-case-uni" title="glk_buffer_to_upper_case_uni ()"><code class="function">glk_buffer_to_upper_case_uni()</code></a>
+    <a class="link" href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-upper-case-uni" title="glk_buffer_to_upper_case_uni ()"><code class="function">glk_buffer_to_upper_case_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0122</code></span></td>
+<td><p><span class="term"><code class="code">0x0122</code></span></p></td>
 <td><p>
-    <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-title-case-uni" title="glk_buffer_to_title_case_uni ()"><code class="function">glk_buffer_to_title_case_uni()</code></a>
+    <a class="link" href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-title-case-uni" title="glk_buffer_to_title_case_uni ()"><code class="function">glk_buffer_to_title_case_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0128</code></span></td>
+<td><p><span class="term"><code class="code">0x0128</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-char-uni" title="glk_put_char_uni ()"><code class="function">glk_put_char_uni()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-char-uni" title="glk_put_char_uni ()"><code class="function">glk_put_char_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0129</code></span></td>
+<td><p><span class="term"><code class="code">0x0129</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-string-uni" title="glk_put_string_uni ()"><code class="function">glk_put_string_uni()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-string-uni" title="glk_put_string_uni ()"><code class="function">glk_put_string_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x012A</code></span></td>
+<td><p><span class="term"><code class="code">0x012A</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-buffer-uni" title="glk_put_buffer_uni ()"><code class="function">glk_put_buffer_uni()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-buffer-uni" title="glk_put_buffer_uni ()"><code class="function">glk_put_buffer_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x012B</code></span></td>
+<td><p><span class="term"><code class="code">0x012B</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-char-stream-uni" title="glk_put_char_stream_uni ()"><code class="function">glk_put_char_stream_uni()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-char-stream-uni" title="glk_put_char_stream_uni ()"><code class="function">glk_put_char_stream_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x012C</code></span></td>
+<td><p><span class="term"><code class="code">0x012C</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-string-stream-uni" title="glk_put_string_stream_uni ()"><code class="function">glk_put_string_stream_uni()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-string-stream-uni" title="glk_put_string_stream_uni ()"><code class="function">glk_put_string_stream_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x012D</code></span></td>
+<td><p><span class="term"><code class="code">0x012D</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Print.html#glk-put-buffer-stream-uni" title="glk_put_buffer_stream_uni ()"><code class="function">glk_put_buffer_stream_uni()</code></a>
+    <a class="link" href="chimara-How-to-Print.html#glk-put-buffer-stream-uni" title="glk_put_buffer_stream_uni ()"><code class="function">glk_put_buffer_stream_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0130</code></span></td>
+<td><p><span class="term"><code class="code">0x0130</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Read.html#glk-get-char-stream-uni" title="glk_get_char_stream_uni ()"><code class="function">glk_get_char_stream_uni()</code></a>
+    <a class="link" href="chimara-How-to-Read.html#glk-get-char-stream-uni" title="glk_get_char_stream_uni ()"><code class="function">glk_get_char_stream_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0131</code></span></td>
+<td><p><span class="term"><code class="code">0x0131</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Read.html#glk-get-buffer-stream-uni" title="glk_get_buffer_stream_uni ()"><code class="function">glk_get_buffer_stream_uni()</code></a>
+    <a class="link" href="chimara-How-to-Read.html#glk-get-buffer-stream-uni" title="glk_get_buffer_stream_uni ()"><code class="function">glk_get_buffer_stream_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0132</code></span></td>
+<td><p><span class="term"><code class="code">0x0132</code></span></p></td>
 <td><p>
-    <a href="chimara-How-to-Read.html#glk-get-line-stream-uni" title="glk_get_line_stream_uni ()"><code class="function">glk_get_line_stream_uni()</code></a>
+    <a class="link" href="chimara-How-to-Read.html#glk-get-line-stream-uni" title="glk_get_line_stream_uni ()"><code class="function">glk_get_line_stream_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0138</code></span></td>
+<td><p><span class="term"><code class="code">0x0138</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Streams.html#glk-stream-open-file-uni" title="glk_stream_open_file_uni ()"><code class="function">glk_stream_open_file_uni()</code></a>
+    <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-file-uni" title="glk_stream_open_file_uni ()"><code class="function">glk_stream_open_file_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0139</code></span></td>
+<td><p><span class="term"><code class="code">0x0139</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory-uni" title="glk_stream_open_memory_uni ()"><code class="function">glk_stream_open_memory_uni()</code></a>
+    <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-memory-uni" title="glk_stream_open_memory_uni ()"><code class="function">glk_stream_open_memory_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0140</code></span></td>
+<td><p><span class="term"><code class="code">0x0140</code></span></p></td>
 <td><p>
-    <a href="chimara-Character-Input-Events.html#glk-request-char-event-uni" title="glk_request_char_event_uni ()"><code class="function">glk_request_char_event_uni()</code></a>
+    <a class="link" href="chimara-Character-Input-Events.html#glk-request-char-event-uni" title="glk_request_char_event_uni ()"><code class="function">glk_request_char_event_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0141</code></span></td>
+<td><p><span class="term"><code class="code">0x0141</code></span></p></td>
 <td><p>
-    <a href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()"><code class="function">glk_request_line_event_uni()</code></a>
+    <a class="link" href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()"><code class="function">glk_request_line_event_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0123</code></span></td>
+<td><p><span class="term"><code class="code">0x0123</code></span></p></td>
 <td><p>
-    <a href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-decompose-uni" title="glk_buffer_canon_decompose_uni ()"><code class="function">glk_buffer_canon_decompose_uni()</code></a>
+    <a class="link" href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-decompose-uni" title="glk_buffer_canon_decompose_uni ()"><code class="function">glk_buffer_canon_decompose_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0124</code></span></td>
+<td><p><span class="term"><code class="code">0x0124</code></span></p></td>
 <td><p>
-    <a href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-normalize-uni" title="glk_buffer_canon_normalize_uni ()"><code class="function">glk_buffer_canon_normalize_uni()</code></a>
+    <a class="link" href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-normalize-uni" title="glk_buffer_canon_normalize_uni ()"><code class="function">glk_buffer_canon_normalize_uni()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0150</code></span></td>
+<td><p><span class="term"><code class="code">0x0150</code></span></p></td>
 <td><p>
-    <a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a>
+    <a class="link" href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0151</code></span></td>
+<td><p><span class="term"><code class="code">0x0151</code></span></p></td>
 <td><p>
-    <a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>
+    <a class="link" href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0160</code></span></td>
+<td><p><span class="term"><code class="code">0x0160</code></span></p></td>
 <td><p>
-    <a href="chimara-The-System-Clock.html#glk-current-time" title="glk_current_time ()"><code class="function">glk_current_time()</code></a>
+    <a class="link" href="chimara-The-System-Clock.html#glk-current-time" title="glk_current_time ()"><code class="function">glk_current_time()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0161</code></span></td>
+<td><p><span class="term"><code class="code">0x0161</code></span></p></td>
 <td><p>
-    <a href="chimara-The-System-Clock.html#glk-current-simple-time" title="glk_current_simple_time ()"><code class="function">glk_current_simple_time()</code></a>
+    <a class="link" href="chimara-The-System-Clock.html#glk-current-simple-time" title="glk_current_simple_time ()"><code class="function">glk_current_simple_time()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0168</code></span></td>
+<td><p><span class="term"><code class="code">0x0168</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-utc" title="glk_time_to_date_utc ()"><code class="function">glk_time_to_date_utc()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-utc" title="glk_time_to_date_utc ()"><code class="function">glk_time_to_date_utc()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0169</code></span></td>
+<td><p><span class="term"><code class="code">0x0169</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-local" title="glk_time_to_date_local ()"><code class="function">glk_time_to_date_local()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-time-to-date-local" title="glk_time_to_date_local ()"><code class="function">glk_time_to_date_local()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x016A</code></span></td>
+<td><p><span class="term"><code class="code">0x016A</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-utc" title="glk_simple_time_to_date_utc ()"><code class="function">glk_simple_time_to_date_utc()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-utc" title="glk_simple_time_to_date_utc ()"><code class="function">glk_simple_time_to_date_utc()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x016B</code></span></td>
+<td><p><span class="term"><code class="code">0x016B</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-local" title="glk_simple_time_to_date_local ()"><code class="function">glk_simple_time_to_date_local()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-simple-time-to-date-local" title="glk_simple_time_to_date_local ()"><code class="function">glk_simple_time_to_date_local()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x016C</code></span></td>
+<td><p><span class="term"><code class="code">0x016C</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-utc" title="glk_date_to_time_utc ()"><code class="function">glk_date_to_time_utc()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-utc" title="glk_date_to_time_utc ()"><code class="function">glk_date_to_time_utc()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x016D</code></span></td>
+<td><p><span class="term"><code class="code">0x016D</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-local" title="glk_date_to_time_local ()"><code class="function">glk_date_to_time_local()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-date-to-time-local" title="glk_date_to_time_local ()"><code class="function">glk_date_to_time_local()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x016E</code></span></td>
+<td><p><span class="term"><code class="code">0x016E</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-utc" title="glk_date_to_simple_time_utc ()"><code class="function">glk_date_to_simple_time_utc()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-utc" title="glk_date_to_simple_time_utc ()"><code class="function">glk_date_to_simple_time_utc()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x016F</code></span></td>
+<td><p><span class="term"><code class="code">0x016F</code></span></p></td>
 <td><p>
-    <a href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-local" title="glk_date_to_simple_time_local ()"><code class="function">glk_date_to_simple_time_local()</code></a>
+    <a class="link" href="chimara-Time-and-Date-Conversions.html#glk-date-to-simple-time-local" title="glk_date_to_simple_time_local ()"><code class="function">glk_date_to_simple_time_local()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x0049</code></span></td>
+<td><p><span class="term"><code class="code">0x0049</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Streams.html#glk-stream-open-resource" title="glk_stream_open_resource ()"><code class="function">glk_stream_open_resource()</code></a>
+    <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-resource" title="glk_stream_open_resource ()"><code class="function">glk_stream_open_resource()</code></a>
   </p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">0x013A</code></span></td>
+<td><p><span class="term"><code class="code">0x013A</code></span></p></td>
 <td><p>
-    <a href="chimara-The-Types-of-Streams.html#glk-stream-open-resource-uni" title="glk_stream_open_resource_uni ()"><code class="function">glk_stream_open_resource_uni()</code></a>
+    <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-resource-uni" title="glk_stream_open_resource_uni ()"><code class="function">glk_stream_open_resource_uni()</code></a>
   </p></td>
 </tr>
 </tbody>
@@ -783,12 +786,9 @@ Note that <code class="function">glk_main()</code> does not have a selector, bec
 <p>
 There is no way to use these selectors directly in the Glk API.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 An earlier version of Glk had gestalt selectors <code class="code">gestalt_FunctionNameToID</code> and <code class="code">gestalt_FunctionIDToName</code>, but these have been withdrawn.
-</p>
-</div>
+</p></div>
 <p>
 They are defined and used only by the dispatch layer.
 </p>
@@ -800,6 +800,6 @@ These are not documented here.
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

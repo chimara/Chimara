@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Stream Positions</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Stream Positions: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-streams.html" title="Streams">
 <link rel="prev" href="chimara-Closing-Streams.html" title="Closing Streams">
 <link rel="next" href="chimara-Styles.html" title="Styles">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Closing-Streams.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Styles.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Stream-Positions"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,12 +31,12 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Stream-Positions.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody>
 <tr>
@@ -44,67 +44,64 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()">glk_stream_set_position</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()">glk_stream_set_position</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
 <td class="function_type">
-<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+<a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
 </td>
 <td class="function_name">
-<a href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()">glk_stream_get_position</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()">glk_stream_get_position</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Stream-Positions.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="other_proto_type">
+<col class="other_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Stream-Positions.html#seekmode-Start" title="seekmode_Start">seekmode_Start</a></td>
+<td class="function_name"><a class="link" href="chimara-Stream-Positions.html#seekmode-Start" title="seekmode_Start">seekmode_Start</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Stream-Positions.html#seekmode-Current" title="seekmode_Current">seekmode_Current</a></td>
+<td class="function_name"><a class="link" href="chimara-Stream-Positions.html#seekmode-Current" title="seekmode_Current">seekmode_Current</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Stream-Positions.html#seekmode-End" title="seekmode_End">seekmode_End</a></td>
+<td class="function_name"><a class="link" href="chimara-Stream-Positions.html#seekmode-End" title="seekmode_End">seekmode_End</a></td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Stream-Positions.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Stream-Positions.description"></a><h2>Description</h2>
 <p>You can set the position of the read/write mark in a stream.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Which makes one wonder why they're called “streams” in the first place.
   Oh well.
-</p>
+</p></div>
 </div>
-</div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Stream-Positions.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-stream-set-position"></a><h3>glk_stream_set_position ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_stream_set_position (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> str</code></em>,
-                         <em class="parameter"><code><a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> pos</code></em>,
-                         <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> seekmode</code></em>);</pre>
+glk_stream_set_position (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> str</code></em>,
+                         <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a> pos</code></em>,
+                         <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> seekmode</code></em>);</pre>
 <p>Sets the position of the read/write mark in <em class="parameter"><code>str</code></em>
 . The position is controlled
 by <em class="parameter"><code>pos</code></em>
@@ -118,23 +115,23 @@ the file.</p>
 number of characters you have read or written. In text files, this mapping 
 can vary, because of linefeed conventions or other character-set 
 approximations.
-See <a href="chimara-Streams.html" title="Streams">Streams</a>.
-<a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a> and <a href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a> measure positions in
+See <a class="link" href="chimara-Streams.html" title="Streams">Streams</a>.
+<a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a> and <a class="link" href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a> measure positions in
 the platform's native encoding — after character cookery. Therefore,
-in a text stream, it is safest to use <a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a> only to move
+in a text stream, it is safest to use <a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a> only to move
 to the beginning or end of a file, or to a position determined by
-<a href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a>.</p>
+<a class="link" href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a>.</p>
 <p>Again, in Latin-1 streams, characters are bytes. In Unicode streams,
 characters are 32-bit words, or four bytes each.</p>
 <p>A window stream doesn't have a movable mark, so calling
-<a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a> has no effect.</p>
-<div class="refsect3" lang="en">
+<a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a> has no effect.</p>
+<div class="refsect3">
 <a name="glk-stream-set-position.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -150,7 +147,7 @@ characters are 32-bit words, or four bytes each.</p>
 </tr>
 <tr>
 <td class="parameter_name"><p>seekmode</p></td>
-<td class="parameter_description"><p>One of <a href="chimara-Stream-Positions.html#seekmode-Start" title="seekmode_Start"><code class="literal">seekmode_Start</code></a>, <a href="chimara-Stream-Positions.html#seekmode-Current" title="seekmode_Current"><code class="literal">seekmode_Current</code></a>, or <a href="chimara-Stream-Positions.html#seekmode-End" title="seekmode_End"><code class="literal">seekmode_End</code></a>.</p></td>
+<td class="parameter_description"><p>One of <a class="link" href="chimara-Stream-Positions.html#seekmode-Start" title="seekmode_Start"><code class="literal">seekmode_Start</code></a>, <a class="link" href="chimara-Stream-Positions.html#seekmode-Current" title="seekmode_Current"><code class="literal">seekmode_Current</code></a>, or <a class="link" href="chimara-Stream-Positions.html#seekmode-End" title="seekmode_End"><code class="literal">seekmode_End</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -158,46 +155,40 @@ characters are 32-bit words, or four bytes each.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-stream-get-position"></a><h3>glk_stream_get_position ()</h3>
-<pre class="programlisting"><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
-glk_stream_get_position (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> str</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="returnvalue">glui32</span></a>
+glk_stream_get_position (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> str</code></em>);</pre>
 <p>Returns the position of the read/write mark in <em class="parameter"><code>str</code></em>
 . For memory streams and
 binary file streams, this is exactly the number of characters read or written
 from the beginning of the stream (unless you have moved the mark with
-<a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>.) For text file streams, matters are more 
+<a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>.) For text file streams, matters are more 
 ambiguous, since (for example) writing one byte to a text file may store more
 than one character in the platform's native encoding. You can only be sure
 that the position increases as you read or write to the file.</p>
 <p>Additional complication: for Latin-1 memory and file streams, a character is
 a byte. For Unicode memory and file streams (those created by
-<a href="chimara-The-Types-of-Streams.html#glk-stream-open-file-uni" title="glk_stream_open_file_uni ()"><code class="function">glk_stream_open_file_uni()</code></a> and <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory-uni" title="glk_stream_open_memory_uni ()"><code class="function">glk_stream_open_memory_uni()</code></a>), a character is
+<a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-file-uni" title="glk_stream_open_file_uni ()"><code class="function">glk_stream_open_file_uni()</code></a> and <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-memory-uni" title="glk_stream_open_memory_uni ()"><code class="function">glk_stream_open_memory_uni()</code></a>), a character is
 a 32-bit word. So in a binary Unicode file, positions are multiples of four
 bytes.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   If this bothers you, don't use binary Unicode files. I don't think they're
   good for much anyhow.
-</p>
-</div>
-<p><code class="literal"><a href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a></code> on a window stream will always return zero.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+</p></div>
+<p><code class="literal"><a class="link" href="chimara-Stream-Positions.html#glk-stream-get-position" title="glk_stream_get_position ()"><code class="function">glk_stream_get_position()</code></a></code> on a window stream will always return zero.</p>
+<div class="note"><p>
   It might make more sense to return the number of characters written to the
   window, but existing libraries do not support this and it's not really
   worth adding the feature.
-</p>
-</div>
-<div class="refsect3" lang="en">
+</p></div>
+<div class="refsect3">
 <a name="glk-stream-get-position.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>str</p></td>
@@ -206,39 +197,39 @@ bytes.</p>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-stream-get-position.returns"></a><h4>Returns</h4>
 <p> position of the read/write mark in <em class="parameter"><code>str</code></em>
 .</p>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Stream-Positions.other_details"></a><h2>Types and Values</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="seekmode-Start"></a><h3>seekmode_Start</h3>
 <pre class="programlisting">#define seekmode_Start (0)
 </pre>
-<p>In <a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>, signifies that <em class="parameter"><code>pos</code></em>
+<p>In <a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>, signifies that <em class="parameter"><code>pos</code></em>
  is counted in characters
 after the beginning of the file.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="seekmode-Current"></a><h3>seekmode_Current</h3>
 <pre class="programlisting">#define seekmode_Current (1)
 </pre>
-<p>In <a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>, signifies that <em class="parameter"><code>pos</code></em>
+<p>In <a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>, signifies that <em class="parameter"><code>pos</code></em>
  is counted in characters
 after the current position (moving backwards if <em class="parameter"><code>pos</code></em>
  is negative.)</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="seekmode-End"></a><h3>seekmode_End</h3>
 <pre class="programlisting">#define seekmode_End (2)
 </pre>
-<p>In <a href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>, signifies that <em class="parameter"><code>pos</code></em>
+<p>In <a class="link" href="chimara-Stream-Positions.html#glk-stream-set-position" title="glk_stream_set_position ()"><code class="function">glk_stream_set_position()</code></a>, signifies that <em class="parameter"><code>pos</code></em>
  is counted in characters
 after the end of the file. (<em class="parameter"><code>pos</code></em>
  should always be zero or negative, so that
@@ -247,6 +238,6 @@ this will move backwards to a  position within the file.</p>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Startup Code</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Startup Code: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-glk-extensions.html" title="Appendix C. Glk Extensions">
 <link rel="prev" href="chimara-glk-spec-glk-extensions.html" title="Appendix C. Glk Extensions">
 <link rel="next" href="chimara-Unix-Extensions.html" title="Unix Extensions">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-glk-spec-glk-extensions.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Unix-Extensions.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Startup-Code"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,52 +31,52 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Startup-Code.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="other_proto_type">
+<col class="other_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="datatype_keyword"> </td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-argumentlist-t" title="glkunix_argumentlist_t">glkunix_argumentlist_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-argumentlist-t" title="glkunix_argumentlist_t">glkunix_argumentlist_t</a></td>
 </tr>
 <tr>
 <td class="datatype_keyword"> </td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-startup-t" title="glkunix_startup_t">glkunix_startup_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-startup-t" title="glkunix_startup_t">glkunix_startup_t</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-arg-NoValue" title="glkunix_arg_NoValue">glkunix_arg_NoValue</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-NoValue" title="glkunix_arg_NoValue">glkunix_arg_NoValue</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-arg-ValueFollows" title="glkunix_arg_ValueFollows">glkunix_arg_ValueFollows</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-ValueFollows" title="glkunix_arg_ValueFollows">glkunix_arg_ValueFollows</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-arg-ValueCanFollow" title="glkunix_arg_ValueCanFollow">glkunix_arg_ValueCanFollow</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-ValueCanFollow" title="glkunix_arg_ValueCanFollow">glkunix_arg_ValueCanFollow</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-arg-NumberValue" title="glkunix_arg_NumberValue">glkunix_arg_NumberValue</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-NumberValue" title="glkunix_arg_NumberValue">glkunix_arg_NumberValue</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Startup-Code.html#glkunix-arg-End" title="glkunix_arg_End">glkunix_arg_End</a></td>
+<td class="function_name"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-End" title="glkunix_arg_End">glkunix_arg_End</a></td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Startup-Code.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 #include &lt;libchimara/glkstart.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Startup-Code.description"></a><h2>Description</h2>
 <p>This section describes an extension to Glk for parsing command-line startup
 options. It was written by Andrew Plotkin for the Glk libraries CheapGlk and
@@ -91,7 +91,7 @@ modify it to your needs.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">extern</span> glkunix_argumentlist_t glkunix_arguments[];</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="k">extern</span> <span class="n">glkunix_argumentlist_t</span> <span class="n">glkunix_arguments</span><span class="p">[];</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -103,13 +103,13 @@ program can accept.
 The library will sort these out of the command line and pass them on to your
 code.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Startup-Code.functions_details"></a><h2>Functions</h2>
 <p></p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Startup-Code.other_details"></a><h2>Types and Values</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-argumentlist-t"></a><h3>glkunix_argumentlist_t</h3>
 <pre class="programlisting">typedef struct {
     char *name;
@@ -117,40 +117,47 @@ code.</p>
     char *desc;
 } glkunix_argumentlist_t;
 </pre>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody>
 <tr>
-<td><span class="term"><a href="chimara-Startup-Code.html#glkunix-arg-NoValue" title="glkunix_arg_NoValue"><code class="literal">glkunix_arg_NoValue</code></a></span></td>
+<td><p><span class="term"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-NoValue" title="glkunix_arg_NoValue"><code class="literal">glkunix_arg_NoValue</code></a></span></p></td>
 <td><p>The argument appears by itself.</p></td>
 </tr>
 <tr>
-<td><span class="term"><a href="chimara-Startup-Code.html#glkunix-arg-ValueFollows" title="glkunix_arg_ValueFollows"><code class="literal">glkunix_arg_ValueFollows</code></a></span></td>
-<td><p>The argument must be followed by another argument (the 
+<td><p><span class="term"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-ValueFollows" title="glkunix_arg_ValueFollows"><code class="literal">glkunix_arg_ValueFollows</code></a></span></p></td>
+<td><p>The argument must be followed by another argument (the
+
  value).</p></td>
 </tr>
 <tr>
-<td><span class="term"><a href="chimara-Startup-Code.html#glkunix-arg-ValueCanFollow" title="glkunix_arg_ValueCanFollow"><code class="literal">glkunix_arg_ValueCanFollow</code></a></span></td>
+<td><p><span class="term"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-ValueCanFollow" title="glkunix_arg_ValueCanFollow"><code class="literal">glkunix_arg_ValueCanFollow</code></a></span></p></td>
 <td><p>The argument may be followed by a value, optionally. (If the
- next argument starts with a dash, it is taken to be a new argument, not the 
+ next argument starts with a dash, it is taken to be a new argument, not the
+
  value of this one.)</p></td>
 </tr>
 <tr>
-<td><span class="term"><a href="chimara-Startup-Code.html#glkunix-arg-NumberValue" title="glkunix_arg_NumberValue"><code class="literal">glkunix_arg_NumberValue</code></a></span></td>
-<td><p>The argument must be followed by a number, which may be the 
+<td><p><span class="term"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-NumberValue" title="glkunix_arg_NumberValue"><code class="literal">glkunix_arg_NumberValue</code></a></span></p></td>
+<td><p>The argument must be followed by a number, which may be the
+
  next argument or part of this one. (That is, either “<code class="code">-width 20</code>”
  or “<code class="code">-width20</code>” will be accepted.)
  </p></td>
 </tr>
 <tr>
-<td><span class="term"><a href="chimara-Startup-Code.html#glkunix-arg-End" title="glkunix_arg_End"><code class="literal">glkunix_arg_End</code></a></span></td>
-<td><p>The <code class="code">glkunix_arguments[]</code> array must be 
+<td><p><span class="term"><a class="link" href="chimara-Startup-Code.html#glkunix-arg-End" title="glkunix_arg_End"><code class="literal">glkunix_arg_End</code></a></span></p></td>
+<td><p>The <code class="code">glkunix_arguments[]</code> array must be
+
  terminated with an entry containing this value.</p></td>
 </tr>
 </tbody>
 </table></div>
 <p>To accept arbitrary arguments which lack dashes, specify a name of <code class="literal">""</code> and
-an argtype of <a href="chimara-Startup-Code.html#glkunix-arg-ValueFollows" title="glkunix_arg_ValueFollows"><code class="literal">glkunix_arg_ValueFollows</code></a>.</p>
+an argtype of <a class="link" href="chimara-Startup-Code.html#glkunix-arg-ValueFollows" title="glkunix_arg_ValueFollows"><code class="literal">glkunix_arg_ValueFollows</code></a>.</p>
 <p>If you don't care about command-line arguments, you must still define an
 empty arguments list, as follows:</p>
 <div class="informalexample">
@@ -160,9 +167,9 @@ empty arguments list, as follows:</p>
         <td class="listing_lines" align="right"><pre>1
 2
 3</pre></td>
-        <td class="listing_code"><pre class="programlisting">glkunix_argumentlist_t glkunix_arguments[] = {
-    { <span class="number">NULL</span>, glkunix_arg_End, <span class="number">NULL</span> }
-};</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glkunix_argumentlist_t</span> <span class="n">glkunix_arguments</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">glkunix_arg_End</span><span class="p">,</span> <span class="nb">NULL</span> <span class="p">}</span>
+<span class="p">};</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -183,15 +190,15 @@ empty arguments list, as follows:</p>
 7
 8
 9</pre></td>
-        <td class="listing_code"><pre class="programlisting">glkunix_argumentlist_t glkunix_arguments[] = {
-    { <span class="number">&quot;&quot;</span>, glkunix_arg_ValueFollows, <span class="number">&quot;filename: The game file to load.&quot;</span> },
-    { <span class="number">&quot;-hum&quot;</span>, glkunix_arg_ValueFollows, <span class="number">&quot;-hum NUM: Hum some NUM.&quot;</span> },
-    { <span class="number">&quot;-bom&quot;</span>, glkunix_arg_ValueCanFollow, <span class="number">&quot;-bom [ NUM ]: Do a bom (on</span>
-      the NUM, <span class="keyword">if</span> given<span class="Error">)</span>.<span class="number">&quot; },</span>
-    { <span class="number">&quot;-goo&quot;</span>, glkunix_arg_NoValue, <span class="number">&quot;-goo: Find goo.&quot;</span> },
-    { <span class="number">&quot;-wob&quot;</span>, glkunix_arg_NumberValue, <span class="number">&quot;-wob NUM: Wob NUM times.&quot;</span> },
-    { <span class="number">NULL</span>, glkunix_arg_End, <span class="number">NULL</span> }
-};</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">glkunix_argumentlist_t</span> <span class="n">glkunix_arguments</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">glkunix_arg_ValueFollows</span><span class="p">,</span> <span class="s">&quot;filename: The game file to load.&quot;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;-hum&quot;</span><span class="p">,</span> <span class="n">glkunix_arg_ValueFollows</span><span class="p">,</span> <span class="s">&quot;-hum NUM: Hum some NUM.&quot;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;-bom&quot;</span><span class="p">,</span> <span class="n">glkunix_arg_ValueCanFollow</span><span class="p">,</span> <span class="s">&quot;-bom [ NUM ]: Do a bom (on</span>
+      <span class="n">the</span> <span class="n">NUM</span><span class="p">,</span> <span class="k">if</span> <span class="n">given</span><span class="p">).</span><span class="s">&quot; },</span>
+    <span class="p">{</span> <span class="s">&quot;-goo&quot;</span><span class="p">,</span> <span class="n">glkunix_arg_NoValue</span><span class="p">,</span> <span class="s">&quot;-goo: Find goo.&quot;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;-wob&quot;</span><span class="p">,</span> <span class="n">glkunix_arg_NumberValue</span><span class="p">,</span> <span class="s">&quot;-wob NUM: Wob NUM times.&quot;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">glkunix_arg_End</span><span class="p">,</span> <span class="nb">NULL</span> <span class="p">}</span>
+<span class="p">};</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -206,23 +213,24 @@ initialization, and then calls <code class="function">glkunix_startup_code()</co
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">int</span> glkunix_startup_code(glkunix_startup_t *data);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="kt">int</span> <span class="nf">glkunix_startup_code</span><span class="p">(</span><span class="n">glkunix_startup_t</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <p></p>
-<p>This should return <code class="literal">TRUE</code> if everything initializes properly. If it returns
-<code class="literal">FALSE</code>, the library will shut down without ever calling your <code class="function">glk_main()</code> 
+<p>This should return <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if everything initializes properly. If it returns
+<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>, the library will shut down without ever calling your <code class="function">glk_main()</code>
+
 function.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-argumentlist-t.members"></a><h4>Members</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -247,7 +255,7 @@ printing a list of options.</p></td>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-startup-t"></a><h3>glkunix_startup_t</h3>
 <pre class="programlisting">typedef struct {
     int argc;
@@ -257,13 +265,13 @@ printing a list of options.</p></td>
 <p>The fields are a standard Unix <code class="literal">(argc, argv)</code> list, which contain the
 arguments you requested from the command line.
 In deference to custom, <code class="literal">argv[0]</code> is always the program name.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-startup-t.members"></a><h4>Members</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -282,46 +290,49 @@ In deference to custom, <code class="literal">argv[0]</code> is always the progr
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-arg-NoValue"></a><h3>glkunix_arg_NoValue</h3>
 <pre class="programlisting">#define glkunix_arg_NoValue (2)
 </pre>
 <p>Indicates an argument which occurs by itself, without a value.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-arg-ValueFollows"></a><h3>glkunix_arg_ValueFollows</h3>
 <pre class="programlisting">#define glkunix_arg_ValueFollows (1)
 </pre>
-<p>Indicates an argument which must be followed by a value, as the next 
+<p>Indicates an argument which must be followed by a value, as the next
+
 argument.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-arg-ValueCanFollow"></a><h3>glkunix_arg_ValueCanFollow</h3>
 <pre class="programlisting">#define glkunix_arg_ValueCanFollow (3)
 </pre>
-<p>Indicates an argument which may be followed by a value, or may occur by 
+<p>Indicates an argument which may be followed by a value, or may occur by
+
 itself.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-arg-NumberValue"></a><h3>glkunix_arg_NumberValue</h3>
 <pre class="programlisting">#define glkunix_arg_NumberValue (4)
 </pre>
-<p>Indicates an argument which must be followed by a numerical value, either as 
+<p>Indicates an argument which must be followed by a numerical value, either as
+
 the next argument or tacked onto the end of this argument.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-arg-End"></a><h3>glkunix_arg_End</h3>
 <pre class="programlisting">#define glkunix_arg_End (0)
 </pre>
-<p>Terminates a list of <a href="chimara-Startup-Code.html#glkunix-argumentlist-t" title="glkunix_argumentlist_t"><span class="type">glkunix_argumentlist_t</span></a>.</p>
+<p>Terminates a list of <a class="link" href="chimara-Startup-Code.html#glkunix-argumentlist-t" title="glkunix_argumentlist_t"><span class="type">glkunix_argumentlist_t</span></a>.</p>
 </div>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

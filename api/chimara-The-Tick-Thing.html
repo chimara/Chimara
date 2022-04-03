@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>The Tick Thing</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>The Tick Thing: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
 <link rel="prev" href="chimara-The-Interrupt-Handler.html" title="The Interrupt Handler">
 <link rel="next" href="chimara-Basic-Types.html" title="Basic Types">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-The-Interrupt-Handler.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Basic-Types.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-The-Tick-Thing"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,87 +31,80 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-The-Tick-Thing.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody><tr>
 <td class="function_type">
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()">glk_tick</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()">glk_tick</a> <span class="c_punctuation">()</span>
 </td>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-The-Tick-Thing.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-The-Tick-Thing.description"></a><h2>Description</h2>
 <p>Many platforms have some annoying thing that has to be done every so often,
 or the gnurrs come from the voodvork out and eat your computer.</p>
-<p>Well, not really. But you should call <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> every so often, just in
+<p>Well, not really. But you should call <a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> every so often, just in
 case. It may be necessary to yield time to other applications in a
 cooperative-multitasking OS, or to check for player interrupts in an infinite
 loop.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-The-Tick-Thing.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-tick"></a><h3>glk_tick ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
 glk_tick (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>Carries out platform-dependent actions such as yielding time to the operating
-system and checking for interrupts. <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> should be called every so 
-often when there is a long interval between calls of <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> or 
-<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>. This call is fast; in fact, on average, it does nothing at
+system and checking for interrupts. <a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> should be called every so 
+often when there is a long interval between calls of <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> or 
+<a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>. This call is fast; in fact, on average, it does nothing at
 all. So you can call it often.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   In a virtual machine interpreter, once per opcode is appropriate. A more
   parsimonious approach would be once per branch and function call opcode;
   this guarantees it will be called inside loops. In a program with lots of
   computation, pick a comparable rate.
-</p>
-</div>
+</p></div>
 <p>glk_tick() does not try to update the screen, or check for player input, or
-any other interface task. For that, you should call <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> or 
-<a href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>.
-See <a href="chimara-Events.html" title="Events">Events</a>.</p>
+any other interface task. For that, you should call <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> or 
+<a class="link" href="chimara-Events.html#glk-select-poll" title="glk_select_poll ()"><code class="function">glk_select_poll()</code></a>.
+See <a class="link" href="chimara-Events.html" title="Events">Events</a>.</p>
 <div class="note">
-<h3 class="title"></h3>
 <p>Captious critics have pointed out that in the sample program
-  <code class="filename">model.c</code>, I do not call <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> at all. This is
+  <code class="filename">model.c</code>, I do not call <a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> at all. This is
   because <code class="filename">model.c</code> has no heavy loops. It does a bit of
   work for each command, and then cycles back to the top of the event loop.
-  The <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> call, of course, blocks waiting for input, so it does all
+  The <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> call, of course, blocks waiting for input, so it does all
   the yielding and interrupt-checking one could imagine.
   </p>
 <p>Basically, you must ensure there's some fixed upper bound on the
-  amount of computation that can occur before a <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> (or <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>)
+  amount of computation that can occur before a <a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> (or <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a>)
   occurs. In a VM interpreter, where the VM code might contain an infinite
   loop, this is critical. In a C program, you can often eyeball it.
   </p>
 <p>But the next version of <code class="filename">model.c</code> will have a
-  <a href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> in the ornate printing loop of 
+  <a class="link" href="chimara-The-Tick-Thing.html#glk-tick" title="glk_tick ()"><code class="function">glk_tick()</code></a> in the ornate printing loop of 
   <code class="function">verb_yada()</code>. Just to make the point.
   </p>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-The-Tick-Thing.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

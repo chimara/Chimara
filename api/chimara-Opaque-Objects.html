@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Opaque Objects</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Opaque Objects: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
 <link rel="prev" href="chimara-Basic-Types.html" title="Basic Types">
 <link rel="next" href="chimara-The-Gestalt-System.html" title="The Gestalt System">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Basic-Types.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-The-Gestalt-System.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Opaque-Objects"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,135 +31,117 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Opaque-Objects.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="other_proto_type">
+<col class="other_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="typedef_keyword">typedef</td>
-<td class="function_name"><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t">winid_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t">winid_t</a></td>
 </tr>
 <tr>
 <td class="typedef_keyword">typedef</td>
-<td class="function_name"><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t">strid_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t">strid_t</a></td>
 </tr>
 <tr>
 <td class="typedef_keyword">typedef</td>
-<td class="function_name"><a href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t">frefid_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t">frefid_t</a></td>
 </tr>
 <tr>
 <td class="typedef_keyword">typedef</td>
-<td class="function_name"><a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t">schanid_t</a></td>
+<td class="function_name"><a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t">schanid_t</a></td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Opaque-Objects.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Opaque-Objects.description"></a><h2>Description</h2>
 <p>Glk keeps track of a few classes of special objects. These are opaque to your
 program; you always refer to them using pointers to opaque C structures.</p>
 <p>Currently, these classes are:</p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody>
 <tr>
-<td><span class="term">Windows</span></td>
+<td><p><span class="term">Windows</span></p></td>
 <td><p>Screen panels, used to input or output information.
    </p></td>
 </tr>
 <tr>
-<td><span class="term">Streams</span></td>
+<td><p><span class="term">Streams</span></p></td>
 <td>
 <p>Data streams, to which you can input or output text.
    </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>There are file streams and window streams, since you can
-   output data to windows or files.</p>
-</div>
+<div class="note"><p>There are file streams and window streams, since you can
+   output data to windows or files.</p></div>
 </td>
 </tr>
 <tr>
-<td><span class="term">File references</span></td>
+<td><p><span class="term">File references</span></p></td>
 <td>
 <p>Pointers to files in permanent storage.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>In Unix a file reference is a pathname; on the Mac, an
+<div class="note"><p>In Unix a file reference is a pathname; on the Mac, an
    <span class="type">FSSpec</span>. Actually there's a little more information included,
-   such as file type and whether it is a text or binary file.</p>
-</div>
+   such as file type and whether it is a text or binary file.</p></div>
 </td>
 </tr>
 <tr>
-<td><span class="term">Sound channels</span></td>
+<td><p><span class="term">Sound channels</span></p></td>
 <td>
 <p>Audio output channels.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>Not all Glk libraries support sound.</p>
-</div>
+<div class="note"><p>Not all Glk libraries support sound.</p></div>
 </td>
 </tr>
 </tbody>
 </table></div>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 Note that there may be more object classes in future versions of the Glk API.
-</p>
-</div>
+</p></div>
 <p>When you create one of these objects, it is always possible that the creation
 will fail (due to lack of memory, or some other OS error.) When this happens,
-the allocation function will return <code class="literal">NULL</code> instead of a valid pointer. You
+the allocation function will return <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> instead of a valid pointer. You
 should always test for this possibility.</p>
-<p><code class="literal">NULL</code> is never the identifier of any object (window, stream, file reference,
-or sound channel). The value <code class="literal">NULL</code> is often used to indicate “no object” or
+<p><a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> is never the identifier of any object (window, stream, file reference,
+or sound channel). The value <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> is often used to indicate “no object” or
 “nothing”, but it is not a valid reference.
 If a Glk function takes an object reference as an argument, it is illegal to
-pass in <code class="literal">NULL</code> unless the function definition says otherwise.</p>
-<p>The <code class="literal">glk.h</code> file defines types <a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a>, <a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a>, <a href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t"><span class="type">frefid_t</span></a>, <a href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a> to
+pass in <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> unless the function definition says otherwise.</p>
+<p>The <code class="literal">glk.h</code> file defines types <a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a>, <a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a>, <a class="link" href="chimara-Opaque-Objects.html#frefid-t" title="frefid_t"><span class="type">frefid_t</span></a>, <a class="link" href="chimara-Opaque-Objects.html#schanid-t" title="schanid_t"><span class="type">schanid_t</span></a> to
 store references.
 These are pointers to struct <span class="type">glk_window_struct</span>, <span class="type">glk_stream_struct</span>,
 <span class="type">glk_fileref_struct</span>, and <span class="type">glk_schannel_struct</span> respectively. It is, of course,
 illegal to pass one kind of pointer to a function which expects another.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 This is how you deal with opaque objects from a C program. If you are using
 Glk through a virtual machine, matters will probably be different. Opaque
 objects may be represented as integers, or as VM objects of some sort.
-</p>
-</div>
-<div class="refsect2" lang="en">
+</p></div>
+<div class="refsect2">
 <a name="chimara-Rocks"></a><h3>Rocks</h3>
 <p>Every one of these objects (window, stream, file reference, or sound channel)
 has a “rock” value.
 This is simply a 32-bit integer value which you provide, for your own
 purposes, when you create the object.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>The library — so to speak — stuffs this value under a
+<div class="note"><p>The library — so to speak — stuffs this value under a
 rock for safe-keeping, and gives it back to you when you ask for it.
-</p>
-</div>
-<div class="note">
-<h3 class="title"></h3>
-<p>If you don't know what to use the rocks for, provide 0 and forget
-about it.</p>
-</div>
+</p></div>
+<div class="note"><p>If you don't know what to use the rocks for, provide 0 and forget
+about it.</p></div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="chimara-Iterating-Through-Opaque-Objects"></a><h3>Iteration Through Opaque Objects</h3>
 <p>For each class of opaque objects, there is an iterate function, which you can
 use to obtain a list of all existing objects of that class. It takes the form</p>
@@ -168,34 +150,31 @@ use to obtain a list of all existing objects of that class. It takes the form</p
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting">CLASSid_t glk_CLASS_iterate(CLASSid_t obj, glui32 *rockptr);</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">CLASSid_t</span> <span class="nf">glk_CLASS_iterate</span><span class="p">(</span><span class="n">CLASSid_t</span> <span class="n">obj</span><span class="p">,</span> <span class="n">glui32</span> <span class="o">*</span><span class="n">rockptr</span><span class="p">);</span></pre></td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <p>
-...where <code class="literal"><em class="replaceable"><code>CLASS</code></em></code> represents one of the opaque
+...where <code class="literal">&lt;replaceable&gt;CLASS&lt;/replaceable&gt;</code> represents one of the opaque
 object classes.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  So, at the current time, these are the functions <a href="chimara-Other-Window-Functions.html#glk-window-iterate" title="glk_window_iterate ()"><code class="function">glk_window_iterate()</code></a>,
-  <a href="chimara-Other-Stream-Functions.html#glk-stream-iterate" title="glk_stream_iterate ()"><code class="function">glk_stream_iterate()</code></a>, <a href="chimara-Other-File-Reference-Functions.html#glk-fileref-iterate" title="glk_fileref_iterate ()"><code class="function">glk_fileref_iterate()</code></a>, and <a href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-iterate" title="glk_schannel_iterate ()"><code class="function">glk_schannel_iterate()</code></a>.  
+<div class="note"><p>
+  So, at the current time, these are the functions <a class="link" href="chimara-Other-Window-Functions.html#glk-window-iterate" title="glk_window_iterate ()"><code class="function">glk_window_iterate()</code></a>,
+  <a class="link" href="chimara-Other-Stream-Functions.html#glk-stream-iterate" title="glk_stream_iterate ()"><code class="function">glk_stream_iterate()</code></a>, <a class="link" href="chimara-Other-File-Reference-Functions.html#glk-fileref-iterate" title="glk_fileref_iterate ()"><code class="function">glk_fileref_iterate()</code></a>, and <a class="link" href="chimara-Other-Sound-Channel-Functions.html#glk-schannel-iterate" title="glk_schannel_iterate ()"><code class="function">glk_schannel_iterate()</code></a>.  
   There may be more classes in future versions of the spec; they all behave
   the same.
-</p>
-</div>
-<p>Calling <code class="literal">glk_<em class="replaceable"><code>CLASS</code></em>_iterate(NULL, r)</code> returns the
-first object; calling <code class="literal">glk_<em class="replaceable"><code>CLASS</code></em>_iterate(obj, r)</code>
+</p></div>
+<p>Calling <code class="literal">glk_&lt;replaceable&gt;CLASS&lt;/replaceable&gt;_iterate(NULL, r)</code> returns the
+first object; calling <code class="literal">glk_&lt;replaceable&gt;CLASS&lt;/replaceable&gt;_iterate(obj, r)</code>
 returns the next object, until there aren't any more, at which time it
-returns <code class="literal">NULL</code>.</p>
+returns <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 <p>The <em class="parameter"><code>rockptr</code></em>
  argument is a pointer to a location; whenever  
-<code class="literal">glk_<em class="replaceable"><code>CLASS</code></em><code class="function">_iterate()</code></code> returns an object, the
+<code class="literal">glk_&lt;replaceable&gt;CLASS&lt;/replaceable&gt;<code class="function">_iterate()</code></code> returns an object, the
 object's rock is stored in the location <code class="literal">(*@rockptr)</code>.
 If you don't want the rocks to be returned, you may set <em class="parameter"><code>rockptr</code></em>
- to <code class="literal">NULL</code>.</p>
+ to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 <p>You usually use this as follows:</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
@@ -206,11 +185,11 @@ If you don't want the rocks to be returned, you may set <em class="parameter"><c
 3
 4
 5</pre></td>
-        <td class="listing_code"><pre class="programlisting">obj = glk_CLASS_iterate(<span class="number">NULL</span>, <span class="number">NULL</span>);
-<span class="keyword">while</span> (obj) {
-   <span class="comment">// ...do something with obj...</span>
-   obj = glk_CLASS_iterate(obj, <span class="number">NULL</span>);
-}</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="n">obj</span> <span class="o">=</span> <span class="n">glk_CLASS_iterate</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// ...do something with obj...</span>
+   <span class="n">obj</span> <span class="o">=</span> <span class="n">glk_CLASS_iterate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -219,32 +198,33 @@ If you don't want the rocks to be returned, you may set <em class="parameter"><c
 <p></p>
 <p>If you create or destroy objects inside this loop, obviously, the results are
 unpredictable. However it is always legal to call 
-<code class="literal">glk_<em class="replaceable"><code>CLASS</code></em>_iterate(obj, r)</code> as long as <em class="parameter"><code>obj</code></em>
+<code class="literal">glk_&lt;replaceable&gt;CLASS&lt;/replaceable&gt;_iterate(obj, r)</code> as long as <em class="parameter"><code>obj</code></em>
  is a
-valid object id, or <code class="literal">NULL</code>.</p>
+valid object id, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 <p>The order in which objects are returned is entirely arbitrary. The library
 may even rearrange the order every time you create or destroy an object of
 the given class. As long as you do not create or destroy any object, the rule
-is that <code class="literal">glk_<em class="replaceable"><code>CLASS</code></em>_iterate(obj, r)</code> has a fixed
+is that <code class="literal">glk_&lt;replaceable&gt;CLASS&lt;/replaceable&gt;_iterate(obj, r)</code> has a fixed
 result, and iterating through the results as above will list every object
 exactly once.</p>
 </div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Opaque-Objects.functions_details"></a><h2>Functions</h2>
 <p></p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Opaque-Objects.other_details"></a><h2>Types and Values</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="winid-t"></a><h3>winid_t</h3>
 <pre class="programlisting">typedef struct glk_window_struct  *winid_t;
 </pre>
-<p>Opaque structure representing a Glk window. It has no user-accessible 
+<p>Opaque structure representing a Glk window. It has no user-accessible
+
 members.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="strid-t"></a><h3>strid_t</h3>
 <pre class="programlisting">typedef struct glk_stream_struct  *strid_t;
 </pre>
@@ -252,7 +232,7 @@ members.</p>
 user-accessible members.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="frefid-t"></a><h3>frefid_t</h3>
 <pre class="programlisting">typedef struct glk_fileref_struct *frefid_t;
 </pre>
@@ -260,7 +240,7 @@ user-accessible members.</p>
 members.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="schanid-t"></a><h3>schanid_t</h3>
 <pre class="programlisting">typedef struct glk_schannel_struct *schanid_t;
 </pre>
@@ -270,6 +250,6 @@ members.</p>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

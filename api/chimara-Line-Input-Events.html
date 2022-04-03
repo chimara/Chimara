@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Line Input Events</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Line Input Events: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-events.html" title="Events">
 <link rel="prev" href="chimara-Character-Input-Events.html" title="Character Input Events">
 <link rel="next" href="chimara-Mouse-Input-Events.html" title="Mouse Input Events">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Character-Input-Events.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Mouse-Input-Events.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Line-Input-Events"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,12 +31,12 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Line-Input-Events.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody>
 <tr>
@@ -44,7 +44,7 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()">glk_request_line_event</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()">glk_request_line_event</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -52,7 +52,7 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()">glk_request_line_event_uni</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Line-Input-Events.html#glk-request-line-event-uni" title="glk_request_line_event_uni ()">glk_request_line_event_uni</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -60,7 +60,7 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()">glk_cancel_line_event</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()">glk_cancel_line_event</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -68,7 +68,7 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()">glk_set_echo_line_event</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()">glk_set_echo_line_event</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -76,40 +76,40 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()">glk_set_terminators_line_event</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()">glk_set_terminators_line_event</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Line-Input-Events.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Line-Input-Events.description"></a><h2>Description</h2>
 <p>You can request line input from text buffer and text grid windows. See
-<a href="chimara-Events.html#evtype-LineInput" title="evtype_LineInput"><code class="literal">evtype_LineInput</code></a>. There are separate functions for requesting Latin-1 input
-and Unicode input; see <a href="chimara-The-Gestalt-System.html#gestalt-Unicode" title="gestalt_Unicode"><code class="literal">gestalt_Unicode</code></a>.</p>
+<a class="link" href="chimara-Events.html#evtype-LineInput" title="evtype_LineInput"><code class="literal">evtype_LineInput</code></a>. There are separate functions for requesting Latin-1 input
+and Unicode input; see <a class="link" href="chimara-The-Gestalt-System.html#gestalt-Unicode" title="gestalt_Unicode"><code class="literal">gestalt_Unicode</code></a>.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Line-Input-Events.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-request-line-event"></a><h3>glk_request_line_event ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_request_line_event (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+glk_request_line_event (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
                         <em class="parameter"><code><span class="type">char</span> *buf</code></em>,
-                        <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> maxlen</code></em>,
-                        <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> initlen</code></em>);</pre>
+                        <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> maxlen</code></em>,
+                        <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> initlen</code></em>);</pre>
 <p>Requests input of a line of Latin-1 characters. A window cannot have requests
 for both character and line input at the same time. Nor can it have requests
 for line input of both types (Latin-1 and Unicode). It is illegal to call
-<a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a> if the window already has a pending request for
+<a class="link" href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a> if the window already has a pending request for
 either character or line input.</p>
 <p>The <em class="parameter"><code>buf</code></em>
  argument is a pointer to space where the line input will be stored.
-(This may not be <code class="literal">NULL</code>.) <em class="parameter"><code>maxlen</code></em>
+(This may not be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.) <em class="parameter"><code>maxlen</code></em>
  is the length of this space, in bytes; the
 library will not accept more characters than this. If <em class="parameter"><code>initlen</code></em>
  is nonzero,
@@ -119,16 +119,16 @@ then the first <em class="parameter"><code>initlen</code></em>
 — just as if the player had typed them himself. (The player can continue
 composing after this pre-entered input, or delete it or edit as usual.)</p>
 <p>The contents of the buffer are undefined until the input is completed (either
-by a line input event, or <a href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a>. The library may or may not
+by a line input event, or <a class="link" href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a>. The library may or may not
 fill in the buffer as the player composes, while the input is still pending;
 it is illegal to change the contents of the buffer yourself.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-request-line-event.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -158,50 +158,44 @@ to pre-enter.</p></td>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-request-line-event-uni"></a><h3>glk_request_line_event_uni ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_request_line_event_uni (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *buf</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> maxlen</code></em>,
-                            <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> initlen</code></em>);</pre>
+glk_request_line_event_uni (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *buf</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> maxlen</code></em>,
+                            <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> initlen</code></em>);</pre>
 <p>Request input of a line of Unicode characters. This works the same as
-<a href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a>, except the result is stored in an array of
-<a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> values instead of an array of characters, and the values may be any
+<a class="link" href="chimara-Line-Input-Events.html#glk-request-line-event" title="glk_request_line_event ()"><code class="function">glk_request_line_event()</code></a>, except the result is stored in an array of
+<a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> values instead of an array of characters, and the values may be any
 valid Unicode code points.</p>
 <p>If possible, the library should return fully composed Unicode characters,
 rather than strings of base and composition characters.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Fully-composed characters are the norm for Unicode text, so an
   implementation that ignores this issue will probably produce the right
   result. However, the game may not want to rely on that. Another factor is
   that case-folding can (occasionally) produce non-normalized text.
   Therefore, to cover all its bases, a game should call
-  <a href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>, followed by
-  <a href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-normalize-uni" title="glk_buffer_canon_normalize_uni ()"><code class="function">glk_buffer_canon_normalize_uni()</code></a>, before parsing.
-</p>
-</div>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+  <a class="link" href="chimara-Upper-and-Lower-Case.html#glk-buffer-to-lower-case-uni" title="glk_buffer_to_lower_case_uni ()"><code class="function">glk_buffer_to_lower_case_uni()</code></a>, followed by
+  <a class="link" href="chimara-Unicode-String-Normalization.html#glk-buffer-canon-normalize-uni" title="glk_buffer_canon_normalize_uni ()"><code class="function">glk_buffer_canon_normalize_uni()</code></a>, before parsing.
+</p></div>
+<div class="note"><p>
   Earlier versions of this spec said that line input must always be in
   Unicode Normalization Form C. However, this has not been universally
   implemented. It is also somewhat redundant, for the results noted above.
   Therefore, we now merely recommend that line input be fully composed. The
   game is ultimately responsible for all case-folding and normalization. See
-  <a href="chimara-Unicode-String-Normalization.html" title="Unicode String Normalization">Unicode String
+  <a class="link" href="chimara-Unicode-String-Normalization.html" title="Unicode String Normalization">Unicode String
   Normalization</a>.
-</p>
-</div>
-<div class="refsect3" lang="en">
+</p></div>
+<div class="refsect3">
 <a name="glk-request-line-event-uni.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -231,27 +225,27 @@ to pre-enter.</p></td>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-cancel-line-event"></a><h3>glk_cancel_line_event ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_cancel_line_event (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                       <em class="parameter"><code><a href="chimara-Events.html#event-t" title="event_t"><span class="type">event_t</span></a> *event</code></em>);</pre>
+glk_cancel_line_event (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                       <em class="parameter"><code><a class="link" href="chimara-Events.html#event-t" title="event_t"><span class="type">event_t</span></a> *event</code></em>);</pre>
 <p>This cancels a pending request for line input. (Either Latin-1 or Unicode.)</p>
 <p>The event pointed to by the event argument will be filled in as if the
-player had hit <span><strong class="keycap">enter</strong></span>, and the input composed so far will be
+player had hit <span class="keycap"><strong>enter</strong></span>, and the input composed so far will be
 stored in the buffer; see below. If you do not care about this information,
-pass <code class="literal">NULL</code> as the <em class="parameter"><code>event</code></em>
+pass <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> as the <em class="parameter"><code>event</code></em>
  argument. (The buffer will still be filled.)</p>
-<p>For convenience, it is legal to call <a href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a> even if there
+<p>For convenience, it is legal to call <a class="link" href="chimara-Line-Input-Events.html#glk-cancel-line-event" title="glk_cancel_line_event ()"><code class="function">glk_cancel_line_event()</code></a> even if there
 is no line input request on that window. The event type will be set to
-<a href="chimara-Events.html#evtype-None" title="evtype_None"><code class="literal">evtype_None</code></a> in this case.</p>
-<div class="refsect3" lang="en">
+<a class="link" href="chimara-Events.html#evtype-None" title="evtype_None"><code class="literal">evtype_None</code></a> in this case.</p>
+<div class="refsect3">
 <a name="glk-cancel-line-event.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -269,11 +263,11 @@ is no line input request on that window. The event type will be set to
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-set-echo-line-event"></a><h3>glk_set_echo_line_event ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_set_echo_line_event (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                         <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> val</code></em>);</pre>
+glk_set_echo_line_event (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                         <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> val</code></em>);</pre>
 <p>Normally, after line input is completed or cancelled in a buffer window, the
 library ensures that the complete input line (or its latest state, after
 cancelling) is displayed at the end of the buffer, followed by a newline.
@@ -284,34 +278,28 @@ will leave the buffer unchanged after the input is completed or cancelled;
 the player's input will not be printed. If <em class="parameter"><code>val</code></em>
  is nonzero, subsequent input
 requests will have the normal printing behavior.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Note that this feature is unrelated to the window's echo stream.
-</p>
-</div>
+</p></div>
 <p>If you turn off line input echoing, you can reproduce the standard input
 behavior by following each line input event (or line input cancellation) by
 printing the input line, in the Input style, followed by a newline in the
 original style.</p>
-<p>The <a href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a> does not affect a pending line input request.
+<p>The <a class="link" href="chimara-Line-Input-Events.html#glk-set-echo-line-event" title="glk_set_echo_line_event ()"><code class="function">glk_set_echo_line_event()</code></a> does not affect a pending line input request.
 It also has no effect in non-buffer windows.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   In a grid window, the game can overwrite the input area at will, so there
   is no need for this distinction.
-</p>
-</div>
+</p></div>
 <p>Not all libraries support this feature. You can test for it with
-<a href="chimara-The-Gestalt-System.html#gestalt-LineInputEcho" title="gestalt_LineInputEcho"><code class="literal">gestalt_LineInputEcho</code></a>.</p>
-<div class="refsect3" lang="en">
+<a class="link" href="chimara-The-Gestalt-System.html#gestalt-LineInputEcho" title="gestalt_LineInputEcho"><code class="literal">gestalt_LineInputEcho</code></a>.</p>
+<div class="refsect3">
 <a name="glk-set-echo-line-event.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -329,43 +317,40 @@ It also has no effect in non-buffer windows.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-set-terminators-line-event"></a><h3>glk_set_terminators_line_event ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_set_terminators_line_event (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
-                                <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *keycodes</code></em>,
-                                <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> count</code></em>);</pre>
+glk_set_terminators_line_event (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#winid-t" title="winid_t"><span class="type">winid_t</span></a> win</code></em>,
+                                <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> *keycodes</code></em>,
+                                <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> count</code></em>);</pre>
 <p>It is possible to request that other keystrokes complete line input as well.
 (This allows a game to intercept function keys or other special keys during
-line input.) To do this, call <a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>, and pass an
+line input.) To do this, call <a class="link" href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a>, and pass an
 array of <em class="parameter"><code>count</code></em>
  keycodes.
-These must all be special keycodes (see <a href="chimara-Character-Input.html" title="Character Input">Character
+These must all be special keycodes (see <a class="link" href="chimara-Character-Input.html" title="Character Input">Character
 Input</a>).
-Do not include regular printable characters in the array, nor <a href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a>
-(which represents the default <span><strong class="keycap">enter</strong></span> key and will always be
-recognized). To return to the default behavior, pass a <code class="literal">NULL</code> or empty array.</p>
-<p>The <a href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a> affects <span class="emphasis"><em>subsequent</em></span>
+Do not include regular printable characters in the array, nor <a class="link" href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a>
+(which represents the default <span class="keycap"><strong>enter</strong></span> key and will always be
+recognized). To return to the default behavior, pass a <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> or empty array.</p>
+<p>The <a class="link" href="chimara-Line-Input-Events.html#glk-set-terminators-line-event" title="glk_set_terminators_line_event ()"><code class="function">glk_set_terminators_line_event()</code></a> affects <span class="emphasis"><em>subsequent</em></span>
 line input requests in the given window. It does not affect a pending line
 input request.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   This distinction makes life easier for interpreters that set up UI
   callbacks only at the start of input.
-</p>
-</div>
+</p></div>
 <p>A library may not support this feature; if it does, it may not support all
 special keys as terminators. (Some keystrokes are reserved for OS or
-interpreter control.) You can test for this with <a href="chimara-The-Gestalt-System.html#gestalt-LineTerminators" title="gestalt_LineTerminators"><code class="literal">gestalt_LineTerminators</code></a> and
-<a href="chimara-The-Gestalt-System.html#gestalt-LineTerminatorKey" title="gestalt_LineTerminatorKey"><code class="literal">gestalt_LineTerminatorKey</code></a>.</p>
-<div class="refsect3" lang="en">
+interpreter control.) You can test for this with <a class="link" href="chimara-The-Gestalt-System.html#gestalt-LineTerminators" title="gestalt_LineTerminators"><code class="literal">gestalt_LineTerminators</code></a> and
+<a class="link" href="chimara-The-Gestalt-System.html#gestalt-LineTerminatorKey" title="gestalt_LineTerminatorKey"><code class="literal">gestalt_LineTerminatorKey</code></a>.</p>
+<div class="refsect3">
 <a name="glk-set-terminators-line-event.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -390,11 +375,8 @@ interpreter control.) You can test for this with <a href="chimara-The-Gestalt-Sy
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-Line-Input-Events.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

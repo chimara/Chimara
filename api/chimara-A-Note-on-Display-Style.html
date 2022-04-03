@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>A Note on Display Style</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>A Note on Display Style: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
 <link rel="prev" href="chimara-Changing-Window-Constraints.html" title="Changing Window Constraints">
 <link rel="next" href="chimara-The-Types-of-Windows.html" title="The Types of Windows">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,7 +19,7 @@
 <td><a accesskey="p" href="chimara-Changing-Window-Constraints.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-The-Types-of-Windows.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-A-Note-on-Display-Style"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -28,34 +28,31 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
-<a name="idp140340082329984"></a><h2>Description</h2>
+<div class="refsect1">
+<a name="id-1.4.6.6.3"></a><h2>Description</h2>
 <p>
 The way windows are displayed is, of course, entirely up to the Glk library; it depends on what is natural for the player's machine.
 The borders between windows may be black lines, 3-D bars, rows of “<code class="computeroutput">#</code>” characters; there may even be no borders at all.
 The library may not support the Border/NoBorder hint, in which case <span class="emphasis"><em>every</em></span> pair of windows will have a visible border — or no border — between them.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 The Border/NoBorder was introduced in Glk 0.7.1.
 Prior to that, all games used the Border hint, and this remains the default.
 However, as noted, not all implementations display window borders.
 Therefore, for existing implementations, “Border” may be understood as “your normal style of window display”; “NoBorder” may be understood as “suppress any interwindow borders you may have”.
-</p>
-</div>
+</p></div>
 <p>
 There may be decorations within the windows as well. A text buffer window will often have a scroll bar. The library (or player) may prefer wide margins around each text window. And so on.
 </p>
 <p>
-The library is reponsible for handling these decorations, margins, spaces, and borders. You should never worry about them. You are guaranteed that if you request a fixed size of two rows, your text grid window will have room for two rows of characters — if there is enough total space. Any margins or borders will be allowed for already. If there <span class="emphasis"><em>isn't</em></span> enough total space (as in stages 4 and 5 of <a href="chimara-Window-Opening-Closing-and-Constraints.html#chimara-Figure-Squeezing-Window">this figure</a>), you lose, of course.
+The library is reponsible for handling these decorations, margins, spaces, and borders. You should never worry about them. You are guaranteed that if you request a fixed size of two rows, your text grid window will have room for two rows of characters — if there is enough total space. Any margins or borders will be allowed for already. If there <span class="emphasis"><em>isn't</em></span> enough total space (as in stages 4 and 5 of <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#chimara-Figure-Squeezing-Window">this figure</a>), you lose, of course.
 </p>
 <p>
-How do you know when you're losing? You can call <a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> to determine the window size you really got. Obviously, you should draw into your windows based on their real size, not the size you requested. If there's enough space, the requested size and the real size will be identical; but you should not rely on this. Call <a href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> and check.
+How do you know when you're losing? You can call <a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> to determine the window size you really got. Obviously, you should draw into your windows based on their real size, not the size you requested. If there's enough space, the requested size and the real size will be identical; but you should not rely on this. Call <a class="link" href="chimara-Changing-Window-Constraints.html#glk-window-get-size" title="glk_window_get_size ()"><code class="function">glk_window_get_size()</code></a> and check.
 </p>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

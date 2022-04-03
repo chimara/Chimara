@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Window Arrangement</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Window Arrangement: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-windows.html" title="Windows">
 <link rel="prev" href="chimara-Windows.html" title="Windows">
 <link rel="next" href="chimara-Window-Opening-Closing-and-Constraints.html" title="Window Opening, Closing, and Constraints">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,7 +19,7 @@
 <td><a accesskey="p" href="chimara-Windows.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Window-Opening-Closing-and-Constraints.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Window-Arrangement"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -28,16 +28,13 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
-<a name="idp140340080459872"></a><h2>Description</h2>
+<div class="refsect1">
+<a name="id-1.4.6.3.3"></a><h2>Description</h2>
 <p>
 The Way of Window Arrangement is fairly complicated. I'll try to explain it coherently.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>If you are reading this document to get an overview of Glk, by all means skip forward to <a href="chimara-The-Types-of-Windows.html" title="The Types of Windows">The Types of Windows</a>. Come back here later.
-</p>
-</div>
+<div class="note"><p>If you are reading this document to get an overview of Glk, by all means skip forward to <a class="link" href="chimara-The-Types-of-Windows.html" title="The Types of Windows">The Types of Windows</a>. Come back here later.
+</p></div>
 <p>
 Originally, there are no windows. You can create a window, which will take up the entire available screen area. You can then split this window in two. One of the halves is the original window; the other half is new, and can be of any type you want. You can control whether the new window is left, right, above, or below the original one. You can also control how the split occurs. It can be 50-50, or 70-30, or any other percentage split. Or, you can give a fixed width to the new window, and allow the old one to take up the rest of the available space. Or you can give a fixed width to the old window, and let the new one take up the rest of the space.
 </p>
@@ -45,22 +42,19 @@ Originally, there are no windows. You can create a window, which will take up th
 Now you have two windows. In exactly the same way, you can split either of them — the original window, or the one you just created. Whichever one you split becomes two, which together take up the same space that the one did before.
 </p>
 <p>
-You can repeat this as often as you want. Every time you split a window, one new window is created. Therefore, the call that does this is called <a href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>.
+You can repeat this as often as you want. Every time you split a window, one new window is created. Therefore, the call that does this is called <a class="link" href="chimara-Window-Opening-Closing-and-Constraints.html#glk-window-open" title="glk_window_open ()"><code class="function">glk_window_open()</code></a>.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 It might have been less confusing to call it “glk_split_window()” — or it might have been more confusing.
 I picked one.
-</p>
-</div>
+</p></div>
 <p>
 It is important to remember that the order of splitting matters. If you split twice, you don't have a trio of windows; you have a pair with another pair on one side. Mathematically, the window structure is a binary tree.
 </p>
 <p>
 Example time. Say you do two splits, each a 50-50 percentage split. You start with the original window A, and split that into A and B; then you split B into B and C.
 </p>
-<div class="informaltable"><table border="0">
+<div class="informaltable"><table class="informaltable" border="0">
 <colgroup>
 <col>
 <col>
@@ -79,7 +73,7 @@ Example time. Say you do two splits, each a 50-50 percentage split. You start wi
 <p>
 Or, you could split A into A and B, and then split A again into A and C.
 </p>
-<div class="informaltable"><table border="0">
+<div class="informaltable"><table class="informaltable" border="0">
 <colgroup>
 <col>
 <col>
@@ -98,7 +92,7 @@ Or, you could split A into A and B, and then split A again into A and C.
 <p>
 I'm using the simplest possible splits in the examples above. Every split is 50-50, and the new window of the pair is always below the original one (the one that gets split.) You can get fancier than that. Here are three more ways to perform the first example; all of them have the same tree structure, but look different on the screen.
 </p>
-<div class="informaltable"><table border="0">
+<div class="informaltable"><table class="informaltable" border="0">
 <colgroup>
 <col>
 <col>
@@ -137,7 +131,7 @@ You don't create pair windows directly; they are created as a consequence of win
 Whenever you create a new window, a new pair window is also created automatically.
 In the following two-split process, you can see that when a window is split, it is replaced by a new pair window, and moves down to become one of that “O”'s two children.
 </p>
-<div class="informaltable"><table border="0">
+<div class="informaltable"><table class="informaltable" border="0">
 <colgroup>
 <col>
 <col>
@@ -193,6 +187,6 @@ There are Glk functions to determine the root window, and to determine the paren
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

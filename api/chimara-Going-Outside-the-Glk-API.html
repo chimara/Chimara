@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Going Outside the Glk API</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Going Outside the Glk API: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-Porting-Adapting-and-Other-Messy-Bits.html" title="Porting, Adapting, and Other Messy Bits">
 <link rel="prev" href="chimara-Porting-Adapting-and-Other-Messy-Bits.html" title="Porting, Adapting, and Other Messy Bits">
 <link rel="next" href="chimara-Glk-and-the-Virtual-Machine.html" title="Glk and the Virtual Machine">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,13 +19,13 @@
 <td><a accesskey="p" href="chimara-Porting-Adapting-and-Other-Messy-Bits.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Glk-and-the-Virtual-Machine.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="sect1" lang="en">
+<div class="sect1">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="chimara-Going-Outside-the-Glk-API"></a>Going Outside the Glk API</h2></div></div></div>
 <p>
 Nonportable problems are not limited to the start of execution. There is also the question of OS services which are not represented in Glk. The ANSI C libraries are so familiar that they seem universal, but they are actually not necessarily present. Palmtop platforms such as PalmOS are particularly good at leaving out ANSI libraries.
 </p>
-<div class="sect2" lang="en">
+<div class="sect2">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="chimara-Memory-Management"></a>Memory Management</h3></div></div></div>
 <p>
@@ -35,29 +35,23 @@ Everyone uses <code class="function">malloc()</code>, <code class="function">rea
 The <code class="function">malloc()</code> system is simple; it can probably be implemented as a layer on top of whatever native API is available. So you don't absolutely have to worry about this. However, it can't hurt to group all your <code class="function">malloc()</code> and <code class="function">free()</code> calls in one part of your program, so that a porter can easily change them all if it turns out to be a good idea. 
 </p>
 </div>
-<div class="sect2" lang="en">
+<div class="sect2">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="chimara-String-Manipulation"></a>String Manipulation</h3></div></div></div>
 <p>
 This is more of a nuisance, because the set of string functions varies quite a bit between platforms. Consider <code class="function">bcopy()</code>, <code class="function">memcpy()</code>, and <code class="function">memmove()</code>; <code class="function">stricmp()</code> and <code class="function">strcasecmp()</code>; <code class="function">strchr()</code> and <code class="function">index()</code>; and so on. And again, on a palmtop machine, none of these may be available. The maximally safe course is to implement what you need yourself.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 See the <code class="filename">model.c</code> program for an example; it implements its own <code class="function">str_eq()</code> and <code class="function">str_len()</code>.
-</p>
-</div>
+</p></div>
 <p>
 The maximally safe course is also a pain in the butt, and may well be inefficient (a platform may have a <code class="function">memcpy()</code> which is highly optimized for large moves.) That's porting in the big city.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 By the way, the next person I see who <code class="code">#define</code>s <code class="function">memmove()</code> as <code class="function">memcpy()</code> when a real <code class="function">memmove()</code> isn't available, gets slapped in the face with a lead-lined rubber salmon.
-</p>
+</p></div>
 </div>
-</div>
-<div class="sect2" lang="en">
+<div class="sect2">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="chimara-File-Handling"></a>File Handling</h3></div></div></div>
 <p>
@@ -69,17 +63,14 @@ The problem is, the stdio library really isn't always the best choice, particula
 <p>
 There's also the problem of hooking into the Glk API. Window output goes through Glk streams.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 It would have been lovely to use the stdio API for that, but it's not generally possible.
-</p>
-</div>
+</p></div>
 <p>
 As usual, it's a judgement call. If you have a large existing pile of source code which you're porting, and it uses a lot of icky stdio features like <code class="function">ungetc()</code>, it may be better not to bother changing everything to the Glk file API. If you're starting from scratch, using the Glk calls will probably be cleaner. 
 </p>
 </div>
-<div class="sect2" lang="en">
+<div class="sect2">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="chimara-Private-Extensions-to-Glk"></a>Private Extensions to Glk</h3></div></div></div>
 <p>
@@ -97,6 +88,6 @@ If an extension or new function is so useful that everyone is implementing it, I
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Character Input</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Character Input: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-character-encoding.html" title="Character Encoding">
 <link rel="prev" href="chimara-Line-Input.html" title="Line Input">
 <link rel="next" href="chimara-Upper-and-Lower-Case.html" title="Upper and Lower Case">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Line-Input.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Upper-and-Lower-Case.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Character-Input"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,400 +31,387 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Character-Input.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="other_proto_type">
+<col class="other_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Unknown" title="keycode_Unknown">keycode_Unknown</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Unknown" title="keycode_Unknown">keycode_Unknown</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Left" title="keycode_Left">keycode_Left</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Left" title="keycode_Left">keycode_Left</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Right" title="keycode_Right">keycode_Right</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Right" title="keycode_Right">keycode_Right</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Up" title="keycode_Up">keycode_Up</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Up" title="keycode_Up">keycode_Up</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Down" title="keycode_Down">keycode_Down</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Down" title="keycode_Down">keycode_Down</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Return" title="keycode_Return">keycode_Return</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Return" title="keycode_Return">keycode_Return</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Delete" title="keycode_Delete">keycode_Delete</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Delete" title="keycode_Delete">keycode_Delete</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Escape" title="keycode_Escape">keycode_Escape</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Escape" title="keycode_Escape">keycode_Escape</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab">keycode_Tab</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab">keycode_Tab</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-PageUp" title="keycode_PageUp">keycode_PageUp</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-PageUp" title="keycode_PageUp">keycode_PageUp</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-PageDown" title="keycode_PageDown">keycode_PageDown</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-PageDown" title="keycode_PageDown">keycode_PageDown</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Home" title="keycode_Home">keycode_Home</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Home" title="keycode_Home">keycode_Home</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-End" title="keycode_End">keycode_End</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-End" title="keycode_End">keycode_End</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func1" title="keycode_Func1">keycode_Func1</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func1" title="keycode_Func1">keycode_Func1</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func2" title="keycode_Func2">keycode_Func2</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func2" title="keycode_Func2">keycode_Func2</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func3" title="keycode_Func3">keycode_Func3</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func3" title="keycode_Func3">keycode_Func3</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func4" title="keycode_Func4">keycode_Func4</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func4" title="keycode_Func4">keycode_Func4</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func5" title="keycode_Func5">keycode_Func5</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func5" title="keycode_Func5">keycode_Func5</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func6" title="keycode_Func6">keycode_Func6</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func6" title="keycode_Func6">keycode_Func6</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func7" title="keycode_Func7">keycode_Func7</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func7" title="keycode_Func7">keycode_Func7</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func8" title="keycode_Func8">keycode_Func8</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func8" title="keycode_Func8">keycode_Func8</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func9" title="keycode_Func9">keycode_Func9</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func9" title="keycode_Func9">keycode_Func9</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func10" title="keycode_Func10">keycode_Func10</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func10" title="keycode_Func10">keycode_Func10</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func11" title="keycode_Func11">keycode_Func11</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func11" title="keycode_Func11">keycode_Func11</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Character-Input.html#keycode-Func12" title="keycode_Func12">keycode_Func12</a></td>
+<td class="function_name"><a class="link" href="chimara-Character-Input.html#keycode-Func12" title="keycode_Func12">keycode_Func12</a></td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Character-Input.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Character-Input.description"></a><h2>Description</h2>
-<p>You can request that the player hit a single key. See <a href="chimara-Character-Input-Events.html" title="Character Input Events">Character Input
+<p>You can request that the player hit a single key. See <a class="link" href="chimara-Character-Input-Events.html" title="Character Input Events">Character Input
 Events</a>.</p>
 <p>If you use the basic text API, the character code which is returned can be
 any value from 0 to 255. The printable character codes have already been
 described.
-The remaining codes are typically control codes: <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">A</strong></span>
-to <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">Z</strong></span> and a few
+The remaining codes are typically control codes: <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>A</strong></span>
+to <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>Z</strong></span> and a few
 others.</p>
 <p>There are also a number of special codes, representing special keyboard
 keys, which can be returned from a char-input event. These are represented
 as 32-bit integers, starting with 4294967295 (0xFFFFFFFF) and working down.
 The special key codes are defined in the <code class="literal">glk.h</code> file.
-They include one code for <span><strong class="keycap">return</strong></span> or <span><strong class="keycap">enter</strong></span>, one for <span><strong class="keycap">delete</strong></span> or <span><strong class="keycap">backspace</strong></span>, twelve function keys, and one code
+They include one code for <span class="keycap"><strong>return</strong></span> or <span class="keycap"><strong>enter</strong></span>, one for <span class="keycap"><strong>delete</strong></span> or <span class="keycap"><strong>backspace</strong></span>, twelve function keys, and one code
 for any key which has no Latin-1 or special code. The full list of key codes
 is included below.</p>
 <p>Various implementations of Glk will vary widely in which characters the
 player can enter. The most obvious limitation is that some characters are
-mapped to others. For example, most keyboards return a <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">I</strong></span> code when the <span><strong class="keycap">tab</strong></span> key is
+mapped to others. For example, most keyboards return a <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>I</strong></span> code when the <span class="keycap"><strong>tab</strong></span> key is
 pressed. The Glk library, if it can recognize this at all, will generate a
-<a href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab"><code class="literal">keycode_Tab</code></a> event (value 0xFFFFFFF7) when this occurs.
-Therefore, for these keyboards, no keyboard key will generate a <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">I</strong></span> event (value 9.) The Glk library will probably map many of the
+<a class="link" href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab"><code class="literal">keycode_Tab</code></a> event (value 0xFFFFFFF7) when this occurs.
+Therefore, for these keyboards, no keyboard key will generate a <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>I</strong></span> event (value 9.) The Glk library will probably map many of the
 control codes to the other special keycodes.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   On the other hand, the library may be very clever and discriminate between
-  <span><strong class="keycap">tab</strong></span> and <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">I</strong></span>. This is
+  <span class="keycap"><strong>tab</strong></span> and <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>I</strong></span>. This is
   legal. The idea is, however, that if your program asks the player to
-  “<code class="computeroutput">press the <span><strong class="keycap">tab</strong></span>
+  “<code class="computeroutput">press the <span class="keycap"><strong>tab</strong></span>
   key</code>”, you should check for a
-  <a href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab"><code class="literal">keycode_Tab</code></a> event as opposed to a <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">I</strong></span> event.
-</p>
-</div>
+  <a class="link" href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab"><code class="literal">keycode_Tab</code></a> event as opposed to a <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>I</strong></span> event.
+</p></div>
 <p>Some characters may not be enterable simply because they do not exist.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  Not all keyboards have a <span><strong class="keycap">home</strong></span> or <span><strong class="keycap">end</strong></span> key. A pen-based platform may not recognize
+<div class="note"><p>
+  Not all keyboards have a <span class="keycap"><strong>home</strong></span> or <span class="keycap"><strong>end</strong></span> key. A pen-based platform may not recognize
   any control characters at all.
-</p>
-</div>
+</p></div>
 <p>Some characters may not be enterable because they are reserved for the
 purposes of the interface.
-For example, the Mac Glk library reserves the <span><strong class="keycap">tab</strong></span> key for switching between different Glk windows.
-Therefore, on the Mac, the library will never generate a <a href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab"><code class="literal">keycode_Tab</code></a> event
-or a <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">I</strong></span> event.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  Note that the linefeed or <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">J</strong></span> 
+For example, the Mac Glk library reserves the <span class="keycap"><strong>tab</strong></span> key for switching between different Glk windows.
+Therefore, on the Mac, the library will never generate a <a class="link" href="chimara-Character-Input.html#keycode-Tab" title="keycode_Tab"><code class="literal">keycode_Tab</code></a> event
+or a <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>I</strong></span> event.</p>
+<div class="note"><p>
+  Note that the linefeed or <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>J</strong></span> 
   character, which is the only printable control character, is probably not
   typable. This is because, in most libraries, it will be converted to
-  <a href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a>.
-  Again, you should check for <a href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a> if your program asks the player
-  to “<code class="computeroutput">press the <span><strong class="keycap">return</strong></span>
+  <a class="link" href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a>.
+  Again, you should check for <a class="link" href="chimara-Character-Input.html#keycode-Return" title="keycode_Return"><code class="literal">keycode_Return</code></a> if your program asks the player
+  to “<code class="computeroutput">press the <span class="keycap"><strong>return</strong></span>
   key</code>”.
-</p>
-</div>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  The <span><strong class="keycap">delete</strong></span> and <span><strong class="keycap">backspace</strong></span> keys are merged into a single
+</p></div>
+<div class="note"><p>
+  The <span class="keycap"><strong>delete</strong></span> and <span class="keycap"><strong>backspace</strong></span> keys are merged into a single
   keycode because they have such an astonishing history of being confused in
   the first place... this spec formally waives any desire to define the
-  difference. Of course, a library is free to distinguish <span><strong class="keycap">delete</strong></span> and <span><strong class="keycap">backspace</strong></span> during line input. This is when it
+  difference. Of course, a library is free to distinguish <span class="keycap"><strong>delete</strong></span> and <span class="keycap"><strong>backspace</strong></span> during line input. This is when it
   matters most; conflating the two during character input should not be a
   large problem.
-</p>
-</div>
-<p>You can test for this by using the <a href="chimara-The-Gestalt-System.html#gestalt-CharInput" title="gestalt_CharInput"><code class="literal">gestalt_CharInput</code></a> selector.</p>
+</p></div>
+<p>You can test for this by using the <a class="link" href="chimara-The-Gestalt-System.html#gestalt-CharInput" title="gestalt_CharInput"><code class="literal">gestalt_CharInput</code></a> selector.</p>
 <div class="note">
-<h3 class="title"></h3>
 <p>
   Glk porters take note: it is not a goal to be able to generate every
   single possible key event. If the library says that it can generate a
   particular keycode, then game programmers will assume that it is
   available, and ask players to use it.
-  If a <a href="chimara-Character-Input.html#keycode-Home" title="keycode_Home"><code class="literal">keycode_Home</code></a> event can only be generated by typing <span><strong class="keycap">escape</strong></span> <span><strong class="keycap">control</strong></span>+<span><strong class="keycap">A</strong></span>, and the player does not know this, the player will be lost
-  when the game says “<code class="computeroutput">Press the <span><strong class="keycap">home</strong></span> key to see the next 
+  If a <a class="link" href="chimara-Character-Input.html#keycode-Home" title="keycode_Home"><code class="literal">keycode_Home</code></a> event can only be generated by typing <span class="keycap"><strong>escape</strong></span> <span class="keycap"><strong>control</strong></span>+<span class="keycap"><strong>A</strong></span>, and the player does not know this, the player will be lost
+  when the game says “<code class="computeroutput">Press the <span class="keycap"><strong>home</strong></span> key to see the next 
   hint.</code>” It is better for the library to say that it
-  cannot generate a <a href="chimara-Character-Input.html#keycode-Home" title="keycode_Home"><code class="literal">keycode_Home</code></a> event; that way the game can detect the
-  situation and ask the user to type <span><strong class="keycap">H</strong></span> instead.
+  cannot generate a <a class="link" href="chimara-Character-Input.html#keycode-Home" title="keycode_Home"><code class="literal">keycode_Home</code></a> event; that way the game can detect the
+  situation and ask the user to type <span class="keycap"><strong>H</strong></span> instead.
 </p>
 <p>
   Of course, it is better not to rely on obscure keys in any case. The arrow
-  keys and <span><strong class="keycap">return</strong></span> are nearly certain to be
+  keys and <span class="keycap"><strong>return</strong></span> are nearly certain to be
   available; the others are of gradually decreasing reliability, and you
   (the game programmer) should not depend on them. You must be certain to
-  check for the ones you want to use, including the arrow keys and <span><strong class="keycap">return</strong></span>, and be prepared to use different keys in
-  your interface if <a href="chimara-The-Gestalt-System.html#gestalt-CharInput" title="gestalt_CharInput"><code class="literal">gestalt_CharInput</code></a> says they are not available.
+  check for the ones you want to use, including the arrow keys and <span class="keycap"><strong>return</strong></span>, and be prepared to use different keys in
+  your interface if <a class="link" href="chimara-The-Gestalt-System.html#gestalt-CharInput" title="gestalt_CharInput"><code class="literal">gestalt_CharInput</code></a> says they are not available.
 </p>
 </div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Character-Input.functions_details"></a><h2>Functions</h2>
 <p></p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Character-Input.other_details"></a><h2>Types and Values</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Unknown"></a><h3>keycode_Unknown</h3>
 <pre class="programlisting">#define keycode_Unknown  (0xffffffff)
 </pre>
 <p>Represents any key that has no Latin-1 or special code.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Left"></a><h3>keycode_Left</h3>
 <pre class="programlisting">#define keycode_Left     (0xfffffffe)
 </pre>
-<p>Represents the <span><strong class="keycap">left arrow</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>left arrow</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Right"></a><h3>keycode_Right</h3>
 <pre class="programlisting">#define keycode_Right    (0xfffffffd)
 </pre>
-<p>Represents the <span><strong class="keycap">right arrow</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>right arrow</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Up"></a><h3>keycode_Up</h3>
 <pre class="programlisting">#define keycode_Up       (0xfffffffc)
 </pre>
-<p>Represents the <span><strong class="keycap">up arrow</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>up arrow</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Down"></a><h3>keycode_Down</h3>
 <pre class="programlisting">#define keycode_Down     (0xfffffffb)
 </pre>
-<p>Represents the <span><strong class="keycap">down arrow</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>down arrow</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Return"></a><h3>keycode_Return</h3>
 <pre class="programlisting">#define keycode_Return   (0xfffffffa)
 </pre>
-<p>Represents the <span><strong class="keycap">return</strong></span> or <span><strong class="keycap">enter</strong></span> keys.</p>
+<p>Represents the <span class="keycap"><strong>return</strong></span> or <span class="keycap"><strong>enter</strong></span> keys.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Delete"></a><h3>keycode_Delete</h3>
 <pre class="programlisting">#define keycode_Delete   (0xfffffff9)
 </pre>
-<p>Represents the <span><strong class="keycap">delete</strong></span> or <span><strong class="keycap">backspace</strong></span> keys.</p>
+<p>Represents the <span class="keycap"><strong>delete</strong></span> or <span class="keycap"><strong>backspace</strong></span> keys.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Escape"></a><h3>keycode_Escape</h3>
 <pre class="programlisting">#define keycode_Escape   (0xfffffff8)
 </pre>
-<p>Represents the <span><strong class="keycap">escape</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>escape</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Tab"></a><h3>keycode_Tab</h3>
 <pre class="programlisting">#define keycode_Tab      (0xfffffff7)
 </pre>
-<p>Represents the <span><strong class="keycap">tab</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>tab</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-PageUp"></a><h3>keycode_PageUp</h3>
 <pre class="programlisting">#define keycode_PageUp   (0xfffffff6)
 </pre>
-<p>Represents the <span><strong class="keycap">page up</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>page up</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-PageDown"></a><h3>keycode_PageDown</h3>
 <pre class="programlisting">#define keycode_PageDown (0xfffffff5)
 </pre>
-<p>Represents the <span><strong class="keycap">page down</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>page down</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Home"></a><h3>keycode_Home</h3>
 <pre class="programlisting">#define keycode_Home     (0xfffffff4)
 </pre>
-<p>Represents the <span><strong class="keycap">home</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>home</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-End"></a><h3>keycode_End</h3>
 <pre class="programlisting">#define keycode_End      (0xfffffff3)
 </pre>
-<p>Represents the <span><strong class="keycap">end</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>end</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func1"></a><h3>keycode_Func1</h3>
 <pre class="programlisting">#define keycode_Func1    (0xffffffef)
 </pre>
-<p>Represents the <span><strong class="keycap">F1</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F1</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func2"></a><h3>keycode_Func2</h3>
 <pre class="programlisting">#define keycode_Func2    (0xffffffee)
 </pre>
-<p>Represents the <span><strong class="keycap">F2</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F2</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func3"></a><h3>keycode_Func3</h3>
 <pre class="programlisting">#define keycode_Func3    (0xffffffed)
 </pre>
-<p>Represents the <span><strong class="keycap">F3</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F3</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func4"></a><h3>keycode_Func4</h3>
 <pre class="programlisting">#define keycode_Func4    (0xffffffec)
 </pre>
-<p>Represents the <span><strong class="keycap">F4</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F4</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func5"></a><h3>keycode_Func5</h3>
 <pre class="programlisting">#define keycode_Func5    (0xffffffeb)
 </pre>
-<p>Represents the <span><strong class="keycap">F5</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F5</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func6"></a><h3>keycode_Func6</h3>
 <pre class="programlisting">#define keycode_Func6    (0xffffffea)
 </pre>
-<p>Represents the <span><strong class="keycap">F6</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F6</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func7"></a><h3>keycode_Func7</h3>
 <pre class="programlisting">#define keycode_Func7    (0xffffffe9)
 </pre>
-<p>Represents the <span><strong class="keycap">F7</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F7</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func8"></a><h3>keycode_Func8</h3>
 <pre class="programlisting">#define keycode_Func8    (0xffffffe8)
 </pre>
-<p>Represents the <span><strong class="keycap">F8</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F8</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func9"></a><h3>keycode_Func9</h3>
 <pre class="programlisting">#define keycode_Func9    (0xffffffe7)
 </pre>
-<p>Represents the <span><strong class="keycap">F9</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F9</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func10"></a><h3>keycode_Func10</h3>
 <pre class="programlisting">#define keycode_Func10   (0xffffffe6)
 </pre>
-<p>Represents the <span><strong class="keycap">F10</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F10</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func11"></a><h3>keycode_Func11</h3>
 <pre class="programlisting">#define keycode_Func11   (0xffffffe5)
 </pre>
-<p>Represents the <span><strong class="keycap">F11</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F11</strong></span> key.</p>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="keycode-Func12"></a><h3>keycode_Func12</h3>
 <pre class="programlisting">#define keycode_Func12   (0xffffffe4)
 </pre>
-<p>Represents the <span><strong class="keycap">F12</strong></span> key.</p>
+<p>Represents the <span class="keycap"><strong>F12</strong></span> key.</p>
 </div>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

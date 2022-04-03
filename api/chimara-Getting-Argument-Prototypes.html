@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Getting Argument Prototypes</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Getting Argument Prototypes: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
 <link rel="prev" href="chimara-Dispatching.html" title="Dispatching">
 <link rel="next" href="chimara-Functions-the-Library-Must-Provide.html" title="Functions the Library Must Provide">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Dispatching.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Functions-the-Library-Must-Provide.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Getting-Argument-Prototypes"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,86 +31,86 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Getting-Argument-Prototypes.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody><tr>
 <td class="function_type">
 <span class="returnvalue">char</span> *
 </td>
 <td class="function_name">
-<a href="chimara-Getting-Argument-Prototypes.html#gidispatch-prototype" title="gidispatch_prototype ()">gidispatch_prototype</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Getting-Argument-Prototypes.html#gidispatch-prototype" title="gidispatch_prototype ()">gidispatch_prototype</a> <span class="c_punctuation">()</span>
 </td>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Getting-Argument-Prototypes.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 #include &lt;libchimara/gi-dispa.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Getting-Argument-Prototypes.description"></a><h2>Description</h2>
-<p>There are many possible ways to set up a <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> array, and it's
-illegal to call <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> with an array which doesn't match the
+<p>There are many possible ways to set up a <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> array, and it's
+illegal to call <a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> with an array which doesn't match the
 function. Furthermore, some references are passed in, some passed out, and
 some both. How do you know how to handle the argument list?</p>
 <p>One possibility is to recognize each function selector, and set up the
 arguments appropriately. However, this entails writing special code for each
 Glk function; which is exactly what we don't want to do.</p>
-<p>Instead, you can call <a href="chimara-Getting-Argument-Prototypes.html#gidispatch-prototype" title="gidispatch_prototype ()"><code class="function">gidispatch_prototype()</code></a>.</p>
+<p>Instead, you can call <a class="link" href="chimara-Getting-Argument-Prototypes.html#gidispatch-prototype" title="gidispatch_prototype ()"><code class="function">gidispatch_prototype()</code></a>.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Getting-Argument-Prototypes.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="gidispatch-prototype"></a><h3>gidispatch_prototype ()</h3>
 <pre class="programlisting"><span class="returnvalue">char</span> *
-gidispatch_prototype (<em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> funcnum</code></em>);</pre>
+gidispatch_prototype (<em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> funcnum</code></em>);</pre>
 <p>This returns a string which encodes the proper argument list for the given
-function. If there is no such function in the library, this returns <code class="literal">NULL</code>.</p>
-<p>The prototype string for the <code class="literal">glk_glomp()</code> function described above would be:
-<code class="literal">"4IuQa&amp;Iu&amp;Qb:"</code>.
+function. If there is no such function in the library, this returns <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
+<p>The prototype string for the <code class="literal">glk_glomp&lt;!----&gt;()</code> function described above would be:
+<code class="literal">"4IuQa&amp;amp;Iu&amp;amp;Qb:"</code>.
 The <code class="literal">"4"</code> is the number of arguments (including the return value, if there is
 one, which in this case there isn't.)
 <code class="literal">"Iu"</code> denotes an unsigned integer; <code class="literal">"Qa"</code> is an opaque object of class 0
 (window).
-<code class="literal">"&amp;Iu"</code> is a <span class="emphasis"><em>reference</em></span> to an unsigned integer, and
-<code class="literal">"&amp;Qb"</code> is a reference to a stream.
+<code class="literal">"&amp;amp;Iu"</code> is a <span class="emphasis"><em>reference</em></span> to an unsigned integer, and
+<code class="literal">"&amp;amp;Qb"</code> is a reference to a stream.
 The colon at the end terminates the argument list; the return value would
 follow it, if there was one.</p>
 <p>Note that the initial number (<code class="literal">"4"</code> in this case) is the number of logical
-arguments, not the number of <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects which will be passed to
-<a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>.
-The <code class="literal">glk_glomp()</code> call uses anywhere from four to six <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects,
+arguments, not the number of <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects which will be passed to
+<a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a>.
+The <code class="literal">glk_glomp&lt;!----&gt;()</code> call uses anywhere from four to six <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects,
 as demonstrated above.</p>
 <p>The basic type codes:</p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody>
 <tr>
-<td><span class="term"><code class="code">Iu, Is</code></span></td>
+<td><p><span class="term"><code class="code">Iu, Is</code></span></p></td>
 <td><p>Unsigned and signed 32-bit integer.</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">Cn, Cu, Cs</code></span></td>
+<td><p><span class="term"><code class="code">Cn, Cu, Cs</code></span></p></td>
 <td>
 <p>Character, <span class="type">unsigned</span> <span class="type">char</span>, and <span class="type">signed</span> <span class="type">char</span>.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>Of course <code class="code">Cn</code> will be the same as either 
+<div class="note"><p>Of course <code class="code">Cn</code> will be the same as either 
     <code class="code">Cu</code> or <code class="code">Cs</code>, depending on the platform. For this
     reason, Glk avoids using it, but it is included here for completeness.
-    </p>
-</div>
+    </p></div>
 </td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">S</code></span></td>
+<td><p><span class="term"><code class="code">S</code></span></p></td>
 <td><p>A C-style string (null-terminated array of <span class="type">char</span>). In Glk,
   strings are always treated as read-only and used immediately; the library
   does not retain a reference to a string between Glk calls. A Glk call that
@@ -118,7 +118,7 @@ as demonstrated above.</p>
   (<code class="code">"#C"</code>), not string (<code class="code">"S"</code>).</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">U</code></span></td>
+<td><p><span class="term"><code class="code">U</code></span></p></td>
 <td><p>A zero-terminated array of 32-bit integers. This is
   primarily intended as a Unicode equivalent of <code class="code">"S"</code>. Like 
   <code class="code">"S"</code> strings, <code class="code">"U"</code> strings are read-only and used
@@ -126,117 +126,105 @@ as demonstrated above.</p>
   an array type (<code class="code">"#Iu"</code>) instead of <code class="code">"U"</code>.</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">F</code></span></td>
+<td><p><span class="term"><code class="code">F</code></span></p></td>
 <td><p>A floating-point value. Glk does not currently use
   floating-point values, but we might as well define a code for them.</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">Qa, Qb, Qc...</code></span></td>
+<td><p><span class="term"><code class="code">Qa, Qb, Qc...</code></span></p></td>
 <td>
 <p>A reference to an opaque object. The second letter
   determines which class is involved. (The number of classes can be gleaned
-  from <a href="chimara-Interrogating-the-Interface.html#gidispatch-count-classes" title="gidispatch_count_classes ()"><code class="function">gidispatch_count_classes()</code></a>; see <a href="chimara-Interrogating-the-Interface.html" title="Interrogating the Interface">Interrogating the
+  from <a class="link" href="chimara-Interrogating-the-Interface.html#gidispatch-count-classes" title="gidispatch_count_classes ()"><code class="function">gidispatch_count_classes()</code></a>; see <a class="link" href="chimara-Interrogating-the-Interface.html" title="Interrogating the Interface">Interrogating the
   Interface</a>).</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
     If Glk expands to have more than 26 classes, we'll think of something.
-  </p>
-</div>
+  </p></div>
 </td>
 </tr>
 </tbody>
 </table></div>
 <p>Any type code can be prefixed with one or more of the following characters:</p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody>
 <tr>
-<td><span class="term"><code class="code">&amp;</code></span></td>
+<td><p><span class="term"><code class="code">&amp;</code></span></p></td>
 <td><p>A reference to the type; or, if you like, a variable passed
   by reference. The reference is passed both in and out, so you must copy the
-  value in before calling <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> and copy it out afterward.</p></td>
+  value in before calling <a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> and copy it out afterward.</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">&lt;</code></span></td>
+<td><p><span class="term"><code class="code">&lt;</code></span></p></td>
 <td><p>A reference which is pass-out only. The initial value is
   ignored, so you only need copy out the value after the call.</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">&gt;</code></span></td>
+<td><p><span class="term"><code class="code">&gt;</code></span></p></td>
 <td>
 <p>A reference which is pass-in only.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
     This is not generally used for simple types, but is useful for structures
     and arrays.
-  </p>
-</div>
+  </p></div>
 </td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">+</code></span></td>
+<td><p><span class="term"><code class="code">+</code></span></p></td>
 <td>
 <p>Combined with <code class="code">"&amp;"</code>, <code class="code">"&lt;"</code>, or 
-  <code class="code">"&gt;"</code>, indicates that a valid reference is mandatory; <code class="literal">NULL</code>
+  <code class="code">"&gt;"</code>, indicates that a valid reference is mandatory; <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>
   cannot be passed.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-    Note that even though the <em class="parameter"><code>ptrflag</code></em> <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> for a <code class="code">"+"</code>
-    reference is always <code class="literal">TRUE</code>, it cannot be omitted.
-  </p>
-</div>
+<div class="note"><p>
+    Note that even though the <em class="parameter"><code>ptrflag</code></em> <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> for a <code class="code">"+"</code>
+    reference is always <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>, it cannot be omitted.
+  </p></div>
 </td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">:</code></span></td>
+<td><p><span class="term"><code class="code">:</code></span></p></td>
 <td><p>The colon separates the arguments from the return value, or
   terminates the string if there is no return value. Since return values are
-  always non-<code class="literal">NULL</code> pass-out references, you may treat <code class="code">":"</code> as
+  always non-<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> pass-out references, you may treat <code class="code">":"</code> as
   equivalent to <code class="code">"&lt;+"</code>. The colon is never combined with any
   other prefix character.</p></td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">[...]</code></span></td>
+<td><p><span class="term"><code class="code">[...]</code></span></p></td>
 <td>
 <p>Combined with <code class="code">"&amp;"</code>, <code class="code">"&lt;"</code>, or 
   <code class="code">"&gt;"</code>, indicates a structure reference. Between the brackets
   is a complete argument list encoding string, including the number of
   arguments.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-    For example, the prototype string for <a href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> is
+<div class="note"><p>
+    For example, the prototype string for <a class="link" href="chimara-Events.html#glk-select" title="glk_select ()"><code class="function">glk_select()</code></a> is
     <code class="code">"1&lt;+[4IuQaIuIu]:"</code> — one argument, which is a
-    pass-out non-<code class="literal">NULL</code> reference to a structure, which contains four
+    pass-out non-<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> reference to a structure, which contains four
     arguments.
-  </p>
-</div>
+  </p></div>
 <p>Currently, structures in Glk contain only basic types.</p>
 </td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">#</code></span></td>
+<td><p><span class="term"><code class="code">#</code></span></p></td>
 <td>
 <p>Combined with <code class="code">"&amp;"</code>, <code class="code">"&lt;"</code>, or 
   <code class="code">"&gt;"</code>, indicates an array reference. As described above, this
-  encompasses up to three <a href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects — <em class="parameter"><code>ptrflag</code></em>, pointer,
+  encompasses up to three <a class="link" href="chimara-Dispatching.html#gluniversal-t" title="gluniversal_t"><span class="type">gluniversal_t</span></a> objects — <em class="parameter"><code>ptrflag</code></em>, pointer,
   and integer length.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
     Depending on the design of your program, you may wish to pass a pointer
     directly to your program's memory, or allocate an array and copy the
     contents in and out.
     See [Arrays][chimara-Arrays].
-  </p>
-</div>
+  </p></div>
 </td>
 </tr>
 <tr>
-<td><span class="term"><code class="code">!</code></span></td>
+<td><p><span class="term"><code class="code">!</code></span></p></td>
 <td>
 <p>Combined with <code class="code">"#"</code>, indicates that the
   array is retained by the library. The library will keep a reference to the
@@ -244,25 +232,19 @@ as demonstrated above.</p>
   or copy the contents of the array out after the call, even for 
   <code class="code">"&amp;#!"</code> or <code class="code">"&lt;#!"</code> arrays. Instead, do
   it when the library releases the array.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-    For example, <a href="chimara-The-Types-of-Streams.html#glk-stream-open-memory" title="glk_stream_open_memory ()"><code class="function">glk_stream_open_memory()</code></a> retains the array that you pass it,
+<div class="note"><p>
+    For example, <a class="link" href="chimara-The-Types-of-Streams.html#glk-stream-open-memory" title="glk_stream_open_memory ()"><code class="function">glk_stream_open_memory()</code></a> retains the array that you pass it,
     and releases it when the stream is closed. The library can notify you
     automatically when arrays are retained and released; see [Retained Array
     Registry][gidispatch-set-retained-registry].
-  </p>
-</div>
+  </p></div>
 </td>
 </tr>
 </tbody>
 </table></div>
 <p>The order of these characters and prefixes is not completely arbitrary. Here
 is a formal grammar for the prototype strings.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>Thanks to Neil Cerutti for working this out.</p>
-</div>
+<div class="note"><p>Thanks to Neil Cerutti for working this out.</p></div>
 <table width="100%" cellpadding="5" bgcolor="#F5DCB3" border="1" class="productionset" summary="EBNF"><tr><td><table border="0" width="99%" cellpadding="0" bgcolor="#F5DCB3" class="productionset" summary="EBNF productions">
 <tr>
 <td align="left" valign="top" width="3%">[1]</td>
@@ -345,13 +327,13 @@ is a formal grammar for the prototype strings.</p>
 <a name="EOL"></a>
   <p>EOL is end of input</p>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="gidispatch-prototype.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>funcnum</p></td>
@@ -360,17 +342,14 @@ is a formal grammar for the prototype strings.</p>
 </tr></tbody>
 </table></div>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="gidispatch-prototype.returns"></a><h4>Returns</h4>
 <p> A string which encodes the prototype of the specified Glk function.</p>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-Getting-Argument-Prototypes.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

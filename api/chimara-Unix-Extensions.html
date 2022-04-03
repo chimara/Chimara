@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Unix Extensions</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Unix Extensions: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-glk-extensions.html" title="Appendix C. Glk Extensions">
 <link rel="prev" href="chimara-Startup-Code.html" title="Startup Code">
 <link rel="next" href="chimara-Gargoyle-Extensions.html" title="Gargoyle Extensions">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-Startup-Code.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Gargoyle-Extensions.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Unix-Extensions"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,28 +31,28 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Unix-Extensions.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="function_type">
-<a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+<a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
 </td>
 <td class="function_name">
-<a href="chimara-Unix-Extensions.html#glkunix-stream-open-pathname-gen" title="glkunix_stream_open_pathname_gen ()">glkunix_stream_open_pathname_gen</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Unix-Extensions.html#glkunix-stream-open-pathname-gen" title="glkunix_stream_open_pathname_gen ()">glkunix_stream_open_pathname_gen</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
 <td class="function_type">
-<a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+<a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
 </td>
 <td class="function_name">
-<a href="chimara-Unix-Extensions.html#glkunix-stream-open-pathname" title="glkunix_stream_open_pathname ()">glkunix_stream_open_pathname</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Unix-Extensions.html#glkunix-stream-open-pathname" title="glkunix_stream_open_pathname ()">glkunix_stream_open_pathname</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -60,19 +60,19 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Unix-Extensions.html#glkunix-set-base-file" title="glkunix_set_base_file ()">glkunix_set_base_file</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Unix-Extensions.html#glkunix-set-base-file" title="glkunix_set_base_file ()">glkunix_set_base_file</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Unix-Extensions.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 #include &lt;libchimara/glkstart.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Unix-Extensions.description"></a><h2>Description</h2>
 <p>This section describes an extension to Glk for various Unix functions. It was
 written by Andrew Plotkin for the Glk libraries CheapGlk and GlkTerm.</p>
@@ -80,27 +80,27 @@ written by Andrew Plotkin for the Glk libraries CheapGlk and GlkTerm.</p>
 generally be limited to finding and opening data files. There are a few Unix
 Glk library functions which are convenient for this purpose.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Unix-Extensions.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-stream-open-pathname-gen"></a><h3>glkunix_stream_open_pathname_gen ()</h3>
-<pre class="programlisting"><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+<pre class="programlisting"><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
 glkunix_stream_open_pathname_gen (<em class="parameter"><code><span class="type">char</span> *pathname</code></em>,
-                                  <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> writemode</code></em>,
-                                  <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> textmode</code></em>,
-                                  <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
+                                  <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> writemode</code></em>,
+                                  <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> textmode</code></em>,
+                                  <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
 <p>Opens an arbitrary file for reading or writing. (You cannot open a file for
 appending using this call.) Note that this function is
 <span class="emphasis"><em>only</em></span> available during <code class="function">glkunix_startup_code()</code>. It is 
 inherently non-portable; it should not and cannot be called from inside 
 <code class="function">glk_main()</code>.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-stream-open-pathname-gen.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -126,28 +126,28 @@ inherently non-portable; it should not and cannot be called from inside
 </tbody>
 </table></div>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-stream-open-pathname-gen.returns"></a><h4>Returns</h4>
-<p> A new stream, or <code class="literal">NULL</code> if the file operation failed.</p>
+<p> A new stream, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the file operation failed.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-stream-open-pathname"></a><h3>glkunix_stream_open_pathname ()</h3>
-<pre class="programlisting"><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+<pre class="programlisting"><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
 glkunix_stream_open_pathname (<em class="parameter"><code><span class="type">char</span> *pathname</code></em>,
-                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> textmode</code></em>,
-                              <em class="parameter"><code><a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
+                              <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> textmode</code></em>,
+                              <em class="parameter"><code><a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> rock</code></em>);</pre>
 <p>This opens a file for reading. It is a less-general form of
-<a href="chimara-Unix-Extensions.html#glkunix-stream-open-pathname-gen" title="glkunix_stream_open_pathname_gen ()"><code class="function">glkunix_stream_open_pathname_gen()</code></a>, preserved for backwards compatibility.</p>
+<a class="link" href="chimara-Unix-Extensions.html#glkunix-stream-open-pathname-gen" title="glkunix_stream_open_pathname_gen ()"><code class="function">glkunix_stream_open_pathname_gen()</code></a>, preserved for backwards compatibility.</p>
 <p>This should be used only by <code class="function">glkunix_startup_code()</code>.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-stream-open-pathname.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody>
 <tr>
@@ -168,30 +168,30 @@ glkunix_stream_open_pathname (<em class="parameter"><code><span class="type">cha
 </tbody>
 </table></div>
 </div>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-stream-open-pathname.returns"></a><h4>Returns</h4>
-<p> A new stream, or <code class="literal">NULL</code> if the file operation failed.</p>
+<p> A new stream, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the file operation failed.</p>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glkunix-set-base-file"></a><h3>glkunix_set_base_file ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
 glkunix_set_base_file (<em class="parameter"><code><span class="type">char</span> *filename</code></em>);</pre>
 <p>Sets the library's idea of the “current directory” for the executing program.
 The argument should be the name of a file (not a directory).
-When this is set, <a href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-name" title="glk_fileref_create_by_name ()"><code class="function">glk_fileref_create_by_name()</code></a> will create files in the same
-directory as that file, and <a href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-prompt" title="glk_fileref_create_by_prompt ()"><code class="function">glk_fileref_create_by_prompt()</code></a> will base default
+When this is set, <a class="link" href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-name" title="glk_fileref_create_by_name ()"><code class="function">glk_fileref_create_by_name()</code></a> will create files in the same
+directory as that file, and <a class="link" href="chimara-The-Types-of-File-References.html#glk-fileref-create-by-prompt" title="glk_fileref_create_by_prompt ()"><code class="function">glk_fileref_create_by_prompt()</code></a> will base default
 filenames off of the file.
 If this is not called, the library works in the Unix current working
 directory, and picks reasonable default defaults.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glkunix-set-base-file.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>filename</p></td>
@@ -202,11 +202,8 @@ directory, and picks reasonable default defaults.</p>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
-<a name="chimara-Unix-Extensions.other_details"></a><h2>Types and Values</h2>
-</div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

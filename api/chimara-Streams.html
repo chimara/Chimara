@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Streams</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Streams: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-streams.html" title="Streams">
 <link rel="prev" href="chimara-glk-spec-streams.html" title="Streams">
 <link rel="next" href="chimara-How-to-Print.html" title="How to Print">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -22,7 +22,7 @@
 <td><a accesskey="p" href="chimara-glk-spec-streams.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-How-to-Print.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Streams"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -31,12 +31,12 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Streams.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="functions_proto_type">
+<col class="functions_proto_name">
 </colgroup>
 <tbody>
 <tr>
@@ -44,244 +44,217 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
-<a href="chimara-Streams.html#glk-stream-set-current" title="glk_stream_set_current ()">glk_stream_set_current</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Streams.html#glk-stream-set-current" title="glk_stream_set_current ()">glk_stream_set_current</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
 <td class="function_type">
-<a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+<a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
 </td>
 <td class="function_name">
-<a href="chimara-Streams.html#glk-stream-get-current" title="glk_stream_get_current ()">glk_stream_get_current</a> <span class="c_punctuation">()</span>
+<a class="link" href="chimara-Streams.html#glk-stream-get-current" title="glk_stream_get_current ()">glk_stream_get_current</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Streams.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
+<col width="150px" class="other_proto_type">
+<col class="other_proto_name">
 </colgroup>
 <tbody>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Streams.html#filemode-Write" title="filemode_Write">filemode_Write</a></td>
+<td class="function_name"><a class="link" href="chimara-Streams.html#filemode-Write" title="filemode_Write">filemode_Write</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Streams.html#filemode-Read" title="filemode_Read">filemode_Read</a></td>
+<td class="function_name"><a class="link" href="chimara-Streams.html#filemode-Read" title="filemode_Read">filemode_Read</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite">filemode_ReadWrite</a></td>
+<td class="function_name"><a class="link" href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite">filemode_ReadWrite</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend">filemode_WriteAppend</a></td>
+<td class="function_name"><a class="link" href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend">filemode_WriteAppend</a></td>
 </tr>
 </tbody>
 </table></div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Streams.includes"></a><h2>Includes</h2>
 <pre class="synopsis">#include &lt;libchimara/glk.h&gt;
 </pre>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Streams.description"></a><h2>Description</h2>
 <p>All character output in Glk is done through streams. Every window has an
 output stream associated with it. You can also write to files on disk; every
 open file is represented by an output stream as well.</p>
 <p>There are also input streams; these are used for reading from files on disk.
 It is possible for a stream to be both an input and an output stream. </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Player input is done through line and character input events, not streams.
   This is a small inelegance in theory. In practice, player input is slow and
   things can interrupt it, whereas file input is immediate. If a network
   extension to Glk were proposed, it would probably use events and not
   streams, since network communication is not immediate.
-</p>
-</div>
+</p></div>
 <p>It is also possible to create a stream that reads or writes to a buffer in
 memory.</p>
 <p>Finally, there may be platform-specific types of streams, which are created
 before your program starts running. </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   For example, a program running under Unix may have access to standard input
   as a stream, even though there is no Glk call to explicitly open standard
   input. On the Mac, data in a Mac resource may be available through a
   resource-reading stream.
-</p>
-</div>
+</p></div>
 <p>You do not need to worry about the origin of such streams; just read or write
 them as usual. For information about how platform-specific streams come to
-be, see <a href="chimara-Porting-Adapting-and-Other-Messy-Bits.html#chimara-Startup-Options" title="Startup Options">Startup Options</a>.</p>
+be, see <a class="link" href="chimara-Porting-Adapting-and-Other-Messy-Bits.html#chimara-Startup-Options" title="Startup Options">Startup Options</a>.</p>
 <p>A stream is opened with a particular file mode, see the <code class="literal">filemode_</code> constants
 below.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  In the stdio library, using <code class="function">fopen()</code>, <a href="chimara-Streams.html#filemode-Write" title="filemode_Write"><code class="literal">filemode_Write</code></a> would be mode
-  <code class="code">"w"</code>; <a href="chimara-Streams.html#filemode-Read" title="filemode_Read"><code class="literal">filemode_Read</code></a> would be mode <code class="code">"r"</code>;
-  <a href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite"><code class="literal">filemode_ReadWrite</code></a> would be mode <code class="code">"r+"</code>. Confusingly,
-  <a href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> cannot be mode <code class="code">"a"</code>, because the stdio
+<div class="note"><p>
+  In the stdio library, using <code class="function">fopen()</code>, <a class="link" href="chimara-Streams.html#filemode-Write" title="filemode_Write"><code class="literal">filemode_Write</code></a> would be mode
+  <code class="code">"w"</code>; <a class="link" href="chimara-Streams.html#filemode-Read" title="filemode_Read"><code class="literal">filemode_Read</code></a> would be mode <code class="code">"r"</code>;
+  <a class="link" href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite"><code class="literal">filemode_ReadWrite</code></a> would be mode <code class="code">"r+"</code>. Confusingly,
+  <a class="link" href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> cannot be mode <code class="code">"a"</code>, because the stdio
   spec says that when you open a file with mode <code class="code">"a"</code>, then
   <code class="function">fseek()</code> doesn't work. So we have to use mode <code class="code">"r+"</code> for
   appending. Then we run into the <span class="emphasis"><em>other</em></span> stdio problem,
   which is that <code class="code">"r+"</code> never creates a new file. So
-  <a href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> has to <span class="emphasis"><em>first</em></span> open the file with
+  <a class="link" href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> has to <span class="emphasis"><em>first</em></span> open the file with
   <code class="code">"a"</code>, close it, reopen with <code class="code">"r+"</code>, and then
-  <code class="function">fseek()</code> to the end of the file. For <a href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite"><code class="literal">filemode_ReadWrite</code></a>, the process is
+  <code class="function">fseek()</code> to the end of the file. For <a class="link" href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite"><code class="literal">filemode_ReadWrite</code></a>, the process is
   the same, except without the <code class="function">fseek()</code> — we begin at the beginning of
   the file.
-</p>
-</div>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+</p></div>
+<div class="note"><p>
   We must also obey an obscure geas of ANSI C <code class="code">"r+"</code> files: you
   can't switch from reading to writing without doing an <code class="function">fseek()</code> in between.
   Switching from writing to reading has the same restriction, except that an
   <code class="function">fflush()</code> also works.
-</p>
-</div>
+</p></div>
 <p>For information on opening streams, see the discussion of each specific type
-of stream in <a href="chimara-The-Types-of-Streams.html" title="The Types of Streams">The Types of Streams</a>.
+of stream in <a class="link" href="chimara-The-Types-of-Streams.html" title="The Types of Streams">The Types of Streams</a>.
 Remember that it is always possible that opening a stream will fail, in which
-case the creation function will return <code class="literal">NULL</code>.</p>
+case the creation function will return <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 <p>Each stream remembers two character counts, the number of characters printed
 to and read from that stream. The write-count is exactly one per 
-<a href="chimara-How-to-Print.html#glk-put-char" title="glk_put_char ()"><code class="function">glk_put_char()</code></a> call; it is figured before any platform-dependent character
+<a class="link" href="chimara-How-to-Print.html#glk-put-char" title="glk_put_char ()"><code class="function">glk_put_char()</code></a> call; it is figured before any platform-dependent character
 cookery. </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   For example, if a newline character is converted to 
   linefeed-plus-carriage-return, the stream's count still only goes up by
   one; similarly if an accented character is displayed as two characters.
-</p>
-</div>
-<p>The read-count is exactly one per <a href="chimara-How-to-Read.html#glk-get-char-stream" title="glk_get_char_stream ()"><code class="function">glk_get_char_stream()</code></a> call, as long as the
+</p></div>
+<p>The read-count is exactly one per <a class="link" href="chimara-How-to-Read.html#glk-get-char-stream" title="glk_get_char_stream ()"><code class="function">glk_get_char_stream()</code></a> call, as long as the
 call returns an actual character (as opposed to an end-of-file token.) </p>
 <p>Glk has a notion of the “current (output) stream”.
 If you print text without specifying a stream, it goes to the current output
 stream.
-The current output stream may be <code class="literal">NULL</code>, meaning that there isn't one.
-It is illegal to print text to stream <code class="literal">NULL</code>, or to print to the current
+The current output stream may be <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, meaning that there isn't one.
+It is illegal to print text to stream <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, or to print to the current
 stream when there isn't one.</p>
 <p>If the stream which is the current stream is closed, the current stream
-becomes <code class="literal">NULL</code>.</p>
+becomes <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Streams.functions_details"></a><h2>Functions</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-stream-set-current"></a><h3>glk_stream_set_current ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
-glk_stream_set_current (<em class="parameter"><code><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> str</code></em>);</pre>
+glk_stream_set_current (<em class="parameter"><code><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="type">strid_t</span></a> str</code></em>);</pre>
 <p>Sets the current stream to <em class="parameter"><code>str</code></em>
 , which must be an output stream. You may set
-the current stream to <code class="literal">NULL</code>, which means the current stream is not set to
+the current stream to <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, which means the current stream is not set to
 anything.</p>
-<div class="refsect3" lang="en">
+<div class="refsect3">
 <a name="glk-stream-set-current.parameters"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
-<col>
-<col>
-<col>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>str</p></td>
-<td class="parameter_description"><p>An output stream, or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_description"><p>An output stream, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p></td>
 <td class="parameter_annotations"> </td>
 </tr></tbody>
 </table></div>
 </div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="glk-stream-get-current"></a><h3>glk_stream_get_current ()</h3>
-<pre class="programlisting"><a href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
+<pre class="programlisting"><a class="link" href="chimara-Opaque-Objects.html#strid-t" title="strid_t"><span class="returnvalue">strid_t</span></a>
 glk_stream_get_current (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
-<p>Returns the current stream, or <code class="literal">NULL</code> if there is none.</p>
-<div class="refsect3" lang="en">
+<p>Returns the current stream, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if there is none.</p>
+<div class="refsect3">
 <a name="glk-stream-get-current.returns"></a><h4>Returns</h4>
-<p> A stream, or <code class="literal">NULL</code>.</p>
+<p> A stream, or <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</p>
 </div>
 </div>
 </div>
-<div class="refsect1" lang="en">
+<div class="refsect1">
 <a name="chimara-Streams.other_details"></a><h2>Types and Values</h2>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="filemode-Write"></a><h3>filemode_Write</h3>
 <pre class="programlisting">#define filemode_Write (0x01)
 </pre>
 <p>An output stream.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Corresponds to mode <code class="code">"w"</code> in the stdio library, using <code class="function">fopen()</code>.
-</p>
-</div>
+</p></div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="filemode-Read"></a><h3>filemode_Read</h3>
 <pre class="programlisting">#define filemode_Read (0x02)
 </pre>
 <p>An input stream.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Corresponds to mode <code class="code">"r"</code> in the stdio library, using <code class="function">fopen()</code>.
-</p>
-</div>
+</p></div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="filemode-ReadWrite"></a><h3>filemode_ReadWrite</h3>
 <pre class="programlisting">#define filemode_ReadWrite (0x03)
 </pre>
 <p>Both an input and an output stream.</p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
   Corresponds to mode <code class="code">"r+"</code> in the stdio library, using <code class="function">fopen()</code>.
-</p>
-</div>
+</p></div>
 </div>
 <hr>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="filemode-WriteAppend"></a><h3>filemode_WriteAppend</h3>
 <pre class="programlisting">#define filemode_WriteAppend (0x05)
 </pre>
 <p>An output stream, but the data will added to the end of whatever already
 existed in the destination, instead of replacing it. </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
-  Confusingly, <a href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> cannot be mode <code class="code">"a"</code>, because
+<div class="note"><p>
+  Confusingly, <a class="link" href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> cannot be mode <code class="code">"a"</code>, because
   the stdio spec says that when you open a file with mode <code class="code">"a"</code>,
   then <code class="function">fseek()</code> doesn't work. So we have to use mode <code class="code">"r+"</code> for
   appending. Then we run into the <span class="emphasis"><em>other</em></span> stdio problem,
   which is that <code class="code">"r+"</code> never creates a new file. So
-  <a href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> has to <span class="emphasis"><em>first</em></span> open the file with
+  <a class="link" href="chimara-Streams.html#filemode-WriteAppend" title="filemode_WriteAppend"><code class="literal">filemode_WriteAppend</code></a> has to <span class="emphasis"><em>first</em></span> open the file with
   <code class="code">"a"</code>, close it, reopen with <code class="code">"r+"</code>, and then <code class="function">fseek()</code>
-  to the end of the file. For <a href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite"><code class="literal">filemode_ReadWrite</code></a>, the process is the same,
+  to the end of the file. For <a class="link" href="chimara-Streams.html#filemode-ReadWrite" title="filemode_ReadWrite"><code class="literal">filemode_ReadWrite</code></a>, the process is the same,
   except without the <code class="function">fseek()</code> — we begin at the beginning of the file.
-</p>
-</div>
+</p></div>
 </div>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

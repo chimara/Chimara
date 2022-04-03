@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>The Dispatch Layer</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>The Dispatch Layer: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
 <link rel="prev" href="chimara-glk-spec-the-dispatch-layer.html" title="Appendix A. The Dispatch Layer">
 <link rel="next" href="chimara-Interrogating-the-Interface.html" title="Interrogating the Interface">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,7 +19,7 @@
 <td><a accesskey="p" href="chimara-glk-spec-the-dispatch-layer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Interrogating-the-Interface.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-The-Dispatch-Layer"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -28,8 +28,8 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
-<a name="idp140340079838016"></a><h2>Description</h2>
+<div class="refsect1">
+<a name="id-1.4.15.2.3"></a><h2>Description</h2>
 <p>
 The material described in this section is not part of the Glk API per se. It is an external layer, lying on top of Glk, which allows a program to invoke Glk dynamically — determining the capabilities and interfaces of Glk at run-time.
 </p>
@@ -39,7 +39,7 @@ This is most useful for virtual machines and other run-time systems, which want 
 <p>
 If you are writing a C program which uses the Glk API, you can ignore this section entirely. If you are writing a VM which uses Glk, you need to read it. If you are implementing a Glk library, you should also read it. (There are some additional interfaces which your library must support for the dispatch layer to work right.) 
 </p>
-<div class="refsect2" lang="en">
+<div class="refsect2">
 <a name="chimara-dispatch-How-This-Works"></a><h3>How This Works</h3>
 <p>
 The dispatch layer is implemented in a C source file, <code class="filename">gi_dispa.c</code>, and its header, <code class="filename">gi_dispa.h</code>. This code is platform-independent — it is identical in every library, just as the <code class="filename">glk.h</code> header file is identical in every library. Each library author should download the <code class="filename">gi_dispa.c</code> and <code class="filename">gi_dispa.h</code> files from the Glk web site, and compile them unchanged into the library.
@@ -48,12 +48,12 @@ The dispatch layer is implemented in a C source file, <code class="filename">gi_
 This code is mostly external to Glk; it operates by calling the documented Glk API, not library internals. This is how <code class="filename">gi_dispa.c</code> can be platform-independent. However, the dividing line is not perfect. There are a few extra functions, not part of the Glk API, which the library must implement; <code class="filename">gi_dispa.c</code> (and no one else) calls these functions. These functions are simple and should not make life much harder for library implementors.
 </p>
 <p>
-The dispatch layer then provides a dispatch API. The heart of this is the <a href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> function, which allows you to call <span class="emphasis"><em>any</em></span> Glk function (specified by number) and pass in a list of arguments in a standardized way. You may also make use of <a href="chimara-Getting-Argument-Prototypes.html#gidispatch-prototype" title="gidispatch_prototype ()"><code class="function">gidispatch_prototype()</code></a>, which gives you the proper format of that list for each function. Ancilliary functions let you enumerate the functions and constants in the Glk API. 
+The dispatch layer then provides a dispatch API. The heart of this is the <a class="link" href="chimara-Dispatching.html#gidispatch-call" title="gidispatch_call ()"><code class="function">gidispatch_call()</code></a> function, which allows you to call <span class="emphasis"><em>any</em></span> Glk function (specified by number) and pass in a list of arguments in a standardized way. You may also make use of <a class="link" href="chimara-Getting-Argument-Prototypes.html#gidispatch-prototype" title="gidispatch_prototype ()"><code class="function">gidispatch_prototype()</code></a>, which gives you the proper format of that list for each function. Ancilliary functions let you enumerate the functions and constants in the Glk API. 
 </p>
 </div>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

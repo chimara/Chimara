@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Porting, Adapting, and Other Messy Bits</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Porting, Adapting, and Other Messy Bits: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-api-spec.html" title="Glk API Specification, version 0.7.4">
 <link rel="prev" href="chimara-Testing-for-Clock-Capabilities.html" title="Testing for Clock Capabilities">
 <link rel="next" href="chimara-Going-Outside-the-Glk-API.html" title="Going Outside the Glk API">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,10 +19,10 @@
 <td><a accesskey="p" href="chimara-Testing-for-Clock-Capabilities.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-Going-Outside-the-Glk-API.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="chapter" lang="en">
+<div class="chapter">
 <div class="titlepage"><div><div><h2 class="title">
 <a name="chimara-Porting-Adapting-and-Other-Messy-Bits"></a>Porting, Adapting, and Other Messy Bits</h2></div></div></div>
-<div class="toc"><dl>
+<div class="toc"><dl class="toc">
 <dt><span class="sect1"><a href="chimara-Porting-Adapting-and-Other-Messy-Bits.html#chimara-Startup-Options">Startup Options</a></span></dt>
 <dt><span class="sect1"><a href="chimara-Going-Outside-the-Glk-API.html">Going Outside the Glk API</a></span></dt>
 <dd><dl>
@@ -40,7 +40,7 @@
 <p>
 Life is not perfect, and neither are our toys. In a world of perfect toys, a Glk program could compile with any Glk library and run without human intervention. Guess what.
 </p>
-<div class="sect1" lang="en">
+<div class="sect1">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="chimara-Startup-Options"></a>Startup Options</h2></div></div></div>
 <p>
@@ -49,12 +49,9 @@ One large grey area is starting up, startup files, and other program options. It
 <p>
 Therefore, Glk does not try to pass an <code class="code">(argc, argv)</code> list to your <code class="function">glk_main()</code>. Nor does it provide a portable API for startup files and options. 
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 Doing that well would require API calls to parse command-line arguments of various types, and then also design and handle dialog boxes. It would go far beyond the level of complexity which Glk aspires to.
-</p>
-</div>
+</p></div>
 <p>
 Instead, startup files and options are handled in an <span class="emphasis"><em>entirely platform-dependent</em></span> manner. You, as the author of a Glk program, must describe how your program should behave. As your program is ported to various Glk libraries, each porter must decide how to implement that behavior on the platform in question. The library should store the options and files in global variables, where your <code class="function">glk_main()</code> routine can read them.
 </p>
@@ -66,49 +63,40 @@ You can consider that your startup behavior is divided into the messy part, whic
 <p>
 This is not as much of a mess as it sounds. Many programs, and almost all IF programs, follow one of a few simple models.
 </p>
-<div class="itemizedlist"><ul type="disc">
-<li><p>The simple model: There are no startup files. The program just starts running when invoked.</p></li>
-<li><p>The game-file model: The program begins running when it is handed a single file of a particular type. On command-line systems, this comes as a filename in a command-line option. On GUI systems, it will usually be a platform-native event which contains a file reference.</p></li>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem"><p>The simple model: There are no startup files. The program just starts running when invoked.</p></li>
+<li class="listitem"><p>The game-file model: The program begins running when it is handed a single file of a particular type. On command-line systems, this comes as a filename in a command-line option. On GUI systems, it will usually be a platform-native event which contains a file reference.</p></li>
 </ul></div>
 <p>
 </p>
 <p>
 Any Glk library will be able to support these two models, probably through compile-time options. The details will vary. 
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 For one notable case, the Mac Glk library has two possible behaviors when compiled with the game-file model. If the player double-clicks a game file, the library calls <code class="function">glk_main()</code> immediately. If the player double-clicks the application icon, the library allows the player to wait, perhaps adjusting preferences; it only calls <code class="function">glk_main()</code> after the game file is selected through a file dialog.
-</p>
-</div>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+</p></div>
+<div class="note"><p>
 In fact, if life were this simple, it would be worth adding these models to the Glk API somehow.
 Unfortunately, it's not.
 Consider AGT: the “game file” is actually about ten separate files with related filenames, in the same directory.
 Glk does not contain API calls to do precise file and pathname manipulation; it is too complicated an area to support.
 So this situation must be handled non-portably.
-</p>
-</div>
+</p></div>
 <p>
 More complicated models are also possible. You might want to accept files through GUI events at any time, not just at startup. This could be handled by defining a new Glk event type, and having the library send such an event when a platform-native icon-click is detected. You would then have to decide how the situation should be handled in a command-line Glk library. But that is inherent in your task as a program author.
 </p>
 <p>
 Options and preferences are a separate problem. Most often, a command-line library will handle them with command-line arguments, and a GUI library will handle them with a dialog box. Ideally, you should describe how both cases should behave — list the command-line arguments, and perhaps how they could be labelled in a dialog.
 </p>
-<div class="note">
-<h3 class="title"></h3>
-<p>
+<div class="note"><p>
 This is unlikely to be very complicated. Although who knows.
-</p>
-</div>
+</p></div>
 <p>
 Remember that the Glk library is likely to have some options of its own — matters of display styles and so on. A command-line library will probably have a simple API to extract its own options and pass the rest on to the startup code. 
 </p>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>

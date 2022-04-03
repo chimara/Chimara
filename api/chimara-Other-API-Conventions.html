@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Other API Conventions</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
-<link rel="start" href="index.html" title="Chimara Reference Manual">
+<title>Other API Conventions: Chimara Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Chimara Reference Manual">
 <link rel="up" href="chimara-glk-spec-overall-structure.html" title="Overall Structure">
 <link rel="prev" href="chimara-The-Gestalt-System.html" title="The Gestalt System">
 <link rel="next" href="chimara-glk-spec-character-encoding.html" title="Character Encoding">
-<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.33.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -19,7 +19,7 @@
 <td><a accesskey="p" href="chimara-The-Gestalt-System.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="chimara-glk-spec-character-encoding.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
-<div class="refentry" lang="en">
+<div class="refentry">
 <a name="chimara-Other-API-Conventions"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
@@ -28,28 +28,28 @@
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
-<div class="refsect1" lang="en">
-<a name="idp140340074486736"></a><h2>Description</h2>
+<div class="refsect1">
+<a name="id-1.4.4.9.3"></a><h2>Description</h2>
 <p>
-The <code class="filename">glk.h</code> header file is the same on all platforms, with the sole exception of the typedef of <a href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> and <a href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a>.
+The <code class="filename">glk.h</code> header file is the same on all platforms, with the sole exception of the typedef of <a class="link" href="chimara-Basic-Types.html#glui32" title="glui32"><span class="type">glui32</span></a> and <a class="link" href="chimara-Basic-Types.html#glsi32" title="glsi32"><span class="type">glsi32</span></a>.
 These will always be defined as 32-bit unsigned and signed integer types, which may be “<span class="type">long</span>” or “<span class="type">int</span>” or some other C definition.
 </p>
 <p>
 Note that all constants are #defines. All functions are currently actual function declarations (as opposed to macros), but this may change in future Glk revisions. As in the standard C library, if Glk function is defined by a macro, an actual function of the same name will also be available.
 </p>
 <p>
-Functions that return or generate boolean values will produce only 0 (<code class="literal">FALSE</code>) or 1 (<code class="literal">TRUE</code>). Functions that accept boolean arguments will accept any value, with zero indicating <code class="literal">FALSE</code> and nonzero indicating <code class="literal">TRUE</code>.
+Functions that return or generate boolean values will produce only 0 (<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>) or 1 (<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>). Functions that accept boolean arguments will accept any value, with zero indicating <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> and nonzero indicating <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>.
 </p>
 <p>
-<code class="literal">NULL</code> (when used in this document) refers to the C null pointer. As stated above, it is illegal to pass <code class="literal">NULL</code> to a function which is expecting a valid object reference, unless the function definition says otherwise.
+<a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> (when used in this document) refers to the C null pointer. As stated above, it is illegal to pass <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to a function which is expecting a valid object reference, unless the function definition says otherwise.
 </p>
 <p>
 Some functions have pointer arguments, acting as “variable” or “reference” arguments; the function's intent is to return some value in the space pointed to by the argument.
-Unless the function says otherwise, it is legal to pass <code class="literal">NULL</code> to indicate that you do not care about that value.
+Unless the function says otherwise, it is legal to pass <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to indicate that you do not care about that value.
 </p>
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.25</div>
+<hr>Generated by GTK-Doc V1.33.1</div>
 </body>
 </html>
