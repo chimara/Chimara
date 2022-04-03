@@ -1,0 +1,45 @@
+---
+name: Build packages
+"on":
+  push:
+    tags: '[0-9]+.[0-9]+.[0-9]+'
+jobs:
+  tarball:
+    name: Source package
+    runs-on: ubuntu-latest
+    steps:
+      - name: install-deps
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install \
+            bison \
+            gstreamer1.0-plugins-bad \
+            gstreamer1.0-plugins-good \
+            gstreamer1.0-tools \
+            gtk-doc-tools \
+            libgirepository1.0-dev \
+            libgstreamer1.0-dev \
+            libgtk-3-dev \
+            meson \
+            texinfo \
+            valac
+
+      # needed for dist --no-tests, unfortunately
+      - name: upgrade-meson
+        run: |
+          curl -O \
+            http://ftp.osuosl.org/pub/ubuntu/pool/universe/m/meson/meson_0.57.0+really0.56.2-0.1_all.deb
+          sudo dpkg -i meson_0.57.0+really0.56.2-0.1_all.deb
+
+      - uses: actions/checkout@v2
+
+      - name: configure
+        run: meson _build
+
+      - name: build
+        run: meson dist -C _build --no-tests
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Source package
+          path: _build/meson-dist/chimara-*.tar.xz
