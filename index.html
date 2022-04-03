@@ -78,13 +78,12 @@
       <h2>Download and install</h2>
 
       <p>As packages are not yet provided (they will be in the future), the only way to install Chimara is to compile the source yourself.
-      Compile the current version from a Git clone, or download the somewhat outdated tarball; see the <a href="#links">download links</a>.
-      When cloning the Git repository first run <code>./autogen.sh</code>.
+      Compile the current version from a Git clone, or download the source code archive; see the <a href="#links">download links</a>.
       To compile and install Chimara run:</p>
 
-      <pre>./configure
-make
-make install</pre>
+      <pre>meson _build
+ninja -C _build
+sudo ninja -C _build install</pre>
 
       <p>Test the installation by running the example player (<code>chimara</code>) and playing some <a href="http://www.ifarchive.org">games</a>!</p>
 
@@ -105,11 +104,11 @@ make install</pre>
             <div class="list-group-item-text">chimara/Chimara</div>
           </a>
 
-          <a class="list-group-item" href="https://github.com/chimara/Chimara/releases/download/0.9.1/chimara-0.9.1.tar.gz">
+          <a class="list-group-item" href="https://github.com/chimara/Chimara/releases/download/0.9.2/chimara-0.9.2.tar.xz">
             <div class="list-group-item-heading">
               <span class="fa fa-lg fa-fw fa-file-zip-o"></span> Download source code
             </div>
-            <div class="list-group-item-text">Release candidate 0.9.1</div>
+            <div class="list-group-item-text">Release candidate 0.9.2</div>
           </a>
 
           <a class="list-group-item" href="api/index.html">
@@ -124,13 +123,6 @@ make install</pre>
               <span class="fa fa-lg fa-fw fa-bug"></span> Report a bug
             </div>
           </a>
-
-          <a class="list-group-item" href="https://travis-ci.org/chimara/Chimara">
-            <div class="list-group-item-heading">
-              <span class="fa fa-lg fa-fw fa-gear"></span>
-              <img alt="build status" src="https://travis-ci.org/chimara/Chimara.svg?branch=master">
-            </div>
-          </a>
         </div>
       </div>
     </div>
@@ -139,7 +131,7 @@ make install</pre>
 
 <footer class="footer">
   <div class="container">
-    <p class="text-muted">Copyright 2008&ndash;2016 Philip Chimento and Marijn van Vliet.</p>
+    <p class="text-muted">Copyright 2008&ndash;2021 Philip Chimento and Marijn van Vliet.</p>
   </div>
 </footer>
 
