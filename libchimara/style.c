@@ -43,7 +43,7 @@ glk_set_style(glui32 styl)
  */
 void
 glk_set_style_stream(strid_t str, glui32 styl) {
-	g_debug("glk_set_style(str->rock=%d, styl=%d)", str->rock, styl);
+	g_debug("glk_set_style_stream(str->rock=%d, styl=%d)", str->rock, styl);
 
 	if(str->window == NULL)
 		return;
