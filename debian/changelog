@@ -1,3 +1,9 @@
+chimara (0.9.2-1) unstable; urgency=low
+
+  * Update release to 0.9.2.
+
+ -- Philip Chimento <philip.chimento@gmail.com>  Sat, 02 Apr 2022 18:26:03 -0700
+
 chimara (0.9.1-1) unstable; urgency=low
 
   * Change build system to Meson.
