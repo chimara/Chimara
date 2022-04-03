@@ -1,0 +1,56 @@
+---
+name: CI workflow
+"on": [push]
+env:
+  CFLAGS: -fdiagnostics-color
+jobs:
+  run-tests:
+    strategy:
+      matrix:
+        include:
+          - compiler: gcc
+            docs: true
+            sound: enabled
+            vapi: enabled
+          - compiler: gcc
+            docs: false
+            sound: disabled
+            vapi: disabled
+          - compiler: clang
+            docs: false
+            sound: enabled
+            vapi: disabled
+    runs-on: ubuntu-20.04
+    steps:
+      - name: install-deps
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install \
+            bison \
+            gstreamer1.0-plugins-bad \
+            gstreamer1.0-plugins-good \
+            gstreamer1.0-tools \
+            gtk-doc-tools \
+            libgirepository1.0-dev \
+            libgstreamer1.0-dev \
+            libgtk-3-dev \
+            meson \
+            texinfo \
+            valac
+
+      - uses: actions/checkout@v2
+
+      - name: configure
+        run: |
+          CC=${{ matrix.compiler }}  meson _build -Dgtk_doc=${{ matrix.docs }} \
+            -Dsound=${{ matrix.sound }} -Dvapi=${{ matrix.vapi }}
+
+      - name: build
+        run: ninja -C _build
+
+      - name: build-docs
+        if: matrix.docs
+        run: ninja -C _build chimara-doc
+
+      - name: test
+        run: xvfb-run -a meson test -C _build
