@@ -66,7 +66,8 @@ if get_option('sound').enabled()
     foreach plugin : ['giostreamsrc', 'typefind', 'audioconvert', 'volume',
         'oggdemux', 'vorbisdec', 'autoaudiosink', 'aiffparse', 'modplug']
         message('Checking GStreamer element @0@'.format(plugin))
-        if run_command(gstinspect, '--exists', plugin).returncode() != 0
+        result = run_command(gstinspect, '--exists', plugin, check: false)
+        if result.returncode() != 0
             error('''One or more required GStreamer elements were not found.
     You will have to install your system's "base", "good", and "bad" plugins
     packages. Try looking for names such as: gstreamer1-plugins-base,
