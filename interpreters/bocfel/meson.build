@@ -1,11 +1,14 @@
-shared_module('bocfel', 'blorb.c', 'branch.c', 'dict.c', 'glkstart.c', 'iff.c',
-    'io.c', 'math.c', 'memory.c', 'meta.c', 'objects.c', 'osdep.c', 'patches.c',
-    'process.c', 'random.c', 'screen.c', 'sound.c', 'stack.c', 'unicode.c',
-    'util.c', 'zoom.c', 'zterp.c',
-    name_prefix: '', c_args: ['-DZTERP_GLK', '-DZTERP_UNIX'],
+shared_module('bocfel', 'blorb.cpp', 'branch.cpp', 'dict.cpp', 'glkstart.cpp',
+    'iff.cpp', 'io.cpp', 'mathop.cpp', 'memory.cpp', 'meta.cpp', 'objects.cpp',
+    'osdep.cpp', 'patches.cpp', 'process.cpp', 'random.cpp', 'screen.cpp',
+    'sound.cpp', 'stack.cpp', 'stash.cpp', 'unicode.cpp', 'util.cpp',
+    'zoom.cpp', 'zterp.cpp',
+    name_prefix: '',
+    cpp_args: ['-DZTERP_GLK', '-DZTERP_GLK_BLORB', '-DZTERP_GLK_UNIX',
+        '-DZTERP_UNIX', '-DZTERP_GLK_TICK'],
     include_directories: '../../libchimara',
     link_args: plugin_link_args, link_depends: plugin_link_depends,
     install: true, install_dir: plugindir)
 
-install_data('BUILDING', 'COPYING.GPLv2', 'COPYING.GPLv3', 'README',
+install_data('COPYING.GPLv2', 'COPYING.GPLv3',
     install_dir: pkgdocsdir / 'bocfel')

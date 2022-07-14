@@ -1,58 +1,87 @@
-// vim: set ft=c:
+// vim: set ft=cpp:
 
 #ifndef ZTERP_STACK_H
 #define ZTERP_STACK_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <stdexcept>
 
-#define DEFAULT_STACK_SIZE	0x4000
-#define DEFAULT_CALL_DEPTH	0x400
+#include "types.h"
+
+static constexpr unsigned long DEFAULT_STACK_SIZE = 0x4000;
+static constexpr unsigned long DEFAULT_CALL_DEPTH = 0x400;
+
+class RestoreError : public std::runtime_error {
+public:
+    explicit RestoreError(const std::string &msg) : std::runtime_error(msg) {
+    }
+};
 
 extern bool seen_save_undo;
 
-void init_stack(void);
+void init_stack(bool first_run);
 
-uint16_t variable(uint16_t);
-void store_variable(uint16_t, uint16_t);
-uint16_t *stack_top_element(void);
+uint16_t variable(uint16_t var);
+void store_variable(uint16_t var, uint16_t n);
+uint16_t *stack_top_element();
 
-void start_v6(void);
+void start_v6();
 #ifdef ZTERP_GLK
-uint16_t direct_call(uint16_t);
+uint16_t internal_call(uint16_t routine);
 #endif
-void do_return(uint16_t);
+void do_return(uint16_t retval);
 
-bool do_save(bool);
-bool do_restore(bool, bool *);
+enum class SaveType {
+    Normal,
+    Meta,
+    Autosave,
+};
 
-enum save_type { SAVE_GAME, SAVE_USER };
-bool push_save(enum save_type, bool, const char *);
-bool pop_save(enum save_type, long, bool *);
-bool drop_save(enum save_type, long);
-void list_saves(enum save_type, void (*)(const char *));
+enum class SaveOpcode {
+    None = -1,
+    Read = 0,
+    ReadChar = 1,
+};
 
-void zpush(void);
-void zpull(void);
-void zload(void);
-void zstore(void);
-void zret_popped(void);
-void zpop(void);
-void zcatch(void);
-void zthrow(void);
-void zret(void);
-void zrtrue(void);
-void zrfalse(void);
-void zcheck_arg_count(void);
-void zpop_stack(void);
-void zpush_stack(void);
-void zsave_undo(void);
-void zrestore_undo(void);
-void zsave(void);
-void zrestore(void);
+bool do_save(SaveType savetype, SaveOpcode saveopcode);
+bool do_restore(SaveType savetype, SaveOpcode &saveopcode);
 
-void zcall_store(void);
-void zcall_nostore(void);
+enum class SaveStackType {
+    Game,
+    User
+};
+
+enum class SaveResult {
+    Success,
+    Failure,
+    Unavailable,
+};
+
+SaveResult push_save(SaveStackType type, SaveType savetype, SaveOpcode saveopcode, const char *desc);
+bool pop_save(SaveStackType type, size_t saveno, SaveOpcode &saveopcode);
+bool drop_save(SaveStackType type, size_t i);
+void list_saves(SaveStackType type, void (*printer)(const char *));
+
+void zpush();
+void zpull();
+void zload();
+void zstore();
+void zret_popped();
+void zpop();
+void zcatch();
+void zthrow();
+void zret();
+void zrtrue();
+void zrfalse();
+void zcheck_arg_count();
+void zpop_stack();
+void zpush_stack();
+void zsave_undo();
+void zrestore_undo();
+void zsave();
+void zrestore();
+
+void zcall_store();
+void zcall_nostore();
 
 #define zcall		zcall_store
 #define zcall_1n	zcall_nostore
