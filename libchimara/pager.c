@@ -138,8 +138,12 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 			return TRUE;
 			/* don't handle "up" and "down", they're used for input history */
 	}
-	
-	return FALSE; /* if the key wasn't handled here, pass it to other handlers */
+
+	/* Any other key press, assume that the user wants to skip to the end and
+	 * keep typing. */
+	gtk_adjustment_set_value(adj, upper - page_size);
+	check_paging(adj, win);
+	return GDK_EVENT_PROPAGATE;
 }
 
 /* Check whether paging should be done. This function is called after the
