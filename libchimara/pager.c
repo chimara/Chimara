@@ -164,9 +164,10 @@ pager_after_size_allocate(GtkTextView *textview, GdkRectangle *allocation, winid
 		gtk_text_view_scroll_to_iter(textview, &end, 0.0, TRUE, 0.0, 0.0);
 		return;
 	}
-	
-	/* Scroll past text already read by user. This is automatic scrolling, so disable the pager_ajustment_handler
-	 * first, that acts on the belief the scolling is performed by the user. */
+
+	/* Scroll past text already read by user. This is automatic scrolling, so
+	 * disable the pager_adjustment_handler first, that acts on the belief the
+	 * scrolling is performed by the user. */
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(win->scrolledwindow));
 	g_signal_handler_block(adj, win->pager_adjustment_handler);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(win->widget));
