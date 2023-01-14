@@ -54,6 +54,12 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 	ui_message_queue(msg);
 }
 
+static void
+message_handler(GScanner *scanner, char *message, gboolean is_error)
+{
+    g_warning("%s", message);
+}
+
 /* Create the CSS file scanner */
 GScanner *
 create_css_file_scanner(void)
@@ -64,6 +70,7 @@ create_css_file_scanner(void)
 	scanner->config->symbol_2_token = TRUE;
 	scanner->config->cpair_comment_single = NULL;
 	scanner->config->scan_float = FALSE;
+    scanner->msg_handler = message_handler;
 	return scanner;
 }
 
@@ -241,6 +248,7 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		}
 		scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
 		scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
+        scanner->config->scan_identifier_1char = FALSE;
 		if (error)
 			return FALSE;
 		g_object_set(current_tag, "size-points", size_points, "size-set", TRUE, NULL);

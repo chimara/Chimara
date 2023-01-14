@@ -20,6 +20,9 @@ executable('csstest', 'csstest.c',
 glkunit_runner = executable('glkunit-runner', 'glkunit-runner.c',
     include_directories: top_include, link_with: libchimara,
     dependencies: [gmodule, gtk])
+cssparse = executable('cssparse', 'cssparse.c',
+    include_directories: top_include, link_with: libchimara,
+    dependencies: [gmodule, gtk])
 
 shared_module('first', 'first.c', name_prefix: '',
     include_directories: top_include,
@@ -52,4 +55,8 @@ datetime_test = shared_module('datetime', 'unit/datetime.c', 'unit/glkunit.c',
     name_prefix: '', include_directories: [top_include, '../libchimara'],
     link_args: plugin_link_args, link_depends: plugin_link_depends)
 
+test_env = environment()
+test_env.set('NO_AT_BRIDGE', '1')
+
 test('datetime', glkunit_runner, args: [datetime_test], protocol: 'tap')
+test('cssparse', cssparse, protocol: 'tap', env: test_env)
