@@ -19,30 +19,51 @@ style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_t
 	gboolean foreground_set = FALSE;
 	gboolean background_set = FALSE;
 	gint reverse_color;
+	GdkRGBA *fg = NULL;
+	GdkRGBA *bg = NULL;
 
 	// Default color
 	reverse_color = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(default_tag), "reverse-color") );
 	g_object_get(default_tag, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
 	if(foreground_set)
-		g_object_get(default_tag, "foreground-rgba", reverse_color ? background : foreground, NULL);
+		g_object_get(default_tag, "foreground-rgba", reverse_color ? &bg : &fg, NULL);
 	if(background_set)
-		g_object_get(default_tag, "background-rgba", reverse_color ? foreground : background, NULL);
+		g_object_get(default_tag, "background-rgba", reverse_color ? &fg : &bg, NULL);
 
 	// Player defined color
 	reverse_color = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(tag), "reverse-color") );
 	g_object_get(tag, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
-	if(foreground_set)
-		g_object_get(tag, "foreground-rgba", reverse_color ? background : foreground, NULL);
-	if(background_set)
-		g_object_get(tag, "background-rgba", reverse_color ? foreground : background, NULL);
+	if(foreground_set) {
+		GdkRGBA **dest = reverse_color ? &bg : &fg;
+		if (*dest != NULL)
+			gdk_rgba_free(*dest);
+		g_object_get(tag, "foreground-rgba", dest, NULL);
+	}
+	if(background_set) {
+		GdkRGBA **dest = reverse_color ? &fg : &bg;
+		if (*dest != NULL)
+			gdk_rgba_free(*dest);
+		g_object_get(tag, "background-rgba", dest, NULL);
+	}
 
 	// GLK defined color
 	reverse_color = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(glk_tag), "reverse-color") );
 	g_object_get(glk_tag, "foreground-set", &foreground_set, "background-set", &background_set, NULL);
-	if(foreground_set)
-		g_object_get(glk_tag, "foreground-rgba", reverse_color ? background : foreground, NULL);
-	if(background_set)
-		g_object_get(glk_tag, "background-rgba", reverse_color ? foreground : background, NULL);
+	if(foreground_set) {
+		GdkRGBA **dest = reverse_color ? &bg : &fg;
+		if (*dest != NULL)
+			gdk_rgba_free(*dest);
+		g_object_get(glk_tag, "foreground-rgba", dest, NULL);
+	}
+	if(background_set) {
+		GdkRGBA **dest = reverse_color ? &fg : &bg;
+		if (*dest != NULL)
+			gdk_rgba_free(*dest);
+		g_object_get(glk_tag, "background-rgba", dest, NULL);
+	}
+
+	*foreground = fg;
+	*background = bg;
 }
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
@@ -369,6 +390,7 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 		pango_attr_list_insert(list,
 			pango_attr_foreground_new(foreground->red, foreground->green, foreground->blue));
 	}
+	gdk_rgba_free(foreground);
 
 	g_object_get(tag,
 		"background-set", &set,
@@ -378,6 +400,7 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 		pango_attr_list_insert(list,
 			pango_attr_background_new(background->red, background->green, background->blue));
 	}
+	gdk_rgba_free(background);
 
 	g_object_get(tag,
 		"language-set", &set,
@@ -387,6 +410,7 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 		pango_attr_list_insert(list,
 			pango_attr_language_new( pango_language_from_string(string) ));
 	}
+	g_free(string);
 
 	/* Font description updates the following properties simultaniously:
 	 * family, style, weight, variant, stretch, size.
@@ -394,6 +418,7 @@ text_tag_to_attr_list(GtkTextTag *tag, PangoAttrList *list)
 	 */
 	g_object_get(tag, "font-desc", &font_desc, NULL);
 	pango_attr_list_insert(list, pango_attr_font_desc_new(font_desc));
+	pango_font_description_free(font_desc);
 
 	g_object_get(tag,
 		"strikethrough-set", &set,
