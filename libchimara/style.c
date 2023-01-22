@@ -103,7 +103,6 @@ static gboolean
 style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 {
 	GtkTextTag *current_tag;
-	gchar *field;
 	GTokenType token = g_scanner_get_next_token(scanner);
 	GTokenValue value = g_scanner_cur_value(scanner);
 
@@ -115,8 +114,7 @@ style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 		return FALSE;
 	}
 
-	field = g_strdup(value.v_identifier);
-	uint32_t wintype = strcmp(field, "buffer") == 0 ? CHIMARA_GLK_TEXT_BUFFER : CHIMARA_GLK_TEXT_GRID;
+	uint32_t wintype = strcmp(value.v_identifier, "buffer") == 0 ? CHIMARA_GLK_TEXT_BUFFER : CHIMARA_GLK_TEXT_GRID;
 
 	/* Parse the tag name to change */
 	if( g_scanner_peek_next_token(scanner) == '{') {
