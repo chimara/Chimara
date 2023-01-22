@@ -735,7 +735,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				for(count = 0; count < lines_to_add; count++)
 					blanklines[count] = blanks;
 				blanklines[lines_to_add] = NULL;
-				gchar *vertical_blanks = g_strjoinv("\n", blanklines);
+				g_autofree char *vertical_blanks = g_strjoinv("\n", blanklines);
 				g_free(blanklines); 
 				g_free(blanks);
 

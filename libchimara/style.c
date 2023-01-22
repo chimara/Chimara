@@ -160,14 +160,13 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 {
 	GTokenType token = g_scanner_get_next_token(scanner);
 	GTokenValue value = g_scanner_cur_value(scanner);
-	gchar *hint;
 
 	if(token != G_TOKEN_IDENTIFIER) {
 		g_scanner_error(scanner, "CSS Error: style hint expected");
 		return FALSE;
 	}
 
-	hint = g_strdup(value.v_identifier);
+	g_autofree char *hint = g_strdup(value.v_identifier);
 
 	if( !style_accept(scanner, ':') )
 		return FALSE;
