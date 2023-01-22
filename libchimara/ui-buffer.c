@@ -53,9 +53,9 @@ ui_buffer_finish_line_input(winid_t win, gboolean emit_signal)
 		gtk_text_buffer_delete(window_buffer, &start_iter, &end_iter);
 
 	/* Don't include the newline in the input */
-	char *last_char = inserted_text + strlen(inserted_text) - 1;
-	if(*last_char == '\n')
-		*last_char = '\0';
+	size_t inserted_len = strlen(inserted_text);
+	if (inserted_len >= 1 && inserted_text[inserted_len] == '\n')
+		inserted_text[inserted_len] = '\0';
 
 	int chars_written = ui_textwin_finish_line_input(win, inserted_text, emit_signal);
 	g_free(inserted_text);
