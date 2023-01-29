@@ -54,3 +54,7 @@ jobs:
 
       - name: test
         run: xvfb-run -a meson test -C _build
+
+      - name: print-test-log
+        if: ${{ failure() }}
+        run: cat _build/meson-logs/testlog.txt

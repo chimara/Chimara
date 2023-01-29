@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <string.h>
 
 #include <glib.h>
@@ -53,6 +54,12 @@ glk_set_style_stream(strid_t str, glui32 styl) {
 	ui_message_queue(msg);
 }
 
+static void
+message_handler(GScanner *scanner, char *message, gboolean is_error)
+{
+    g_warning("%s", message);
+}
+
 /* Create the CSS file scanner */
 GScanner *
 create_css_file_scanner(void)
@@ -63,6 +70,7 @@ create_css_file_scanner(void)
 	scanner->config->symbol_2_token = TRUE;
 	scanner->config->cpair_comment_single = NULL;
 	scanner->config->scan_float = FALSE;
+    scanner->msg_handler = message_handler;
 	return scanner;
 }
 
@@ -166,10 +174,9 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 	if( !style_accept(scanner, ':') )
 		return FALSE;
 
-	token = g_scanner_get_next_token(scanner);
-	value = g_scanner_cur_value(scanner);
-
 	if( !strcmp(hint, "font-family") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_STRING) {
 			g_scanner_error(scanner, "CSS Error: string expected");
 			return FALSE;
@@ -177,6 +184,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		g_object_set(current_tag, "family", value.v_string, "family-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "font-weight") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_IDENTIFIER) {
 			g_scanner_error(scanner, "CSS Error: bold/normal expected");
 			return FALSE;
@@ -192,6 +201,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		}
 	}
 	else if( !strcmp(hint, "font-style") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_IDENTIFIER) {
 			g_scanner_error(scanner, "CSS Error: italic/normal expected");
 			return FALSE;
@@ -207,16 +218,44 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		}
 	}
 	else if( !strcmp(hint, "font-size") ) {
-		if(token == G_TOKEN_INT) 
-			g_object_set(current_tag, "size-points", (float)value.v_int, "size-set", TRUE, NULL);
-		else if(token == G_TOKEN_FLOAT)
-			g_object_set(current_tag, "size-points", value.v_float, "size-set", TRUE, NULL);
-		else {
-			g_scanner_error(scanner, "CSS Error: integer or float expected");
-			return FALSE;
+		/* GScanner can't handle a CSS length with unit suffixed to digits
+		 * (e.g., "11pt"). Temporarily change the configuration so that this is
+		 * parsed as an identifier. */
+		scanner->config->cset_identifier_first = G_CSET_DIGITS ".";
+		scanner->config->cset_identifier_nth = G_CSET_DIGITS "." G_CSET_a_2_z;
+        scanner->config->scan_identifier_1char = TRUE;
+
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
+
+		gboolean error = FALSE;
+		double size_points = 0.0;
+		if(token == G_TOKEN_INT) {
+			size_points = value.v_int;
+		} else if(token == G_TOKEN_FLOAT) {
+			size_points = value.v_float;
+		} else if (token == G_TOKEN_IDENTIFIER) {
+			size_points = atof(value.v_identifier);
+			while (isdigit(*value.v_identifier) || *value.v_identifier == '.')
+				value.v_identifier++;
+			if (*value.v_identifier != '\0' && strcmp(value.v_identifier, "pt") != 0) {
+				g_scanner_error(scanner, "CSS Error: only 'pt' units supported, not '%s'", value.v_identifier);
+				error = TRUE;
+			}
+		} else {
+			g_scanner_error(scanner, "CSS Error: CSS length expected, not %d", token);
+			error = TRUE;
 		}
+		scanner->config->cset_identifier_first = G_CSET_a_2_z G_CSET_A_2_Z "#";
+		scanner->config->cset_identifier_nth = G_CSET_a_2_z G_CSET_A_2_Z "-_" G_CSET_DIGITS;
+        scanner->config->scan_identifier_1char = FALSE;
+		if (error)
+			return FALSE;
+		g_object_set(current_tag, "size-points", size_points, "size-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "color") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_IDENTIFIER) {
 			g_scanner_error(scanner, "CSS Error: hex color expected");
 			return FALSE;
@@ -225,6 +264,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		g_object_set(current_tag, "foreground", value.v_identifier, "foreground-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "background-color") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_IDENTIFIER) {
 			g_scanner_error(scanner, "CSS Error: hex color expected");
 			return FALSE;
@@ -232,6 +273,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		g_object_set(current_tag, "background", value.v_identifier, "background-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "text-align") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_IDENTIFIER) {
 			g_scanner_error(scanner, "CSS Error: left/right/center expected");
 			return FALSE;
@@ -249,6 +292,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		}
 	}
 	else if( !strcmp(hint, "margin-left") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_INT) {
 			g_scanner_error(scanner, "CSS Error: integer expected");
 			return FALSE;
@@ -256,6 +301,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		g_object_set(current_tag, "left-margin", value.v_int, "left-margin-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "margin-right") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_INT) {
 			g_scanner_error(scanner, "CSS Error: integer expected");
 			return FALSE;
@@ -263,6 +310,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		g_object_set(current_tag, "right-margin", value.v_int, "right-margin-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "margin-top") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_INT) {
 			g_scanner_error(scanner, "CSS Error: integer expected");
 			return FALSE;
@@ -270,6 +319,8 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		g_object_set(current_tag, "pixels-above-lines", value.v_int, "pixels-above-lines-set", TRUE, NULL);
 	}
 	else if( !strcmp(hint, "margin-bottom") ) {
+		token = g_scanner_get_next_token(scanner);
+		value = g_scanner_cur_value(scanner);
 		if(token != G_TOKEN_INT) {
 			g_scanner_error(scanner, "CSS Error: integer expected");
 			return FALSE;
