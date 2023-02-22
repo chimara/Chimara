@@ -735,7 +735,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				for(count = 0; count < lines_to_add; count++)
 					blanklines[count] = blanks;
 				blanklines[lines_to_add] = NULL;
-				gchar *vertical_blanks = g_strjoinv("\n", blanklines);
+				g_autofree char *vertical_blanks = g_strjoinv("\n", blanklines);
 				g_free(blanklines); 
 				g_free(blanks);
 
@@ -869,11 +869,11 @@ chimara_glk_stopped(ChimaraGlk *self)
 {
 	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
     priv->running = FALSE;
-    priv->program_name = NULL;
+    g_clear_pointer(&priv->program_name, g_free);
     g_object_notify(G_OBJECT(self), "program-name");
-    priv->program_info = NULL;
+    g_clear_pointer(&priv->program_info, g_free);
     g_object_notify(G_OBJECT(self), "program-info");
-    priv->story_name = NULL;
+    g_clear_pointer(&priv->story_name, g_free);
     g_object_notify(G_OBJECT(self), "story-name");
 }
 

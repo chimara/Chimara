@@ -718,6 +718,7 @@ chimara_if_run_game(ChimaraIF *self, const char *game_path, GError **error)
 	GSList *ptr;
 	for(count = 0, ptr = args; ptr; count++, ptr = g_slist_next(ptr))
 		argv[count] = g_strdup(ptr->data);
+	g_slist_free(args);
 
 	/* Set the story name */
 	g_autofree char *story_name = g_path_get_basename(game_path);
