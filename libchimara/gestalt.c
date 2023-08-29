@@ -63,6 +63,10 @@ glk_gestalt(glui32 sel, glui32 val)
  * behavior if you pass 0 as the second argument, but other values may produce
  * other behavior.)
  *
+ * Gestalt selectors numbered 0x1400 to 0x14FF are reserved for extension
+ * projects by ZZO38.
+ * These are not documented here.
+ *
  * Returns: an integer, depending on what selector was called.
  */
 glui32

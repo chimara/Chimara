@@ -380,7 +380,9 @@ glk_window_get_root()
  * displayed in A will be visible. At stage 4, there isn't even room in the
  * upper 50% to give C its two rows; so it only gets one. Finally, C is
  * squashed out of existence as well.
- * 
+ * (Without sufficient space to display a complete line of text, it counts as
+ * "zero size".)
+ *
  * When a window winds up undersized, it remembers what size it should be. In
  * the example above, A remembers that it should be two rows; if the user
  * expands the window to the original size, it would return to the original

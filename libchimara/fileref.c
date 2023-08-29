@@ -214,6 +214,10 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
  * `.glksave` for %fileusage_SavedGame, `.txt` for %fileusage_Transcript and
  * %fileusage_InputRecord.
  *
+ * The prompt may also include a choice of file formats.
+ * This will affect the format of the file (written or parsed), as noted
+ * earlier.
+ *
  * Returns: A new fileref, or #NULL if the fileref creation failed or the
  * dialog was canceled.
  */
@@ -332,6 +336,17 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  *     </para></listitem>
  *   </itemizedlist>
  * </note>
+ *
+ * <note><para>
+ *   In case anyone cares, %fileusage_Data (<filename>.glkdata</filename>) can
+ *   be associated with the MIME type `application/x-glkdata`;
+ *   %fileusage_SavedGame (<filename>.glksave</filename>) with
+ *   `application/x-glksave`.
+ *   <filename>.glksave</filename> files are commonly Quetzal save data (but
+ *   might be other formats for IF systems other than Z-code and Glulx).
+ *   <filename>.glkdata</filename> can contain any data, obviously.
+ *   So knowing the MIME type doesn't get you much, but we offer them anyway.
+ * </para></note>
  *
  * Returns: A new fileref, or %NULL if the fileref creation failed. 
  */

@@ -75,6 +75,7 @@ CHIMARA_IF_GET_CLASS
 glk_exit
 <SUBSECTION Private>
 glk_main
+GLK_ATTRIBUTE_NORETURN
 </SECTION>
 
 <SECTION>
@@ -139,6 +140,7 @@ gestalt_Hyperlinks
 gestalt_HyperlinkInput
 gestalt_SoundMusic
 gestalt_GraphicsTransparency
+gestalt_GraphicsCharInput
 gestalt_DateTime
 gestalt_ResourceStream
 GLK_MODULE_RESOURCE_STREAM

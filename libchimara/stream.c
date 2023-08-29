@@ -442,16 +442,30 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
  * If the filemode requires the file to exist, but the file does not exist,
  * glk_stream_open_file() returns %NULL.
  *
+ * <note><para>
+ *   Unfortunately, many (most) older interpreters will throw a fatal error in
+ *   this case (missing file for %filemode_Read) rather than returning %NULL.
+ *   Therefore it is best to call glk_fileref_does_file_exist() before trying to
+ *   read a file.
+ * </para></note>
+ *
  * The file may be read or written in text or binary mode; this is determined
  * by the @fileref argument. Similarly, platform-dependent attributes such as
  * file type are determined by @fileref.
  * See [File References][chimara-File-References].
  *
- * When writing in binary mode, Unicode values (characters greater than 255)
- * cannot be written to the file. If you try, they will be stored as 0x3F
- * (`"?"`) characters. In text mode, Unicode values may be stored
- * exactly, approximated, or abbreviated, depending on what the platform's text
- * files support.
+ * When writing in binary mode, byte values are written directly to the file.
+ * (Writing calls such as glk_put_char_stream() are defined in terms of Latin-1
+ * characters, so the binary file can be presumed to use Latin-1.
+ * Newlines will remain as 0x0A bytes.)
+ * Unicode values (characters greater than 255) cannot be written to the file.
+ * If you try, they will be stored as 0x3F (`"?"`) characters.
+ *
+ * When writing in text mode, character data is written in an encoding
+ * appropriate to the platform; this may be Latin-1 or some other format.
+ * Newlines may be converted to other line break sequences.
+ * Unicode values may be stored exactly, approximated, or abbreviated, depending
+ * on what the platform's text files support.
  *
  * Returns: A new stream, or %NULL if the file operation failed.
  */
@@ -472,11 +486,38 @@ glk_stream_open_file(frefid_t fileref, glui32 fmode, glui32 rock)
  * characters are written and read as four-byte (big-endian) values. This
  * allows you to write any Unicode character.
  *
- * In text mode, the file is written and read in a platform-dependent way, which
- * may or may not handle all Unicode characters. A text-mode file created with
- * glk_stream_open_file_uni() may have the same format as a text-mode file
- * created with glk_stream_open_file(); or it may use a more Unicode-friendly
- * format.
+ * In text mode, the file is written and read using the UTF-8 Unicode encoding.
+ * Files should be written without a byte-ordering mark.
+ * This ensures that text-mode files created by glk_stream_open_file() and
+ * glk_stream_open_file_uni() will be identical if only ASCII characters
+ * (32&ndash;127) are written.
+ *
+ * <note><para>
+ *   Previous versions of this spec said, of glk_stream_open_file_uni():
+ *   "In text mode, the file is written and read in a platform-dependent way,
+ *   which may or may not handle all Unicode characters."
+ *   This left open the possibility of other native text-file formats, as well
+ *   as richer formats such as RTF or HTML.
+ *   Richer formats do not seem to have ever been used; and at this point, UTF-8
+ *   is widespread enough for us to mandate it.
+ * </para></note>
+ *
+ * To summarize:
+ *
+ * - glk_stream_open_file() (byte stream), text mode: platform native text
+ * - glk_stream_open_file() (byte stream), binary mode: Latin-1
+ * - glk_stream_open_file_uni() (word stream), text mode: UTF-8
+ * - glk_stream_open_file_uni() (word stream), binary mode: four-byte
+ *   (big-endian) integers
+ *
+ * However, if the fileref was created via a prompt
+ * (glk_fileref_create_by_prompt()), the player may have selected format options
+ * that override these rules.
+ *
+ * <note><para>
+ *   See also the comments about text and binary mode,
+ *   [File References][chimara-File-References].
+ * </para></note>
  *
  * Returns: A new stream, or %NULL if the file operation failed.
  */
