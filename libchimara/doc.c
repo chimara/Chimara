@@ -1221,6 +1221,16 @@
  */
 
 /**
+ * SECTION:dispatch-game-id
+ * @short_description: Querying a game ID string
+ * @stability: Unstable
+ *
+ * These functions are not part of Glk dispatching per se; they allow the game
+ * to provide an identifier string for the Glk library to use.
+ * The functions themselves are in <filename>gi_dispa.c</filename>.
+ */
+
+/**
  * SECTION:dispatch-library-functions
  * @short_description: Platform-dependent dispatch layer functions
  *
@@ -3622,7 +3632,53 @@
  * You can store any value you want in this object; return it from your object
  * registry and retained array registry callbacks, and the library will stash it
  * away. You can retrieve it with gidispatch_get_objrock().
- */ 
+ */
+
+/**
+ * GI_DISPA_GAME_ID_AVAILABLE:
+ *
+ * The game should test `#ifdef GI_DISPA_GAME_ID_AVAILABLE` to ensure that these
+ * functions exist.
+ * (They are a late addition to <filename>gi_dispa.c</filename>, so older Glk
+ * library distributions will lack them.)
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * gidispatch_set_game_id_hook:
+ * @hook: a function that returns a game ID string.
+ *
+ * Set a function for getting a game ID string.
+ * The Glk library may call the supplied function when creating files, so that
+ * the files can be put in a game-specific location.
+ *
+ * The function must have the form: `char *func(void);`
+ *
+ * It should return %NULL or a pointer to a (null-terminated) string.
+ * (The string will be copied, so it may be in a temporary buffer.)
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * gidispatch_get_game_id:
+ *
+ * Retrieve a game ID string for the current game.
+ *
+ * If not %NULL, this string may be in a temporary buffer, so the caller
+ * must copy it!
+ *
+ * Returns: (nullable): A game ID string.
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * GIDISPATCH_AUTORESTORE_REGISTRY:
+ *
+ * Stability: Unstable
+ */
 
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_BLORB.H ------------------*/
  

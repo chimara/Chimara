@@ -199,3 +199,25 @@ gidispatch_set_retained_registry(gidispatch_rock_t (*regi)(void *array, glui32 l
 	glk_data->register_arr = regi;
 	glk_data->unregister_arr = unregi;
 }
+
+/**
+ * gidispatch_set_autorestore_registry:
+ * @locatearr:
+ * @restorearr:
+ *
+ * This function is also part of the Glk library, but it only exists on
+ * libraries that support autorestore.
+ * (Only iosglk, currently.)
+ * Only call this if %GIDISPATCH_AUTORESTORE_REGISTRY is defined.
+ *
+ * > # Chimara #
+ * > This function does nothing in Chimara.
+ *
+ * Stability: Unstable
+ */
+void
+gidispatch_set_autorestore_registry(
+    long (*locatearr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock, int *elemsizeref),
+    gidispatch_rock_t (*restorearr)(long bufkey, glui32 len, char *typecode, void **arrayref))
+{
+}

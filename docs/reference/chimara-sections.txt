@@ -618,12 +618,22 @@ gidispatch_prototype
 </SECTION>
 
 <SECTION>
+<FILE>dispatch-game-id</FILE>
+<TITLE>Querying a game ID string</TITLE>
+GI_DISPA_GAME_ID_AVAILABLE
+gidispatch_set_game_id_hook
+gidispatch_get_game_id
+</SECTION>
+
+<SECTION>
 <FILE>dispatch-library-functions</FILE>
 <TITLE>Functions the Library Must Provide</TITLE>
 gidispatch_set_object_registry
 gidispatch_rock_t
 gidispatch_get_objrock
 gidispatch_set_retained_registry
+GIDISPATCH_AUTORESTORE_REGISTRY
+gidispatch_set_autorestore_registry
 </SECTION>
 
 <INCLUDE>libchimara/glk.h, libchimara/gi-blorb.h</INCLUDE>
