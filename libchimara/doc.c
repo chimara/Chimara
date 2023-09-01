@@ -3670,7 +3670,7 @@
 /**
  * giblorb_ID_Copyright:
  *
- * Resource usage constant representing the copyright message (date and holder, 
+ * Chunk type constant representing the copyright message (date and holder,
  * without the actual copyright symbol). There should only be one such chunk per
  * file.
  */
@@ -3678,28 +3678,28 @@
 /**
  * giblorb_ID_AUTH:
  *
- * Resource usage constant representing the name of the author or creator of the
+ * Chunk type constant representing the name of the author or creator of the
  * file. This could be a login name on multi-user systems, for example. There
  * should only be one such chunk per file.
  */
- 
+
 /**
  * giblorb_ID_ANNO:
  *
- * Resource usage constant representing any textual annotation that the user or 
+ * Chunk type constant representing any textual annotation that the user or
  * writing program sees fit to include.
- */ 
+ */
 
 /**
  * giblorb_ID_TEXT:
  *
- * Resource usage constant representing a text data file.
+ * Chunk type constant representing a text data file.
  */
 
 /**
  * giblorb_ID_BINA:
  *
- * Resource usage constant representing a binary data file.
+ * Chunk type constant representing a binary data file.
  */
 
 /**
