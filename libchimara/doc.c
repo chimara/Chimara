@@ -3762,6 +3762,22 @@
  */
 
 /**
+ * giblorb_ID_PNG:
+ *
+ * Chunk type constant representing a PNG image file.
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * giblorb_ID_JPEG:
+ *
+ * Chunk type constant representing a JPEG image file.
+ *
+ * Stability: Unstable
+ */
+
+/**
  * giblorb_map_t:
  *
  * Holds the complete description of an open Blorb file. This type is opaque for
@@ -3780,7 +3796,17 @@
  * you used %giblorb_method_FilePos). See giblorb_load_chunk_by_type() and
  * giblorb_load_chunk_by_number(). 
  */
- 
+
+/**
+ * giblorb_image_info_t:
+ * @chunktype: The type of the chunk (%giblorb_ID_PNG or %giblorb_ID_JPEG)
+ * @width:
+ * @height:
+ * @alttext:
+ *
+ * Stability: Unstable
+ */
+
 /**
  * giblorb_create_map:
  * @file: An input stream pointing to a Blorb file.
@@ -3920,6 +3946,17 @@
  * information. 
  *
  * Returns: a Blorb error code.
+ */
+
+/**
+ * giblorb_load_image_info:
+ * @map: The Blorb resource map from which to load the image info.
+ * @resnum: The resource number to examine.
+ * @res: Return location for the result.
+ *
+ * Returns: a Blorb error code.
+ *
+ * Stability: Unstable
  */
 
 /*--------------------TYPES AND CONSTANTS FROM GLKSTART.H---------------------*/

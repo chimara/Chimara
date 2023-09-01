@@ -647,6 +647,8 @@ giblorb_load_chunk_by_number
 giblorb_unload_chunk
 giblorb_load_resource
 giblorb_count_resources
+giblorb_image_info_t
+giblorb_load_image_info
 <SUBSECTION Constants>
 giblorb_method_DontLoad
 giblorb_method_Memory
@@ -660,6 +662,8 @@ giblorb_ID_AUTH
 giblorb_ID_ANNO
 giblorb_ID_TEXT
 giblorb_ID_BINA
+giblorb_ID_JPEG
+giblorb_ID_PNG
 <SUBSECTION Private>
 giblorb_make_id
 </SECTION>
