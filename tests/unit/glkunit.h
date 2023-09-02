@@ -22,6 +22,8 @@
 #define ASSERT_NOT_EQUAL(unexpected, actual) _ASSERT((unexpected) != (actual), \
     "%s != %s (expected not to be %d but was)", \
     #actual, #unexpected, unexpected);
+#define ASSERT_NULL(actual, msg) _ASSERT((actual) == NULL, \
+    "%s is expected to be NULL (but was not) %s", #actual, msg);
 #define ASSERT_NONNULL(actual, msg) _ASSERT((actual) != NULL, \
     "%s is expected not to be NULL (but was) %s", #actual, msg);
 

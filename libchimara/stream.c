@@ -355,10 +355,8 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 	switch(fmode) 
 	{
 		case filemode_Read:
-			if(!g_file_test(fileref->filename, G_FILE_TEST_EXISTS)) {
-				ILLEGAL_PARAM("Tried to open a nonexistent file, '%s', in read mode", fileref->filename);
+			if (!g_file_test(fileref->filename, G_FILE_TEST_EXISTS))
 				return NULL;
-			}
 			modestr = binary? "rb" : "r";
 			break;
 		case filemode_Write:
