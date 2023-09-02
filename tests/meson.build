@@ -57,12 +57,18 @@ shared_module('fileio', 'fileio.c', name_prefix: '',
 datetime_test = shared_module('datetime', 'unit/datetime.c', 'unit/glkunit.c',
     name_prefix: '', include_directories: [top_include, '../libchimara'],
     link_args: plugin_link_args, link_depends: plugin_link_depends)
+stream_test = shared_module('stream', 'unit/stream.c', 'unit/glkunit.c',
+    name_prefix: '', include_directories: [top_include, '../libchimara'],
+    link_args: plugin_link_args, link_depends: plugin_link_depends)
 
 test_env = environment()
 test_env.set('NO_AT_BRIDGE', '1')
+test_env.set('SOURCE_DIR', meson.current_source_dir())
 
 test('datetime', glkunit_runner, args: [datetime_test], suite: 'unit',
-    protocol: 'tap')
+    protocol: 'tap', env: test_env)
+test('stream', glkunit_runner, args: [stream_test], suite: 'unit',
+    protocol: 'tap', env: test_env)
 
 glulxercise_tests = [
     'abbrevtest',

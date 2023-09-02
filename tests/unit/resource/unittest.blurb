@@ -1,0 +1,3 @@
+copyright "Philip Chimento 2023"
+data 1 "magic.dat" type BINA
+sound 3 "minifile.aiff"
