@@ -1,6 +1,8 @@
 #ifndef UI_MESSAGE_H
 #define UI_MESSAGE_H
 
+#include <stdbool.h>
+
 #include <glib.h>
 
 #include "chimara-glk.h"
@@ -187,6 +189,7 @@ typedef struct {
 	GMutex lock;
 	GCond sign;
 	GVariant *response;
+	bool is_waiting : 1;
 } UiMessage;
 
 G_GNUC_INTERNAL UiMessage *ui_message_new(UiMessageType type, winid_t win);
