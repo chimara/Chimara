@@ -163,3 +163,73 @@ shutdown_glk_post(void)
 	glk_data->unregister_arr = NULL;
 #endif
 }
+
+static gboolean
+emit_waiting_signal(ChimaraGlk *glk)
+{
+	g_signal_emit_by_name(glk, "waiting");
+	return G_SOURCE_REMOVE;
+}
+
+static gboolean
+emit_stopped_signal(ChimaraGlk *glk)
+{
+	g_signal_emit_by_name(glk, "stopped");
+	return G_SOURCE_REMOVE;
+}
+
+void
+shutdown_glk_full(void)
+{
+	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
+
+	shutdown_glk_pre();
+
+	/* Find the biggest text buffer window */
+	winid_t win, largewin = NULL;
+	glui32 largearea = 0;
+	for (win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL)) {
+		if (win->type == wintype_TextBuffer) {
+			glui32 w, h;
+			if (!largewin) {
+				largewin = win;
+				glk_window_get_size(largewin, &w, &h);
+				largearea = w * h;
+			} else {
+				glk_window_get_size(win, &w, &h);
+				if(w * h > largearea) {
+					largewin = win;
+					largearea = w * h;
+				}
+			}
+		}
+	}
+	if (largewin) {
+		glk_set_window(largewin);
+		glk_set_style(style_Alert);
+		glk_put_string("\n");
+		glk_put_string(glk_data->final_message);
+		glk_put_string("\n");
+		flush_window_buffer(largewin);
+	}
+
+	/* Wait for a keypress if any text grid or buffer windows are open */
+	gboolean should_wait = FALSE;
+	g_mutex_lock(&glk_data->shutdown_lock);
+	for (win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL)) {
+		if (win->type == wintype_TextGrid || win->type == wintype_TextBuffer) {
+			g_signal_handler_unblock(win->widget, win->shutdown_keypress_handler);
+			should_wait = TRUE;
+		}
+	}
+	if (should_wait) {
+		gdk_threads_add_idle((GSourceFunc)emit_waiting_signal, glk_data->self);
+		if (glk_data->interactive)
+			g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
+	}
+	g_mutex_unlock(&glk_data->shutdown_lock);
+
+	shutdown_glk_post();
+
+	gdk_threads_add_idle((GSourceFunc)emit_stopped_signal, glk_data->self);
+}

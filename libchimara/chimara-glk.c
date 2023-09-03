@@ -11,6 +11,7 @@
 #include <gmodule.h>
 #include <gtk/gtk.h>
 
+#include "abort.h"
 #include "chimara-glk-private.h"
 #include "chimara-marshallers.h"
 #include "event.h"
@@ -1392,6 +1393,8 @@ glk_enter(struct StartupData *startup)
 	g_async_queue_ref(startup->glk_data->char_input_queue);
 	g_async_queue_ref(startup->glk_data->line_input_queue);
 
+	gdk_threads_add_idle((GSourceFunc)emit_started_signal, startup->glk_data->self);
+
 	/* Run startup function */
 	if(startup->glkunix_startup_code) {
 		startup->glk_data->in_startup = TRUE;
@@ -1400,18 +1403,16 @@ glk_enter(struct StartupData *startup)
 
 		if(!result) {
 			free_startup_data(startup);
+			shutdown_glk_full();
 			return NULL;
 		}
 	}
-
-	gdk_threads_add_idle((GSourceFunc)emit_started_signal, startup->glk_data->self);
 
 	/* Run main function */
 	glk_main_t glk_main = startup->glk_main;
 	free_startup_data(startup);
 	glk_main();
-	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
-	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
+	shutdown_glk_full();
 	return NULL;
 }
 
