@@ -23,6 +23,9 @@ glkunit_runner = executable('glkunit-runner', 'glkunit-runner.c',
 cssparse = executable('cssparse', 'cssparse.c',
     include_directories: top_include, link_with: libchimara,
     dependencies: [gmodule, gtk])
+glulxercise_runner = executable('glulxercise-runner', 'glulxercise-runner.c',
+    include_directories: top_include, link_with: libchimara,
+    dependencies: [gmodule, gtk])
 
 shared_module('first', 'first.c', name_prefix: '',
     include_directories: top_include,
