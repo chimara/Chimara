@@ -178,6 +178,9 @@ chimara_glk_reset_glk_styles(ChimaraGlk *self)
 		g_hash_table_insert(glk_text_buffer_styles, (char *) GLK_TAG_NAMES[i], tag);
 	}
 
+	g_clear_pointer(&priv->glk_styles->text_grid, g_hash_table_destroy);
+	g_clear_pointer(&priv->glk_styles->text_buffer, g_hash_table_destroy);
+
 	priv->glk_styles->text_grid = glk_text_grid_styles;
 	priv->glk_styles->text_buffer = glk_text_buffer_styles;
 }
