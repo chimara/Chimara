@@ -64,6 +64,7 @@ test_env.set('LSAN_OPTIONS',
 
 unit_tests = [
     'datetime',
+    'io',
     'stream',
     'window',
 ]
