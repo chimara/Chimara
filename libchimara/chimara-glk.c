@@ -356,7 +356,8 @@ text_tag_copy(GtkTextTag *tag)
 static void
 copy_tag_to_textbuffer(void *key, void *tag, void *target_table)
 {
-	gtk_text_tag_table_add(target_table, text_tag_copy(GTK_TEXT_TAG(tag)));
+	g_autoptr(GtkTextTag) tag_copy = text_tag_copy(GTK_TEXT_TAG(tag));
+	gtk_text_tag_table_add(GTK_TEXT_TAG_TABLE(target_table), tag_copy);
 }
 
 /* Private method: initialize the default styles to a textbuffer. */
