@@ -182,7 +182,11 @@ parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *a
             }
 		}
 	}
-	
+
+	for (size_t ix = 0; ix < data->argc; ix++)
+		g_free(data->argv[ix]);
+	g_free(data->argv);
+
 	data->argc = g_slist_length(arglist) + 1;
 	data->argv = g_new0(char *, data->argc);
 	arglist = g_slist_reverse(arglist);

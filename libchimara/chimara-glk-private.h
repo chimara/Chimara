@@ -6,6 +6,7 @@
 
 #include "chimara-glk.h"
 #include "glk.h"
+#include "glkstart.h"
 #include "gi_blorb.h"
 #include "gi_dispa.h"
 
@@ -91,6 +92,8 @@ struct _ChimaraGlkPrivate {
 	gchar *program_name;
 	gchar *program_info;
 	gchar *story_name;
+	/* Startup args (have Glk program lifetime) */
+	glkunix_startup_t args;
     /* User-defined interrupt handler */
     void (*interrupt_handler)(void);
     /* Global tree of all windows */
