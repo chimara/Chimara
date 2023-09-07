@@ -62,8 +62,10 @@ style_cascade_colors(GtkTextTag *tag, GtkTextTag *glk_tag, GtkTextTag *default_t
 		g_object_get(glk_tag, "background-rgba", dest, NULL);
 	}
 
-	*foreground = fg;
-	*background = bg;
+	if (fg)
+		*foreground = fg;
+	if (bg)
+		*background = bg;
 }
 
 /* Internal function: changes a GTK tag to correspond with the given style. */
