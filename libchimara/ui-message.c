@@ -85,6 +85,7 @@ void
 ui_message_free(UiMessage *msg)
 {
 	g_free(msg->strval);
+	g_clear_pointer(&msg->response, g_variant_unref);
 	g_slice_free(UiMessage, msg);
 }
 
@@ -156,7 +157,6 @@ ui_message_queue_and_await(UiMessage *msg)
 {
 	queue_and_await_response(msg);
 	int retval = g_variant_get_int64(msg->response);
-	g_variant_unref(msg->response);
 	ui_message_free(msg);
 	return retval;
 }
@@ -174,7 +174,6 @@ ui_message_queue_and_await_string(UiMessage *msg)
 	queue_and_await_response(msg);
 	char *retval;
 	g_variant_get(msg->response, "ms", &retval);
-	g_variant_unref(msg->response);
 	ui_message_free(msg);
 	return retval;
 }
@@ -188,6 +187,7 @@ ui_message_respond(UiMessage *msg, gint64 response)
 {
 	g_mutex_lock(&msg->lock);
 	msg->response = g_variant_new_int64(response);
+	g_variant_ref_sink(msg->response);
 	g_cond_signal(&msg->sign);
 	g_mutex_unlock(&msg->lock);
 }
@@ -205,6 +205,7 @@ ui_message_respond_string(UiMessage *msg, char *response)
 	g_mutex_lock(&msg->lock);
 	msg->response = g_variant_new_maybe(G_VARIANT_TYPE_STRING,
 		response != NULL ? g_variant_new_take_string(response) : NULL);
+	g_variant_ref_sink(msg->response);
 	g_cond_signal(&msg->sign);
 	g_mutex_unlock(&msg->lock);
 }
