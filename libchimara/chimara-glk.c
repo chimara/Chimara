@@ -548,6 +548,7 @@ chimara_glk_finalize(GObject *object)
 	g_free(priv->story_name);
 	g_free(priv->styles);
 	g_free(priv->glk_styles);
+	g_clear_pointer(&priv->thread, g_thread_unref);
 
 	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
@@ -1519,6 +1520,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 	priv->ui_message_handler_id = gdk_threads_add_idle((GSourceFunc)chimara_glk_process_queue, self);
 
     /* Run in a separate thread */
+	g_clear_pointer(&priv->thread, g_thread_unref);
 	priv->thread = g_thread_try_new("glk", (GThreadFunc)glk_enter, startup, error);
 
 	return !(priv->thread == NULL);
@@ -1624,7 +1626,7 @@ chimara_glk_wait(ChimaraGlk *self)
 	/* Empty UI message queue first, so that the Glk thread isn't waiting on any
 	UI operations; then it's safe to wait for the Glk thread to finish */
 	chimara_glk_drain_queue(self);
-    g_thread_join(priv->thread);
+	g_clear_pointer(&priv->thread, g_thread_join);
 }
 
 /**
