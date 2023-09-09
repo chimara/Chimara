@@ -743,13 +743,15 @@ glk_window_close(winid_t win, stream_result_t *result)
 
 		stream_close_common( ((winid_t) pair_node->data)->window_stream, NULL );
 		window_close_common( (winid_t) pair_node->data, TRUE);
-	} 
+		/* node is now already freed by pair_node */
+		window_close_common(win, /* free_node = */ FALSE);
+	}
 	else /* it was the root window */
 	{
 		glk_data->root_window = NULL;
+		window_close_common(win, TRUE);
 	}
 
-	window_close_common(win, FALSE);
 	g_mutex_unlock(&glk_data->arrange_lock);
 
 	/* Schedule a redraw */
