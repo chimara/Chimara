@@ -1228,7 +1228,7 @@ glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
 				}
 				else /* Regular binary file */
 				{
-					gchar *readbuffer = g_new0(gchar, len);
+					g_autofree char *readbuffer = g_new0(char, len);
 					ensure_file_operation(str, filemode_Read);
 					if( !fgets(readbuffer, len, str->file_pointer) ) {
 						*buf = 0;
