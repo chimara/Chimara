@@ -204,7 +204,8 @@ load_resource_into_giostream(glui32 snd)
 		giblorb_result_t resource;
 		giblorb_err_t result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
 		if(result != giblorb_err_None) {
-			WARNING_S( "Error loading resource", giblorb_get_error_message(result) );
+			if (result != giblorb_err_NotFound)
+				WARNING_S("Error loading resource", giblorb_get_error_message(result));
 			return NULL;
 		}
 		retval = g_memory_input_stream_new_from_data(resource.data.ptr, resource.length, NULL);
@@ -888,7 +889,8 @@ glk_sound_load_hint(glui32 snd, glui32 flag)
 		 loading a chunk more than once does nothing */
 		result = giblorb_load_resource(glk_data->resource_map, giblorb_method_Memory, &resource, giblorb_ID_Snd, snd);
 		if(result != giblorb_err_None) {
-			WARNING_S( "Error loading resource", giblorb_get_error_message(result) );
+			if (result != giblorb_err_NotFound)
+				WARNING_S("Error loading resource", giblorb_get_error_message(result));
 			return;
 		}
 	} else {
@@ -897,7 +899,8 @@ glk_sound_load_hint(glui32 snd, glui32 flag)
 		 isn't loaded */
 		result = giblorb_load_resource(glk_data->resource_map, giblorb_method_DontLoad, &resource, giblorb_ID_Snd, snd);
 		if(result != giblorb_err_None) {
-			WARNING_S( "Error loading resource", giblorb_get_error_message(result) );
+			if (result != giblorb_err_NotFound)
+				WARNING_S("Error loading resource", giblorb_get_error_message(result));
 			return;
 		}
 		result = giblorb_unload_chunk(glk_data->resource_map, resource.chunknum);

@@ -527,10 +527,12 @@ glk_stream_open_resource(glui32 filenum, glui32 rock)
 	}
 
 	err = giblorb_load_resource(map, giblorb_method_Memory, &res, giblorb_ID_Data, filenum);
-	if(err) {
-		WARNING_S("Could not create resource stream, because the resource "
-			"could not be loaded", giblorb_get_error_message(err));
-		return 0; /* Not found, or some other error */
+	if (err != giblorb_err_None) {
+		if (err != giblorb_err_NotFound) {
+			WARNING_S("Could not create resource stream, because the resource "
+				"could not be loaded", giblorb_get_error_message(err));
+		}
+		return NULL;
 	}
 
 	/* We'll use the in-memory copy of the chunk data as the basis for

@@ -63,6 +63,7 @@ stream_test = shared_module('stream', 'unit/stream.c', 'unit/glkunit.c',
 
 test_env = environment()
 test_env.set('NO_AT_BRIDGE', '1')
+test_env.set('G_DEBUG', 'fatal-warnings')
 test_env.set('SOURCE_DIR', meson.current_source_dir())
 
 test('datetime', glkunit_runner, args: [datetime_test], suite: 'unit',
