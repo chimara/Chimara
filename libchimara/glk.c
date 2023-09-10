@@ -99,7 +99,8 @@ glk_exit(void)
 	}
 	if (should_wait) {
 		gdk_threads_add_idle((GSourceFunc)emit_waiting_signal, glk_data->self);
-		g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
+		if (glk_data->interactive)
+			g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
 	}
 	g_mutex_unlock(&glk_data->shutdown_lock);
 
