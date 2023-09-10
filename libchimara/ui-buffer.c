@@ -370,7 +370,7 @@ ui_buffer_force_line_input(winid_t win, const char *text)
 	/* Insert the forced input into the window */
 	if(win->echo_current_line_input) {
 		gtk_text_buffer_get_end_iter(buffer, &end);
-		char *text_to_insert = g_strconcat(text, "\n", NULL);
+		g_autofree char *text_to_insert = g_strconcat(text, "\n", NULL);
 		gtk_text_buffer_insert_with_tags_by_name(buffer, &end, text_to_insert, -1, "default", "input", "glk-input", NULL);
 	}
 
