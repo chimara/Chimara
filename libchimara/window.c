@@ -83,6 +83,9 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_clear_object(&win->font_override);
 	g_clear_object(&win->background_override);
 
+	if (win->vadjustment)
+		g_clear_signal_handler(&win->pager_adjustment_handler, win->vadjustment);
+
 	g_mutex_clear(&win->lock);
 
 	g_slice_free(struct glk_window_struct, win);

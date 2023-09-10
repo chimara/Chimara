@@ -201,6 +201,8 @@ ui_buffer_create(winid_t win, ChimaraGlk *glk)
 {
 	win->frame = gtk_overlay_new();
 	win->scrolledwindow = gtk_scrolled_window_new(NULL, NULL);
+	win->vadjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(win->scrolledwindow));
+	g_object_add_weak_pointer(G_OBJECT(win->vadjustment), (void **)&win->vadjustment);
 	win->widget = gtk_text_view_new();
 	win->pager = gtk_button_new_with_label(_("More"));
 	GtkWidget *image = gtk_image_new_from_icon_name("go-down", GTK_ICON_SIZE_BUTTON);
@@ -237,8 +239,7 @@ ui_buffer_create(winid_t win, ChimaraGlk *glk)
 	g_signal_connect_after( win->widget, "size-allocate", G_CALLBACK(pager_after_size_allocate), win );
 	win->pager_keypress_handler = g_signal_connect( win->widget, "key-press-event", G_CALLBACK(pager_on_key_press_event), win );
 	g_signal_handler_block(win->widget, win->pager_keypress_handler);
-	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->scrolledwindow) );
-	win->pager_adjustment_handler = g_signal_connect_after(adj, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
+	win->pager_adjustment_handler = g_signal_connect_after(win->vadjustment, "value-changed", G_CALLBACK(pager_after_adjustment_changed), win);
 	g_signal_connect(win->pager, "clicked", G_CALLBACK(pager_on_clicked), win);
 
 	/* Char and line input */

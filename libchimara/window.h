@@ -72,6 +72,7 @@ struct glk_window_struct
 	/* In text buffer windows, the scrolled window and the pager are extra
 	widgets that are neither "widget" nor "frame" */
 	GtkWidget *scrolledwindow;
+	GtkAdjustment *vadjustment;  /* unowned weak pointer */
 	GtkWidget *pager;
 	/* Input request stuff */
 	enum InputRequestType input_request_type;
