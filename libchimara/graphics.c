@@ -240,12 +240,12 @@ image_cache_find(struct image_info* to_find)
 glui32
 glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
 {
-	struct image_info *to_find = g_new0(struct image_info, 1);
+	struct image_info to_find = {
+		.resource_number = image,
+		.scaled = false,  /* we want the original image size */
+	};
 	struct image_info *found;
-	to_find->resource_number = image;
-	to_find->scaled = FALSE; /* we want the original image size */
-
-	if( !(found = image_cache_find(to_find)) ) {
+	if (!(found = image_cache_find(&to_find))) {
 		found = load_image_in_cache(image, 0, 0);
 		if(found == NULL)
 			return FALSE;
@@ -292,14 +292,14 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 	VALID_WINDOW(win, return FALSE);
 	g_return_val_if_fail(win->type == wintype_Graphics || win->type == wintype_TextBuffer, FALSE);
 
-	struct image_info *to_find = g_new0(struct image_info, 1);
+	struct image_info to_find = {
+		.resource_number = image,
+		.scaled = false,  /* we want the original image size */
+	};
 	struct image_info *info;
 
 	/* Lookup the proper resource */
-	to_find->resource_number = image;
-	to_find->scaled = FALSE; /* we want the original image size */
-
-	if( !(info = image_cache_find(to_find)) ) {
+	if (!(info = image_cache_find(&to_find))) {
 		info = load_image_in_cache(image, 0, 0);
 		if(info == NULL)
 			return FALSE;
@@ -354,15 +354,16 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
 	g_return_val_if_fail(width != 0 && height != 0, FALSE);
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	struct image_info *to_find = g_new0(struct image_info, 1);
+
+	struct image_info to_find = {
+		.resource_number = image,
+		.scaled = true,  /* any image size equal or larger than requested will do */
+	};
 	struct image_info *info;
 	struct image_info *scaled_info;
 
 	/* Lookup the proper resource */
-	to_find->resource_number = image;
-	to_find->scaled = TRUE; /* any image size equal or larger than requested will do */
-
-	if( !(info = image_cache_find(to_find)) ) {
+	if (!(info = image_cache_find(&to_find))) {
 		info = load_image_in_cache(image, width, height);
 		if(info == NULL)
 			return FALSE;
