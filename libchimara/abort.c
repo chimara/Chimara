@@ -105,13 +105,7 @@ shutdown_glk_pre(void)
 		glk_data->resource_map = NULL;
 		glk_stream_close(glk_data->resource_file, NULL);
 	}
-	
-	/* Empty the input queues */
-	while(g_async_queue_try_pop(glk_data->char_input_queue))
-		;
-	while(g_async_queue_try_pop(glk_data->line_input_queue))
-		;
-	
+
 	/* Wait for any pending window rearrange */
 	ui_message_queue_and_await(ui_message_new(UI_MESSAGE_SYNC_ARRANGE, NULL));
 }
