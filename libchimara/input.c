@@ -137,6 +137,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Cn");
 
 	win->input_request_type = INPUT_REQUEST_LINE;
+	win->last_line_input_was_unicode = false;
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
 	win->echo_current_line_input = win->echo_line_input;
@@ -202,6 +203,7 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
 
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
+	win->last_line_input_was_unicode = true;
 	win->line_input_buffer_unicode = buf;
 	win->line_input_buffer_max_len = maxlen;
 	win->echo_current_line_input = win->echo_line_input;
