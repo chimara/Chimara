@@ -337,6 +337,7 @@ force_char_input_from_queue(winid_t win, event_t *event)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	guint keyval = GPOINTER_TO_UINT(g_async_queue_pop(glk_data->char_input_queue));
+    bool is_unicode = win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE;
 
 	glk_cancel_char_event(win);
 
@@ -346,7 +347,7 @@ force_char_input_from_queue(winid_t win, event_t *event)
 
 	event->type = evtype_CharInput;
 	event->win = win;
-	event->val1 = keyval_to_glk_keycode(keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
+	event->val1 = keyval_to_glk_keycode(keyval, is_unicode);
 	event->val2 = 0;
 }
 
