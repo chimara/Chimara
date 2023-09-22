@@ -153,9 +153,13 @@ shutdown_glk_post(void)
 	glk_data->interrupt_handler = NULL;
 	g_free(glk_data->current_dir);
 	glk_data->current_dir = NULL;
-	/* Remove the dispatch callbacks */
+	/* Remove the dispatch callbacks. However, if we are running under address
+	 * sanitizer, leave them in place - this is an unfortunate hack that allows
+	 * Glulxe to work twice in a row without unloading the plugin in between. */
+#ifndef CHIMARA_ASAN_HACK
 	glk_data->register_obj = NULL;
 	glk_data->unregister_obj = NULL;
 	glk_data->register_arr = NULL;
 	glk_data->unregister_arr = NULL;
+#endif
 }

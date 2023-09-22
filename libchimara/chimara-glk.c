@@ -1470,8 +1470,16 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 
     g_assert( g_module_supported() );
 	/* If there is already a module loaded, free it first -- you see, we want to
-	 * keep modules loaded as long as possible to avoid crashes in stack unwinding */
+	 * keep modules loaded as long as possible to avoid crashes in stack
+	 * unwinding. And in fact, skip unloading it altogether if we are running
+	 * under address sanitizer, because otherwise symbolizing stack traces at
+	 * the end of the process won't work (and then the stack traces won't match
+	 * the suppressions file. This is an unfortunate but necessary hack unless
+	 * we can either deallocate all static data in glulxe manually, or rewrite
+	 * the unit test suite so that it doesn't need to unload plugins. */
+#ifndef CHIMARA_ASAN_HACK
 	chimara_glk_unload_plugin(self);
+#endif
 	/* Open the module to run */
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
