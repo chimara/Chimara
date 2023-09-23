@@ -4,7 +4,9 @@ glulxe = shared_module('glulxe', 'accel.c', 'debugger.c', 'exec.c', 'files.c',
     'float.c', 'funcs.c', 'gestalt.c', 'glkop.c', 'heap.c', 'main.c',
     'operand.c', 'osdepend.c', 'profile.c', 'search.c', 'serial.c', 'string.c',
     'unixautosave.c', 'unixstrt.c', 'vm.c',
-    name_prefix: '', c_args: ['-DOS_UNIX', glulxe_extraflags],
+    name_prefix: '',
+    # Workaround for float issue https://github.com/erkyrath/glulxe/issues/31
+    c_args: ['-DOS_UNIX', '-DFLOAT_COMPILE_SAFER_POWF', glulxe_extraflags],
     include_directories: '../../libchimara',
     link_args: plugin_link_args, link_depends: plugin_link_depends,
     install: true, install_dir: plugindir)
