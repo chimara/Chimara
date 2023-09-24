@@ -58,3 +58,61 @@ jobs:
       - name: print-test-log
         if: ${{ failure() }}
         run: cat _build/meson-logs/testlog.txt
+
+  sanitizer:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: install-deps
+        # gtk downgrade is because there is no matching version in ddebs repo
+        # for the latest
+        run: |
+          sudo apt-get update
+          sudo apt-get -y --allow-downgrades install \
+            gir1.2-gtk-3.0=3.24.33-1ubuntu1 \
+            gstreamer1.0-plugins-bad \
+            gstreamer1.0-plugins-good \
+            gstreamer1.0-tools \
+            libc6-dbg \
+            libgstreamer1.0-dev \
+            libgtk-3-0=3.24.33-1ubuntu1 \
+            libgtk-3-dev=3.24.33-1ubuntu1 \
+            libunwind-dev \
+            libxml2-utils \
+            meson \
+            ubuntu-dbgsym-keyring
+
+      - name: install-debug-symbols
+        run: |
+          sudo tee -a "/etc/apt/sources.list.d/ddebs.list" <<EOF
+          deb http://ddebs.ubuntu.com jammy main restricted universe multiverse
+          deb http://ddebs.ubuntu.com jammy-updates main restricted universe multiverse
+          EOF
+          sudo apt-get update
+          sudo apt-get -y install libglib2.0-0-dbgsym libgtk-3-0-dbgsym
+
+      - uses: actions/checkout@v3
+
+      - name: configure
+        run: |
+          meson _build \
+            -Db_sanitize=address \
+            -Dintrospection=false \
+            -Dbocfel=false \
+            -Dfrotz=false \
+            -Dgit=false \
+            -Dnitfol=false \
+            -Dplayer=false
+
+      - name: build
+        run: ASAN_OPTIONS=detect_leaks=0 ninja -C _build
+
+      - name: test
+        run: |
+          G_DEBUG=gc-friendly \
+          G_SLICE=always-malloc \
+          ASAN_OPTIONS=fast_unwind_on_malloc=0 \
+            xvfb-run -a meson test -C _build
+
+      - name: print-test-log
+        if: ${{ failure() }}
+        run: cat _build/meson-logs/testlog.txt
