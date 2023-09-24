@@ -59,6 +59,8 @@ test_env = environment()
 test_env.set('NO_AT_BRIDGE', '1')
 test_env.set('G_DEBUG', 'fatal-warnings')
 test_env.set('SOURCE_DIR', meson.current_source_dir())
+test_env.set('LSAN_OPTIONS',
+    'suppressions=@0@/lsan.supp'.format(meson.current_source_dir()))
 
 unit_tests = [
     'datetime',

@@ -1,0 +1,10 @@
+leak:g_quark_init
+leak:libfontconfig.so
+
+# Glulxe static data
+leak:setup_vm
+leak:init_dispatch
+leak:prepare_glk_args
+
+# Workaround for CI image - can't reproduce on up-to-date system
+leak:perform_saveundo
