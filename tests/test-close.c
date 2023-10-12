@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 #include <libchimara/chimara-if.h>
 
+#define GAME_FILE PACKAGE_SRC_DIR "/glulxercise/unicodetest.ulx"
+
 void
 on_command(ChimaraIF *glk, gchar *input, gchar *response, GtkWindow *window)
 {
@@ -24,7 +26,7 @@ void
 on_go(GtkButton *button, ChimaraIF *glk)
 {
 	on_stop(button, glk);
-	g_assert(chimara_if_run_game(CHIMARA_IF(glk), PACKAGE_SRC_DIR "/unicodetest.ulx", NULL));
+	g_assert(chimara_if_run_game(CHIMARA_IF(glk), GAME_FILE, NULL));
 }
 
 int
@@ -64,7 +66,7 @@ main(int argc, char *argv[])
     g_object_ref(glk);
     
     /* Start the plugin */
-    g_assert(chimara_if_run_game(CHIMARA_IF(glk), PACKAGE_SRC_DIR "/unicodetest.ulx", NULL));
+    g_assert(chimara_if_run_game(CHIMARA_IF(glk), GAME_FILE, NULL));
 
     gtk_main();
 

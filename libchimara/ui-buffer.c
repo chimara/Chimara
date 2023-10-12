@@ -54,8 +54,8 @@ ui_buffer_finish_line_input(winid_t win, gboolean emit_signal)
 
 	/* Don't include the newline in the input */
 	size_t inserted_len = strlen(inserted_text);
-	if (inserted_len >= 1 && inserted_text[inserted_len] == '\n')
-		inserted_text[inserted_len] = '\0';
+	if (inserted_len >= 1 && inserted_text[inserted_len - 1] == '\n')
+		inserted_text[inserted_len - 1] = '\0';
 
 	int chars_written = ui_textwin_finish_line_input(win, inserted_text, emit_signal);
 	g_free(inserted_text);

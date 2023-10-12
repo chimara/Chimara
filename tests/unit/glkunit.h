@@ -22,6 +22,8 @@
 #define ASSERT_NOT_EQUAL(unexpected, actual) _ASSERT((unexpected) != (actual), \
     "%s != %s (expected not to be %d but was)", \
     #actual, #unexpected, unexpected);
+#define ASSERT_NONNULL(actual, msg) _ASSERT((actual) != NULL, \
+    "%s is expected not to be NULL (but was) %s", #actual, msg);
 
 struct TestDescription {
     char *name;

@@ -124,8 +124,9 @@ load_image_in_cache(glui32 image, gint width, gint height)
 	} else {
 		giblorb_result_t resource;
 		giblorb_err_t blorb_error = giblorb_load_resource(glk_data->resource_map, giblorb_method_FilePos, &resource, giblorb_ID_Pict, image);
-		if(blorb_error != giblorb_err_None) {
-			WARNING_S( "Error loading resource", giblorb_get_error_message(blorb_error) );
+		if (blorb_error != giblorb_err_None) {
+			if (blorb_error != giblorb_err_NotFound)
+				WARNING_S("Error loading resource", giblorb_get_error_message(blorb_error));
 			return NULL;
 		}
 		info = load_image_from_blorb(resource, image, width, height);

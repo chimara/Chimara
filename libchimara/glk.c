@@ -9,6 +9,13 @@
 G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
 
 static gboolean
+emit_waiting_signal(ChimaraGlk *glk)
+{
+	g_signal_emit_by_name(glk, "waiting");
+	return G_SOURCE_REMOVE;
+}
+
+static gboolean
 emit_stopped_signal(ChimaraGlk *glk)
 {
 	g_signal_emit_by_name(glk, "stopped");
@@ -90,8 +97,11 @@ glk_exit(void)
 			should_wait = TRUE;
 		}
 	}
-	if (should_wait)
-		g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
+	if (should_wait) {
+		gdk_threads_add_idle((GSourceFunc)emit_waiting_signal, glk_data->self);
+		if (glk_data->interactive)
+			g_cond_wait(&glk_data->shutdown_key_pressed, &glk_data->shutdown_lock);
+	}
 	g_mutex_unlock(&glk_data->shutdown_lock);
 
 	shutdown_glk_post();

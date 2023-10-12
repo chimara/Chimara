@@ -27,7 +27,7 @@ on_go_clicked(GtkButton *go, Widgets *w)
 	gtk_tree_model_get(model, &iter, 1, &filename, -1);
 	g_object_unref(model);
 
-	gchar *fullpath = g_build_filename(PACKAGE_SRC_DIR, filename, NULL);
+	gchar *fullpath = g_build_filename(PACKAGE_SRC_DIR "/glulxercise/", filename, NULL);
 
 	if( !chimara_if_run_game(CHIMARA_IF(w->interp), fullpath, &error) )
 		g_error("Error starting Glk library: %s", error->message);

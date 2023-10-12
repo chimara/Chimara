@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
@@ -74,6 +76,7 @@ ui_message_new(UiMessageType type, winid_t win)
 	UiMessage *msg = g_slice_new0(UiMessage);
 	msg->type = type;
 	msg->win = win;
+	msg->is_waiting = false;
 	return msg;
 }
 
@@ -126,6 +129,7 @@ queue_and_await_response(UiMessage *msg)
 	g_mutex_init(&msg->lock);
 	g_cond_init(&msg->sign);
 	msg->response = NULL;
+	msg->is_waiting = true;
 
 	ui_message_queue(msg);
 
@@ -153,6 +157,7 @@ ui_message_queue_and_await(UiMessage *msg)
 	queue_and_await_response(msg);
 	int retval = g_variant_get_int64(msg->response);
 	g_variant_unref(msg->response);
+	ui_message_free(msg);
 	return retval;
 }
 
@@ -170,6 +175,7 @@ ui_message_queue_and_await_string(UiMessage *msg)
 	char *retval;
 	g_variant_get(msg->response, "ms", &retval);
 	g_variant_unref(msg->response);
+	ui_message_free(msg);
 	return retval;
 }
 
@@ -207,8 +213,16 @@ ui_message_respond_string(UiMessage *msg, char *response)
 static void
 respond_after_size_allocate(ChimaraGlk *glk, GtkAllocation *allocation, struct SyncArrangeCallbackData *data)
 {
+	/* If no response is being awaited, we can free the message at the end of
+	 * this function. Otherwise, the other thread will free it after the
+	 * response has been received. */
+	bool should_free = !data->msg->is_waiting;
+
 	ui_message_respond(data->msg, 1);
-	ui_message_free(data->msg);
+
+	if (should_free)
+		ui_message_free(data->msg);
+
 	g_signal_handler_disconnect(glk, data->handler_id);
 	g_slice_free(struct SyncArrangeCallbackData, data);
 }
@@ -219,6 +233,11 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 #ifdef DEBUG_MESSAGES
 	debug_ui_message(msg, FALSE);
 #endif
+
+	/* If no response is being awaited, we can free the message at the end of
+	 * this function. Otherwise, the other thread will free it after the
+	 * response has been received. */
+	bool should_free = !msg->is_waiting;
 
 	switch(msg->type) {
 	case UI_MESSAGE_PRINT_STRING:
@@ -324,5 +343,7 @@ ui_message_perform(ChimaraGlk *glk, UiMessage *msg)
 		ui_message_respond(msg, 1);
 		break;
 	}
-	ui_message_free(msg);
+
+	if (should_free)
+		ui_message_free(msg);
 }

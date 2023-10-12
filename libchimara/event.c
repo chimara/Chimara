@@ -121,7 +121,7 @@ glk_select(event_t *event)
 	/* If the event was a line input event, the library must release the buffer */
 	if(event->type == evtype_LineInput && glk_data->unregister_arr) 
 	{
-        if(event->win->input_request_type == INPUT_REQUEST_LINE_UNICODE)
+		if (event->win->last_line_input_was_unicode)
 			(*glk_data->unregister_arr)(event->win->line_input_buffer_unicode, event->win->line_input_buffer_max_len, "&+#!Iu", event->win->buffer_rock);
 		else
             (*glk_data->unregister_arr)(event->win->line_input_buffer, event->win->line_input_buffer_max_len, "&+#!Cn", event->win->buffer_rock);

@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #include "glk.h"
@@ -77,6 +79,8 @@ struct glk_window_struct
 	glui32 *line_input_buffer_unicode;
 	glui32 line_input_buffer_max_len;
 	gidispatch_rock_t buffer_rock;
+	/* Used for processing even after the input request is handled: */
+	bool last_line_input_was_unicode : 1;
 	gboolean mouse_input_requested;
 	GList *history;
 	GList *history_pos;

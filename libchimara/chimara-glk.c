@@ -376,6 +376,15 @@ chimara_glk_init_textbuffer_styles(ChimaraGlk *self, ChimaraGlkWindowType wintyp
 }
 
 static void
+reset_input_queues(ChimaraGlkPrivate *priv)
+{
+	g_clear_pointer(&priv->char_input_queue, g_async_queue_unref);
+	priv->char_input_queue = g_async_queue_new();
+	g_clear_pointer(&priv->line_input_queue, g_async_queue_unref);
+	priv->line_input_queue = g_async_queue_new_full(g_free);
+}
+
+static void
 chimara_glk_init(ChimaraGlk *self)
 {
 	chimara_init(); /* This is a library entry point */
@@ -391,8 +400,7 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->ui_message_queue = g_async_queue_new_full((GDestroyNotify)ui_message_free);
     priv->event_queue = g_queue_new();
-	priv->char_input_queue = g_async_queue_new_full(g_free);
-	priv->line_input_queue = g_async_queue_new_full(g_free);
+	reset_input_queues(priv);
 
 	g_mutex_init(&priv->event_lock);
 	g_mutex_init(&priv->abort_lock);
@@ -875,6 +883,9 @@ chimara_glk_stopped(ChimaraGlk *self)
     g_object_notify(G_OBJECT(self), "program-info");
     g_clear_pointer(&priv->story_name, g_free);
     g_object_notify(G_OBJECT(self), "story-name");
+
+	/* Glk thread has ended and released its ref on the input queues by now */
+	reset_input_queues(priv);
 }
 
 static void

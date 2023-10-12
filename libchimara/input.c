@@ -137,6 +137,7 @@ glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Cn");
 
 	win->input_request_type = INPUT_REQUEST_LINE;
+	win->last_line_input_was_unicode = false;
 	win->line_input_buffer = buf;
 	win->line_input_buffer_max_len = maxlen;
 	win->echo_current_line_input = win->echo_line_input;
@@ -202,6 +203,7 @@ glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initl
         win->buffer_rock = (*glk_data->register_arr)(buf, maxlen, "&+#!Iu");
 
 	win->input_request_type = INPUT_REQUEST_LINE_UNICODE;
+	win->last_line_input_was_unicode = true;
 	win->line_input_buffer_unicode = buf;
 	win->line_input_buffer_max_len = maxlen;
 	win->echo_current_line_input = win->echo_line_input;
@@ -335,6 +337,7 @@ force_char_input_from_queue(winid_t win, event_t *event)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	guint keyval = GPOINTER_TO_UINT(g_async_queue_pop(glk_data->char_input_queue));
+    bool is_unicode = win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE;
 
 	glk_cancel_char_event(win);
 
@@ -344,7 +347,7 @@ force_char_input_from_queue(winid_t win, event_t *event)
 
 	event->type = evtype_CharInput;
 	event->win = win;
-	event->val1 = keyval_to_glk_keycode(keyval, win->input_request_type == INPUT_REQUEST_CHARACTER_UNICODE);
+	event->val1 = keyval_to_glk_keycode(keyval, is_unicode);
 	event->val2 = 0;
 }
 

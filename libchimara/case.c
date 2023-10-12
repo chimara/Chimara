@@ -183,20 +183,254 @@ glk_buffer_to_title_case_uni(glui32 *buf, glui32 len, glui32 numchars, glui32 lo
 {
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
-	
-	/* FIXME: This is wrong. g_unichar_totitle() which returns the titlecase of
-	 one Unicode code point, but that only returns the correct result if the
-	 titlecase character is also one code point.
-	 For example, the one-character 'ffi' ligature should be title-cased to the
-	 three-character string 'Ffi'. This code leaves it as the 'ffi' ligature,
-	 which is incorrect.
-	 However, nothing much can be done about it unless GLib gets a
-	 g_utf8_strtitle() function, or we roll our own. */
-	*buf = g_unichar_totitle(*buf);
-	/* Call lowercase on the rest of the string */
-	if(lowerrest)
-		return glk_buffer_to_lower_case_uni(buf + 1, len - 1, numchars - 1) + 1;
-	return numchars;
+
+	/* Special-cases not handled by g_unichar_totitle() because they expand to
+	 * more than one character in title case.
+	 * Source: https://www.unicode.org/Public/UCD/latest/ucd/SpecialCasing.txt
+	 * Does not include any context- or locale-sensitive case mappings. */
+	unsigned tlen = 0;
+	glui32 titled[3];
+	switch (buf[0]) {
+	case 0x00df:  /* LATIN SMALL LETTER SHARP S */
+		titled[tlen++] = 0x0053;
+		titled[tlen++] = 0x0073;
+		break;
+	case 0xfb00:  /* LATIN SMALL LIGATURE FF */
+		titled[tlen++] = 0x0046;
+		titled[tlen++] = 0x0066;
+		break;
+	case 0xfb01:  /* LATIN SMALL LIGATURE FI */
+		titled[tlen++] = 0x0046;
+		titled[tlen++] = 0x0069;
+		break;
+	case 0xfb02:  /* LATIN SMALL LIGATURE FL */
+		titled[tlen++] = 0x0046;
+		titled[tlen++] = 0x006c;
+		break;
+	case 0xfb03:  /* LATIN SMALL LIGATURE FFI */
+		titled[tlen++] = 0x0046;
+		titled[tlen++] = 0x0066;
+		titled[tlen++] = 0x0069;
+		break;
+	case 0xfb04:  /* LATIN SMALL LIGATURE FFL */
+		titled[tlen++] = 0x0046;
+		titled[tlen++] = 0x0066;
+		titled[tlen++] = 0x006c;
+		break;
+	case 0xfb05:  /* LATIN SMALL LIGATURE LONG S T */
+		titled[tlen++] = 0x0053;
+		titled[tlen++] = 0x0074;
+		break;
+	case 0xfb06:  /* LATIN SMALL LIGATURE ST */
+		titled[tlen++] = 0x0053;
+		titled[tlen++] = 0x0074;
+		break;
+	case 0x0587:  /* ARMENIAN SMALL LIGATURE ECH YIWN */
+		titled[tlen++] = 0x0535;
+		titled[tlen++] = 0x0582;
+		break;
+	case 0xfb13:  /* ARMENIAN SMALL LIGATURE MEN NOW */
+		titled[tlen++] = 0x0544;
+		titled[tlen++] = 0x0576;
+		break;
+	case 0xfb14:  /* ARMENIAN SMALL LIGATURE MEN ECH */
+		titled[tlen++] = 0x0544;
+		titled[tlen++] = 0x0565;
+		break;
+	case 0xfb15:  /* ARMENIAN SMALL LIGATURE MEN INI */
+		titled[tlen++] = 0x0544;
+		titled[tlen++] = 0x056b;
+		break;
+	case 0xfb16:  /* ARMENIAN SMALL LIGATURE VEW NOW */
+		titled[tlen++] = 0x054e;
+		titled[tlen++] = 0x0576;
+		break;
+	case 0xfb17:  /* ARMENIAN SMALL LIGATURE MEN XEH */
+		titled[tlen++] = 0x0544;
+		titled[tlen++] = 0x056d;
+		break;
+	case 0x0149:  /* LATIN SMALL LETTER N PRECEDED BY APOSTROPHE */
+		titled[tlen++] = 0x02bc;
+		titled[tlen++] = 0x004e;
+		break;
+	case 0x0390:  /* GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS */
+		titled[tlen++] = 0x0399;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0301;
+		break;
+	case 0x03b0:  /* GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0301;
+		break;
+	case 0x01f0:  /* LATIN SMALL LETTER J WITH CARON */
+		titled[tlen++] = 0x004a;
+		titled[tlen++] = 0x030c;
+		break;
+	case 0x1e96:  /* LATIN SMALL LETTER H WITH LINE BELOW */
+		titled[tlen++] = 0x0048;
+		titled[tlen++] = 0x0331;
+		break;
+	case 0x1e97:  /* LATIN SMALL LETTER T WITH DIAERESIS */
+		titled[tlen++] = 0x0054;
+		titled[tlen++] = 0x0308;
+		break;
+	case 0x1e98:  /* LATIN SMALL LETTER W WITH RING ABOVE */
+		titled[tlen++] = 0x0057;
+		titled[tlen++] = 0x030a;
+		break;
+	case 0x1e99:  /* LATIN SMALL LETTER Y WITH RING ABOVE */
+		titled[tlen++] = 0x0059;
+		titled[tlen++] = 0x030a;
+		break;
+	case 0x1e9a:  /* LATIN SMALL LETTER A WITH RIGHT HALF RING */
+		titled[tlen++] = 0x0041;
+		titled[tlen++] = 0x02be;
+		break;
+	case 0x1f50:  /* GREEK SMALL LETTER UPSILON WITH PSILI */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0313;
+		break;
+	case 0x1f52:  /* GREEK SMALL LETTER UPSILON WITH PSILI AND VARIA */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0313;
+		titled[tlen++] = 0x0300;
+		break;
+	case 0x1f54:  /* GREEK SMALL LETTER UPSILON WITH PSILI AND OXIA */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0313;
+		titled[tlen++] = 0x0301;
+		break;
+	case 0x1f56:  /* GREEK SMALL LETTER UPSILON WITH PSILI AND PERISPOMENI */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0313;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fb6:  /* GREEK SMALL LETTER ALPHA WITH PERISPOMENI */
+		titled[tlen++] = 0x0391;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fc6:  /* GREEK SMALL LETTER ETA WITH PERISPOMENI */
+		titled[tlen++] = 0x0397;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fd2:  /* GREEK SMALL LETTER IOTA WITH DIALYTIKA AND VARIA */
+		titled[tlen++] = 0x0399;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0300;
+		break;
+	case 0x1fd3:  /* GREEK SMALL LETTER IOTA WITH DIALYTIKA AND OXIA */
+		titled[tlen++] = 0x0399;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0301;
+		break;
+	case 0x1fd6:  /* GREEK SMALL LETTER IOTA WITH PERISPOMENI */
+		titled[tlen++] = 0x0399;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fd7:  /* GREEK SMALL LETTER IOTA WITH DIALYTIKA AND PERISPOMENI */
+		titled[tlen++] = 0x0399;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fe2:  /* GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND VARIA */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0300;
+		break;
+	case 0x1fe3:  /* GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND OXIA */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0301;
+		break;
+	case 0x1fe4:  /* GREEK SMALL LETTER RHO WITH PSILI */
+		titled[tlen++] = 0x03a1;
+		titled[tlen++] = 0x0313;
+		break;
+	case 0x1fe6:  /* GREEK SMALL LETTER UPSILON WITH PERISPOMENI */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fe7:  /* GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND PERISPOMENI */
+		titled[tlen++] = 0x03a5;
+		titled[tlen++] = 0x0308;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1ff6:  /* GREEK SMALL LETTER OMEGA WITH PERISPOMENI */
+		titled[tlen++] = 0x03a9;
+		titled[tlen++] = 0x0342;
+		break;
+	case 0x1fb2:  /* GREEK SMALL LETTER ALPHA WITH VARIA AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x1fba;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1fb4:  /* GREEK SMALL LETTER ALPHA WITH OXIA AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x0386;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1fc2:  /* GREEK SMALL LETTER ETA WITH VARIA AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x1fca;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1fc4:  /* GREEK SMALL LETTER ETA WITH OXIA AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x0389;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1ff2:  /* GREEK SMALL LETTER OMEGA WITH VARIA AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x1ffa;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1ff4:  /* GREEK SMALL LETTER OMEGA WITH OXIA AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x038f;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1fb7:  /* GREEK SMALL LETTER ALPHA WITH PERISPOMENI AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x0391;
+		titled[tlen++] = 0x0342;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1fc7:  /* GREEK SMALL LETTER ETA WITH PERISPOMENI AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x0397;
+		titled[tlen++] = 0x0342;
+		titled[tlen++] = 0x0345;
+		break;
+	case 0x1ff7:  /* GREEK SMALL LETTER OMEGA WITH PERISPOMENI AND YPOGEGRAMMENI */
+		titled[tlen++] = 0x03a9;
+		titled[tlen++] = 0x0342;
+		titled[tlen++] = 0x0345;
+		break;
+	}
+
+	if (tlen == 0) {
+		/* Easy path. g_unichar_totitle() returns the titlecase of one Unicode
+		 * code point, but that is only correct if the titlecase character is
+		 * also one code point. */
+		*buf = g_unichar_totitle(*buf);
+		/* Call lowercase on the rest of the string */
+		if (lowerrest)
+			return glk_buffer_to_lower_case_uni(buf + 1, len - 1, numchars - 1) + 1;
+		return numchars;
+	}
+
+	/* This code handles the special cases from the above switch statement. For
+	 * example, the one-character 'ffi' ligature should be title-cased to the
+	 * three-character string 'Ffi'. */
+
+	/* Allocate a new buffer, because the number of characters has already
+	 * changed. */
+	g_autofree glui32 *newbuf = g_new0(glui32, len + tlen);
+
+	memcpy(newbuf, titled, tlen * sizeof(glui32));
+	memcpy(newbuf + tlen, buf + 1, (numchars - 1) * sizeof(glui32));
+
+	if (!lowerrest) {
+		memcpy(buf, newbuf, len * sizeof(glui32));
+		return numchars + tlen - 1;
+	}
+
+	glui32 lowercount = glk_buffer_to_lower_case_uni(newbuf + tlen, len - tlen, numchars - 1);
+	memcpy(buf, newbuf, len * sizeof(glui32));
+	return lowercount + tlen;
 }
 
 /**

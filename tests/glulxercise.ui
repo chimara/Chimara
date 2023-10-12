@@ -150,20 +150,12 @@
         <col id="1">glulxercise.ulx</col>
       </row>
       <row>
-        <col id="0" translatable="yes">AccelFuncTest</col>
-        <col id="1">accelfunctest.ulx</col>
+        <col id="0" translatable="yes">AbbrevTest-E</col>
+        <col id="1">abbrevtest-e.ulx</col>
       </row>
       <row>
-        <col id="0" translatable="yes">ActionExtension</col>
-        <col id="1">actionextension.ulx</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">ActionExtension (Z5)</col>
-        <col id="1">actionextension.z5</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">ArrayLimitTest</col>
-        <col id="1">arraylimittest.ulx</col>
+        <col id="0" translatable="yes">AbbrevTest</col>
+        <col id="1">abbrevtest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">ChineseDictTest</col>
@@ -176,10 +168,6 @@
       <row>
         <col id="0" translatable="yes">DictFlagTest</col>
         <col id="1">dictflagtest.ulx</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">DictFlagTest (Z5)</col>
-        <col id="1">dictflagtest.z5</col>
       </row>
       <row>
         <col id="0" translatable="yes">ExtBinaryFile</col>
@@ -198,12 +186,16 @@
         <col id="1">floatparsetest.ulx</col>
       </row>
       <row>
-        <col id="0" translatable="yes">InputEventText</col>
-        <col id="1">inputeventtext.ulx</col>
+        <col id="0" translatable="yes">GraphWinTest</col>
+        <col id="1">graphwintest.gblorb</col>
       </row>
       <row>
-        <col id="0" translatable="yes">InputFeatureTest</col>
-        <col id="1">inputfeaturetest.ulx</col>
+        <col id="0" translatable="yes">ImageTest</col>
+        <col id="1">imagetest.gblorb</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">InputEventTest</col>
+        <col id="1">inputeventtest.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">MemCopyTest</col>
@@ -218,20 +210,12 @@
         <col id="1">memstreamtest.ulx</col>
       </row>
       <row>
-        <col id="0" translatable="yes">ReadThreeArgTest (Z5)</col>
-        <col id="1">readthreeargtest.z5</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">ResizeMemStreamTest</col>
-        <col id="1">resizememstreamtest.ulx</col>
-      </row>
-      <row>
         <col id="0" translatable="yes">ResStreamTest</col>
         <col id="1">resstreamtest.gblorb</col>
       </row>
       <row>
-        <col id="0" translatable="yes">SelectVariantTest</col>
-        <col id="1">selectvarianttest.ulx</col>
+        <col id="0" translatable="yes">StartSaveTest</col>
+        <col id="1">startsavetest.gblorb</col>
       </row>
       <row>
         <col id="0" translatable="yes">UniCaseTest</col>
@@ -248,6 +232,10 @@
       <row>
         <col id="0" translatable="yes">UniSourceTest</col>
         <col id="1">unisourcetest.ulx</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">UniSourceTestB</col>
+        <col id="1">unisourcetestb.ulx</col>
       </row>
       <row>
         <col id="0" translatable="yes">WindowTest</col>
