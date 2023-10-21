@@ -2,7 +2,7 @@
 git_version = configuration_data({
     'GIT_MAJOR': 1,
     'GIT_MINOR': 3,
-    'GIT_PATCH': 7,
+    'GIT_PATCH': 8,
 })
 git_version_h = configure_file(configuration: git_version, output: 'version.h')
 
