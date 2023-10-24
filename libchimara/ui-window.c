@@ -223,9 +223,9 @@ ui_window_request_char_input(ChimaraGlk *glk, winid_t win, gboolean unicode)
 	g_signal_emit_by_name(glk, "waiting");
 }
 
-/* Internal function: General callback for signal key-press-event on a text
- * buffer or text grid window. Used in character input on both text buffers and
- * grids. Blocked when not in use. */
+/* Internal function: General callback for signal key-press-event on a window.
+ * Used in character input in text buffers, text grids, and graphics. Blocked
+ * when not in use. */
 gboolean
 ui_window_handle_char_input_key_press(GtkWidget *widget, GdkEventKey *event, winid_t win) {
 	/* Ignore modifier keys, otherwise the char input will already trigger on

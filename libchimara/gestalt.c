@@ -123,6 +123,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_Timer:
 		case gestalt_Hyperlinks:
 		case gestalt_Graphics:
+		case gestalt_GraphicsCharInput:
 		case gestalt_GraphicsTransparency:
 		case gestalt_DateTime:
 		case gestalt_UnicodeNorm:
