@@ -329,7 +329,7 @@ ui_textwin_set_zcolors(winid_t win, unsigned fg, unsigned bg)
 		// NULL value means to ignore the zcolor property altogether
 		win->zcolor = NULL;
 	} else {
-		char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, fore_name, back_name);
+		g_autofree char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, fore_name, back_name);
 		g_free(fore_name);
 		g_free(back_name);
 
@@ -389,7 +389,7 @@ ui_textwin_set_reverse_video(winid_t win, gboolean reverse)
 	// Name the color
 	char *foreground_name = gdk_rgba_to_string(current_foreground);
 	char *background_name = gdk_rgba_to_string(current_background);
-	char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, foreground_name, background_name);
+	g_autofree char *name = g_strdup_printf(ZCOLOR_NAME_TEMPLATE, foreground_name, background_name);
 	g_free(foreground_name);
 	g_free(background_name);
 

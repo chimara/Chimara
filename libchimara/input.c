@@ -355,10 +355,9 @@ void
 force_line_input_from_queue(winid_t win, event_t *event)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-	const gchar *text = g_async_queue_pop(glk_data->line_input_queue);
 
 	UiMessage *msg = ui_message_new(UI_MESSAGE_FORCE_LINE_INPUT, win);
-	msg->strval = g_strdup(text);
+	msg->strval = g_async_queue_pop(glk_data->line_input_queue);
 	glui32 chars_written = ui_message_queue_and_await(msg);
 
 	event->type = evtype_LineInput;

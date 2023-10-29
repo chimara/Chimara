@@ -83,6 +83,9 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_clear_object(&win->font_override);
 	g_clear_object(&win->background_override);
 
+	if (win->vadjustment)
+		g_clear_signal_handler(&win->pager_adjustment_handler, win->vadjustment);
+
 	g_mutex_clear(&win->lock);
 
 	g_slice_free(struct glk_window_struct, win);
@@ -743,13 +746,15 @@ glk_window_close(winid_t win, stream_result_t *result)
 
 		stream_close_common( ((winid_t) pair_node->data)->window_stream, NULL );
 		window_close_common( (winid_t) pair_node->data, TRUE);
-	} 
+		/* node is now already freed by pair_node */
+		window_close_common(win, /* free_node = */ FALSE);
+	}
 	else /* it was the root window */
 	{
 		glk_data->root_window = NULL;
+		window_close_common(win, TRUE);
 	}
 
-	window_close_common(win, FALSE);
 	g_mutex_unlock(&glk_data->arrange_lock);
 
 	/* Schedule a redraw */

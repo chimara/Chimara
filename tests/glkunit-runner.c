@@ -5,14 +5,15 @@ int
 main(int argc, char *argv[])
 {
 	GError *error = NULL;
-	GtkWidget *glk = NULL;
 
 	gtk_init(&argc, &argv);
 
-	glk = chimara_glk_new();
-	g_object_ref(glk);
+	GtkWidget *glk = chimara_glk_new();
 	g_signal_connect(glk, "stopped", gtk_main_quit, NULL);
-	gtk_widget_show_all(glk);
+
+	GtkWidget *win = gtk_offscreen_window_new();
+	gtk_container_add(GTK_CONTAINER(win), glk);
+	gtk_widget_show_all(win);
 
 	if(argc < 2)
 		g_error("Must provide a plugin\n");
@@ -27,7 +28,8 @@ main(int argc, char *argv[])
 
 	chimara_glk_stop(CHIMARA_GLK(glk));
 	chimara_glk_wait(CHIMARA_GLK(glk));
-	g_object_unref(glk);
+
+	gtk_widget_destroy(win);
 
 	return 0;
 }

@@ -11,6 +11,16 @@
 
 G_BEGIN_DECLS
 
+#ifdef __has_feature
+# if __has_feature(address_sanitizer)
+#  define CHIMARA_ASAN_HACK 1
+# endif
+#else
+# ifdef __SANITIZE_ADDRESS__
+#  define CHIMARA_ASAN_HACK 1
+# endif
+#endif
+
 typedef struct StyleSet {
 	GHashTable *text_grid;
 	GHashTable *text_buffer;

@@ -345,8 +345,8 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 	/* Do any string-munging here to remove illegal Latin-1 characters from 
 	filename. On ext3, the only illegal characters are '/' and '\0', but the Glk
 	spec calls for removing any other tricky characters. */
-	char *buf = g_malloc(strlen(name));
-	char *ptr, *filename, *extension;
+	char *buf = g_malloc(strlen(name) + 1);
+	char *ptr, *extension;
 	int len;
 	for(ptr = name, len = 0; *ptr && *ptr != '.'; ptr++)
 	{
@@ -383,8 +383,8 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 			ILLEGAL_PARAM("Unknown file usage: %u", usage);
 			return NULL;
 	}
-	filename = g_strconcat(buf, extension, NULL);
-	
+	g_autofree char *filename = g_strconcat(buf, extension, NULL);
+
 	/* Find out what encoding filenames are in */
 	const gchar **charsets; /* Do not free */
 	g_get_filename_charsets(&charsets);

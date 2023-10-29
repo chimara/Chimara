@@ -178,6 +178,9 @@ chimara_glk_reset_glk_styles(ChimaraGlk *self)
 		g_hash_table_insert(glk_text_buffer_styles, (char *) GLK_TAG_NAMES[i], tag);
 	}
 
+	g_clear_pointer(&priv->glk_styles->text_grid, g_hash_table_destroy);
+	g_clear_pointer(&priv->glk_styles->text_buffer, g_hash_table_destroy);
+
 	priv->glk_styles->text_grid = glk_text_grid_styles;
 	priv->glk_styles->text_buffer = glk_text_buffer_styles;
 }
@@ -353,7 +356,8 @@ text_tag_copy(GtkTextTag *tag)
 static void
 copy_tag_to_textbuffer(void *key, void *tag, void *target_table)
 {
-	gtk_text_tag_table_add(target_table, text_tag_copy(GTK_TEXT_TAG(tag)));
+	g_autoptr(GtkTextTag) tag_copy = text_tag_copy(GTK_TEXT_TAG(tag));
+	gtk_text_tag_table_add(GTK_TEXT_TAG_TABLE(target_table), tag_copy);
 }
 
 /* Private method: initialize the default styles to a textbuffer. */
@@ -544,6 +548,7 @@ chimara_glk_finalize(GObject *object)
 	g_free(priv->story_name);
 	g_free(priv->styles);
 	g_free(priv->glk_styles);
+	g_clear_pointer(&priv->thread, g_thread_unref);
 
 	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
@@ -1465,8 +1470,16 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 
     g_assert( g_module_supported() );
 	/* If there is already a module loaded, free it first -- you see, we want to
-	 * keep modules loaded as long as possible to avoid crashes in stack unwinding */
+	 * keep modules loaded as long as possible to avoid crashes in stack
+	 * unwinding. And in fact, skip unloading it altogether if we are running
+	 * under address sanitizer, because otherwise symbolizing stack traces at
+	 * the end of the process won't work (and then the stack traces won't match
+	 * the suppressions file. This is an unfortunate but necessary hack unless
+	 * we can either deallocate all static data in glulxe manually, or rewrite
+	 * the unit test suite so that it doesn't need to unload plugins. */
+#ifndef CHIMARA_ASAN_HACK
 	chimara_glk_unload_plugin(self);
+#endif
 	/* Open the module to run */
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
     
@@ -1515,6 +1528,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 	priv->ui_message_handler_id = gdk_threads_add_idle((GSourceFunc)chimara_glk_process_queue, self);
 
     /* Run in a separate thread */
+	g_clear_pointer(&priv->thread, g_thread_unref);
 	priv->thread = g_thread_try_new("glk", (GThreadFunc)glk_enter, startup, error);
 
 	return !(priv->thread == NULL);
@@ -1620,7 +1634,7 @@ chimara_glk_wait(ChimaraGlk *self)
 	/* Empty UI message queue first, so that the Glk thread isn't waiting on any
 	UI operations; then it's safe to wait for the Glk thread to finish */
 	chimara_glk_drain_queue(self);
-    g_thread_join(priv->thread);
+	g_clear_pointer(&priv->thread, g_thread_join);
 }
 
 /**

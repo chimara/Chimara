@@ -54,22 +54,27 @@ shared_module('soundtest', 'soundtest.c', name_prefix: '',
 shared_module('fileio', 'fileio.c', name_prefix: '',
     include_directories: top_include, dependencies: glib,
     link_args: plugin_link_args, link_depends: plugin_link_depends)
-datetime_test = shared_module('datetime', 'unit/datetime.c', 'unit/glkunit.c',
-    name_prefix: '', include_directories: [top_include, '../libchimara'],
-    link_args: plugin_link_args, link_depends: plugin_link_depends)
-stream_test = shared_module('stream', 'unit/stream.c', 'unit/glkunit.c',
-    name_prefix: '', include_directories: [top_include, '../libchimara'],
-    link_args: plugin_link_args, link_depends: plugin_link_depends)
 
 test_env = environment()
 test_env.set('NO_AT_BRIDGE', '1')
 test_env.set('G_DEBUG', 'fatal-warnings')
 test_env.set('SOURCE_DIR', meson.current_source_dir())
+test_env.set('LSAN_OPTIONS',
+    'suppressions=@0@/lsan.supp'.format(meson.current_source_dir()))
 
-test('datetime', glkunit_runner, args: [datetime_test], suite: 'unit',
-    protocol: 'tap', env: test_env)
-test('stream', glkunit_runner, args: [stream_test], suite: 'unit',
-    protocol: 'tap', env: test_env)
+unit_tests = [
+    'datetime',
+    'stream',
+    'window',
+]
+
+foreach t : unit_tests
+    plugin = shared_module(t, 'unit/@0@.c'.format(t), 'unit/glkunit.c',
+        name_prefix: '', include_directories: [top_include, '../libchimara'],
+        link_args: plugin_link_args, link_depends: plugin_link_depends)
+    test(t, glkunit_runner, args: [plugin], suite: 'unit', protocol: 'tap',
+        env: test_env)
+endforeach
 
 glulxercise_tests = [
     'abbrevtest',

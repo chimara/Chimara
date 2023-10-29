@@ -20,7 +20,7 @@ on_go_clicked(GtkButton *go, Widgets *w)
 {
 	GError *error = NULL;
 
-	gchar *filename = NULL;
+	g_autofree char *filename = NULL;
 	GtkTreeIter iter;
 	GtkTreeModel *model = gtk_combo_box_get_model(GTK_COMBO_BOX(w->test_picker));
 	gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->test_picker), &iter);
@@ -78,7 +78,7 @@ main(int argc, char *argv[])
 
 	gtk_init(&argc, &argv);
 
-	GtkBuilder *builder = gtk_builder_new();
+	g_autoptr(GtkBuilder) builder = gtk_builder_new();
 	if(!gtk_builder_add_from_file(builder, PACKAGE_SRC_DIR "/glulxercise.ui", &error))
 		g_error("Failed to build interface: %s", error->message);
 
