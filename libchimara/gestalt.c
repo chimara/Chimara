@@ -8,7 +8,7 @@
 /* Version of the Glk specification implemented by this library */
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 7
-#define SUB_VERSION   4
+#define SUB_VERSION   5
 
 /**
  * glk_gestalt:
