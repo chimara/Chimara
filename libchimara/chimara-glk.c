@@ -11,6 +11,7 @@
 #include <gmodule.h>
 #include <gtk/gtk.h>
 
+#include "abort.h"
 #include "chimara-glk-private.h"
 #include "chimara-marshallers.h"
 #include "event.h"
@@ -549,6 +550,10 @@ chimara_glk_finalize(GObject *object)
 	g_free(priv->styles);
 	g_free(priv->glk_styles);
 	g_clear_pointer(&priv->thread, g_thread_unref);
+
+	for (size_t ix = 0; ix < priv->args.argc; ix++)
+		g_free(priv->args.argv[ix]);
+	g_free(priv->args.argv);
 
 	/* Chain up to parent */
     G_OBJECT_CLASS(chimara_glk_parent_class)->finalize(object);
@@ -1359,17 +1364,12 @@ chimara_glk_get_spacing(ChimaraGlk *self)
 struct StartupData {
 	glk_main_t glk_main;
 	glkunix_startup_code_t glkunix_startup_code;
-	glkunix_startup_t args;
 	ChimaraGlkPrivate *glk_data;
 };
 
 static void
 free_startup_data(struct StartupData *startup)
 {
-	int i = 0;
-	while(i < startup->args.argc)
-		g_free(startup->args.argv[i++]);
-	g_free(startup->args.argv);
 	g_slice_free(struct StartupData, startup);
 }
 
@@ -1392,26 +1392,26 @@ glk_enter(struct StartupData *startup)
 	g_async_queue_ref(startup->glk_data->char_input_queue);
 	g_async_queue_ref(startup->glk_data->line_input_queue);
 
+	gdk_threads_add_idle((GSourceFunc)emit_started_signal, startup->glk_data->self);
+
 	/* Run startup function */
 	if(startup->glkunix_startup_code) {
 		startup->glk_data->in_startup = TRUE;
-		int result = startup->glkunix_startup_code(&startup->args);
+		int result = startup->glkunix_startup_code(&startup->glk_data->args);
 		startup->glk_data->in_startup = FALSE;
 
 		if(!result) {
 			free_startup_data(startup);
+			shutdown_glk_full();
 			return NULL;
 		}
 	}
-
-	gdk_threads_add_idle((GSourceFunc)emit_started_signal, startup->glk_data->self);
 
 	/* Run main function */
 	glk_main_t glk_main = startup->glk_main;
 	free_startup_data(startup);
 	glk_main();
-	glk_exit(); /* Run shutdown code in glk_exit() even if glk_main() returns normally */
-	g_assert_not_reached(); /* because glk_exit() calls g_thread_exit() */
+	shutdown_glk_full();
 	return NULL;
 }
 
@@ -1501,15 +1501,14 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 		glkunix_argumentlist_t *glkunix_arguments;
 
 		if( !(g_module_symbol(priv->program, "glkunix_arguments", (gpointer *) &glkunix_arguments) 
-			  && parse_command_line(glkunix_arguments, argc, argv, &startup->args)) )
-		{
+			  && parse_command_line(glkunix_arguments, argc, argv, &priv->args))) {
 			/* arguments could not be parsed, so create data ourselves */
-			startup->args.argc = 1;
-			startup->args.argv = g_new0(gchar *, 1);
+			priv->args.argc = 1;
+			priv->args.argv = g_new0(gchar *, 1);
 		}
 
 		/* Set the program invocation name */
-		startup->args.argv[0] = g_strdup(plugin);
+		priv->args.argv[0] = g_strdup(plugin);
     }
 	startup->glk_data = priv;
 	

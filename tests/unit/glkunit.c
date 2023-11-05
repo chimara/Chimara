@@ -42,6 +42,8 @@ glk_main(void)
     struct TestDescription *test = tests;
     int total, tested, failed = 0;
 
+    printf("TAP version 13\n");
+
     /* Print test plan. Use stdio.h to print to stdout, Glk can't do that */
     for(total = 0; tests[total].name != NULL; total++)
         ;  /* count tests for test plan*/
