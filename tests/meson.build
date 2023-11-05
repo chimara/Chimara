@@ -27,6 +27,10 @@ glulxercise_runner = executable('glulxercise-runner',
     'glulxercise-runner.c', 'keycode.c',
     include_directories: top_include, link_with: libchimara,
     dependencies: [gmodule, gtk])
+reftest_runner = executable('reftest-runner',
+    'reftest-runner.c', 'reftest-compare.c',
+    include_directories: top_include, link_with: libchimara,
+    dependencies: [gmodule, gtk])
 
 shared_module('first', 'first.c', name_prefix: '',
     include_directories: top_include,
@@ -79,6 +83,23 @@ foreach t : unit_tests
     test(name, glkunit_runner, args: [plugin, t[1]], suite: 'unit',
         protocol: 'tap', env: test_env)
 endforeach
+
+reftests = [
+    'zero-height-window',
+    'zero-width-window',
+]
+
+reftest_deps = []
+foreach t : reftests
+    plugin = shared_module(t, 'reftest/@0@.c'.format(t), name_prefix: '',
+        include_directories: [top_include, '../libchimara'],
+        link_args: plugin_link_args, link_depends: plugin_link_depends)
+    reftest_deps += plugin
+endforeach
+
+reftest_dir = join_paths(meson.current_source_dir(), 'reftest')
+test('reftests', reftest_runner, args: [reftest_dir, meson.current_build_dir()],
+    depends: reftest_deps, suite: 'reftest', protocol: 'tap', env: test_env)
 
 glulxercise_tests = [
     'abbrevtest',
