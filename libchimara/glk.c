@@ -40,6 +40,10 @@ glk_exit(void)
 {
 	shutdown_glk_full();
 	g_thread_exit(NULL);
+
+	/* This function does not return, even if g_thread_exit is not annotated as
+	 * such */
+	g_assert_not_reached();
 }
 
 /**

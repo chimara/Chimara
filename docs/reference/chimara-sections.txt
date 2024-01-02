@@ -75,6 +75,7 @@ CHIMARA_IF_GET_CLASS
 glk_exit
 <SUBSECTION Private>
 glk_main
+GLK_ATTRIBUTE_NORETURN
 </SECTION>
 
 <SECTION>
@@ -139,6 +140,7 @@ gestalt_Hyperlinks
 gestalt_HyperlinkInput
 gestalt_SoundMusic
 gestalt_GraphicsTransparency
+gestalt_GraphicsCharInput
 gestalt_DateTime
 gestalt_ResourceStream
 GLK_MODULE_RESOURCE_STREAM
@@ -616,12 +618,22 @@ gidispatch_prototype
 </SECTION>
 
 <SECTION>
+<FILE>dispatch-game-id</FILE>
+<TITLE>Querying a game ID string</TITLE>
+GI_DISPA_GAME_ID_AVAILABLE
+gidispatch_set_game_id_hook
+gidispatch_get_game_id
+</SECTION>
+
+<SECTION>
 <FILE>dispatch-library-functions</FILE>
 <TITLE>Functions the Library Must Provide</TITLE>
 gidispatch_set_object_registry
 gidispatch_rock_t
 gidispatch_get_objrock
 gidispatch_set_retained_registry
+GIDISPATCH_AUTORESTORE_REGISTRY
+gidispatch_set_autorestore_registry
 </SECTION>
 
 <INCLUDE>libchimara/glk.h, libchimara/gi-blorb.h</INCLUDE>
@@ -645,6 +657,8 @@ giblorb_load_chunk_by_number
 giblorb_unload_chunk
 giblorb_load_resource
 giblorb_count_resources
+giblorb_image_info_t
+giblorb_load_image_info
 <SUBSECTION Constants>
 giblorb_method_DontLoad
 giblorb_method_Memory
@@ -658,6 +672,8 @@ giblorb_ID_AUTH
 giblorb_ID_ANNO
 giblorb_ID_TEXT
 giblorb_ID_BINA
+giblorb_ID_JPEG
+giblorb_ID_PNG
 <SUBSECTION Private>
 giblorb_make_id
 </SECTION>

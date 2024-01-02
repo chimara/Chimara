@@ -464,9 +464,13 @@
  * SECTION:glk-character-input-events
  * @short_description: Events representing a single keystroke
  *
- * You can request character input from text buffer and text grid windows. See 
- * %evtype_CharInput. There are separate functions for requesting Latin-1 input
- * and Unicode input; see %gestalt_Unicode.
+ * You can request character input from text buffer, text grid, and graphics
+ * windows.
+ * See %evtype_CharInput.
+ * There are separate functions for requesting the availability of particular
+ * Latin-1 and Unicode characters; see %gestalt_Unicode.
+ * To test whether graphics windows support character input, use the
+ * %gestalt_GraphicsCharInput selector.
  */
 
 /**
@@ -474,8 +478,9 @@
  * @short_description: Events representing a line of user input
  *
  * You can request line input from text buffer and text grid windows. See
- * %evtype_LineInput. There are separate functions for requesting Latin-1 input
- * and Unicode input; see %gestalt_Unicode.
+ * %evtype_LineInput.
+ * There are separate functions for requesting the availability of particular
+ * Latin-1 and Unicode characters; see %gestalt_Unicode.
  */
 
 /**
@@ -865,7 +870,27 @@
  *   glk_stream_open_resource() and glk_stream_open_resource_uni(). A data file
  *   is identified by number, not by a filename. The Blorb usage field will be
  *   <code>'Data'</code>. The chunk type will be %giblorb_ID_TEXT for text
- *   resources, %giblorb_ID_BINA for binary resources.
+ *   resources, %giblorb_ID_BINA or <code>'FORM'</code> for binary resources.
+ * </para></note>
+ *
+ * <note><para>
+ *   For a `'FORM'` Blorb chunk, the stream should start reading at the
+ *   beginning of the chunk header &mdash; that is, it should read the `'FORM'`
+ *   and length words before the chunk content.
+ *   For %giblorb_ID_TEXT and %giblorb_ID_BINA chunks, the stream should skip
+ *   the header and begin with the chunk content.
+ *   This distinction is important when embedding AIFF sounds or Quetzal saved
+ *   games, for example.
+ * </para></note>
+ *
+ * <note><para>
+ *   Note that this `FORM` distinction was added to the Glk 0.7.4 spec in July
+ *   2012, several months after the spec went out.
+ *   This is bad form, no pun intended, but I don't think it'll cause headaches.
+ *   No games use the resource stream feature yet, as far as I know.
+ *   A Glk library written in the interregnum of early 2012 will fail to
+ *   recognize `FORM` chunks, and if a game tries to use one,
+ *   glk_stream_open_resource() will return %NULL.
  * </para></note>
  *
  * <note><para>
@@ -873,7 +898,9 @@
  *   look for data files as actual files instead. These would be named
  *   <filename>DATA1</filename>, <filename>DATA2</filename>, etc, with a suffix
  *   distinguishing text and binary files. See “Other Resource Arrangements”
- *   in the Blorb spec: <ulink url="http://eblong.com/zarf/blorb/"></ulink>
+ *   in the Blorb spec: <ulink url="http://eblong.com/zarf/blorb/"></ulink>.
+ *   The stream should always begin at the beginning of the file, in this case;
+ *   there is no `BINA`/`FORM` distinction to worry about.
  * </para></note>
  */
  
@@ -916,7 +943,24 @@
  * to be read back by your program, or if the data must be stored exactly. Text
  * mode is appropriate for %fileusage_Transcript; binary mode is appropriate for
  * %fileusage_SavedGame and probably for %fileusage_InputRecord. %fileusage_Data
- * files may be text or binary, depending on what you use them for. 
+ * files may be text or binary, depending on what you use them for.
+ *
+ * When a fileref is created via a user prompt (glk_fileref_create_by_prompt()),
+ * it may include extra file type information.
+ *
+ * <note><para>
+ *   For example, a prompt to write a transcript file might include a choice of
+ *   text encodings, or even alternate formats such as RTF or HTML.
+ * </para></note>
+ *
+ * This player-selected information will override the default encoding rules
+ * noted above.
+ * When a fileref is created non-interactively (glk_fileref_create_by_name(),
+ * glk_fileref_create_temp()) the default rules always apply.
+ *
+ * <note><para>
+ *   See also the comments about encoding, [File Streams][chimara-File-Streams].
+ * </para></note>
  */
  
 /**
@@ -1174,6 +1218,16 @@
  * Glk function; which is exactly what we don't want to do.
  * 
  * Instead, you can call gidispatch_prototype(). 
+ */
+
+/**
+ * SECTION:dispatch-game-id
+ * @short_description: Querying a game ID string
+ * @stability: Unstable
+ *
+ * These functions are not part of Glk dispatching per se; they allow the game
+ * to provide an identifier string for the Glk library to use.
+ * The functions themselves are in <filename>gi_dispa.c</filename>.
  */
 
 /**
@@ -1462,8 +1516,8 @@
  *   So the version number 78.2.11 would be encoded as 0x004E020B.
  * </para></note>
  *
- * The current Glk specification version is 0.7.4, so this selector will return
- * 0x00000704.
+ * The current Glk specification version is 0.7.5, so this selector will return
+ * 0x00000705.
  *
  * |[<!--language="C"-->
  * glui32 res;
@@ -1659,8 +1713,9 @@
  * glui32 res;
  * res = glk_gestalt(gestalt_Sound, 0);
  * ]|
- * This returns 1 if the overall suite of sound functions is available. This 
- * includes glk_schannel_create(), glk_schannel_destroy(), 
+ * This returns 1 if the older (pre-0.7.3) suite of sound functions is
+ * available.
+ * This includes glk_schannel_create(), glk_schannel_destroy(),
  * glk_schannel_iterate(), glk_schannel_get_rock(), glk_schannel_play(),
  * glk_schannel_play_ext(), glk_schannel_stop(), glk_schannel_set_volume(), and
  * glk_sound_load_hint().
@@ -1759,6 +1814,14 @@
  *   The JPEG format does not support transparency or alpha channels; the PNG 
  *   format does.
  * </para></note>
+ */
+
+/**
+ * gestalt_GraphicsCharInput:
+ *
+ * This returns 1 if graphics windows can accept character input requests.
+ * If it returns zero, do not call glk_request_char_event() or
+ * glk_request_char_event_uni() on a graphics window.
  */
 
 /**
@@ -2575,8 +2638,14 @@
  * For a description of the drawing functions that apply to graphics windows,
  * see [Graphics in Graphics Windows][chimara-Graphics-in-Graphics-Windows].
  *
- * Graphics windows support no text input or output.
- * 
+ * Graphics windows do not support text output, nor line input.
+ * They may support character input.
+ *
+ * <note><para>
+ *   Character input for graphics windows was added in Glk spec 0.7.5.
+ *   Older interpreters may not support this feature.
+ * </para></note>
+ *
  * Not all libraries support graphics windows. You can test whether Glk graphics
  * are available using the gestalt system. In a C program, you can also test
  * whether the graphics functions are defined at compile-time.
@@ -3563,7 +3632,53 @@
  * You can store any value you want in this object; return it from your object
  * registry and retained array registry callbacks, and the library will stash it
  * away. You can retrieve it with gidispatch_get_objrock().
- */ 
+ */
+
+/**
+ * GI_DISPA_GAME_ID_AVAILABLE:
+ *
+ * The game should test `#ifdef GI_DISPA_GAME_ID_AVAILABLE` to ensure that these
+ * functions exist.
+ * (They are a late addition to <filename>gi_dispa.c</filename>, so older Glk
+ * library distributions will lack them.)
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * gidispatch_set_game_id_hook:
+ * @hook: a function that returns a game ID string.
+ *
+ * Set a function for getting a game ID string.
+ * The Glk library may call the supplied function when creating files, so that
+ * the files can be put in a game-specific location.
+ *
+ * The function must have the form: `char *func(void);`
+ *
+ * It should return %NULL or a pointer to a (null-terminated) string.
+ * (The string will be copied, so it may be in a temporary buffer.)
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * gidispatch_get_game_id:
+ *
+ * Retrieve a game ID string for the current game.
+ *
+ * If not %NULL, this string may be in a temporary buffer, so the caller
+ * must copy it!
+ *
+ * Returns: (nullable): A game ID string.
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * GIDISPATCH_AUTORESTORE_REGISTRY:
+ *
+ * Stability: Unstable
+ */
 
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_BLORB.H ------------------*/
  
@@ -3703,6 +3818,22 @@
  */
 
 /**
+ * giblorb_ID_PNG:
+ *
+ * Chunk type constant representing a PNG image file.
+ *
+ * Stability: Unstable
+ */
+
+/**
+ * giblorb_ID_JPEG:
+ *
+ * Chunk type constant representing a JPEG image file.
+ *
+ * Stability: Unstable
+ */
+
+/**
  * giblorb_map_t:
  *
  * Holds the complete description of an open Blorb file. This type is opaque for
@@ -3721,7 +3852,17 @@
  * you used %giblorb_method_FilePos). See giblorb_load_chunk_by_type() and
  * giblorb_load_chunk_by_number(). 
  */
- 
+
+/**
+ * giblorb_image_info_t:
+ * @chunktype: The type of the chunk (%giblorb_ID_PNG or %giblorb_ID_JPEG)
+ * @width:
+ * @height:
+ * @alttext:
+ *
+ * Stability: Unstable
+ */
+
 /**
  * giblorb_create_map:
  * @file: An input stream pointing to a Blorb file.
@@ -3861,6 +4002,17 @@
  * information. 
  *
  * Returns: a Blorb error code.
+ */
+
+/**
+ * giblorb_load_image_info:
+ * @map: The Blorb resource map from which to load the image info.
+ * @resnum: The resource number to examine.
+ * @res: Return location for the result.
+ *
+ * Returns: a Blorb error code.
+ *
+ * Stability: Unstable
  */
 
 /*--------------------TYPES AND CONSTANTS FROM GLKSTART.H---------------------*/

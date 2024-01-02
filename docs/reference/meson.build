@@ -52,6 +52,7 @@ gnome.gtkdoc('chimara',
         'ui-message.h',
         'window.h',
     ],
+    scan_args: ['--ignore-decorators=GLK_ATTRIBUTE_NORETURN'],
     mkdb_args: [
         '--sgml-mode',
         '--output-format=xml',

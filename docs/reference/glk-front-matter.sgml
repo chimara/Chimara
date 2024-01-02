@@ -3,18 +3,15 @@
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 ]>
 <referenceinfo>
-<title>Glk API Specification</title>
-<subtitle>API version 0.7.4</subtitle>
-<author>
-  <personname>
-    <firstname>Andrew</firstname>
-    <surname>Plotkin</surname>
-  </personname>
-  <email>erkyrath@eblong.com</email>
-</author>
+<title>Glk: A Portable Interface Standard for IF</title>
+<subtitle>API specification version 0.7.5</subtitle>
+<publisher>
+  <publishername>Maintained by IFTF</publishername>
+  <email>specs@ifarchive.org</email>
+</publisher>
 <copyright>
-  <year>1998&ndash;2012</year>
-  <holder>Andrew Plotkin</holder>
+  <year>2020</year>
+  <holder>the <ulink href="https://iftechfoundation.org/">Interactive Fiction Technology Foundation</ulink></holder>
 </copyright>
 <legalnotice>
 <para>
@@ -26,6 +23,6 @@ Anyone is free to write programs that use the Glk API or libraries that implemen
 </para>
 </legalnotice>
 <releaseinfo>
-The authors of the Chimara library have adapted this document to better fit the format of a GtkDoc reference manual. They have also added notes specific to Chimara's implementation of the Glk API. The original API specification and further Glk information can be found at: <ulink url="http://eblong.com/zarf/glk/"/>
+The authors of the Chimara library have adapted this document to better fit the format of a GtkDoc reference manual. They have also added notes specific to Chimara's implementation of the Glk API. The original API specification and further Glk information can be found at: <ulink url="https://github.com/iftechfoundation/ifarchive-if-specs"/>
 </releaseinfo>
 </referenceinfo>

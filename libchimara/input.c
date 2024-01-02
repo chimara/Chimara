@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <string.h>
 
 #include <glib.h>
@@ -10,6 +11,14 @@
 #include "window.h"
 
 extern GPrivate glk_data_key;
+
+static inline bool
+window_supports_char_input(winid_t win)
+{
+	return win->type == wintype_TextBuffer ||
+		win->type == wintype_TextGrid ||
+		win->type == wintype_Graphics;
+}
 
 /* Internal function: cancels any pending input requests on the window and
  * presents a warning if not INPUT_REQUEST_NONE */
@@ -39,7 +48,7 @@ static void
 request_char_event_common(winid_t win, gboolean unicode)
 {
 	VALID_WINDOW(win, return);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+	g_return_if_fail(window_supports_char_input(win));
 
 	cancel_old_input_request(win);
 
@@ -90,7 +99,7 @@ void
 glk_cancel_char_event(winid_t win)
 {
 	VALID_WINDOW(win, return);
-	g_return_if_fail(win->type != wintype_TextBuffer || win->type != wintype_TextGrid);
+	g_return_if_fail(window_supports_char_input(win));
 
 	ui_message_queue(ui_message_new(UI_MESSAGE_CANCEL_CHAR_INPUT, win));
 }

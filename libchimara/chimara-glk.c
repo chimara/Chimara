@@ -597,6 +597,11 @@ chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
 static winid_t
 allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 {
+	if (allocation->width == 0 || allocation->height == 0) {
+		/* Just don't show this window */
+		return win;
+	}
+
 	if(win->type == wintype_Pair)
 	{
 		g_mutex_lock(&win->lock);
@@ -693,7 +698,18 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				child1.width = child2.width = allocation->width;
 				break;
 		}
-		
+
+		/* If either of the child windows get 0 size, hide that window and just
+		 * give the full space to the other one */
+		if (child1.width == 0 || child1.height == 0) {
+			allocate_recurse(win->window_node->children->next->data, allocation, spacing);
+			return win;
+		}
+		if (child2.width == 0 || child2.height == 0) {
+			allocate_recurse(win->window_node->children->data, allocation, spacing);
+			return win;
+		}
+
 		/* Recurse */
 		winid_t arrange1 = allocate_recurse(win->window_node->children->data, &child1, spacing);
 		winid_t arrange2 = allocate_recurse(win->window_node->children->next->data, &child2, spacing);

@@ -52,7 +52,9 @@ A window has a type. Currently there are four window types:
 <varlistentry>
 	<term>Graphics windows</term>
 	<listitem><para>
-	A grid of colored pixels. Graphics windows do not support text input or output, but there are image commands to draw in them.
+	A grid of colored pixels.
+    Graphics windows do not support text output, but there are image commands to draw in them.
+    Graphics windows can accept character (keystroke) input, but not line input.
 	</para>
 	<note><para>This is an optional capability; not all Glk libraries support graphics. See <link linkend="chimara-Testing-for-Graphics-Capabilities">Testing for Graphics Capabilities</link>.
 	</para></note></listitem>

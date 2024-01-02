@@ -31,8 +31,10 @@ An earlier version of Glk had gestalt selectors <code>gestalt_FunctionNameToID</
 They are defined and used only by the dispatch layer.
 </para>
 <para>
-Call selectors 0x1200 to 0x12FF are reserved for extension projects by Carlos Sanchez.
-The same is true of gestalt selector 0x1200.
+Call selectors 0x1100 to 0x11FF (and the same range of gestalt selectors) are reserved for extension projects by Dannii Willis.
+Call selectors 0x1200 to 0x12FF (and gestalt selector 0x1200) are reserved for extension projects by Carlos Sanchez.
+Call selectors 0x2200 to 0x22FF (and the same range of gestalt selectors) are reserved for iOS extension features by Andrew Plotkin.
+Call selectors 0x1400 to 0x14FF (and the same range of gestalt selectors) are reserved for extension projects by ZZO38.
 These are not documented here.
 </para>
 </refsect1>

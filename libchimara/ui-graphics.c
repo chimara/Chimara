@@ -90,11 +90,15 @@ void
 ui_graphics_create(winid_t win)
 {
 	win->widget = win->frame = gtk_drawing_area_new();
+	gtk_widget_set_can_focus(win->widget, TRUE);
+	gtk_widget_add_events(win->widget, GDK_KEY_PRESS_MASK);
 	gtk_widget_show(win->widget);
 
 	/* Connect signal handlers */
 	win->button_press_event_handler = g_signal_connect(win->widget, "button-press-event", G_CALLBACK(on_graphics_button_press), win);
 	g_signal_handler_block(win->widget, win->button_press_event_handler);
+	win->char_input_keypress_handler = g_signal_connect(win->widget, "key-press-event", G_CALLBACK(ui_window_handle_char_input_key_press), win);
+	g_signal_handler_block(win->widget, win->char_input_keypress_handler);
 	win->shutdown_keypress_handler = g_signal_connect(win->widget, "key-press-event", G_CALLBACK(ui_window_handle_shutdown_key_press), win);
 	g_signal_handler_block(win->widget, win->shutdown_keypress_handler);
 	g_signal_connect(win->widget, "configure-event", G_CALLBACK(on_graphics_configure), win);

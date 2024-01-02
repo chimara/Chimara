@@ -19,7 +19,7 @@
   </reference>
   
   <reference id="chimara-glk-api-spec">
-    <title>Glk API Specification, version 0.7.4</title>
+    <title>Glk API Specification, version 0.7.5</title>
     <xi:include href="glk-front-matter.sgml"/>
     
     <!-- Chapter 0. Introduction -->
@@ -143,6 +143,7 @@
       <xi:include href="xml/dispatch-interrogating.xml"/>
       <xi:include href="xml/dispatch-dispatching.xml"/>
       <xi:include href="xml/dispatch-prototypes.xml"/>
+      <xi:include href="xml/dispatch-game-id.xml"/>
       <xi:include href="xml/dispatch-library-functions.xml"/>
       <xi:include href="dispatch-selectors.sgml"/>
     </appendix>

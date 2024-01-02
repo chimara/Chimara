@@ -8,7 +8,7 @@
 /* Version of the Glk specification implemented by this library */
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 7
-#define SUB_VERSION   4
+#define SUB_VERSION   5
 
 /**
  * glk_gestalt:
@@ -62,6 +62,10 @@ glk_gestalt(glui32 sel, glui32 val)
  * selector may be extended in the future. You will continue to get the current
  * behavior if you pass 0 as the second argument, but other values may produce
  * other behavior.)
+ *
+ * Gestalt selectors numbered 0x1400 to 0x14FF are reserved for extension
+ * projects by ZZO38.
+ * These are not documented here.
  *
  * Returns: an integer, depending on what selector was called.
  */
@@ -119,6 +123,7 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_Timer:
 		case gestalt_Hyperlinks:
 		case gestalt_Graphics:
+		case gestalt_GraphicsCharInput:
 		case gestalt_GraphicsTransparency:
 		case gestalt_DateTime:
 		case gestalt_UnicodeNorm:
