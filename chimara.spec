@@ -2,7 +2,7 @@
 #
 
 Name:           chimara
-Version:        0.9.3
+Version:        0.9.4
 Release:        1%{?dist}
 Summary:        A GTK+ widget implementation of the Glk library
 URL:            http://chimara.github.io/Chimara/
@@ -126,6 +126,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/glib-2.0/schemas/org.chimara-if.gschema.xml
 
 %changelog
+* Wed Jan 3 2024 Philip Chimento <philip.chimento@gmail.com> - 0.9.4-1
+- Update release to 0.9.4.
 * Wed Jul 13 2022 Philip Chimento <philip.chimento@gmail.com> - 0.9.3-1
 - Update release to 0.9.3.
 * Sat Apr 2 2022 Philip Chimento <philip.chimento@gmail.com> - 0.9.2-1
