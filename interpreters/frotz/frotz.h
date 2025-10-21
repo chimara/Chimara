@@ -5,6 +5,11 @@
  *
  */
 
+#if __STDC_VERSION__ >= 199901L
+#include <stdbool.h>
+#define TRUE true
+#define FALSE false
+#else
 typedef int bool;
 
 #ifndef TRUE
@@ -13,6 +18,7 @@ typedef int bool;
 
 #ifndef FALSE
 #define FALSE 0
+#endif
 #endif
 
 #include <stdlib.h>
@@ -637,7 +643,7 @@ void 	os_prepare_sample (int);
 void 	os_process_arguments (int, char *[]);
 int	os_random_seed (void);
 int  	os_read_file_name (char *, const char *, int);
-zchar	os_read_key (int, int);
+zchar	os_read_key (int, bool);
 zchar	os_read_line (int, zchar *, int, int, int);
 zword	os_read_mouse (void);
 void 	os_reset_screen (void);
