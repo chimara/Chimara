@@ -1540,7 +1540,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 	priv->ignore_next_arrange_event = FALSE;
 
 	/* Start listening for UI messages */
-	priv->ui_message_handler_id = gdk_threads_add_idle((GSourceFunc)chimara_glk_process_queue, self);
+	priv->ui_message_handler_id = gdk_threads_add_timeout(20, (GSourceFunc)chimara_glk_process_queue, self);
 
     /* Run in a separate thread */
 	g_clear_pointer(&priv->thread, g_thread_unref);
