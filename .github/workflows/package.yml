@@ -31,7 +31,7 @@ jobs:
       - name: build
         run: meson dist -C _build --no-tests
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v7
         with:
           name: Source package
           path: _build/meson-dist/chimara-*.tar.xz
