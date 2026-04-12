@@ -1,4 +1,4 @@
-project('chimara', 'c', 'cpp', version: '0.9.4', license: 'BSD-3-clause',
+project('chimara', 'c', 'cpp', version: '0.9.5', license: 'BSD-3-clause',
     meson_version: '>= 0.50.0')
 
 libname = meson.project_name()
