@@ -37,7 +37,7 @@ jobs:
             meson \
             valac
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - name: configure
         run: |
@@ -87,7 +87,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install libglib2.0-0t64-dbgsym libgtk-3-0t64-dbgsym
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: configure
         run: |
