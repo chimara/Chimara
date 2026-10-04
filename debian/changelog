@@ -1,3 +1,9 @@
+chimara (0.9.6-1) unstable; urgency=low
+
+  * Update release to 0.9.6.
+
+ -- Philip Chimento <philip.chimento@gmail.com>  Sun, 4 Oct 2026 14:59:07 -0700
+
 chimara (0.9.5-1) unstable; urgency=low
 
   * Update release to 0.9.5.
@@ -30,7 +36,6 @@ chimara (0.9.1-1) unstable; urgency=low
 
 chimara (0.9-1) unstable; urgency=low
 
-  * Initial release (Closes: #36) 
+  * Initial release (Closes: #36)
 
  -- Philip Chimento <philip.chimento@gmail.com>  Sun, 18 Apr 2009 17:03:21 +0100
-
