@@ -3,7 +3,6 @@
 #include <unistd.h>
 
 #include "glk.h"
-#include "gi_blorb.h"
 #include "glkunit.h"
 
 #define NONEXISTENT_FILE "does-not-exist.glkdata"

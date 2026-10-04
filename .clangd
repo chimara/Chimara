@@ -1,0 +1,5 @@
+Diagnostics:
+    ClangTidy:
+        Remove: bugprone-sizeof-expression
+    Includes:
+        IgnoreHeader: config.h

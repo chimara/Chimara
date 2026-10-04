@@ -1,7 +1,6 @@
 #include <glib.h>
 
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "magic.h"
 #include "stream.h"
 #include "ui-message.h"

@@ -7,7 +7,6 @@
 
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "magic.h"
 #include "pager.h"
 #include "ui-misc.h"

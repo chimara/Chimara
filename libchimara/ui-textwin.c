@@ -5,7 +5,6 @@
 #include "charset.h"
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "glk.h"
 #include "garglk.h"
 #include "magic.h"

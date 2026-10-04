@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <string.h>
 
 #include <glib.h>
 

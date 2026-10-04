@@ -2,7 +2,6 @@
 
 #include "chimara-glk.h"
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "glk.h"
 #include "input.h"
 #include "ui-buffer.h"

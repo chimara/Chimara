@@ -3,15 +3,10 @@
 #include "chimara-glk-private.h"
 #include "glk.h"
 #include "gi_dispa.h"
-#include "input.h"
 #include "magic.h"
-#include "pager.h"
 #include "stream.h"
-#include "strio.h"
-#include "style.h"
 #include "window.h"
 #include "ui-message.h"
-#include "ui-window.h"
 
 extern GPrivate glk_data_key;
 

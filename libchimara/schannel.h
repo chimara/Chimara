@@ -7,8 +7,8 @@
 #include <glib.h>
 
 #include "chimara-glk.h"
-#include "gi_dispa.h"
 #include "glk.h"
+#include "gi_dispa.h"
 
 struct glk_schannel_struct
 {

@@ -2,7 +2,7 @@
 #
 
 Name:           chimara
-Version:        0.9.5
+Version:        0.9.6
 Release:        1%{?dist}
 Summary:        A GTK+ widget implementation of the Glk library
 URL:            http://chimara.github.io/Chimara/
@@ -48,7 +48,7 @@ Group:          Amusements/Games
 Requires:       %{name} = %{version}-%{release}
 
 %description    player
-The %{name}-player package contains the default interactive fiction player 
+The %{name}-player package contains the default interactive fiction player
 using %{name}.
 
 # wat, definition of meson macro has builddir and srcdir swapped?!
@@ -118,14 +118,16 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files player
 %defattr(-,root,root,-)
-%doc %{_datadir}/doc/chimara/README 
-%doc %{_datadir}/doc/chimara/COPYING 
-%doc %{_datadir}/doc/chimara/AUTHORS 
+%doc %{_datadir}/doc/chimara/README
+%doc %{_datadir}/doc/chimara/COPYING
+%doc %{_datadir}/doc/chimara/AUTHORS
 %doc %{_datadir}/doc/chimara/NEWS
 %{_bindir}/chimara
 %{_datadir}/glib-2.0/schemas/org.chimara-if.gschema.xml
 
 %changelog
+* Sun Oct 4 2026 Philip Chimento <philip.chimento@gmail.com> - 0.9.6-1
+- Update release to 0.9.6.
 * Sat Apr 11 2026 Philip Chimento <philip.chimento@gmail.com> - 0.9.5-1
 - Update release to 0.9.5.
 * Wed Jan 3 2024 Philip Chimento <philip.chimento@gmail.com> - 0.9.4-1
