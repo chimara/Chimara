@@ -6,7 +6,6 @@
 #endif
 
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "glk.h"
 #include "gi_dispa.h"
 #include "magic.h"

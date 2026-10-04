@@ -1,6 +1,5 @@
 #include <glib.h>
 
-#include "chimara-glk.h"
 #include "magic.h"
 #include "window.h"
 

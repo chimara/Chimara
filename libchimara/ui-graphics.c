@@ -3,7 +3,6 @@
 #include <gtk/gtk.h>
 
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "glk.h"
 #include "ui-window.h"
 #include "window.h"

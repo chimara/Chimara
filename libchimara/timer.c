@@ -1,7 +1,6 @@
 #include <glib.h>
 
 #include "chimara-glk-private.h"
-#include "event.h"
 #include "glk.h"
 
 extern GPrivate glk_data_key;
