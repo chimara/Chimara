@@ -46,7 +46,7 @@ abort_glk(void)
 	shutdown_glk_pre();
 	shutdown_glk_post();
 	/* If program is terminated by g_thread_exit() instead of returning from the
-	 glk_main() function, then the line in glk_exit() where the "stopped" 
+	 glk_main() function, then the line in glk_exit() where the "stopped"
 	 signal is emitted will not be reached. So we have to emit it here. */
 	if(!glk_data->in_startup)
 		g_signal_emit_by_name(glk_data->self, "stopped");
@@ -76,7 +76,7 @@ shutdown_glk_pre(void)
 
 	/* Stop any timers */
 	glk_request_timer_events(0);
-	
+
 	/* Cancel any pending input requests and flush all window buffers */
 	winid_t win;
 	for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL))
@@ -95,10 +95,10 @@ shutdown_glk_pre(void)
 			default:
 				; /* TODO: Handle mouse and hyperlink requests */
 		}
-		
+
 		flush_window_buffer(win);
 	}
-	
+
 	/* Close any open resource files */
 	if(glk_data->resource_map != NULL) {
 		giblorb_destroy_map(glk_data->resource_map);

@@ -506,7 +506,7 @@ chimara_if_class_init(ChimaraIFClass *klass)
 	 * Some Z-machine interpreters accept an extra argument that indicates a
 	 * separate Blorb file containing graphics and sound resources. The
 	 * interpreter will check if the file specified in this property really
-	 * exists, and if so, use it as a resource file. If this property is set to 
+	 * exists, and if so, use it as a resource file. If this property is set to
 	 * %NULL, the interpreter will not look for an extra file.
 	 *
 	 * Only affects Frotz and Nitfol.

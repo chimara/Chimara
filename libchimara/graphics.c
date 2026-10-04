@@ -32,8 +32,8 @@ load_image_from_blorb(giblorb_result_t resource, glui32 image, gint width, gint 
 
 	/* Load the resource */
 	GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
-	g_signal_connect( loader, "size-prepared", G_CALLBACK(on_size_prepared), info ); 
-	g_signal_connect( loader, "closed", G_CALLBACK(on_pixbuf_closed), NULL ); 
+	g_signal_connect( loader, "size-prepared", G_CALLBACK(on_size_prepared), info );
+	g_signal_connect( loader, "closed", G_CALLBACK(on_pixbuf_closed), NULL );
 
 	/* Scale image if necessary */
 	if(width > 0 && height > 0) {
@@ -81,10 +81,10 @@ static struct image_info *
 load_image_from_file(const gchar *filename, glui32 image, gint width, gint height)
 {
 	GError *err = NULL;
-	
+
 	struct image_info *info = g_new0(struct image_info, 1);
 	info->resource_number = image;
-	
+
 	if(width > 0 && height > 0) {
 		info->scaled = TRUE;
 		info->pixbuf = gdk_pixbuf_new_from_file_at_size(filename, width, height, &err);
@@ -107,7 +107,7 @@ load_image_in_cache(glui32 image, gint width, gint height)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	struct image_info *info = NULL;
-	
+
 	/* Lookup the proper resource */
 	if(!glk_data->resource_map) {
 		if(!glk_data->resource_load_callback) {
@@ -222,19 +222,19 @@ image_cache_find(struct image_info* to_find)
  * variables will be filled in with the width and height of the image, in
  * pixels. (You can pass %NULL for either width or height if you don't care
  * about that information.)
- * 
+ *
  * <note><para>
- *   You should always use this function to measure the size of images when you 
+ *   You should always use this function to measure the size of images when you
  *   are creating your display. Do this even if you created the images, and you
  *   know how big they “should” be.
  *   This is because images may be scaled in translating from one platform to
  *   another, or even from one machine to another.
  *   A Glk library might display all images larger than their original size,
  *   because of screen resolution or player preference.
- *   Images will be scaled proportionally, but you still need to call 
+ *   Images will be scaled proportionally, but you still need to call
  *   glk_image_get_info() to determine their absolute size.
  * </para></note>
- * 
+ *
  * Returns: %TRUE if @image is a valid identifier, %FALSE if not.
  */
 glui32
@@ -262,7 +262,7 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
  * glk_image_draw:
  * @win: A graphics or text buffer window.
  * @image: An image resource number.
- * @val1: The x coordinate at which to draw the image (if @win is a graphics 
+ * @val1: The x coordinate at which to draw the image (if @win is a graphics
  * window); or, an [image alignment][imagealign-InlineUp] constant (if @win is a
  * text window).
  * @val2: The y coordinate at which to draw the image (if @win is a graphics
@@ -275,12 +275,12 @@ glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
  * and [Graphics in Text Buffer
  * Windows][chimara-Graphics-in-Text-Buffer-Windows].
  *
- * This function returns a flag indicating whether the drawing operation 
+ * This function returns a flag indicating whether the drawing operation
  * succeeded.
  * <note><para>
- *   A %FALSE result can occur for many reasons. The image data might be 
- *   corrupted; the library may not have enough memory to operate; there may be 
- *   no image with the given identifier; the window might not support image 
+ *   A %FALSE result can occur for many reasons. The image data might be
+ *   corrupted; the library may not have enough memory to operate; there may be
+ *   no image with the given identifier; the window might not support image
  *   display; and so on.
  * </para></note>
  *
@@ -327,7 +327,7 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
  * glk_image_draw_scaled:
  * @win: A graphics or text buffer window.
  * @image: An image resource number.
- * @val1: The x coordinate at which to draw the image (if @win is a graphics 
+ * @val1: The x coordinate at which to draw the image (if @win is a graphics
  * window); or, an [image alignment][imagealign-InlineUp] constant (if @win is a
  * text window).
  * @val2: The y coordinate at which to draw the image (if @win is a graphics
@@ -335,14 +335,14 @@ glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
  * @width: The width of the image.
  * @height: The height of the image.
  *
- * This is similar to glk_image_draw(), but it scales the image to the given 
- * @width and @height, instead of using the image's standard size. (You can 
+ * This is similar to glk_image_draw(), but it scales the image to the given
+ * @width and @height, instead of using the image's standard size. (You can
  * measure the standard size with glk_image_get_info().)
- * 
- * If @width or @height is zero, nothing is drawn. Since those arguments are 
+ *
+ * If @width or @height is zero, nothing is drawn. Since those arguments are
  * unsigned integers, they cannot be negative. If you pass in a negative number,
- * it will be interpreted as a very large positive number, which is almost 
- * certain to end badly. 
+ * it will be interpreted as a very large positive number, which is almost
+ * certain to end badly.
  *
  * Returns: %TRUE if the operation succeeded, %FALSE otherwise.
  */
@@ -410,29 +410,29 @@ glk_image_draw_scaled(winid_t win, glui32 image, glsi32 val1, glsi32 val2, glui3
  * @color: a 32-bit RGB color value.
  *
  * This sets the window's background color. It does not change what is currently
- * displayed; it only affects subsequent clears and resizes. The initial 
+ * displayed; it only affects subsequent clears and resizes. The initial
  * background color of each window is white.
- * 
+ *
  * Colors are encoded in a 32-bit value: the top 8 bits must be zero, the next 8
  * bits are the red value, the next 8 bits are the green value, and the bottom 8
  * bits are the blue value. Color values range from 0 to 255.
  * <note><para>
- *   So <code>0x00000000</code> is black, <code>0x00FFFFFF</code> is white, and 
+ *   So <code>0x00000000</code> is black, <code>0x00FFFFFF</code> is white, and
  *   <code>0x00FF0000</code> is bright red.
  * </para></note>
- * 
+ *
  * <note><para>
- *   This function may only be used with graphics windows. To set background 
- *   colors in a text window, use text styles with color hints; see <link 
+ *   This function may only be used with graphics windows. To set background
+ *   colors in a text window, use text styles with color hints; see <link
  *   linkend="chimara-Styles">Styles</link>.
  * </para></note>
  */
 void
-glk_window_set_background_color(winid_t win, glui32 color) 
+glk_window_set_background_color(winid_t win, glui32 color)
 {
 	VALID_WINDOW(win, return);
 	g_return_if_fail(win->type == wintype_Graphics);
-	
+
 	win->background_color = color;
 }
 
@@ -447,7 +447,7 @@ glk_window_set_background_color(winid_t win, glui32 color)
  *
  * This fills the given rectangle with the given color. It is legitimate for
  * part of the rectangle to fall outside the window. If width or height is zero,
- * nothing is drawn. 
+ * nothing is drawn.
  */
 void
 glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height)
@@ -473,8 +473,8 @@ glk_window_fill_rect(winid_t win, glui32 color, glsi32 left, glsi32 top, glui32 
  * @height: The height of the rectangle.
  *
  * This fills the given rectangle with the window's background color.
- * 
- * You can also fill an entire graphics window with its background color by 
+ *
+ * You can also fill an entire graphics window with its background color by
  * calling glk_window_clear().
  */
 void
@@ -493,30 +493,30 @@ glk_window_erase_rect(winid_t win, glsi32 left, glsi32 top, glui32 width, glui32
  * counting newlines.
  * Instead, use this function.
  *
- * If the current point in the text is indented around a margin-aligned image, 
- * this acts like the correct number of newlines to start a new line below the 
- * image. (If there are several margin-aligned images, it goes below all of 
- * them.) If the current point is not beside a margin-aligned image, this call 
+ * If the current point in the text is indented around a margin-aligned image,
+ * this acts like the correct number of newlines to start a new line below the
+ * image. (If there are several margin-aligned images, it goes below all of
+ * them.) If the current point is not beside a margin-aligned image, this call
  * has no effect.
  *
- * When a text buffer window is resized, a flow-break behaves cleverly; it may 
- * become active or inactive as necessary. You can consider this function to 
- * insert an invisible mark in the text stream. The mark works out how many 
+ * When a text buffer window is resized, a flow-break behaves cleverly; it may
+ * become active or inactive as necessary. You can consider this function to
+ * insert an invisible mark in the text stream. The mark works out how many
  * newlines it needs to be whenever the text is formatted for display.
- * 
- * An example of the use of glk_window_flow_break(): If you display a 
- * left-margin image at the start of every line, they can stack up in a strange 
- * diagonal way that eventually squeezes all the text off the screen. 
+ *
+ * An example of the use of glk_window_flow_break(): If you display a
+ * left-margin image at the start of every line, they can stack up in a strange
+ * diagonal way that eventually squeezes all the text off the screen.
  * <note><para>
- *   If you can't picture this, draw some diagrams. Make the margin images more 
- *   than one line tall, so that each line starts already indented around the 
+ *   If you can't picture this, draw some diagrams. Make the margin images more
+ *   than one line tall, so that each line starts already indented around the
  *   last image.
  * </para></note>
- * To avoid this problem, call glk_window_flow_break() immediately before 
+ * To avoid this problem, call glk_window_flow_break() immediately before
  * glk_image_draw() for every margin-aligned image.
- * 
- * In all windows other than text buffers, glk_window_flow_break() has no 
- * effect. 
+ *
+ * In all windows other than text buffers, glk_window_flow_break() has no
+ * effect.
  *
  * <warning><para>
  *   This function is not implemented yet.

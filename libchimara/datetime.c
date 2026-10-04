@@ -93,13 +93,13 @@ gli_simplify_time(int64_t timestamp, glui32 factor)
  * value will remain zero until sometime in 2106. If your computer is running in
  * 1969, perhaps due to an unexpected solar flare, then @high_sec will be
  * negative.
- * 
+ *
  * The third value in the structure represents a fraction of a second, in
  * microseconds (from 0 to 999999). The resolution of the glk_current_time()
  * call is platform-dependent; the @microsec value may not be updated
  * continuously.
  */
-void 
+void
 glk_current_time(glktimeval_t *time)
 {
 	g_return_if_fail(time != NULL);
@@ -203,8 +203,8 @@ glk_time_to_date_local(glktimeval_t *time, glkdate_t *date)
  *
  * Since the resolution of glk_simple_time_to_date_utc() and
  * glk_simple_time_to_date_local() is no better than seconds, they will return
- * zero for the microseconds value. 
- */ 
+ * zero for the microseconds value.
+ */
 void
 glk_simple_time_to_date_utc(glsi32 time, glui32 factor, glkdate_t *date)
 {

@@ -145,4 +145,3 @@ reftest_compare_surfaces(cairo_surface_t *surface1, cairo_surface_t *surface2)
 
     return diff;
 }
-

@@ -19,12 +19,12 @@ G_BEGIN_DECLS
 
 /**
  * ChimaraGlk:
- * 
+ *
  * This structure contains no public members.
  */
 typedef struct {
 	GtkContainer parent_instance;
-    
+
 	/*< public >*/
 } ChimaraGlk;
 
@@ -58,13 +58,13 @@ typedef enum {
  * @CHIMARA_LOAD_MODULE_ERROR: There was an error opening the plugin containing
  * the Glk program.
  * The error message from g_module_error() is appended to the #GError message.
- * @CHIMARA_NO_GLK_MAIN: The plugin containing the Glk program did not export a 
+ * @CHIMARA_NO_GLK_MAIN: The plugin containing the Glk program did not export a
  * glk_main() function.
- * @CHIMARA_PLUGIN_NOT_FOUND: An appropriate interpreter plugin for the 
+ * @CHIMARA_PLUGIN_NOT_FOUND: An appropriate interpreter plugin for the
  * autodetected game file type could not be found.
  * @CHIMARA_PLUGIN_ALREADY_RUNNING: A plugin was opened while there was already
  * another plugin running in the widget.
- * 
+ *
  * Error codes returned by #ChimaraGlk widgets and subclasses.
  */
 typedef enum _ChimaraError {
@@ -94,7 +94,7 @@ typedef enum _ChimaraResourceType {
  * @user_data: A pointer to provide to the callback.
  *
  * The type of function passed to chimara_glk_set_resource_load_callback(). It
- * takes a #ChimaraResourceType constant, @usage, to indicate what sort of 
+ * takes a #ChimaraResourceType constant, @usage, to indicate what sort of
  * resource to look for; @resnum is the resource number to look for, and
  * @user_data is the user data provided along with the callback. The function
  * must return an allocated string containing the filename where the resource

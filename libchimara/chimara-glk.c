@@ -34,7 +34,7 @@
  * SECTION:chimara-glk
  * @short_description: Widget which executes a Glk program
  * @stability: Unstable
- * 
+ *
  * The #ChimaraGlk widget opens and runs a Glk program. The program must be
  * compiled as a plugin module, with a function `glk_main()` that the Glk
  * library can hook into.
@@ -50,7 +50,7 @@
  * plugin file to open (see the relevant section of the [Libtool
  * manual](http://www.gnu.org/software/libtool/manual/html_node/Finding-the-dlname.html)).
  *
- * The following sample program shows how to initialize and construct a simple 
+ * The following sample program shows how to initialize and construct a simple
  * GTK window that runs a Glk program:
  * |[<!--language="C"-->
  * #include <glib.h>
@@ -426,8 +426,8 @@ static void
 chimara_glk_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
     ChimaraGlk *glk = CHIMARA_GLK(object);
-    
-    switch(prop_id) 
+
+    switch(prop_id)
     {
         case PROP_INTERACTIVE:
             chimara_glk_set_interactive( glk, g_value_get_boolean(value) );
@@ -541,7 +541,7 @@ chimara_glk_finalize(GObject *object)
 	/* Destroy callback data if ownership retained */
 	if(priv->resource_load_callback_destroy_data)
 		priv->resource_load_callback_destroy_data(priv->resource_load_callback_data);
-	
+
 	/* Free other stuff */
 	g_free(priv->current_dir);
 	g_free(priv->program_name);
@@ -591,7 +591,7 @@ chimara_glk_get_preferred_height(GtkWidget *widget, int *minimal, int *natural)
 }
 
 /* Recursively give the Glk windows their allocated space. Returns a window
- containing all children of this window that must be redrawn, or NULL if there 
+ containing all children of this window that must be redrawn, or NULL if there
  are no children that require redrawing. Must be called with priv->arrange_lock
  held. */
 static winid_t
@@ -610,16 +610,16 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 		glui32 direction = win->split_method & winmethod_DirMask;
 		unsigned border = ((win->split_method & winmethod_BorderMask) == winmethod_NoBorder)? 0 : spacing;
 
-		/* If the space gets too small to honor the spacing property, then just 
+		/* If the space gets too small to honor the spacing property, then just
 		 ignore spacing in this window and below. */
 		if( (border > allocation->width && (direction == winmethod_Left || direction == winmethod_Right))
 		   || (border > allocation->height && (direction == winmethod_Above || direction == winmethod_Below)) )
 			border = 0;
-		
+
 		GtkAllocation child1, child2;
 		child1.x = allocation->x;
 		child1.y = allocation->y;
-		
+
 		if(division == winmethod_Fixed)
 		{
 			/* If the key window has been closed, then default to 0; otherwise
@@ -627,17 +627,17 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 			switch(direction)
 			{
 				case winmethod_Left:
-					child1.width = win->key_window? 
-						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - border) 
+					child1.width = win->key_window?
+						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - border)
 						: 0;
 					break;
 				case winmethod_Right:
-					child2.width = win->key_window? 
+					child2.width = win->key_window?
 						CLAMP(win->constraint_size * win->key_window->unit_width, 0, allocation->width - border)
 						: 0;
 					break;
 				case winmethod_Above:
-					child1.height = win->key_window? 
+					child1.height = win->key_window?
 						CLAMP(win->constraint_size * win->key_window->unit_height, 0, allocation->height - border)
 						: 0;
 					break;
@@ -719,7 +719,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 			return arrange1;
 		return win;
 	}
-	
+
 	else if(win->type == wintype_TextGrid)
 	{
 		/* Pass the size allocation on to the framing widget */
@@ -770,10 +770,10 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 					blanklines[count] = blanks;
 				blanklines[lines_to_add] = NULL;
 				g_autofree char *vertical_blanks = g_strjoinv("\n", blanklines);
-				g_free(blanklines); 
+				g_free(blanklines);
 				g_free(blanks);
 
-				if(win->height > 0) 
+				if(win->height > 0)
 					gtk_text_buffer_insert(buffer, &end, "\n", 1);
 
 				gtk_text_buffer_insert(buffer, &end, vertical_blanks, -1);
@@ -814,7 +814,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 				g_free(horizontal_blanks);
 			}
 		}
-	
+
 		gboolean arrange = !(win->width == new_width && win->height == new_height);
 		win->width = new_width;
 		win->height = new_height;
@@ -823,7 +823,7 @@ allocate_recurse(winid_t win, GtkAllocation *allocation, guint spacing)
 
 		return arrange? win : NULL;
 	}
-	
+
 	/* For non-pair, non-text-grid windows, just give them the size */
 	gtk_widget_size_allocate(win->frame, allocation);
 	g_mutex_lock(&win->lock);
@@ -929,7 +929,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     object_class->set_property = chimara_glk_set_property;
     object_class->get_property = chimara_glk_get_property;
     object_class->finalize = chimara_glk_finalize;
-    
+
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->get_request_mode = chimara_glk_get_request_mode;
     widget_class->get_preferred_width = chimara_glk_get_preferred_width;
@@ -951,9 +951,9 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      *
      * Emitted when the a Glk program finishes executing in the widget, whether
      * it ended normally, or was interrupted.
-     */ 
-    chimara_glk_signals[STOPPED] = g_signal_new("stopped", 
-        G_OBJECT_CLASS_TYPE(klass), G_SIGNAL_RUN_FIRST, 
+     */
+    chimara_glk_signals[STOPPED] = g_signal_new("stopped",
+        G_OBJECT_CLASS_TYPE(klass), G_SIGNAL_RUN_FIRST,
         /* FIXME: Should be G_SIGNAL_RUN_CLEANUP but that segfaults??! */
         G_STRUCT_OFFSET(ChimaraGlkClass, stopped), NULL, NULL,
 		g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
@@ -970,7 +970,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 	/**
 	 * ChimaraGlk::waiting:
 	 * @glk: The widget that received the signal
-	 * 
+	 *
 	 * Emitted when glk_select() is called by the Glk program and the event
 	 * queue is empty, which means that the widget is waiting for input.
 	 */
@@ -1058,16 +1058,16 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
     /**
      * ChimaraGlk:interactive:
      *
-     * Sets whether the widget is interactive. A Glk widget is normally 
-     * interactive, but in non-interactive mode, keyboard and mouse input are 
-     * ignored and the Glk program is controlled by 
-     * chimara_glk_feed_char_input() and chimara_glk_feed_line_input(). 
+     * Sets whether the widget is interactive. A Glk widget is normally
+     * interactive, but in non-interactive mode, keyboard and mouse input are
+     * ignored and the Glk program is controlled by
+     * chimara_glk_feed_char_input() and chimara_glk_feed_line_input().
 	 * “More” prompts when a lot of text is printed to a text buffer are also
 	 * disabled.
 	 * This is typically used when you wish to control an interpreter program by
 	 * feeding it a predefined list of commands.
      */
-    g_object_class_install_property( object_class, PROP_INTERACTIVE, 
+    g_object_class_install_property( object_class, PROP_INTERACTIVE,
 		g_param_spec_boolean("interactive", "Interactive",
 		"Whether user input is expected in the Glk program",
         TRUE,
@@ -1079,7 +1079,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
      * Sets whether the Glk program is allowed to do file operations. In protect
      * mode, all file operations will fail.
      */
-    g_object_class_install_property(object_class, PROP_PROTECT, 
+    g_object_class_install_property(object_class, PROP_PROTECT,
 		g_param_spec_boolean("protect", "Protected",
 		"Whether the Glk program is barred from doing file operations",
         FALSE,
@@ -1098,13 +1098,13 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		"The amount of space between Glk windows",
 		0, G_MAXUINT, 0,
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_LAX_VALIDATION | G_PARAM_STATIC_STRINGS) );
-	
+
 	/**
 	 * ChimaraGlk:program-name:
 	 *
-	 * The name of the currently running Glk program. You cannot set this 
+	 * The name of the currently running Glk program. You cannot set this
 	 * property yourself. It is set to the filename of the plugin when you call
-	 * chimara_glk_run(), but the plugin can change it by calling 
+	 * chimara_glk_run(), but the plugin can change it by calling
 	 * garglk_set_program_name(). To find out when this information changes,
 	 * for example to put the program name in the title bar of a window, connect
 	 * to the `::notify::program-name` signal.
@@ -1114,7 +1114,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		"Name of the currently running program",
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
-		
+
 	/**
 	 * ChimaraGlk:program-info:
 	 *
@@ -1127,7 +1127,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		"Information about the currently running program",
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
-	
+
 	/**
 	 * ChimaraGlk:story-name:
 	 *
@@ -1145,7 +1145,7 @@ chimara_glk_class_init(ChimaraGlkClass *klass)
 		"Name of the story currently loaded in the interpreter",
 		NULL,
 		G_PARAM_READABLE | G_PARAM_STATIC_STRINGS) );
-	
+
 	/**
 	 * ChimaraGlk:running:
 	 *
@@ -1195,9 +1195,9 @@ chimara_glk_new(void)
  * @self: a #ChimaraGlk widget
  * @interactive: whether the widget should expect user input
  *
- * Sets the #ChimaraGlk:interactive property of @self. 
+ * Sets the #ChimaraGlk:interactive property of @self.
  */
-void 
+void
 chimara_glk_set_interactive(ChimaraGlk *self, gboolean interactive)
 {
     g_return_if_fail(self || CHIMARA_IS_GLK(self));
@@ -1211,12 +1211,12 @@ chimara_glk_set_interactive(ChimaraGlk *self, gboolean interactive)
  * chimara_glk_get_interactive:
  * @self: a #ChimaraGlk widget
  *
- * Returns whether @self is interactive (expecting user input). See 
+ * Returns whether @self is interactive (expecting user input). See
  * #ChimaraGlk:interactive.
  *
  * Return value: %TRUE if @self is interactive.
  */
-gboolean 
+gboolean
 chimara_glk_get_interactive(ChimaraGlk *self)
 {
     g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
@@ -1228,13 +1228,13 @@ chimara_glk_get_interactive(ChimaraGlk *self)
 /**
  * chimara_glk_set_protect:
  * @self: a #ChimaraGlk widget
- * @protect: whether the widget should allow the Glk program to do file 
+ * @protect: whether the widget should allow the Glk program to do file
  * operations
  *
- * Sets the #ChimaraGlk:protect property of @self. In protect mode, the Glk 
+ * Sets the #ChimaraGlk:protect property of @self. In protect mode, the Glk
  * program is not allowed to do file operations.
  */
-void 
+void
 chimara_glk_set_protect(ChimaraGlk *self, gboolean protect)
 {
     g_return_if_fail(self || CHIMARA_IS_GLK(self));
@@ -1253,7 +1253,7 @@ chimara_glk_set_protect(ChimaraGlk *self, gboolean protect)
  *
  * Return value: %TRUE if @self is in protect mode.
  */
-gboolean 
+gboolean
 chimara_glk_get_protect(ChimaraGlk *self)
 {
     g_return_val_if_fail(self || CHIMARA_IS_GLK(self), FALSE);
@@ -1291,7 +1291,7 @@ chimara_glk_set_css_to_default(ChimaraGlk *glk)
  * Returns: %TRUE on success, %FALSE if an error occurred, in which case @error
  * will be set.
  */
-gboolean 
+gboolean
 chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **error)
 {
 	g_return_val_if_fail(glk || CHIMARA_IS_GLK(glk), FALSE);
@@ -1301,7 +1301,7 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
 	int fd = open(filename, O_RDONLY);
 	if(fd == -1) {
 		if(error)
-			*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno), 
+			*error = g_error_new(G_IO_ERROR, g_io_error_from_errno(errno),
 				"Error opening file \"%s\": %s", filename, g_strerror(errno));
 		return FALSE;
 	}
@@ -1326,16 +1326,16 @@ chimara_glk_set_css_from_file(ChimaraGlk *glk, const gchar *filename, GError **e
  * @css: a string containing CSS code
  *
  * Sets the styles for text buffer and text grid windows according to the CSS
- * code @css. Note that the styles are set cumulatively on top of whatever the 
+ * code @css. Note that the styles are set cumulatively on top of whatever the
  * styles are at the time this function is called; to reset the styles to their
  * defaults, use chimara_glk_set_css_to_default().
  */
-void 
+void
 chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css)
 {
 	g_return_if_fail(glk || CHIMARA_IS_GLK(glk));
 	g_return_if_fail(css || *css);
-	
+
 	GScanner *scanner = create_css_file_scanner();
 	g_scanner_input_text(scanner, css, strlen(css));
 	scanner->input_name = "<string>";
@@ -1350,7 +1350,7 @@ chimara_glk_set_css_from_string(ChimaraGlk *glk, const gchar *css)
  * Sets the #ChimaraGlk:spacing property of @self, which is the border width in
  * pixels between Glk windows.
  */
-void 
+void
 chimara_glk_set_spacing(ChimaraGlk *self, guint spacing)
 {
 	g_return_if_fail(self || CHIMARA_IS_GLK(self));
@@ -1368,7 +1368,7 @@ chimara_glk_set_spacing(ChimaraGlk *self, guint spacing)
  *
  * Return value: pixels of spacing between Glk windows
  */
-guint 
+guint
 chimara_glk_get_spacing(ChimaraGlk *self)
 {
 	g_return_val_if_fail(self || CHIMARA_IS_GLK(self), 0);
@@ -1498,7 +1498,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 #endif
 	/* Open the module to run */
     priv->program = g_module_open(plugin, G_MODULE_BIND_LAZY);
-    
+
     if(!priv->program)
     {
 		g_set_error(error, CHIMARA_ERROR, CHIMARA_LOAD_MODULE_ERROR,
@@ -1516,7 +1516,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
     {
 		glkunix_argumentlist_t *glkunix_arguments;
 
-		if( !(g_module_symbol(priv->program, "glkunix_arguments", (gpointer *) &glkunix_arguments) 
+		if( !(g_module_symbol(priv->program, "glkunix_arguments", (gpointer *) &glkunix_arguments)
 			  && parse_command_line(glkunix_arguments, argc, argv, &priv->args))) {
 			/* arguments could not be parsed, so create data ourselves */
 			priv->args.argc = 1;
@@ -1527,7 +1527,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 		priv->args.argv[0] = g_strdup(plugin);
     }
 	startup->glk_data = priv;
-	
+
 	/* Set the program name */
 	priv->program_name = g_path_get_basename(plugin);
 	g_object_notify(G_OBJECT(self), "program-name");
@@ -1694,12 +1694,12 @@ chimara_glk_get_running(ChimaraGlk *self)
  * chimara_glk_feed_char_input:
  * @self: a #ChimaraGlk widget
  * @keyval: a key symbol as defined in `gdk/gdkkeysyms.h`
- * 
- * Pretend that a key was pressed in the Glk program as a response to a 
+ *
+ * Pretend that a key was pressed in the Glk program as a response to a
  * character input request. You can call this function even when no window has
- * requested character input, in which case the key will be saved for the 
- * following window that requests character input. This has the disadvantage 
- * that if more than one window has requested character input, it is arbitrary 
+ * requested character input, in which case the key will be saved for the
+ * following window that requests character input. This has the disadvantage
+ * that if more than one window has requested character input, it is arbitrary
  * which one gets the key press.
  */
 void
@@ -1715,11 +1715,11 @@ chimara_glk_feed_char_input(ChimaraGlk *self, uint32_t keyval)
  * chimara_glk_feed_line_input:
  * @self: a #ChimaraGlk widget
  * @text: text to pass to the next line input request
- * 
+ *
  * Pretend that @text was typed in the Glk program as a response to a line input
- * request. @text does not need to end with a newline. You can call this 
+ * request. @text does not need to end with a newline. You can call this
  * function even when no window has requested line input, in which case the text
- * will be saved for the following window that requests line input. This has the 
+ * will be saved for the following window that requests line input. This has the
  * disadvantage that if more than one window has requested line input, it is
  * arbitrary which one gets the text.
  */
@@ -1737,7 +1737,7 @@ chimara_glk_feed_line_input(ChimaraGlk *self, const char *text)
  * chimara_glk_is_char_input_pending:
  * @self: a #ChimaraGlk widget
  *
- * Use this function to tell if character input forced by 
+ * Use this function to tell if character input forced by
  * chimara_glk_feed_char_input() has been passed to an input request or not.
  *
  * Returns: %TRUE if forced character input is pending, %FALSE otherwise.
@@ -1754,7 +1754,7 @@ chimara_glk_is_char_input_pending(ChimaraGlk *self)
  * chimara_glk_is_line_input_pending:
  * @self: a #ChimaraGlk widget
  *
- * Use this function to tell if line input forced by 
+ * Use this function to tell if line input forced by
  * chimara_glk_feed_line_input() has been passed to an input request or not.
  *
  * Returns: %TRUE if forced line input is pending, %FALSE otherwise.

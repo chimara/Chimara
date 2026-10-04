@@ -15,7 +15,7 @@ struct glk_schannel_struct
 	/*< private >*/
 	glui32 magic, rock;
 	gidispatch_rock_t disprock;
-	/* Pointer to the list node in the global sound channel list that contains 
+	/* Pointer to the list node in the global sound channel list that contains
 	 this sound channel */
 	GList *schannel_list;
 	/* Pointer to the GTK widget this sound channel belongs to, for convenience */
@@ -27,7 +27,7 @@ struct glk_schannel_struct
 	glui32 repeats;
 	/* Whether channel is paused */
 	gboolean paused;
-	
+
 	/* Volume change information */
 	double target_volume;
 	int64_t target_time;

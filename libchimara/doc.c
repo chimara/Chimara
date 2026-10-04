@@ -8,9 +8,9 @@
  * SECTION:glk-exiting
  * @short_description: How to terminate a Glk program cleanly
  *
- * A Glk program usually ends when the end of the glk_main() function is 
+ * A Glk program usually ends when the end of the glk_main() function is
  * reached. You can also terminate it earlier.
- */ 
+ */
 
 /**
  * SECTION:glk-interrupt
@@ -36,7 +36,7 @@
  *
  * Many platforms have some annoying thing that has to be done every so often,
  * or the gnurrs come from the voodvork out and eat your computer.
- * 
+ *
  * Well, not really. But you should call glk_tick() every so often, just in
  * case. It may be necessary to yield time to other applications in a
  * cooperative-multitasking OS, or to check for player interrupts in an infinite
@@ -63,7 +63,7 @@
  *    <term>References to library objects</term>
  *    <listitem><para>These are pointers to opaque C structures; each library
  *    will use different structures, so you can not and should not try to
- *    manipulate their contents. See <link 
+ *    manipulate their contents. See <link
  *    linkend="chimara-Opaque-Objects">Opaque Objects</link>.</para></listitem>
  *  </varlistentry>
  *  <varlistentry>
@@ -72,19 +72,19 @@
  *    above types.</para></listitem>
  *  </varlistentry>
  *  <varlistentry>
- *    <term><type>unsigned char</type></term> 
- *    <listitem><para>This is used only for Latin-1 text characters; see 
+ *    <term><type>unsigned char</type></term>
+ *    <listitem><para>This is used only for Latin-1 text characters; see
  *    <link linkend="chimara-Character-Encoding">Character Encoding</link>.
  *    </para></listitem>
  *  </varlistentry>
  *  <varlistentry>
- *    <term>Pointer to <type>char</type></term> 
+ *    <term>Pointer to <type>char</type></term>
  *    <listitem><para>Sometimes this means a null-terminated string; sometimes
  *    an unterminated buffer, with length as a separate #glui32 argument. The
  *    documentation says which.</para></listitem>
  *  </varlistentry>
  *  <varlistentry>
- *    <term>Pointer to <type>void</type></term> 
+ *    <term>Pointer to <type>void</type></term>
  *    <listitem><para>When nothing else will do.</para></listitem>
  *  </varlistentry>
  * </variablelist>
@@ -96,7 +96,7 @@
  *
  * Glk keeps track of a few classes of special objects. These are opaque to your
  * program; you always refer to them using pointers to opaque C structures.
- * 
+ *
  * Currently, these classes are:
  * <variablelist>
  *  <varlistentry>
@@ -131,24 +131,24 @@
  * <note><para>
  * Note that there may be more object classes in future versions of the Glk API.
  * </para></note>
- * 
+ *
  * When you create one of these objects, it is always possible that the creation
  * will fail (due to lack of memory, or some other OS error.) When this happens,
  * the allocation function will return %NULL instead of a valid pointer. You
  * should always test for this possibility.
- * 
+ *
  * %NULL is never the identifier of any object (window, stream, file reference,
  * or sound channel). The value %NULL is often used to indicate “no object” or
  * “nothing”, but it is not a valid reference.
  * If a Glk function takes an object reference as an argument, it is illegal to
  * pass in %NULL unless the function definition says otherwise.
- * 
+ *
  * The `glk.h` file defines types #winid_t, #strid_t, #frefid_t, #schanid_t to
  * store references.
  * These are pointers to struct #glk_window_struct, #glk_stream_struct,
  * #glk_fileref_struct, and #glk_schannel_struct respectively. It is, of course,
  * illegal to pass one kind of pointer to a function which expects another.
- * 
+ *
  * <note><para>
  * This is how you deal with opaque objects from a C program. If you are using
  * Glk through a virtual machine, matters will probably be different. Opaque
@@ -180,7 +180,7 @@
  *
  * <note><para>
  *   So, at the current time, these are the functions glk_window_iterate(),
- *   glk_stream_iterate(), glk_fileref_iterate(), and glk_schannel_iterate().  
+ *   glk_stream_iterate(), glk_fileref_iterate(), and glk_schannel_iterate().
  *   There may be more classes in future versions of the spec; they all behave
  *   the same.
  * </para></note>
@@ -190,7 +190,7 @@
  * returns the next object, until there aren't any more, at which time it
  * returns %NULL.
  *
- * The @rockptr argument is a pointer to a location; whenever  
+ * The @rockptr argument is a pointer to a location; whenever
  * `glk_<replaceable>CLASS</replaceable>_iterate()` returns an object, the
  * object's rock is stored in the location `(*@rockptr)`.
  * If you don't want the rocks to be returned, you may set @rockptr to %NULL.
@@ -205,7 +205,7 @@
  * ]|
  *
  * If you create or destroy objects inside this loop, obviously, the results are
- * unpredictable. However it is always legal to call 
+ * unpredictable. However it is always legal to call
  * `glk_<replaceable>CLASS</replaceable>_iterate(obj, r)` as long as @obj is a
  * valid object id, or %NULL.
  *
@@ -259,7 +259,7 @@
  * function="backspace">backspace</keycap>, twelve function keys, and one code
  * for any key which has no Latin-1 or special code. The full list of key codes
  * is included below.
- * 
+ *
  * Various implementations of Glk will vary widely in which characters the
  * player can enter. The most obvious limitation is that some characters are
  * mapped to others. For example, most keyboards return a <keycombo
@@ -271,7 +271,7 @@
  * action="simul"><keycap function="control">control</keycap><keycap>I</keycap>
  * </keycombo> event (value 9.) The Glk library will probably map many of the
  * control codes to the other special keycodes.
- * 
+ *
  * <note><para>
  *   On the other hand, the library may be very clever and discriminate between
  *   <keycap>tab</keycap> and <keycombo action="simul"><keycap
@@ -282,15 +282,15 @@
  *   %keycode_Tab event as opposed to a <keycombo action="simul"><keycap
  *   function="control">control</keycap><keycap>I</keycap></keycombo> event.
  * </para></note>
- * 
+ *
  * Some characters may not be enterable simply because they do not exist.
- * 
+ *
  * <note><para>
  *   Not all keyboards have a <keycap function="home">home</keycap> or <keycap
  *   function="end">end</keycap> key. A pen-based platform may not recognize
  *   any control characters at all.
  * </para></note>
- * 
+ *
  * Some characters may not be enterable because they are reserved for the
  * purposes of the interface.
  * For example, the Mac Glk library reserves the <keycap
@@ -298,10 +298,10 @@
  * Therefore, on the Mac, the library will never generate a %keycode_Tab event
  * or a <keycombo action="simul"><keycap
  * function="control">control</keycap><keycap>I</keycap></keycombo> event.
- * 
+ *
  * <note><para>
- *   Note that the linefeed or <keycombo action="simul"><keycap  
- *   function="control">control</keycap><keycap>J</keycap></keycombo> 
+ *   Note that the linefeed or <keycombo action="simul"><keycap
+ *   function="control">control</keycap><keycap>J</keycap></keycombo>
  *   character, which is the only printable control character, is probably not
  *   typable. This is because, in most libraries, it will be converted to
  *   %keycode_Return.
@@ -309,7 +309,7 @@
  *   to “<computeroutput>press the <keycap function="enter">return</keycap>
  *   key</computeroutput>”.
  * </para></note>
- * 
+ *
  * <note><para>
  *   The <keycap function="delete">delete</keycap> and <keycap
  *   function="backspace">backspace</keycap> keys are merged into a single
@@ -323,7 +323,7 @@
  * </para></note>
  *
  * You can test for this by using the %gestalt_CharInput selector.
- * 
+ *
  * <note><para>
  *   Glk porters take note: it is not a goal to be able to generate every
  *   single possible key event. If the library says that it can generate a
@@ -335,7 +335,7 @@
  *   function="control">control</keycap><keycap>A</keycap></keycombo>
  *   </keycombo>, and the player does not know this, the player will be lost
  *   when the game says “<computeroutput>Press the <keycap
- *   function="home">home</keycap> key to see the next 
+ *   function="home">home</keycap> key to see the next
  *   hint.</computeroutput>” It is better for the library to say that it
  *   cannot generate a %keycode_Home event; that way the game can detect the
  *   situation and ask the user to type <keycap>H</keycap> instead.
@@ -396,7 +396,7 @@
 /**
  * SECTION:glk-window-types
  * @short_description: Blank, pair, text grid, text buffer, and graphics windows
- * 
+ *
  * A technical description of all the window types, and exactly how they behave.
  */
 
@@ -412,13 +412,13 @@
  * Effectively, any call to glk_put_char() (or the other output commands) which
  * is directed to the window's window stream, is replicated to the window's echo
  * stream. This also goes for the style commands such as glk_set_style().
- * 
+ *
  * Note that the echoing is one-way. You can still print text directly to the
  * echo stream, and it will go wherever the stream is bound, but it does not
- * back up and appear in the window. 
+ * back up and appear in the window.
  *
  * An echo stream can be of any type, even another window's window stream.
- * 
+ *
  * <note><para>
  *   This would be somewhat silly, since it would mean that any text printed to
  *   the window would be duplicated in another window. More commonly, you would
@@ -430,17 +430,17 @@
  * stream of any number of windows, sequentially or simultaneously.
  *
  * If a window is closed, its echo stream remains open; it is not automatically
- * closed. 
+ * closed.
  *
  * <note><para>
  *   Do not confuse the window's window stream with its echo stream. The window
  *   stream is “owned” by the window, and dies with it.
  *   The echo stream is merely temporarily associated with the window.
  * </para></note>
- * 
+ *
  * If a stream is closed, and it is the echo stream of one or more windows,
  * those windows are reset to not echo anymore. (So then calling
- * glk_window_get_echo_stream() on them will return %NULL.) 
+ * glk_window_get_echo_stream() on them will return %NULL.)
  */
 
 /**
@@ -487,28 +487,28 @@
  * SECTION:glk-mouse-events
  * @short_description: Events representing a mouse click
  *
- * On some platforms, Glk can recognize when the mouse (or other pointer) is 
- * used to select a spot in a window. You can request mouse input only in text 
+ * On some platforms, Glk can recognize when the mouse (or other pointer) is
+ * used to select a spot in a window. You can request mouse input only in text
  * grid windows and graphics windows.
- * 
+ *
  * A window can have mouse input and character/line input pending at the same
  * time.
- * 
+ *
  * If the player clicks in a window which has a mouse input event pending,
  * glk_select() will return an event whose type is %evtype_MouseInput. Again,
  * once this happens, the request is complete, and you must request another if
  * you want further mouse input.
- * 
+ *
  * In the event structure, @win tells what window the event came from.
- * 
+ *
  * In a text grid window, the @val1 and @val2 fields are the x and y coordinates
- * of the character that was clicked on. 
+ * of the character that was clicked on.
  * <note><para>So @val1 is the column, and @val2 is the row.</para></note>
  * The top leftmost character is considered to be (0,0).
- * 
+ *
  * In a graphics window, they are the x and y coordinates of the pixel that was
  * clicked on. Again, the top left corner of the window is (0,0).
- * 
+ *
  * <note><para>
  *   Most mouse-based idioms define standard functions for mouse hits in text
  *   windows &mdash; typically selecting or copying text. It is up to the
@@ -520,7 +520,7 @@
  *   specify a keyboard key to be the "mouse button", referring to wherever the
  *   mouse cursor is when the key is hit. Or some even more esoteric positioning
  *   system. You need only know that the user can do it, or not.
- * </para></note> 
+ * </para></note>
  * <note><para>
  *   However, since different platforms will handle this issue differently, you
  *   should be careful how you instruct the player in your program. Do not tell
@@ -544,7 +544,7 @@
  * It is possible that the library does not support timer events. You can check
  * this with the %gestalt_Timer selector.
  */
- 
+
 /**
  * SECTION:glk-streams
  * @short_description: Input and output abstractions
@@ -554,7 +554,7 @@
  * open file is represented by an output stream as well.
  *
  * There are also input streams; these are used for reading from files on disk.
- * It is possible for a stream to be both an input and an output stream. 
+ * It is possible for a stream to be both an input and an output stream.
  *
  * <note><para>
  *   Player input is done through line and character input events, not streams.
@@ -566,9 +566,9 @@
  *
  * It is also possible to create a stream that reads or writes to a buffer in
  * memory.
- * 
+ *
  * Finally, there may be platform-specific types of streams, which are created
- * before your program starts running. 
+ * before your program starts running.
  *
  * <note><para>
  *   For example, a program running under Unix may have access to standard input
@@ -612,18 +612,18 @@
  * case the creation function will return %NULL.
  *
  * Each stream remembers two character counts, the number of characters printed
- * to and read from that stream. The write-count is exactly one per 
+ * to and read from that stream. The write-count is exactly one per
  * glk_put_char() call; it is figured before any platform-dependent character
- * cookery. 
+ * cookery.
  *
  * <note><para>
- *   For example, if a newline character is converted to 
+ *   For example, if a newline character is converted to
  *   linefeed-plus-carriage-return, the stream's count still only goes up by
  *   one; similarly if an accented character is displayed as two characters.
  * </para></note>
- * 
+ *
  * The read-count is exactly one per glk_get_char_stream() call, as long as the
- * call returns an actual character (as opposed to an end-of-file token.) 
+ * call returns an actual character (as opposed to an end-of-file token.)
  *
  * Glk has a notion of the “current (output) stream”.
  * If you print text without specifying a stream, it goes to the current output
@@ -633,9 +633,9 @@
  * stream when there isn't one.
  *
  * If the stream which is the current stream is closed, the current stream
- * becomes %NULL. 
+ * becomes %NULL.
  */
- 
+
 /**
  * SECTION:glk-print
  * @short_description: Printing to streams
@@ -644,7 +644,7 @@
  * buffers to any stream. The characters will be converted into the appropriate
  * format for that stream.
  */
- 
+
 /**
  * SECTION:glk-read
  * @short_description: Reading from streams
@@ -653,7 +653,7 @@
  * stream. The characters will be converted into the form in which you request
  * them.
  */
- 
+
 /**
  * SECTION:glk-closing-streams
  * @short_description: Closing streams and retrieving their character counts
@@ -685,8 +685,8 @@
  * will appear in that style. For a memory stream, style changes have no effect.
  * For a file stream, if the machine supports styled text files, the styles may
  * be written to the file; more likely the style changes will have no effect.
- * 
- * Styles are exclusive. A character is shown with exactly one style, not a 
+ *
+ * Styles are exclusive. A character is shown with exactly one style, not a
  * subset of the possible styles.
  *
  * <note><para>
@@ -694,26 +694,26 @@
  *  Sending a style command to one window or stream does not affect any others.
  * </para></note>
  * <note><para>
- *  Except for a window's echo stream; see <link 
+ *  Except for a window's echo stream; see <link
  *  linkend="chimara-Echo-Streams">Echo Streams</link>.
  * </para></note>
- * 
+ *
  * The styles are intended to distinguish meaning and use, not formatting. There
  * is no standard definition of what each style will look like. That is left up
  * to the Glk library, which will choose an appearance appropriate for the
  * platform's interface and the player's preferences.
- * 
+ *
  * There are currently eleven styles defined. More may be defined in the future.
- * 
+ *
  * Styles may be distinguished on screen by font, size, color, indentation,
  * justification, and other attributes. Note that some attributes (notably
  * justification and indentation) apply to entire paragraphs. If possible and
- * relevant, you should apply a style to an entire paragraph &mdash; call 
+ * relevant, you should apply a style to an entire paragraph &mdash; call
  * glk_set_style() immediately after printing the newline at the beginning of
  * the text, and do the same at the end.
- * 
+ *
  * <note><para>
- *  For example, %style_Header may well be centered text. If you print 
+ *  For example, %style_Header may well be centered text. If you print
  *  “Welcome to Victim (a short interactive mystery)”, and only the word
  *  “Victim” is in the %style_Header, the center-justification attribute will be
  *  lost.
@@ -724,8 +724,8 @@
  *  It is often used for single emphasized words in normal text, so you can
  *  expect that it will appear properly that way; it will be displayed in
  *  italics or underlining, not center-justified or indented.
- * </para></note> 
- * 
+ * </para></note>
+ *
  * <note><para>
  *  Yes, this is all a matter of mutual agreement between game authors and game
  *  players. It's not fixed by this specification. That's natural language for
@@ -737,42 +737,42 @@
  * SECTION:glk-stylehints
  * @short_description: Setting style hints
  *
- * There are no guarantees of how styles will look, but you can make 
+ * There are no guarantees of how styles will look, but you can make
  * suggestions.
  *
  * Initially, no hints are set for any window type or style. Note that having no
  * hint set is not the same as setting a hint with value 0.
- * 
- * These functions do <emphasis>not</emphasis> affect 
+ *
+ * These functions do <emphasis>not</emphasis> affect
  * <emphasis>existing</emphasis> windows. They affect the windows which you
  * create subsequently. If you want to set hints for all your game windows, call
  * glk_stylehint_set() before you start creating windows. If you want different
  * hints for different windows, change the hints before creating each window.
- * 
+ *
  * <note><para>
  *  This policy makes life easier for the interpreter. It knows everything about
  *  a particular window's appearance when the window is created, and it doesn't
  *  have to change it while the window exists.
  * </para></note>
- * 
+ *
  * Hints are hints. The interpreter may ignore them, or give the player a choice
  * about whether to accept them. Also, it is never necessary to set hints. You
- * don't have to suggest that %style_Preformatted be fixed-width, or 
+ * don't have to suggest that %style_Preformatted be fixed-width, or
  * %style_Emphasized be boldface or italic; they will have appropriate defaults.
- * Hints are for situations when you want to <emphasis>change</emphasis> the 
+ * Hints are for situations when you want to <emphasis>change</emphasis> the
  * appearance of a style from what it would ordinarily be. The most common case
  * when this is appropriate is for the styles %style_User1 and %style_User2.
- * 
- * There are currently ten style hints defined. More may be defined in the 
- * future. 
- * 
- * Again, when passing a style hint to a Glk function, any value is actually 
- * legal. If the interpreter does not recognize the stylehint value, it will 
- * ignore it. 
+ *
+ * There are currently ten style hints defined. More may be defined in the
+ * future.
+ *
+ * Again, when passing a style hint to a Glk function, any value is actually
+ * legal. If the interpreter does not recognize the stylehint value, it will
+ * ignore it.
  * <note><para>
  *  This policy allows for the future definition of style hints without breaking
  *  old Glk libraries.
- * </para></note> 
+ * </para></note>
  */
 
 /**
@@ -806,10 +806,10 @@
  * Every window has an output stream associated with it. This is created
  * automatically, with %filemode_Write, when you open the window. You get it
  * with glk_window_get_stream(). Window streams always have rock value 0.
- * 
+ *
  * A window stream cannot be closed with glk_stream_close(). It is closed
  * automatically when you close its window with glk_window_close().
- * 
+ *
  * Only printable characters (including newline) may be printed to a window
  * stream.
  * See [Character Encoding](chimara-Character-Encoding).
@@ -827,12 +827,12 @@
  * maintained correctly. That is, it will count the number of characters written
  * into the stream, not the number that fit into the buffer.)
  *
- * If the buffer is %NULL, or for that matter if @buflen is zero, then 
+ * If the buffer is %NULL, or for that matter if @buflen is zero, then
  * <emphasis>everything</emphasis> written to the stream is thrown away. This
  * may be useful if you are interested in the character count.
  *
  * When inputting, if more than @buflen characters are read from the stream, the
- * stream will start returning -1 (signalling end-of-file.) If the buffer is 
+ * stream will start returning -1 (signalling end-of-file.) If the buffer is
  * %NULL, the stream will always return end-of-file.
  *
  * The data is written to the buffer exactly as it was passed to the printing
@@ -843,7 +843,7 @@
  *   You can write a disk file in text mode, but a memory stream is effectively
  *   always in binary mode.
  * </para></note>
- * 
+ *
  * Whether reading or writing, the contents of the buffer are undefined until
  * the stream is closed. The library may store the data there as it is written,
  * or deposit it all in a lump when the stream is closed. It is illegal to
@@ -851,7 +851,7 @@
  *
  * # File Streams # {#chimara-File-Streams}
  *
- * You can open a stream which reads from or writes to a disk file. See 
+ * You can open a stream which reads from or writes to a disk file. See
  * glk_stream_open_file() and glk_stream_open_file_uni().
  *
  * The file may be written in text or binary mode; this is determined by the
@@ -903,7 +903,7 @@
  *   there is no `BINA`/`FORM` distinction to worry about.
  * </para></note>
  */
- 
+
 /**
  * SECTION:glk-stream-other
  * @short_description: Miscellaneous functions for streams
@@ -921,23 +921,23 @@
  * A file reference contains platform-specific information about the name and
  * location of the file, and possibly its type, if the platform has a notion of
  * file type. It also includes a flag indication whether the file is a text file
- * or binary file. 
+ * or binary file.
  *
  * <note><para>
  *   Note that this is different from the standard C I/O library, in which you
  *   specify text or binary mode when the file is opened.
  * </para></note>
- * 
+ *
  * A fileref does not have to refer to a file which actually exists. You can
  * create a fileref for a nonexistent file, and then open it in write mode to
  * create a new file.
- * 
+ *
  * You always provide a usage argument when you create a fileref. The usage
  * indicates the file type and the mode (text or binary.) It must be the
  * logical-or of a file-type constant and a mode constant. These values are used
  * when you create a new file, and also to filter file lists when the player is
  * selecting a file to load.
- * 
+ *
  * In general, you should use text mode if the player expects to read the file
  * with a platform-native text editor; you should use binary mode if the file is
  * to be read back by your program, or if the data must be stored exactly. Text
@@ -962,7 +962,7 @@
  *   See also the comments about encoding, [File Streams][chimara-File-Streams].
  * </para></note>
  */
- 
+
 /**
  * SECTION:glk-fileref-types
  * @short_description: Four different ways to create a file reference
@@ -971,7 +971,7 @@
  * you wish to specify it. Remember that it is always possible that a fileref
  * creation will fail and return %NULL.
  */
- 
+
 /**
  * SECTION:glk-fileref-other
  * @short_description: Miscellaneous functions for file references
@@ -986,34 +986,34 @@
  *
  * In accordance with this modern age, Glk provides for a modicum of graphical
  * flair. It does not attempt to be a complete graphical toolkit. Those already
- * exist. Glk strikes the usual uncomfortable balance between power, 
+ * exist. Glk strikes the usual uncomfortable balance between power,
  * portability, and ease of implementation: commands for arranging pre-supplied
  * images on the screen and intermixed with text.
- * 
- * Graphics is an optional capability in Glk; not all libraries support 
+ *
+ * Graphics is an optional capability in Glk; not all libraries support
  * graphics. This should not be a surprise.
- * 
+ *
  * Most of the graphics commands in Glk deal with image resources. Your program
  * does not have to worry about how images are stored. Everything is a resource,
  * and a resource is referred to by an integer identifier. You may, for example,
- * call a function to display image number 17. The format, loading, and 
+ * call a function to display image number 17. The format, loading, and
  * displaying of that image is entirely up to the Glk library for the platform
  * in question.
- * 
+ *
  * Of course, it is also desirable to have a platform-independent way to store
  * sounds and images. Blorb is the official resource-storage format of Glk. A
  * Glk library does not have to understand Blorb, but it is more likely to
  * understand Blorb than any other format.
  *
  * <note><para>
- *   Glk does not specify the exact format of images, but Blorb does. Images in 
- *   a Blorb archive must be PNG or JPEG files. More formats may be added if 
- *   real-world experience shows it to be desirable. However, that is in the 
+ *   Glk does not specify the exact format of images, but Blorb does. Images in
+ *   a Blorb archive must be PNG or JPEG files. More formats may be added if
+ *   real-world experience shows it to be desirable. However, that is in the
  *   domain of the Blorb specification. The Glk spec, and Glk programming, will
  *   not change.
  * </para></note>
- * 
- * At present, images can only be drawn in graphics windows and text buffer 
+ *
+ * At present, images can only be drawn in graphics windows and text buffer
  * windows. In fact, a library may not implement both of these possibilities.
  * You should test each with the %gestalt_DrawImage selector if you plan to use
  * it.
@@ -1032,26 +1032,26 @@
  * See [Graphics Windows][wintype-Graphics].
  *
  * <note><para>
- *   Note that graphics windows do not support a full set of object-drawing 
- *   commands, nor can you draw text in them. That may be available in a future 
- *   Glk extension. For now, it seems reasonable to limit the task to a single 
+ *   Note that graphics windows do not support a full set of object-drawing
+ *   commands, nor can you draw text in them. That may be available in a future
+ *   Glk extension. For now, it seems reasonable to limit the task to a single
  *   primitive, the drawing of a raster image. And then there's the ability to
- *   fill a rectangle with a solid color &mdash; a small extension, and 
- *   hopefully no additional work for the library, since it can already clear 
- *   with arbitrary background colors. In fact, if glk_window_fill_rect() did 
+ *   fill a rectangle with a solid color &mdash; a small extension, and
+ *   hopefully no additional work for the library, since it can already clear
+ *   with arbitrary background colors. In fact, if glk_window_fill_rect() did
  *   not exist, an author could invent it &mdash; by briefly setting the
  *   background color, erasing a rectangle, and restoring.
  * </para></note>
- * 
+ *
  * If you call glk_image_draw() or glk_image_draw_scaled() in a graphics window,
- * @val1 and @val2 are interpreted as X and Y coordinates. The image will be 
+ * @val1 and @val2 are interpreted as X and Y coordinates. The image will be
  * drawn with its upper left corner at this position.
- * 
+ *
  * It is legitimate for part of the image to fall outside the window; the excess
  * is not drawn. Note that these are signed arguments, so you can draw an image
  * which falls outside the left or top edge of the window, as well as the right
  * or bottom.
- * 
+ *
  * There are a few other commands which apply to graphics windows.
  */
 
@@ -1074,17 +1074,17 @@
  * That is, you may only call glk_image_draw() (with these two alignments) in a
  * window, if you have just printed a newline to the window's stream, or if the
  * window is entirely empty.
- * If you margin-align an image in a line where text has already appeared, no 
+ * If you margin-align an image in a line where text has already appeared, no
  * image will appear at all.
  *
  * Inline-aligned images count as “text” for the purpose of this rule.
  *
  * You may have images in both margins at the same time.
- * 
- * It is also legal to have more than one image in the same margin (left or 
+ *
+ * It is also legal to have more than one image in the same margin (left or
  * right.) However, this is not recommended. It is difficult to predict how text
- * will wrap in that situation, and libraries may err on the side of 
- * conservatism. 
+ * will wrap in that situation, and libraries may err on the side of
+ * conservatism.
  */
 
 /**
@@ -1189,21 +1189,21 @@
  * Before calling Glk date and time functions, you should use the
  * %gestalt_DateTime selector.
  */
- 
+
 /**
  * SECTION:dispatch-interrogating
  * @short_description: Finding out what functions the Glk library exports
  *
  * These are the ancilliary functions that let you enumerate.
  */
- 
+
 /**
  * SECTION:dispatch-dispatching
  * @short_description: Dispatching the call to the Glk library
  *
  * The function gidispatch_call() invokes a function from the Glk library.
  */
- 
+
 /**
  * SECTION:dispatch-prototypes
  * @short_description: Querying Glk function prototypes
@@ -1212,12 +1212,12 @@
  * illegal to call gidispatch_call() with an array which doesn't match the
  * function. Furthermore, some references are passed in, some passed out, and
  * some both. How do you know how to handle the argument list?
- * 
+ *
  * One possibility is to recognize each function selector, and set up the
  * arguments appropriately. However, this entails writing special code for each
  * Glk function; which is exactly what we don't want to do.
- * 
- * Instead, you can call gidispatch_prototype(). 
+ *
+ * Instead, you can call gidispatch_prototype().
  */
 
 /**
@@ -1240,12 +1240,12 @@
  * program that something has happened. Worse, these situations are only
  * relevant to programs which use the dispatch layer, and then only some of
  * those.
- * 
+ *
  * Since C is uncomfortable with the concept of calling functions which may not
  * exist, Glk handles this with call-back function pointers. The program can
  * pass callbacks in to the library; if it does, the library will call them, and
  * if not, the library doesn't try.
- * 
+ *
  * These callbacks are optional, in the sense that the program may or may not
  * set them. However, any library which wants to interoperate with the dispatch
  * layer must <emphasis>allow</emphasis> the program to set them; it is the
@@ -1261,7 +1261,7 @@
  * </para></note>
  */
 
-/** 
+/**
  * SECTION:blorb-program
  * @short_description: How to use the Blorb layer in your program
  *
@@ -1276,7 +1276,7 @@
  *
  * If you do not call giblorb_set_resource_map() in your startup code, or if it
  * fails, the library is left to its own devices for finding resources. Some
- * libraries may try to load resources from individual files &mdash; 
+ * libraries may try to load resources from individual files &mdash;
  * `PIC1`, `PIC2`, `PIC3`, and so on.
  * (See the Blorb specification for more on this approach.)
  * Other libraries will not have any other loading mechanism at all; no
@@ -1308,9 +1308,9 @@
  *
  * This section describes an extension to Glk for parsing command-line startup
  * options. It was written by Andrew Plotkin for the Glk libraries CheapGlk and
- * GlkTerm. 
+ * GlkTerm.
  *
- * When you compile a Glk program, you may define a function called 
+ * When you compile a Glk program, you may define a function called
  * `glkunix_startup_code()`, and an array `glkunix_arguments[]`.
  * These set up various Unix-specific options used by the Glk library.
  * There is a sample “`glkstart.c`” file included in this package; you should
@@ -1345,12 +1345,12 @@
  * Andersson (now maintained by Ben Cressey).
  *
  * These functions mostly serve to close the gap between Glk's input/output
- * capabilities and what some interpreters expect. For example, 
+ * capabilities and what some interpreters expect. For example,
  * garglk_set_zcolors() displays the colors defined in the Z-machine standard,
  * and garglk_set_story_name() can be used to give the host program a hint
  * about what to display in the title bar of its window.
- */ 
- 
+ */
+
 /*---------------- TYPES AND CONSTANTS FROM GLK.H ----------------------------*/
 
 /**
@@ -1358,7 +1358,7 @@
  *
  * A 32-bit unsigned integer type, used wherever possible in Glk.
  */
- 
+
 /**
  * glsi32:
  *
@@ -1387,12 +1387,12 @@
  * described in this section. If not, not.
  *
  * <note><para>
- *   To be extremely specific, there are two ways this can happen. If the 
+ *   To be extremely specific, there are two ways this can happen. If the
  *   <filename class="headerfile">glk.h</filename> file that comes with the
  *   library is too old to have the graphics declarations in it, it will of
- *   course lack %GLK_MODULE_IMAGE as well. If the <filename 
+ *   course lack %GLK_MODULE_IMAGE as well. If the <filename
  *   class="headerfile">glk.h</filename> file is recent, but the library is old,
- *   the definition of %GLK_MODULE_IMAGE should be removed from <filename 
+ *   the definition of %GLK_MODULE_IMAGE should be removed from <filename
  *   class="headerfile">glk.h</filename>, to avoid link errors. This is not a
  *   great solution. A better one is for the library to implement the graphics
  *   functions as stubs that do nothing (or cause run-time errors). Since no
@@ -1404,9 +1404,9 @@
 /**
  * GLK_MODULE_SOUND2:
  *
- * If you are writing a C program, there is an additional complication. A 
+ * If you are writing a C program, there is an additional complication. A
  * library which does not support sound may not implement the sound functions at
- * all. Even if you put gestalt tests around your sound calls, you may get 
+ * all. Even if you put gestalt tests around your sound calls, you may get
  * link-time errors.
  * If the `glk.h` file is so old that it does not declare the sound functions
  * and constants, you may even get compile-time errors.
@@ -1423,10 +1423,10 @@
  * If this is defined, so are all the functions and constants described in this
  * section. If not, not.
  */
- 
+
 /**
  * GLK_MODULE_HYPERLINKS:
- * 
+ *
  * If you are writing a C program, you can perform a preprocessor test for the
  * existence of %GLK_MODULE_HYPERLINKS. If this is defined, so are all the
  * functions and constants described in this section. If not, not.
@@ -1472,31 +1472,31 @@
 /**
  * winid_t:
  *
- * Opaque structure representing a Glk window. It has no user-accessible 
+ * Opaque structure representing a Glk window. It has no user-accessible
  * members.
  */
- 
+
 /**
  * strid_t:
  *
  * Opaque structure representing an input or output stream. It has no
  * user-accessible members.
  */
- 
+
 /**
  * frefid_t:
- * 
+ *
  * Opaque structure representing a file reference. It has no user-accessible
  * members.
  */
 
 /**
  * schanid_t:
- * 
+ *
  * Opaque structure representing a sound channel. It has no user-accessible
  * members.
  */
-  
+
 /**
  * gestalt_Version:
  *
@@ -1523,7 +1523,7 @@
  * glui32 res;
  * res = glk_gestalt_ext(gestalt_Version, 0, NULL, 0);
  * ]|
- * does exactly the same thing. Note that, in either case, the second argument 
+ * does exactly the same thing. Note that, in either case, the second argument
  * is not used; so you should always pass 0 to avoid future surprises.
  */
 
@@ -1565,9 +1565,9 @@
  * res = glk_gestalt_ext(gestalt_CharOutput, ch, &amp;len, 1);
  * ]|
  * then `res` will be one of %gestalt_CharOutput_CannotPrint,
- * %gestalt_CharOutput_ExactPrint, or %gestalt_CharOutput_ApproxPrint (see 
+ * %gestalt_CharOutput_ExactPrint, or %gestalt_CharOutput_ApproxPrint (see
  * below.)
- * 
+ *
  * In all cases, `len` (the #glui32 value pointed at by the third argument) will
  * be the number of actual glyphs which will be used to represent the character.
  * In the case of %gestalt_CharOutput_ExactPrint, this will always be 1; for
@@ -1603,15 +1603,15 @@
  *   instead.
  * </para></note>
  * <note><para>
- *   Unicode includes the concept of non-spacing or combining characters, which 
+ *   Unicode includes the concept of non-spacing or combining characters, which
  *   do not represent glyphs; and double-width characters, whose glyphs take up
- *   two spaces in a fixed-width font. Future versions of this spec may 
+ *   two spaces in a fixed-width font. Future versions of this spec may
  *   recognize these concepts by returning a <code>len</code> of 0 or 2 when
- *   %gestalt_CharOutput_ExactPrint is used. For the moment, we are adhering to 
+ *   %gestalt_CharOutput_ExactPrint is used. For the moment, we are adhering to
  *   a policy of “simple stuff first”.
  * </para></note>
  */
- 
+
 /**
  * gestalt_CharOutput_CannotPrint:
  *
@@ -1623,14 +1623,14 @@
 /**
  * gestalt_CharOutput_ApproxPrint:
  *
- * When the %gestalt_CharOutput selector returns this for a character, the 
- * library will print some approximation of the character. It will be more or 
+ * When the %gestalt_CharOutput selector returns this for a character, the
+ * library will print some approximation of the character. It will be more or
  * less right, but it may not be precise, and it may not be distinguishable from
  * other, similar characters.
  * (Examples: “`ae`” for the one-character “&aelig;” ligature, “`e`” for
  * “&egrave;”, “`|`” for a broken vertical bar (&brvbar;).)
  */
- 
+
 /**
  * gestalt_CharOutput_ExactPrint:
  *
@@ -1641,7 +1641,7 @@
 /**
  * gestalt_MouseInput:
  *
- * You can test whether mouse input is supported with the %gestalt_MouseInput 
+ * You can test whether mouse input is supported with the %gestalt_MouseInput
  * selector.
  * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_MouseInput, windowtype);
@@ -1650,8 +1650,8 @@
  * If this returns %FALSE (0), it is still legal to call
  * glk_request_mouse_event(), but it will have no effect, and you will never get
  * mouse events.
- */ 
- 
+ */
+
 /**
  * gestalt_Timer:
  *
@@ -1659,13 +1659,13 @@
  * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_Timer, 0);
  * ]|
- * This returns %TRUE (1) if timer events are supported, and %FALSE (0) if they 
+ * This returns %TRUE (1) if timer events are supported, and %FALSE (0) if they
  * are not.
  */
 
 /**
  * gestalt_Graphics:
- * 
+ *
  * Before calling Glk graphics functions, you should use the following gestalt
  * selector:
  * |[<!--language="C"-->
@@ -1677,19 +1677,19 @@
  * glk_window_erase_rect(), glk_window_fill_rect(),
  * glk_window_set_background_color(), and glk_window_flow_break(). It also
  * includes the capability to create graphics windows.
- * 
+ *
  * If this selector returns 0, you should not try to call these functions. They
  * may have no effect, or they may cause a run-time error. If you try to create
- * a graphics window, you will get %NULL. 
+ * a graphics window, you will get %NULL.
  */
 
 /**
  * gestalt_DrawImage:
- * 
- * This selector returns 1 if images can be drawn in windows of the given type. 
- * If it returns 0, glk_image_draw() will fail and return %FALSE (0). You should 
- * test %wintype_Graphics and %wintype_TextBuffer separately, since libraries 
- * may implement both, neither, or only one.  
+ *
+ * This selector returns 1 if images can be drawn in windows of the given type.
+ * If it returns 0, glk_image_draw() will fail and return %FALSE (0). You should
+ * test %wintype_Graphics and %wintype_TextBuffer separately, since libraries
+ * may implement both, neither, or only one.
  */
 
 /**
@@ -1720,7 +1720,7 @@
  * glk_schannel_play_ext(), glk_schannel_stop(), glk_schannel_set_volume(), and
  * glk_sound_load_hint().
  *
- * If this selector returns 0, you should not try to call these functions. They 
+ * If this selector returns 0, you should not try to call these functions. They
  * may have no effect, or they may cause a run-time error.
  *
  * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
@@ -1729,12 +1729,12 @@
 /**
  * gestalt_SoundVolume:
  *
- * You can test whether the library supports setting the volume of sound 
- * channels: 
+ * You can test whether the library supports setting the volume of sound
+ * channels:
  * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_SoundVolume, 0);
  * ]|
- * This selector returns 1 if the glk_schannel_set_volume() function works. If 
+ * This selector returns 1 if the glk_schannel_set_volume() function works. If
  * it returns zero, glk_schannel_set_volume() has no effect.
  *
  * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
@@ -1759,7 +1759,7 @@
  * You can test whether the library supports hyperlinks:
  * |[<!--language="C"-->
  * glui32 res;
- * res = glk_gestalt(gestalt_Hyperlinks, 0); 
+ * res = glk_gestalt(gestalt_Hyperlinks, 0);
  * ]|
  * This returns 1 if the overall suite of hyperlinks functions is available.
  * This includes glk_set_hyperlink(), glk_set_hyperlink_stream(),
@@ -1772,7 +1772,7 @@
 /**
  * gestalt_HyperlinkInput:
  *
- * You can test whether hyperlinks are supported with the 
+ * You can test whether hyperlinks are supported with the
  * %gestalt_HyperlinkInput selector:
  * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_HyperlinkInput, windowtype);
@@ -1783,14 +1783,14 @@
  * never get hyperlink events.
  */
 
-/** 
+/**
  * gestalt_SoundMusic:
  *
  * You can test whether music resources are supported:
  * |[<!--language="C"-->
  * res = glk_gestalt(gestalt_SoundMusic, 0);
  * ]|
- * This returns 1 if the library is capable of playing music sound resources. If 
+ * This returns 1 if the library is capable of playing music sound resources. If
  * it returns 0, only sampled sounds can be played.
  * <note><para>
  *   “Music sound resources” means MOD songs &mdash; the only music format that
@@ -1801,8 +1801,8 @@
  * </para></note>
  *
  * This selector is guaranteed to return 1 if %gestalt_Sound2 does.
- */ 
-  
+ */
+
 /**
  * gestalt_GraphicsTransparency:
  *
@@ -1811,7 +1811,7 @@
  * ignored; fully transparent areas will be drawn in an implementation-defined
  * color.
  * <note><para>
- *   The JPEG format does not support transparency or alpha channels; the PNG 
+ *   The JPEG format does not support transparency or alpha channels; the PNG
  *   format does.
  * </para></note>
  */
@@ -1838,14 +1838,14 @@
  * This returns 1 if the core Unicode functions are available. If it returns 0,
  * you should not try to call them. They may print nothing, print gibberish, or
  * cause a run-time error. The Unicode functions include
- * glk_buffer_to_lower_case_uni(), glk_buffer_to_upper_case_uni(),  
+ * glk_buffer_to_lower_case_uni(), glk_buffer_to_upper_case_uni(),
  * glk_buffer_to_title_case_uni(), glk_put_char_uni(), glk_put_string_uni(),
  * glk_put_buffer_uni(), glk_put_char_stream_uni(), glk_put_string_stream_uni(),
  * glk_put_buffer_stream_uni(), glk_get_char_stream_uni(),
  * glk_get_buffer_stream_uni(), glk_get_line_stream_uni(),
  * glk_request_char_event_uni(), glk_request_line_event_uni(),
  * glk_stream_open_file_uni(), glk_stream_open_memory_uni().
- * 
+ *
  * If you are writing a C program, there is an additional complication. A
  * library which does not support Unicode may not implement the Unicode
  * functions at all. Even if you put gestalt tests around your Unicode calls,
@@ -1953,7 +1953,7 @@
  * An event that repeats at fixed intervals.
  * See [Timer Events][chimara-Timer-Events].
  */
- 
+
 /**
  * evtype_CharInput:
  *
@@ -1962,11 +1962,11 @@
  *
  * If a window has a pending request for character input, and the player hits a
  * key in that window, glk_select() will return an event whose type is
- * %evtype_CharInput. Once this happens, the request is complete; it is no 
+ * %evtype_CharInput. Once this happens, the request is complete; it is no
  * longer pending. You must call glk_request_char_event() or
  * glk_request_char_event_uni() if you want another character from that window.
- * 
- * In the event structure, @win tells what window the event came from. @val1 
+ *
+ * In the event structure, @win tells what window the event came from. @val1
  * tells what character was entered; this will be a character code, or a special
  * keycode.
  * (See [Character Input][chimara-Character-Input].)
@@ -2001,11 +2001,11 @@
  * <note><para>
  *   There is no null terminator or newline stored in the buffer.
  * </para></note>
- * 
- * It is illegal to print anything to a window which has line input pending. 
+ *
+ * It is illegal to print anything to a window which has line input pending.
  *
  * <note><para>
- *   This is because the window may be displaying and editing the player's 
+ *   This is because the window may be displaying and editing the player's
  *   input, and printing anything would make life unnecessarily complicated for
  *   the library.
  * </para></note>
@@ -2017,13 +2017,13 @@
  * A mouse click in a window.
  * See [Mouse Input Events][chimara-Mouse-Input-Events].
  */
- 
+
 /**
  * evtype_Arrange:
  *
- * An event signalling that the sizes of some windows have changed. 
- * 
- * Some platforms allow the player to resize the Glk window during play. This 
+ * An event signalling that the sizes of some windows have changed.
+ *
+ * Some platforms allow the player to resize the Glk window during play. This
  * will naturally change the sizes of your windows. If this occurs, then
  * immediately after all the rearrangement, glk_select() will return an event
  * whose type is %evtype_Arrange. You can use this notification to redisplay the
@@ -2033,26 +2033,26 @@
  *   The display of a text buffer window is entirely up to the library, so you
  *   don't need to worry about those.
  * </para></note>
- * 
- * In the event structure, @win will be %NULL if all windows are affected. If 
- * only some windows are affected, @win will refer to a window which contains 
+ *
+ * In the event structure, @win will be %NULL if all windows are affected. If
+ * only some windows are affected, @win will refer to a window which contains
  * all the affected windows. @val1 and @val2 will be 0.
  *
  * <note><para>
- *   You can always play it safe, ignore @win, and redraw every graphics and 
+ *   You can always play it safe, ignore @win, and redraw every graphics and
  *   text grid window.
  * </para></note>
  *
  * An arrangement event is guaranteed to occur whenever the player causes any
- * window to change size, as measured by its own metric. 
+ * window to change size, as measured by its own metric.
  *
  * <note><para>
- *   Size changes caused by you &mdash; for example, if you open, close, or 
- *   resize a window &mdash; do not trigger arrangement events. You must be 
+ *   Size changes caused by you &mdash; for example, if you open, close, or
+ *   resize a window &mdash; do not trigger arrangement events. You must be
  *   aware of the effects of your window management, and redraw the windows that
  *   you affect.
  * </para></note>
- * 
+ *
  * <note><para>
  *   It is possible that several different player actions can cause windows to
  *   change size. For example, if the player changes the screen resolution, an
@@ -2061,15 +2061,15 @@
  *   different “sizes” in the metric of rows and columns, which is the important
  *   metric and the only one you have access to.
  * </para></note>
- * 
+ *
  * Arrangement events, like timer events, can be returned by glk_select_poll().
  * But this will not occur on all platforms. You must be ready to receive an
  * arrangement event when you call glk_select_poll(), but it is possible that it
- * will not arrive until the next time you call glk_select(). 
+ * will not arrive until the next time you call glk_select().
  *
  * <note><para>
  *   This is because on some platforms, window resizing is handled as part of
- *   player input; on others, it can be triggered by an external process such as 
+ *   player input; on others, it can be triggered by an external process such as
  *   a window manager.
  * </para></note>
  */
@@ -2083,17 +2083,17 @@
  * graphics window will be lost, and have to be redrawn from scratch. If this
  * occurs, then glk_select() will return an event whose type is %evtype_Redraw.
  *
- * In the event structure, @win will be %NULL if all windows are affected. If 
- * only some windows are affected, @win will refer to a window which contains 
+ * In the event structure, @win will be %NULL if all windows are affected. If
+ * only some windows are affected, @win will refer to a window which contains
  * all the affected windows. @val1 and @val2 will be 0.
  *
  * <note><para>
  *   You can always play it safe, ignore @win, and redraw every graphics window.
  * </para></note>
  *
- * Affected windows are already cleared to their background color when you 
+ * Affected windows are already cleared to their background color when you
  * receive the redraw event.
- * 
+ *
  * Redraw events can be returned by glk_select_poll(). But, like arrangement
  * events, this is platform-dependent. See %evtype_Arrange.
  *
@@ -2106,16 +2106,16 @@
  *
  * The completion of a sound being played in a sound channel.
  *
- * On platforms that support sound, you can request to receive an 
+ * On platforms that support sound, you can request to receive an
  * %evtype_SoundNotify event when a sound finishes playing.
  * See [Playing Sounds][chimara-Playing-Sounds].
  */
- 
+
 /**
  * evtype_Hyperlink:
  *
  * The selection of a hyperlink in a window.
- * 
+ *
  * On platforms that support hyperlinks, you can request to receive an
  * %evtype_Hyperlink event when the player selects a link.
  * See [Accepting Hyperlink Events][chimara-Accepting-Hyperlink-Events].
@@ -2143,8 +2143,8 @@
  * more information specific to the event.
  *
  * The event types are described below. Note that %evtype_None is zero, and the
- * other values are positive. Negative event types (0x80000000 to 0xFFFFFFFF) 
- * are reserved for implementation-defined events. 
+ * other values are positive. Negative event types (0x80000000 to 0xFFFFFFFF)
+ * are reserved for implementation-defined events.
  */
 
 /**
@@ -2158,29 +2158,29 @@
  *
  * Represents the <keycap function="left">left arrow</keycap> key.
  */
- 
+
 /**
  * keycode_Right:
  *
  * Represents the <keycap function="right">right arrow</keycap> key.
  */
- 
+
 /**
  * keycode_Up:
  *
  * Represents the <keycap function="up">up arrow</keycap> key.
  */
- 
+
 /**
  * keycode_Down:
  *
  * Represents the <keycap function="down">down arrow</keycap> key.
  */
- 
+
 /**
  * keycode_Return:
  *
- * Represents the <keycap function="enter">return</keycap> or <keycap 
+ * Represents the <keycap function="enter">return</keycap> or <keycap
  * function="enter">enter</keycap> keys.
  */
 
@@ -2190,13 +2190,13 @@
  * Represents the <keycap function="delete">delete</keycap> or <keycap
  * function="backspace">backspace</keycap> keys.
  */
- 
+
 /**
  * keycode_Escape:
  *
  * Represents the <keycap function="escape">escape</keycap> key.
  */
- 
+
 /**
  * keycode_Tab:
  *
@@ -2220,7 +2220,7 @@
  *
  * Represents the <keycap function="home">home</keycap> key.
  */
- 
+
 /**
  * keycode_End:
  *
@@ -2232,7 +2232,7 @@
  *
  * Represents the <keycap>F1</keycap> key.
  */
- 
+
 /**
  * keycode_Func2:
  *
@@ -2256,7 +2256,7 @@
  *
  * Represents the <keycap>F5</keycap> key.
  */
- 
+
 /**
  * keycode_Func6:
  *
@@ -2300,41 +2300,41 @@
  */
 
 /**
- * style_Normal: 
+ * style_Normal:
  *
  * The style of normal or body text. A new window or stream always starts with
  * %style_Normal as the current style.
  */
 
 /**
- * style_Emphasized: 
+ * style_Emphasized:
  *
  * Text which is emphasized.
  */
 
 /**
- * style_Preformatted: 
+ * style_Preformatted:
  *
  * Text which has a particular arrangement of characters.
  * <note><para>
- *  This style, unlike the others, does have a standard appearance; it will 
- *  always be a fixed-width font. This is a concession to practicality. Games 
+ *  This style, unlike the others, does have a standard appearance; it will
+ *  always be a fixed-width font. This is a concession to practicality. Games
  *  often want to display maps or diagrams using character graphics, and this is
  *  the style for that.
  * </para></note>
  */
- 
+
 /**
- * style_Header: 
- * 
- * Text which introduces a large section. This is suitable for the title of an 
+ * style_Header:
+ *
+ * Text which introduces a large section. This is suitable for the title of an
  * entire game, or a major division such as a chapter.
  */
 
 /**
- * style_Subheader: 
- * 
- * Text which introduces a smaller section within a large section. 
+ * style_Subheader:
+ *
+ * Text which introduces a smaller section within a large section.
  * <note><para>
  *  In a Colossal-Cave-style game, this is suitable for the name of a room (when
  *  the player looks around.)
@@ -2342,14 +2342,14 @@
  */
 
 /**
- * style_Alert: 
+ * style_Alert:
  *
  * Text which warns of a dangerous condition, or one which the player should pay
  * attention to.
  */
 
 /**
- * style_Note: 
+ * style_Note:
  *
  * Text which notifies of an interesting condition.
  * <note><para>
@@ -2358,31 +2358,31 @@
  */
 
 /**
- * style_BlockQuote: 
+ * style_BlockQuote:
  *
  * Text which forms a quotation or otherwise abstracted text.
  */
 
 /**
- * style_Input: 
+ * style_Input:
  *
  * Text which the player has entered. You should generally not use this style at
  * all; the library uses it for text which is typed during a line-input request.
- * One case when it is appropriate for you to use %style_Input is when you are 
+ * One case when it is appropriate for you to use %style_Input is when you are
  * simulating player input by reading commands from a text file.
  */
 
 /**
- * style_User1: 
- * 
- * This style has no particular semantic meaning. You may define a meaning 
+ * style_User1:
+ *
+ * This style has no particular semantic meaning. You may define a meaning
  * relevant to your own work, and use it as you see fit.
  */
 
 /**
- * style_User2: 
+ * style_User2:
  *
- * Another style available for your use. 
+ * Another style available for your use.
  */
 
 /**
@@ -2404,80 +2404,80 @@
  * argument in glk_stylehint_set().
  */
 
-/** 
+/**
  * wintype_Pair:
- * 
+ *
  * A pair window is completely filled by the two windows it contains. It
  * supports no input and no output, and it has no size.
- * 
+ *
  * You cannot directly create a pair window; one is automatically created
  * every time you split a window with glk_window_open(). Pair windows are
  * always created with a rock value of 0.
- * 
+ *
  * You can close a pair window with glk_window_close(); this also closes every
  * window contained within the pair window.
- * 
+ *
  * It is legal to split a pair window when you call glk_window_open().
  */
- 
+
 /**
  * wintype_Blank:
- * 
+ *
  * A blank window is always blank. It supports no input and no output. (You
  * can call glk_window_get_stream() on it, as you can with any window, but
  * printing to the resulting stream has no effect.) A blank window has no
  * size; glk_window_get_size() will return (0,0), and it is illegal to set a
  * window split with a fixed size in the measurement system of a blank window.
- * 
+ *
  * <note><para>
  *   A blank window is not the same as there being no windows. When Glk starts
  *   up, there are no windows at all, not even a window of the blank type.
  * </para></note>
  */
- 
+
 /**
- * wintype_TextBuffer: 
+ * wintype_TextBuffer:
  *
  * A text buffer window contains a linear stream of text. It supports output;
  * when you print to it, the new text is added to the end. There is no way for
  * you to affect text which has already been printed. There are no guarantees
  * about how much text the window keeps; old text may be stored forever, so
  * that the user can scroll back to it, or it may be thrown away as soon as it
- * scrolls out of the window. 
- * 
+ * scrolls out of the window.
+ *
  * <note><para>
  *   Therefore, there may or may not be a player-controllable scroll bar or
  *   other scrolling widget.
  * </para></note>
- * 
+ *
  * The display of the text in a text buffer is up to the library. Lines will
  * probably not be broken in the middles of words &mdash; but if they are, the
  * library is not doing anything illegal, only ugly. Text selection and copying
  * to a clipboard, if available, are handled however is best on the player's
  * machine. Paragraphs (as defined by newline characters in the output) may be
- * indented. 
- * 
+ * indented.
+ *
  * <note><para>
  *   You should not, in general, fake this by printing spaces before each
  *   paragraph of prose text. Let the library and player preferences handle
  *   that. Special cases (like indented lists) are of course up to you.
  * </para></note>
- * 
+ *
  * When a text buffer is cleared (with glk_window_clear()), the library will do
  * something appropriate; the details may vary. It may clear the window, with
  * later text appearing at the top &mdash; or the bottom. It may simply print
  * enough blank lines to scroll the current text out of the window. It may
  * display a distinctive page-break symbol or divider.
- * 
+ *
  * The size of a text buffer window is necessarily imprecise. Calling
  * glk_window_get_size() will return the number of rows and columns that would
- * be available <emphasis>if</emphasis> the window was filled with 
+ * be available <emphasis>if</emphasis> the window was filled with
  * “0” (zero) characters in the “normal” font.
  * However, the window may use a non-fixed-width font, so that number of
- * characters in a line could vary. The window might even support 
+ * characters in a line could vary. The window might even support
  * variable-height text (say, if the player is using large text for emphasis);
  * that would make the number of lines in the window vary as well.
- * 
+ *
  * Similarly, when you set a fixed-size split in the measurement system of a
  * text buffer, you are setting a window which can handle a fixed number of rows
  * (or columns) of “0” characters.
@@ -2486,31 +2486,31 @@
  *
  * A text buffer window supports both character and line input, but not mouse
  * input.
- * 
+ *
  * In character input, there will be some visible signal that the window is
  * waiting for a keystroke. (Typically, a cursor at the end of the text.) When
  * the player hits a key in that window, an event is generated, but the key is
  * <emphasis>not</emphasis> printed in the window.
- * 
+ *
  * In line input, again, there will be some visible signal. It is most common
  * for the player to compose input in the window itself, at the end of the text.
  * (This is how IF story input usually looks.) But it's not strictly required.
  * An alternative approach is the way MUD clients usually work: there is a
  * dedicated one-line input window, outside of Glk's window space, and the user
  * composes input there.
- * 
+ *
  * <note><para>
  *   If this approach is used, there will still be some way to handle input from
  *   two windows at once. It is the library's responsibility to make this
  *   available to the player. You only need request line input and  wait for the
  *   result.
  * </para></note>
- * 
+ *
  * By default, when the player finishes his line of input, the library will
  * display the input text at the end of the buffer text (if it wasn't there
  * already.) It will be followed by a newline, so that the next text you print
  * will start a new line (paragraph) after the input.
- * 
+ *
  * If you call glk_cancel_line_event(), the same thing happens; whatever text
  * the user was composing is visible at the end of the buffer text, followed by
  * a newline.
@@ -2523,26 +2523,26 @@
  * traditional input behavior, it is then your responsibility to print the text,
  * using the Input text style, followed by a newline (in the original style).
  */
- 
+
 /**
- * wintype_TextGrid: 
- * 
+ * wintype_TextGrid:
+ *
  * A text grid contains a rectangular array of characters, in a fixed-width
  * font. Its size is the number of columns and rows of the array.
- * 
+ *
  * A text grid window supports output. It maintains knowledge of an output
  * cursor position. When the window is opened, it is filled with blanks (space
  * characters), and the output cursor starts in the top left corner &mdash;
  * character (0,0). If the window is cleared with glk_window_clear(), the window
  * is filled with blanks again, and the cursor returns to the top left corner.
- * 
+ *
  * When you print, the characters of the output are laid into the array in
  * order, left to right and top to bottom. When the cursor reaches the end of a
  * line, or if a newline (0x0A) is printed, the cursor goes to the beginning of
  * the next line. The library makes <emphasis>no</emphasis> attempt to wrap
  * lines at word breaks. If the cursor reaches the end of the last line, further
  * printing has no effect on the window until the cursor is moved.
- * 
+ *
  * <note><para>
  *   Note that printing fancy characters may cause the cursor to advance more
  *   than one position per character. (For example, the “&aelig;” ligature may
@@ -2550,27 +2550,27 @@
  *   See <link linkend="chimara-Output">Output</link>, for how to test this
  *   situation.
  * </para></note>
- * 
+ *
  * You can set the cursor position with glk_window_move_cursor().
- * 
+ *
  * When a text grid window is resized smaller, the bottom or right area is
  * thrown away, but the remaining area stays unchanged. When it is resized
  * larger, the new bottom or right area is filled with blanks.
- * 
+ *
  * <note><para>
  *   You may wish to watch for %evtype_Arrange events, and clear-and-redraw your
  *   text grid windows when you see them change size.
  * </para></note>
- * 
+ *
  * Text grid window support character and line input, as well as mouse input (if
  * a mouse is available.)
- * 
+ *
  * Mouse input returns the position of the character that was touched, from
  * (0,0) to <inlineequation><alt>(width-1,height-1)</alt><mathphrase>(width - 1,
  * height - 1)</mathphrase></inlineequation>.
  *
  * Character input is as described in the previous section.
- * 
+ *
  * Line input is slightly different; it is guaranteed to take place in the
  * window, at the output cursor position. The player can compose input only to
  * the right edge of the window; therefore, the maximum input length
@@ -2585,20 +2585,20 @@
  *   This allows you to enter text in a fixed-width field, without the player
  *   being able to overwrite other parts of the window.
  * </para></note>
- * 
+ *
  * When the player finishes his line of input, it will remain visible in the
- * window, and the output cursor will be positioned at the beginning of the 
+ * window, and the output cursor will be positioned at the beginning of the
  * <emphasis>next</emphasis> row. Again, if you glk_cancel_line_event(), the
  * same thing happens. The glk_set_echo_line_event() call has no effect in grid
  * windows.
  */
- 
+
 /**
- * wintype_Graphics: 
- * 
+ * wintype_Graphics:
+ *
  * A graphics window contains a rectangular array of pixels. Its size is the
  * number of columns and rows of the array.
- * 
+ *
  * Each graphics window has a background color, which is initially white. You
  * can change this; see [Graphics in Graphics
  * Windows][chimara-Graphics-in-Graphics-Windows].
@@ -2606,17 +2606,17 @@
  * When a graphics window is resized smaller, the bottom or right area is
  * thrown away, but the remaining area stays unchanged. When it is resized
  * larger, the new bottom or right area is filled with the background color.
- * 
+ *
  * <note><para>
  *   You may wish to watch for %evtype_Arrange events, and clear-and-redraw your
  *   graphics windows when you see them change size.
  * </para></note>
- * 
+ *
  * In some libraries, you can receive a graphics-redraw event (%evtype_Redraw)
  * at any time. This signifies that the window in question has been cleared to
  * its background color, and must be redrawn. If you create any graphics
  * windows, you <emphasis>must</emphasis> handle these events.
- * 
+ *
  * <note><para>
  *   Redraw events can be triggered when a Glk window is uncovered or made
  *   visible by the platform's window manager. On the other hand, some Glk
@@ -2626,7 +2626,7 @@
  *   &mdash; perhaps the screen's color depth has changed. So redraw events are
  *   always a possibility, even in clever libraries. This is why you must be
  *   prepared to handle them.
- * 
+ *
  *   However, you will not receive a redraw event when you create a graphics
  *   window. It is assumed that you will do the initial drawing of your own
  *   accord. You also do not get redraw events when a graphics window is
@@ -2634,7 +2634,7 @@
  *   player is responsible, you receive a window-arrangement event, which covers
  *   the situation.
  * </para></note>
- * 
+ *
  * For a description of the drawing functions that apply to graphics windows,
  * see [Graphics in Graphics Windows][chimara-Graphics-in-Graphics-Windows].
  *
@@ -2657,46 +2657,46 @@
  *   graphics window.
  * </para></note>
  */
- 
+
 /**
  * winmethod_Left:
  *
- * When calling glk_window_open() with this @method, the new window will be 
+ * When calling glk_window_open() with this @method, the new window will be
  * to the left of the old one which was split.
  */
 
 /**
  * winmethod_Right:
  *
- * When calling glk_window_open() with this @method, the new window will be 
+ * When calling glk_window_open() with this @method, the new window will be
  * to the right of the old one which was split.
  */
 
 /**
  * winmethod_Above:
  *
- * When calling glk_window_open() with this @method, the new window will be 
+ * When calling glk_window_open() with this @method, the new window will be
  * above the old one which was split.
  */
- 
+
 /**
  * winmethod_Below:
  *
- * When calling glk_window_open() with this @method, the new window will be 
+ * When calling glk_window_open() with this @method, the new window will be
  * below the old one which was split.
  */
- 
+
 /**
  * winmethod_Fixed:
  *
- * When calling glk_window_open() with this @method, the new window will be 
+ * When calling glk_window_open() with this @method, the new window will be
  * a fixed size. (See glk_window_open()).
  */
 
 /**
  * winmethod_Proportional:
  *
- * When calling glk_window_open() with this @method, the new window will be 
+ * When calling glk_window_open() with this @method, the new window will be
  * a given proportion of the old window's size. (See glk_window_open()).
  */
 
@@ -2722,40 +2722,40 @@
  * graphics windows that should form a single image.)
  */
 
-/** 
- * fileusage_Data: 
+/**
+ * fileusage_Data:
  *
- * Any other kind of file (preferences, statistics, arbitrary data.) 
+ * Any other kind of file (preferences, statistics, arbitrary data.)
  */
 
 /**
- * fileusage_SavedGame: 
- * 
+ * fileusage_SavedGame:
+ *
  * A file which stores game state.
  */
 
 /**
- * fileusage_Transcript: 
- * 
+ * fileusage_Transcript:
+ *
  * A file which contains a stream of text from the game (often an echo stream
  * from a window.)
  */
- 
-/** 
- * fileusage_InputRecord: 
- * 
+
+/**
+ * fileusage_InputRecord:
+ *
  * A file which records player input.
  */
 
-/** 
- * fileusage_TextMode: 
+/**
+ * fileusage_TextMode:
  *
  * The file contents will be transformed to a platform-native text file as they
- * are written out. Newlines may be converted to linefeeds or 
+ * are written out. Newlines may be converted to linefeeds or
  * linefeed-plus-carriage-return combinations; Latin-1 characters may be
  * converted to native character codes. When reading a file in text mode, native
  * line breaks will be converted back to newline (0x0A) characters, and native
- * character codes may be converted to Latin-1 or UTF-8. 
+ * character codes may be converted to Latin-1 or UTF-8.
  *
  * <note><para>
  *   Line breaks will always be converted; other conversions are more
@@ -2769,7 +2769,7 @@
  */
 
 /**
- * fileusage_BinaryMode: 
+ * fileusage_BinaryMode:
  *
  * The file contents will be stored exactly as they are written, and read back
  * in the same way. The resulting file may not be viewable on platform-native
@@ -2785,7 +2785,7 @@
  */
 
 /**
- * filemode_Write: 
+ * filemode_Write:
  *
  * An output stream.
  *
@@ -2794,8 +2794,8 @@
  * </para></note>
  */
 
-/** 
- * filemode_Read: 
+/**
+ * filemode_Read:
  *
  * An input stream.
  *
@@ -2805,7 +2805,7 @@
  */
 
 /**
- * filemode_ReadWrite: 
+ * filemode_ReadWrite:
  *
  * Both an input and an output stream.
  *
@@ -2815,10 +2815,10 @@
  */
 
 /**
- * filemode_WriteAppend: 
+ * filemode_WriteAppend:
  *
  * An output stream, but the data will added to the end of whatever already
- * existed in the destination, instead of replacing it. 
+ * existed in the destination, instead of replacing it.
  *
  * <note><para>
  *   Confusingly, %filemode_WriteAppend cannot be mode <code>"a"</code>, because
@@ -2832,23 +2832,23 @@
  *   except without the fseek() &mdash; we begin at the beginning of the file.
  * </para></note>
  */
- 
+
 /**
  * seekmode_Start:
  *
  * In glk_stream_set_position(), signifies that @pos is counted in characters
  * after the beginning of the file.
  */
- 
+
 /**
- * seekmode_Current: 
+ * seekmode_Current:
  *
  * In glk_stream_set_position(), signifies that @pos is counted in characters
  * after the current position (moving backwards if @pos is negative.)
  */
 
-/** 
- * seekmode_End: 
+/**
+ * seekmode_End:
  *
  * In glk_stream_set_position(), signifies that @pos is counted in characters
  * after the end of the file. (@pos should always be zero or negative, so that
@@ -2856,114 +2856,114 @@
  */
 
 /**
- * stylehint_Indentation: 
+ * stylehint_Indentation:
  *
- * How much to indent lines of text in the given style. May be a negative 
+ * How much to indent lines of text in the given style. May be a negative
  * number, to shift the text out (left) instead of in (right). The exact metric
  * isn't precisely specified; you can assume that +1 is the smallest indentation
  * possible which is clearly visible to the player.
  */
 
 /**
- * stylehint_ParaIndentation: 
+ * stylehint_ParaIndentation:
  *
- * How much to indent the first line of each paragraph. This is in addition to 
- * the indentation specified by %stylehint_Indentation. This too may be 
+ * How much to indent the first line of each paragraph. This is in addition to
+ * the indentation specified by %stylehint_Indentation. This too may be
  * negative, and is measured in the same units as %stylehint_Indentation.
  */
 
 /**
- * stylehint_Justification: 
+ * stylehint_Justification:
  *
- * The value of this hint must be one of the constants 
- * %stylehint_just_LeftFlush, %stylehint_just_LeftRight (full justification), 
+ * The value of this hint must be one of the constants
+ * %stylehint_just_LeftFlush, %stylehint_just_LeftRight (full justification),
  * %stylehint_just_Centered, or %stylehint_just_RightFlush.
  */
 
-/** 
- * stylehint_Size: 
+/**
+ * stylehint_Size:
  *
  * How much to increase or decrease the font size. This is relative; 0 means the
- * interpreter's default font size will be used, positive numbers increase it, 
- * and negative numbers decrease it. Again, +1 is the smallest size increase 
- * which is easily visible. 
+ * interpreter's default font size will be used, positive numbers increase it,
+ * and negative numbers decrease it. Again, +1 is the smallest size increase
+ * which is easily visible.
  * <note><para>
- *  The amount of this increase may not be constant. +1 might increase an 
+ *  The amount of this increase may not be constant. +1 might increase an
  *  8-point font to 9-point, but a 16-point font to 18-point.
  * </para></note>
  */
 
 /**
- * stylehint_Weight: 
+ * stylehint_Weight:
  *
- * The value of this hint must be 1 for heavy-weight fonts (boldface), 0 for 
+ * The value of this hint must be 1 for heavy-weight fonts (boldface), 0 for
  * normal weight, and -1 for light-weight fonts.
  */
 
 /**
- * stylehint_Oblique: 
+ * stylehint_Oblique:
  *
  * The value of this hint must be 1 for oblique fonts (italic), or 0 for normal
  * angle.
  */
- 
-/** 
- * stylehint_Proportional: 
- * 
- * The value of this hint must be 1 for proportional-width fonts, or 0 for 
+
+/**
+ * stylehint_Proportional:
+ *
+ * The value of this hint must be 1 for proportional-width fonts, or 0 for
  * fixed-width.
  */
 
 /**
- * stylehint_TextColor: 
- * 
- * The foreground color of the text. This is encoded in the 32-bit hint value: 
- * the top 8 bits must be zero, the next 8 bits are the red value, the next 8 
- * bits are the green value, and the bottom 8 bits are the blue value. Color 
- * values range from 0 to 255. 
+ * stylehint_TextColor:
+ *
+ * The foreground color of the text. This is encoded in the 32-bit hint value:
+ * the top 8 bits must be zero, the next 8 bits are the red value, the next 8
+ * bits are the green value, and the bottom 8 bits are the blue value. Color
+ * values range from 0 to 255.
  * <note><para>
  *   So 0x00000000 is black, 0x00FFFFFF is white, and 0x00FF0000 is bright red.
  * </para></note>
  */
- 
-/** 
- * stylehint_BackColor: 
+
+/**
+ * stylehint_BackColor:
  *
- * The background color behind the text. This is encoded the same way as 
+ * The background color behind the text. This is encoded the same way as
  * %stylehint_TextColor.
  */
- 
-/** 
- * stylehint_ReverseColor: 
+
+/**
+ * stylehint_ReverseColor:
  *
- * The value of this hint must be 0 for normal printing (%stylehint_TextColor on 
- * %stylehint_BackColor), or 1 for reverse printing (%stylehint_BackColor on 
- * %stylehint_TextColor). 
+ * The value of this hint must be 0 for normal printing (%stylehint_TextColor on
+ * %stylehint_BackColor), or 1 for reverse printing (%stylehint_BackColor on
+ * %stylehint_TextColor).
  * <note><para>
- *  Some libraries may support this hint but not the %stylehint_TextColor and 
- *  %stylehint_BackColor hints. Other libraries may take the opposite tack; 
+ *  Some libraries may support this hint but not the %stylehint_TextColor and
+ *  %stylehint_BackColor hints. Other libraries may take the opposite tack;
  *  others may support both, or neither.
  * </para></note>
  */
- 
+
 /**
  * stylehint_just_LeftFlush:
  *
  * A value for %stylehint_Justification representing left-justified text.
- */ 
- 
+ */
+
 /**
  * stylehint_just_LeftRight:
  *
  * A value for %stylehint_Justification representing fully justified text.
- */ 
- 
+ */
+
 /**
  * stylehint_just_Centered:
  *
  * A value for %stylehint_Justification representing centered text.
- */ 
- 
+ */
+
 /**
  * stylehint_just_RightFlush:
  *
@@ -2994,7 +2994,7 @@
 
 /**
  * imagealign_MarginLeft:
- * 
+ *
  * The image appears in the left margin. Subsequent text will be displayed to
  * the right of the image, and will flow around it &mdash; that is, it will be
  * left-indented for as many lines as it takes to pass the image.
@@ -3036,12 +3036,12 @@
  * This structure represents the Unix timestamp, i.e. the number of seconds
  * since January 1, 1970.
  */
- 
+
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_DISPA.H ------------------*/
 
 /**
  * gidispatch_count_classes:
- * 
+ *
  * Returns the number of opaque object classes used by the library. You will
  * need to know this if you want to keep track of opaque objects as they are
  * created; see [Opaque Object Registry][gidispatch-set-object-registry].
@@ -3071,7 +3071,7 @@
  *
  * Returns: Number of integer constants exported by the library.
  */
- 
+
 /**
  * gidispatch_get_intconst:
  * @index: Unique integer index of the integer constant.
@@ -3101,7 +3101,7 @@
  *   gidispatch_get_intconst() calls.
  * </para></note>
  */
- 
+
 /**
  * gidispatch_count_functions:
  *
@@ -3109,7 +3109,7 @@
  *
  * Returns: Number of functions exported by the library.
  */
- 
+
 /**
  * gidispatch_get_function:
  * @index: Unique integer index of the function.
@@ -3126,7 +3126,7 @@
  *
  * Returns: A #gidispatch_function_t structure describing the function.
  */
- 
+
 /**
  * gidispatch_function_t:
  * @id: Dispatch selector of the function.
@@ -3148,12 +3148,12 @@
  * See [Dispatching][chimara-Dispatching] for more about calling Glk functions
  * by selector.
  */
- 
+
 /**
  * gidispatch_get_function_by_id:
  * @id: A selector.
  *
- * Returns a structure describing the Glk function with selector @id. If there 
+ * Returns a structure describing the Glk function with selector @id. If there
  * is no such function in the library, this returns %NULL.
  *
  * <note><para>
@@ -3163,7 +3163,7 @@
  *
  * Returns: a #gidispatch_function_t structure, or %NULL.
  */
- 
+
 /**
  * gidispatch_call:
  * @funcnum: Selector of the function to call.
@@ -3227,7 +3227,7 @@
  * value = arglist[3].uint;
  * gamefile = arglist[5].opaqueref;
  * ]|
- * 
+ *
  * Note that you copy the value of the reference arguments into and out of
  * @arglist.
  * Of course, it may be that `glk_glomp<!---->()` only uses these as pass-out
@@ -3270,7 +3270,7 @@
  * gidispatch_call(0xABCD, 5, arglist);
  * value = arglist[3].uint;
  * ]|
- * 
+ *
  * As you see, the length of @arglist depends on how many of the reference
  * arguments are %NULL.
  *
@@ -3281,7 +3281,7 @@
  * Again, if the structure pointer is non-%NULL, the @ptrflag should be %TRUE
  * and be followed by values; if not, the @ptrflag should be %NULL and stands
  * alone.
- * 
+ *
  * For example, the function glk_select() can be invoked as follows:
  * |[<!--language="C"-->
  * event_t ev;
@@ -3293,11 +3293,11 @@
  * ev.val1 = arglist[3].uint;
  * ev.val2 = arglist[4].uint;
  * ]|
- * 
+ *
  * Since the structure passed to glk_select() is a pass-out reference (the entry
  * values are ignored), you don't need to fill in `arglist[1..4]` before calling
  * gidispatch_call().
- * 
+ *
  * <note><para>
  *   Theoretically, you would invoke <code>#glk_select(%NULL)</code> by setting'
  *   <code>arglist[0].ptrflag</code> to %FALSE, and using a one-element @arglist
@@ -3314,7 +3314,7 @@
  * argument is %NULL or not. The second is a pointer, stored in the @array
  * field. The third is the array length, stored in the @uint field. And again,
  * if the @ptrflag is %NULL, the following two are omitted.
- * 
+ *
  * For example, the function glk_put_buffer() can be invoked as follows:
  * |[<!--language="C"-->
  * char buf[64];
@@ -3327,11 +3327,11 @@
  * arglist[2].uint = len;
  * gidispatch_call(0x0084, 3, arglist);
  * ]|
- * 
+ *
  * Since you are passing a C char array to gidispatch_call(), the contents will
  * be read directly from that. There is no need to copy data into @arglist, as
  * you would for a basic type.
- * 
+ *
  * If you are implementing a VM whose native representation of char arrays is
  * more complex, you will have to do more work. You should allocate a C char
  * array, copy your characters into it, make the call, and then free the array.
@@ -3346,7 +3346,7 @@
  * The return value of a function is not treated specially. It is simply
  * considered to be a pass-out reference argument which may not be %NULL. It
  * comes after all the other arguments of the function.
- * 
+ *
  * For example, the function glk_window_get_rock() can be invoked as follows:
  * |[<!--language="C"-->
  * glui32 rock;
@@ -3372,7 +3372,7 @@
  * @charstr: Stores a null-terminated string.
  * @unicharstr: Stores a zero-terminated string of #glui32 values representing
  * Unicode characters.
- * @array: Stores a pointer to an array, and should be followed by another 
+ * @array: Stores a pointer to an array, and should be followed by another
  * #gluniversal_t with the array length stored in the @uint member.
  * @ptrflag: If %FALSE, represents an opaque reference or array that is %NULL,
  * in which case it represents the entire argument. If %TRUE, should be followed
@@ -3381,14 +3381,14 @@
  * This is a union, encompassing all the types that can be passed to Glk
  * functions.
  */
- 
+
 /**
  * gidispatch_prototype:
  * @funcnum: A selector for the function to be queried.
  *
  * This returns a string which encodes the proper argument list for the given
  * function. If there is no such function in the library, this returns %NULL.
- * 
+ *
  * The prototype string for the `glk_glomp<!---->()` function described above would be:
  * `"4IuQa&amp;Iu&amp;Qb:"`.
  * The `"4"` is the number of arguments (including the return value, if there is
@@ -3415,7 +3415,7 @@
  * <varlistentry>
  *   <term><code>Cn, Cu, Cs</code></term>
  *   <listitem><para>Character, #unsigned #char, and #signed #char.</para>
- *     <note><para>Of course <code>Cn</code> will be the same as either 
+ *     <note><para>Of course <code>Cn</code> will be the same as either
  *     <code>Cu</code> or <code>Cs</code>, depending on the platform. For this
  *     reason, Glk avoids using it, but it is included here for completeness.
  *     </para></note>
@@ -3426,13 +3426,13 @@
  *   <listitem><para>A C-style string (null-terminated array of #char). In Glk,
  *   strings are always treated as read-only and used immediately; the library
  *   does not retain a reference to a string between Glk calls. A Glk call that
- *   wants to use writable char arrays will use an array type 
+ *   wants to use writable char arrays will use an array type
  *   (<code>"&num;C"</code>), not string (<code>"S"</code>).</para></listitem>
  * </varlistentry>
  * <varlistentry>
  *   <term><code>U</code></term>
  *   <listitem><para>A zero-terminated array of 32-bit integers. This is
- *   primarily intended as a Unicode equivalent of <code>"S"</code>. Like 
+ *   primarily intended as a Unicode equivalent of <code>"S"</code>. Like
  *   <code>"S"</code> strings, <code>"U"</code> strings are read-only and used
  *   immediately. A Glk call that wants to use writable Unicode arrays will use
  *   an array type (<code>"&num;Iu"</code>) instead of <code>"U"</code>.</para>
@@ -3448,7 +3448,7 @@
  *   <term><code>Qa, Qb, Qc...</code></term>
  *   <listitem><para>A reference to an opaque object. The second letter
  *   determines which class is involved. (The number of classes can be gleaned
- *   from gidispatch_count_classes(); see <link 
+ *   from gidispatch_count_classes(); see <link
  *   linkend="chimara-Interrogating-the-Interface">Interrogating the
  *   Interface</link>).</para>
  *   <note><para>
@@ -3481,7 +3481,7 @@
  * </varlistentry>
  * <varlistentry>
  *   <term><code>+</code></term>
- *   <listitem><para>Combined with <code>"&"</code>, <code>"&lt;"</code>, or 
+ *   <listitem><para>Combined with <code>"&"</code>, <code>"&lt;"</code>, or
  *   <code>"&gt;"</code>, indicates that a valid reference is mandatory; %NULL
  *   cannot be passed.</para>
  *   <note><para>
@@ -3499,7 +3499,7 @@
  * </varlistentry>
  * <varlistentry>
  *   <term><code>[...]</code></term>
- *   <listitem><para>Combined with <code>"&amp;"</code>, <code>"&lt;"</code>, or 
+ *   <listitem><para>Combined with <code>"&amp;"</code>, <code>"&lt;"</code>, or
  *   <code>"&gt;"</code>, indicates a structure reference. Between the brackets
  *   is a complete argument list encoding string, including the number of
  *   arguments.</para>
@@ -3514,7 +3514,7 @@
  * </varlistentry>
  * <varlistentry>
  *   <term><code>&num;</code></term>
- *   <listitem><para>Combined with <code>"&amp;"</code>, <code>"&lt;"</code>, or 
+ *   <listitem><para>Combined with <code>"&amp;"</code>, <code>"&lt;"</code>, or
  *   <code>"&gt;"</code>, indicates an array reference. As described above, this
  *   encompasses up to three #gluniversal_t objects &mdash; @ptrflag, pointer,
  *   and integer length.</para>
@@ -3530,7 +3530,7 @@
  *   <listitem><para>Combined with <code>"&num;"</code>, indicates that the
  *   array is retained by the library. The library will keep a reference to the
  *   array; the contents are undefined until further notice. You should not use
- *   or copy the contents of the array out after the call, even for 
+ *   or copy the contents of the array out after the call, even for
  *   <code>"&amp;&num;!"</code> or <code>"&lt;&num;!"</code> arrays. Instead, do
  *   it when the library releases the array.</para>
  *   <note><para>
@@ -3605,13 +3605,13 @@
  *
  * Represents a #winid_t opaque object.
  */
- 
+
 /**
  * gidisp_Class_Stream:
  *
  * Represents a #strid_t opaque object.
  */
- 
+
 /**
  * gidisp_Class_Fileref:
  *
@@ -3620,7 +3620,7 @@
 
 /**
  * gidisp_Class_Schannel:
- * 
+ *
  * Represents a #schanid_t opaque object.
  */
 
@@ -3681,27 +3681,27 @@
  */
 
 /*---------- TYPES, FUNCTIONS AND CONSTANTS FROM GI_BLORB.H ------------------*/
- 
+
 /**
- * giblorb_err_t: 
+ * giblorb_err_t:
  *
  * An integer type that can hold the Blorb error codes.
- */ 
- 
+ */
+
 /**
  * giblorb_err_None:
  *
  * No error.
  */
- 
+
 /**
- * giblorb_err_CompileTime: 
+ * giblorb_err_CompileTime:
  *
  * Something is compiled wrong in the Blorb layer.
  */
- 
+
 /**
- * giblorb_err_Alloc: 
+ * giblorb_err_Alloc:
  *
  * Memory could not be allocated.
  *
@@ -3710,25 +3710,25 @@
  * > instead, the program aborts if memory allocation fails, in keeping with
  * > GLib practices.
  */
- 
+
 /**
- * giblorb_err_Read: 
+ * giblorb_err_Read:
  *
  * Data could not be read from the file.
  */
 
-/** 
+/**
  * giblorb_err_NotAMap:
  *
  * The map parameter is invalid.
  */
 
-/** 
+/**
  * giblorb_err_Format:
  *
  * The Blorb file is corrupted or invalid.
  */
- 
+
 /**
  * giblorb_err_NotFound:
  *
@@ -3769,7 +3769,7 @@
  *
  * Resource usage constant representing an executable program.
  */
- 
+
 /**
  * giblorb_ID_Pict:
  *
@@ -3839,7 +3839,7 @@
  * Holds the complete description of an open Blorb file. This type is opaque for
  * normal interpreter use.
  */
- 
+
 /**
  * giblorb_result_t:
  * @chunknum: The chunk number (for use in giblorb_unload_chunk(), etc.)
@@ -3850,7 +3850,7 @@
  * accessing the chunk data. @data is a union of @ptr, a pointer to the data (if
  * you used %giblorb_method_Memory) and @startpos, the position in the file (if
  * you used %giblorb_method_FilePos). See giblorb_load_chunk_by_type() and
- * giblorb_load_chunk_by_number(). 
+ * giblorb_load_chunk_by_number().
  */
 
 /**
@@ -3868,89 +3868,89 @@
  * @file: An input stream pointing to a Blorb file.
  * @newmap: Return location for a Blorb resource map.
  *
- * Reads Blorb data out of a Glk stream. It does not load every resource at 
- * once; instead, it creates a map in memory which makes it easy to find 
- * resources. A pointer to the map is stored in @newmap. This is an opaque 
+ * Reads Blorb data out of a Glk stream. It does not load every resource at
+ * once; instead, it creates a map in memory which makes it easy to find
+ * resources. A pointer to the map is stored in @newmap. This is an opaque
  * object; you pass it to the other Blorb-layer functions.
  *
- * Returns: a Blorb error code. 
+ * Returns: a Blorb error code.
  */
- 
+
 /**
- * giblorb_destroy_map: 
+ * giblorb_destroy_map:
  * @map: A Blorb resource map to deallocate.
  *
- * Deallocates @map and all associated memory. This does 
+ * Deallocates @map and all associated memory. This does
  * <emphasis>not</emphasis> close the original stream.
  *
- * Returns: a Blorb error code. 
+ * Returns: a Blorb error code.
  */
 
 /**
  * giblorb_load_chunk_by_type:
  * @map: The Blorb resource map to load a chunk from.
- * @method: The loading method to use, one of %giblorb_method_DontLoad, 
+ * @method: The loading method to use, one of %giblorb_method_DontLoad,
  * %giblorb_method_Memory, or %giblorb_method_FilePos.
  * @res: Return location for the result.
  * @chunktype: The type of chunk to load.
  * @count: The chunk number of type @chunktype to load.
  *
- * Loads a chunk of a given type. The @count parameter distinguishes between 
- * chunks of the same type. If @count is zero, the first chunk of that type is 
+ * Loads a chunk of a given type. The @count parameter distinguishes between
+ * chunks of the same type. If @count is zero, the first chunk of that type is
  * loaded, and so on.
- * 
- * To load a chunk of an IFF FORM type (such as AIFF), you should pass in the 
+ *
+ * To load a chunk of an IFF FORM type (such as AIFF), you should pass in the
  * form type, rather than FORM.
  * <note><para>
- *  This introduces a slight ambiguity &mdash; you cannot distiguish between a 
- *  FORM AIFF chunk and a non-FORM chunk of type AIFF. However, the latter is 
+ *  This introduces a slight ambiguity &mdash; you cannot distiguish between a
+ *  FORM AIFF chunk and a non-FORM chunk of type AIFF. However, the latter is
  *  almost certainly a mistake.
- * </para></note> 
- * 
+ * </para></note>
+ *
  * The returned data is written into @res, according to @method.
- * 
+ *
  * The <structfield>chunknum</structfield> field is filled in with the number of
- * the chunk. (This value can then be passed to giblorb_load_chunk_by_number() 
- * or giblorb_unload_chunk().) The <structfield>length</structfield> field is 
- * filled in with the length of the chunk in bytes. The 
- * <structfield>chunktype</structfield> field is the chunk's type, which of 
+ * the chunk. (This value can then be passed to giblorb_load_chunk_by_number()
+ * or giblorb_unload_chunk().) The <structfield>length</structfield> field is
+ * filled in with the length of the chunk in bytes. The
+ * <structfield>chunktype</structfield> field is the chunk's type, which of
  * course will be the type you asked for.
- * 
+ *
  * If you specify %giblorb_method_DontLoad, no data is actually loaded in. You
  * can use this if you are only interested in whether a chunk exists, or in the
- * <structfield>chunknum</structfield> and <structfield>length</structfield> 
+ * <structfield>chunknum</structfield> and <structfield>length</structfield>
  * parameters.
- * 
- * If you specify %giblorb_method_FilePos, 
+ *
+ * If you specify %giblorb_method_FilePos,
  * <structfield>data.startpos</structfield> is filled in with the file position
- * of the chunk data. You can use glk_stream_set_position() to read the data 
+ * of the chunk data. You can use glk_stream_set_position() to read the data
  * from the stream.
- * 
+ *
  * If you specify %giblorb_method_Memory, <structfield>data.ptr</structfield> is
- * filled with a pointer to allocated memory containing the chunk data. This 
- * memory is owned by the map, not you. If you load the chunk more than once 
+ * filled with a pointer to allocated memory containing the chunk data. This
+ * memory is owned by the map, not you. If you load the chunk more than once
  * with %giblorb_method_Memory, the Blorb layer is smart enough to keep just one
- * copy in memory. You should not deallocate this memory yourself; call 
+ * copy in memory. You should not deallocate this memory yourself; call
  * giblorb_unload_chunk() instead.
  *
  * Returns: a Blorb error code.
  */
 
-/** 
+/**
  * giblorb_load_chunk_by_number:
  * @map: The Blorb resource map to load a chunk from.
- * @method: The loading method to use, one of %giblorb_method_DontLoad, 
+ * @method: The loading method to use, one of %giblorb_method_DontLoad,
  * %giblorb_method_Memory, or %giblorb_method_FilePos.
  * @res: Return location for the result.
  * @chunknum: The chunk number to load.
  *
  * This is similar to giblorb_load_chunk_by_type(), but it loads a chunk with a
- * given chunk number. The type of the chunk can be found in the 
+ * given chunk number. The type of the chunk can be found in the
  * <structfield>chunktype</structfield> field of #giblorb_result_t. You can get
- * the chunk number from the <structfield>chunknum</structfield> field, after 
+ * the chunk number from the <structfield>chunknum</structfield> field, after
  * calling one of the other load functions.
  *
- * Returns: a Blorb error code. 
+ * Returns: a Blorb error code.
  */
 
 /**
@@ -3959,7 +3959,7 @@
  * @chunknum: The chunk number to unload.
  *
  * Frees the chunk data allocated by %giblorb_method_Memory. If the given chunk
- * has never been loaded into memory, this has no effect. 
+ * has never been loaded into memory, this has no effect.
  *
  * Returns: a Blorb error code.
  */
@@ -3967,7 +3967,7 @@
 /**
  * giblorb_load_resource:
  * @map: The Blorb resource map to load a resource from.
- * @method: The loading method to use, one of %giblorb_method_DontLoad, 
+ * @method: The loading method to use, one of %giblorb_method_DontLoad,
  * %giblorb_method_Memory, or %giblorb_method_FilePos.
  * @res: Return location for the result.
  * @usage: The type of data resource to load.
@@ -3977,7 +3977,7 @@
  * usage values are %giblorb_ID_Pict (images), %giblorb_ID_Snd (sounds), and
  * %giblorb_ID_Exec (executable program). See the Blorb specification for more
  * information about the types of data that can be stored for these usages.
- * 
+ *
  * Note that a resource number is not the same as a chunk number. The resource
  * number is the sound or image number specified by a Glk program. Chunk number
  * is arbitrary, since chunks in a Blorb file can be in any order. To find the
@@ -3996,10 +3996,10 @@
  * @max: Return location for the highest resource number of @usage.
  *
  * Counts the number of chunks with a given usage (image, sound, or executable.)
- * The total number of chunks of that usage is stored in @num. The lowest and 
+ * The total number of chunks of that usage is stored in @num. The lowest and
  * highest resource number of that usage are stored in @min and @max. You can
  * leave any of the three pointers %NULL if you don't care about that
- * information. 
+ * information.
  *
  * Returns: a Blorb error code.
  */
@@ -4019,12 +4019,12 @@
 
 /**
  * glkunix_argumentlist_t:
- * @name: the option as it would appear on the command line (including the 
- * leading dash, if any.) 
- * @desc: a description of the argument; this is used when the library is 
+ * @name: the option as it would appear on the command line (including the
+ * leading dash, if any.)
+ * @desc: a description of the argument; this is used when the library is
  * printing a list of options.
  * @argtype: one of the `glkunix_arg_` constants.
- * 
+ *
  * <variablelist>
  * <varlistentry>
  *  <term>%glkunix_arg_NoValue</term>
@@ -4032,29 +4032,29 @@
  * </varlistentry>
  * <varlistentry>
  *  <term>%glkunix_arg_ValueFollows</term>
- *  <listitem><para>The argument must be followed by another argument (the 
+ *  <listitem><para>The argument must be followed by another argument (the
  *  value).</para></listitem>
  * </varlistentry>
  * <varlistentry>
- *  <term>%glkunix_arg_ValueCanFollow</term> 
+ *  <term>%glkunix_arg_ValueCanFollow</term>
  *  <listitem><para>The argument may be followed by a value, optionally. (If the
- *  next argument starts with a dash, it is taken to be a new argument, not the 
+ *  next argument starts with a dash, it is taken to be a new argument, not the
  *  value of this one.)</para></listitem>
  * </varlistentry>
  * <varlistentry>
  *  <term>%glkunix_arg_NumberValue</term>
- *  <listitem><para>The argument must be followed by a number, which may be the 
+ *  <listitem><para>The argument must be followed by a number, which may be the
  *  next argument or part of this one. (That is, either “<code>-width 20</code>”
  *  or “<code>-width20</code>” will be accepted.)
  *  </para></listitem>
  * </varlistentry>
- * <varlistentry> 
+ * <varlistentry>
  *  <term>%glkunix_arg_End</term>
- *  <listitem><para>The <code>glkunix_arguments[]</code> array must be 
+ *  <listitem><para>The <code>glkunix_arguments[]</code> array must be
  *  terminated with an entry containing this value.</para></listitem>
  * </varlistentry>
  * </variablelist>
- * 
+ *
  * To accept arbitrary arguments which lack dashes, specify a name of `""` and
  * an argtype of %glkunix_arg_ValueFollows.
  *
@@ -4065,7 +4065,7 @@
  *     { NULL, glkunix_arg_End, NULL }
  * };
  * ]|
- * 
+ *
  * Here is a more complete sample list:
  * |[<!--language="C"-->
  * glkunix_argumentlist_t glkunix_arguments[] = {
@@ -4088,15 +4088,15 @@
  * ]|
  *
  * This should return %TRUE if everything initializes properly. If it returns
- * %FALSE, the library will shut down without ever calling your glk_main() 
+ * %FALSE, the library will shut down without ever calling your glk_main()
  * function.
  */
 
 /**
- * glkunix_startup_t: 
+ * glkunix_startup_t:
  * @argc: The number of arguments in @argv.
  * @argv: Strings representing command line arguments.
- * 
+ *
  * The fields are a standard Unix `(argc, argv)` list, which contain the
  * arguments you requested from the command line.
  * In deference to custom, `argv[0]` is always the program name.
@@ -4107,30 +4107,30 @@
  *
  * Terminates a list of #glkunix_argumentlist_t.
  */
- 
+
 /**
  * glkunix_arg_ValueFollows:
  *
- * Indicates an argument which must be followed by a value, as the next 
+ * Indicates an argument which must be followed by a value, as the next
  * argument.
  */
 
-/** 
+/**
  * glkunix_arg_NoValue:
  *
  * Indicates an argument which occurs by itself, without a value.
  */
- 
+
 /**
  * glkunix_arg_ValueCanFollow:
  *
- * Indicates an argument which may be followed by a value, or may occur by 
+ * Indicates an argument which may be followed by a value, or may occur by
  * itself.
  */
- 
+
 /**
  * glkunix_arg_NumberValue:
  *
- * Indicates an argument which must be followed by a numerical value, either as 
+ * Indicates an argument which must be followed by a numerical value, either as
  * the next argument or tacked onto the end of this argument.
  */

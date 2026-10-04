@@ -2,9 +2,9 @@
 /*
  * main.c
  * Copyright (C) Philip en Marijn 2008 <>
- * 
+ *
  * main.c is free software copyrighted by Philip en Marijn.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -16,7 +16,7 @@
  * 3. Neither the name ``Philip en Marijn'' nor the name of any other
  *    contributor may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * plugin-loader.c IS PROVIDED BY Philip en Marijn ``AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE

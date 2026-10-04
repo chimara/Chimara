@@ -19,7 +19,7 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 	GtkTextIter oldpager, newpager, end;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(textview);
 	GtkTextMark *pager = gtk_text_buffer_get_mark(buffer, "pager_position");
-	
+
 	/* Get an iter at the lower right corner of the visible part of the buffer */
 	gtk_text_view_get_visible_rect(textview, &visiblerect);
 	gtk_text_view_get_iter_at_location(
@@ -29,7 +29,7 @@ move_pager_and_get_scroll_distance(GtkTextView *textview, gint *view_height, gin
 		visiblerect.y + visiblerect.height
 	);
 	gtk_text_buffer_get_iter_at_mark(buffer, &oldpager, pager);
-	
+
 	if(move)
 		gtk_text_buffer_move_mark(buffer, pager, &newpager);
 
@@ -114,13 +114,13 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 {
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW(win->scrolledwindow) );
 	gdouble page_size, upper, lower, value;
-	g_object_get(adj, 
+	g_object_get(adj,
 		"page-size", &page_size,
 		"upper", &upper,
 		"lower", &lower,
 		"value", &value,
 		NULL);
-	
+
 	switch (event->keyval) {
 		case GDK_KEY_space: case GDK_KEY_KP_Space:
 		case GDK_KEY_Page_Down: case GDK_KEY_KP_Page_Down:
@@ -148,11 +148,11 @@ pager_on_key_press_event(GtkTextView *textview, GdkEventKey *event, winid_t win)
 
 /* Check whether paging should be done. This function is called after the
  * textview has finished validating text positions. */
-void 
+void
 pager_after_size_allocate(GtkTextView *textview, GdkRectangle *allocation, winid_t win)
 {
 	/* Move the pager to the last visible character in the buffer */
-	gint view_height, scroll_distance; 
+	gint view_height, scroll_distance;
 	move_pager_and_get_scroll_distance(GTK_TEXT_VIEW(win->widget), &view_height, &scroll_distance, FALSE);
 
 	if(view_height <= 1)
@@ -178,7 +178,7 @@ pager_after_size_allocate(GtkTextView *textview, GdkRectangle *allocation, winid
 	GtkTextMark *pager_position = gtk_text_buffer_get_mark(buffer, "pager_position");
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(win->widget), pager_position, 0.0, TRUE, 0.0, 0.0);
 	g_signal_handler_unblock(adj, win->pager_adjustment_handler);
-	
+
 	if(!win->currently_paging) {
 		if(scroll_distance > view_height) {
 			start_paging(win);

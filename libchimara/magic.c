@@ -41,11 +41,11 @@ magic_is_valid_or_null(const glui32 goodmagic, const glui32 realmagic, const gch
 	}
 	return TRUE;
 }
- 
+
 
 /* Internal function: check the object's magic number to make sure it is
  not NULL, the right type, and not freed. */
-gboolean 
+gboolean
 magic_is_valid(const void *obj, const glui32 goodmagic, const glui32 realmagic, const gchar *function)
 {
 	if(obj == NULL)

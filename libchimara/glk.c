@@ -6,7 +6,7 @@ G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
 
 /**
  * glk_exit:
- * 
+ *
  * If you want to shut down your program in the middle of your `glk_main()`
  * function, you can call glk_exit().
  *
@@ -21,10 +21,10 @@ G_GNUC_INTERNAL GPrivate glk_data_key = G_PRIVATE_INIT(NULL);
  *
  * <note><para>
  * You should only shut down your program with glk_exit() or by returning from
- * your <function>glk_main()</function> function. If you call the ANSI 
+ * your <function>glk_main()</function> function. If you call the ANSI
  * <function>exit()</function> function, bad things may happen. Some versions of
  * the Glk library may be designed for multiple sessions, for example, and you
- * would be cutting off all the sessions instead of just yours. You would 
+ * would be cutting off all the sessions instead of just yours. You would
  * probably also prevent final text from being visible to the player.
  * </para></note>
  *
@@ -50,8 +50,8 @@ glk_exit(void)
  * glk_tick:
  *
  * Carries out platform-dependent actions such as yielding time to the operating
- * system and checking for interrupts. glk_tick() should be called every so 
- * often when there is a long interval between calls of glk_select() or 
+ * system and checking for interrupts. glk_tick() should be called every so
+ * often when there is a long interval between calls of glk_select() or
  * glk_select_poll(). This call is fast; in fact, on average, it does nothing at
  * all. So you can call it often.
  *
@@ -61,9 +61,9 @@ glk_exit(void)
  *   this guarantees it will be called inside loops. In a program with lots of
  *   computation, pick a comparable rate.
  * </para></note>
- * 
+ *
  * glk_tick() does not try to update the screen, or check for player input, or
- * any other interface task. For that, you should call glk_select() or 
+ * any other interface task. For that, you should call glk_select() or
  * glk_select_poll().
  * See [Events][chimara-Events].
  *
@@ -81,7 +81,7 @@ glk_exit(void)
  *   loop, this is critical. In a C program, you can often eyeball it.
  *   </para>
  *   <para>But the next version of <filename>model.c</filename> will have a
- *   glk_tick() in the ornate printing loop of 
+ *   glk_tick() in the ornate printing loop of
  *   <function>verb_yada&lpar;&rpar;</function>. Just to make the point.
  *   </para>
  * </note>
@@ -92,4 +92,3 @@ glk_tick()
 	check_for_abort();
 	g_thread_yield();
 }
-

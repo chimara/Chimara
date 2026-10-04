@@ -37,10 +37,10 @@ static frefid_t scriptref = NULL;
 static strid_t scriptstr = NULL;
 
 /* Your location. This determines what appears in the status line. */
-static int current_room; 
+static int current_room;
 
 /* A flag indicating whether you should look around. */
-static int need_look; 
+static int need_look;
 
 /* Forward declarations */
 void glk_main(void);
@@ -67,21 +67,21 @@ static void verb_notice(void);
 /* The glk_main() function is called by the Glk system; it's the main entry
     point for your program. */
 void glk_main(void)
-{	
+{
     /* Open the main window. */
     mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 1);
     if (!mainwin) {
         /* It's possible that the main window failed to open. There's
             nothing we can do without it, so exit. */
-        return; 
+        return;
     }
-    
+
     /* Set the current output stream to print to it. */
     glk_set_window(mainwin);
-    
+
     /* Open a second window: a text grid, above the main window, three lines
         high. It is possible that this will fail also, but we accept that. */
-    statuswin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed, 
+    statuswin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed,
         3, wintype_TextGrid, 0);
 
     /* The third window, quotewin, isn't opened immediately. We'll do
@@ -93,15 +93,15 @@ void glk_main(void)
 
     current_room = 0; /* Set initial location. */
     need_look = TRUE;
-    
+
     while (1) {
         char commandbuf[256];
         char *cx, *cmd;
         int gotline, len;
         event_t ev;
-        
+
         draw_statuswin();
-        
+
         if (need_look) {
             need_look = FALSE;
             glk_put_string("\n");
@@ -113,22 +113,22 @@ void glk_main(void)
             glk_set_style(style_Normal);
             glk_put_string("You're in a room of some sort.\n");
         }
-        
+
         glk_put_string("\n>");
         /* We request up to 255 characters. The buffer can hold 256, but we
             are going to stick a null character at the end, so we have to
             leave room for that. Note that the Glk library does *not*
             put on that null character. */
         glk_request_line_event(mainwin, commandbuf, 255, 0);
-        
+
         gotline = FALSE;
         while (!gotline) {
-        
+
             /* Grab an event. */
             glk_select(&ev);
-            
+
             switch (ev.type) {
-            
+
                 case evtype_LineInput:
                     if (ev.win == mainwin) {
                         gotline = TRUE;
@@ -141,7 +141,7 @@ void glk_main(void)
                             it. */
                     }
                     break;
-                    
+
                 case evtype_Arrange:
                     /* Windows have changed size, so we have to redraw the
                         status window. */
@@ -149,37 +149,37 @@ void glk_main(void)
                     break;
             }
         }
-        
+
         /* commandbuf now contains a line of input from the main window.
             You would now run your parser and do something with it. */
-        
-        /* First, if there's a blockquote window open, let's close it. 
+
+        /* First, if there's a blockquote window open, let's close it.
             This ensures that quotes remain visible for exactly one
             command. */
         if (quotewin) {
             glk_window_close(quotewin, NULL);
             quotewin = 0;
         }
-        
+
         /* The line we have received in commandbuf is not null-terminated.
             We handle that first. */
         len = ev.val1; /* Will be between 0 and 255, inclusive. */
         commandbuf[len] = '\0';
-        
+
         /* Then squash to lower-case. */
-        for (cx = commandbuf; *cx; cx++) { 
+        for (cx = commandbuf; *cx; cx++) {
             *cx = glk_char_to_lower(*cx);
         }
-        
+
         /* Then trim whitespace before and after. */
-        
+
         for (cx = commandbuf; *cx == ' '; cx++) { };
-        
+
         cmd = cx;
-        
+
         for (cx = commandbuf+len-1; cx >= cmd && *cx == ' '; cx--) { };
         *(cx+1) = '\0';
-        
+
         /* cmd now points to a nice null-terminated string. We'll do the
             simplest possible parsing. */
         if (str_eq(cmd, "")) {
@@ -233,27 +233,27 @@ static void draw_statuswin(void)
 {
     char *roomname;
     glui32 width, height;
-    
+
     if (!statuswin) {
-        /* It is possible that the window was not successfully 
+        /* It is possible that the window was not successfully
             created. If that's the case, don't try to draw it. */
         return;
     }
-    
+
     if (current_room == 0)
         roomname = "The Room";
     else
         roomname = "A Different Room";
-    
+
     glk_set_window(statuswin);
     glk_window_clear(statuswin);
-    
+
     glk_window_get_size(statuswin, &width, &height);
-    
+
     /* Print the room name, centered. */
     glk_window_move_cursor(statuswin, (width - str_len(roomname)) / 2, 1);
     glk_put_string(roomname);
-    
+
     /* Draw a decorative compass rose in the upper right. */
     glk_window_move_cursor(statuswin, width - 3, 0);
     glk_put_string("\\|/");
@@ -261,7 +261,7 @@ static void draw_statuswin(void)
     glk_put_string("-*-");
     glk_window_move_cursor(statuswin, width - 3, 2);
     glk_put_string("/|\\");
-    
+
     glk_set_window(mainwin);
 }
 
@@ -271,44 +271,44 @@ static int yes_or_no(void)
     char *cx;
     int gotline, len;
     event_t ev;
-    
+
     draw_statuswin();
-    
+
     /* This loop is identical to the main command loop in glk_main(). */
-    
+
     while (1) {
         glk_request_line_event(mainwin, commandbuf, 255, 0);
-        
+
         gotline = FALSE;
         while (!gotline) {
-        
+
             glk_select(&ev);
-            
+
             switch (ev.type) {
                 case evtype_LineInput:
                     if (ev.win == mainwin) {
                         gotline = TRUE;
                     }
                     break;
-                    
+
                 case evtype_Arrange:
                     draw_statuswin();
                     break;
             }
         }
-        
+
         len = ev.val1;
         commandbuf[len] = '\0';
         for (cx = commandbuf; *cx == ' '; cx++) { };
-        
+
         if (*cx == 'y' || *cx == 'Y')
             return TRUE;
         if (*cx == 'n' || *cx == 'N')
             return FALSE;
-            
+
         glk_put_string("Please enter \"yes\" or \"no\": ");
     }
-    
+
 }
 
 static void verb_help(void)
@@ -335,7 +335,7 @@ static void verb_jump(void)
 
 static void verb_yada(void)
 {
-    /* This is a goofy (and overly ornate) way to print a long paragraph. 
+    /* This is a goofy (and overly ornate) way to print a long paragraph.
         It just shows off line wrapping in the Glk implementation. */
     #define NUMWORDS (13)
     static char *wordcaplist[NUMWORDS] = {
@@ -352,17 +352,17 @@ static void verb_yada(void)
     static int jx = 0;
     int ix;
     int first = TRUE;
-    
+
     for (ix=0; ix<85; ix++) {
         if (ix > 0) {
             glk_put_string(" ");
         }
-                
+
         if (first) {
             glk_put_string(wordcaplist[(ix / 17) % NUMWORDS]);
             first = FALSE;
         }
-        
+
         glk_put_string(wordlist[jx]);
         jx = (jx + wstep) % NUMWORDS;
         wcount1++;
@@ -375,13 +375,13 @@ static void verb_yada(void)
                 wstep = 1;
             }
         }
-        
+
         if ((ix % 17) == 16) {
             glk_put_string(".");
             first = TRUE;
         }
     }
-    
+
     glk_put_char('\n');
 }
 
@@ -394,7 +394,7 @@ static void verb_quote(void)
         can't be open. But better safe, etc. */
     if (!quotewin) {
         /* A five-line window above the main window, fixed size. */
-        quotewin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed, 
+        quotewin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed,
             5, wintype_TextBuffer, 0);
         if (!quotewin) {
             /* It's possible the quotewin couldn't be opened. In that
@@ -405,7 +405,7 @@ static void verb_quote(void)
     else {
         glk_window_clear(quotewin);
     }
-    
+
     /* Print some quote. */
     glk_set_window(quotewin);
     glk_set_style(style_BlockQuote);
@@ -414,7 +414,7 @@ static void verb_quote(void)
         "And anyway, what light through yonder quote box breaks\n"
         "Handle to my hand?\n");
     glk_put_string("              -- Fred\n");
-    
+
     glk_set_window(mainwin);
 }
 
@@ -422,7 +422,7 @@ static void verb_move(void)
 {
     current_room = (current_room+1) % 2;
     need_look = TRUE;
-    
+
     glk_put_string("You ");
 	glk_set_style(style_Emphasized);
 	glk_put_string("walk");
@@ -446,19 +446,19 @@ static void verb_script(void)
         glk_put_string("Scripting is already on.\n");
         return;
     }
-    
-    /* If we've turned on scripting before, use the same file reference; 
+
+    /* If we've turned on scripting before, use the same file reference;
         otherwise, prompt the player for a file. */
     if (!scriptref) {
         scriptref = glk_fileref_create_by_prompt(
-            fileusage_Transcript | fileusage_TextMode, 
+            fileusage_Transcript | fileusage_TextMode,
             filemode_WriteAppend, 0);
         if (!scriptref) {
             glk_put_string("Unable to place script file.\n");
             return;
         }
     }
-    
+
     /* Open the file. */
     scriptstr = glk_stream_open_file(scriptref, filemode_WriteAppend, 0);
     if (!scriptstr) {
@@ -467,7 +467,7 @@ static void verb_script(void)
     }
     glk_put_string("Scripting on.\n");
     glk_window_set_echo_stream(mainwin, scriptstr);
-    glk_put_string_stream(scriptstr, 
+    glk_put_string_stream(scriptstr,
         "This is the beginning of a transcript.\n");
 }
 
@@ -477,9 +477,9 @@ static void verb_unscript(void)
         glk_put_string("Scripting is already off.\n");
         return;
     }
-    
+
     /* Close the file. */
-    glk_put_string_stream(scriptstr, 
+    glk_put_string_stream(scriptstr,
         "This is the end of a transcript.\n\n");
     glk_stream_close(scriptstr, NULL);
     glk_put_string("Scripting off.\n");
@@ -491,15 +491,15 @@ static void verb_save(void)
     int ix;
     frefid_t saveref;
     strid_t savestr;
-    
+
     saveref = glk_fileref_create_by_prompt(
-        fileusage_SavedGame | fileusage_BinaryMode, 
+        fileusage_SavedGame | fileusage_BinaryMode,
         filemode_Write, 0);
     if (!saveref) {
         glk_put_string("Unable to place save file.\n");
         return;
     }
-    
+
     savestr = glk_stream_open_file(saveref, filemode_Write, 0);
     if (!savestr) {
         glk_put_string("Unable to write to save file.\n");
@@ -508,14 +508,14 @@ static void verb_save(void)
     }
 
     glk_fileref_destroy(saveref); /* We're done with the file ref now. */
-    
+
     /* Write some binary data. */
     for (ix=0; ix<256; ix++) {
         glk_put_char_stream(savestr, (unsigned char)ix);
     }
-    
+
     glk_stream_close(savestr, NULL);
-    
+
     glk_put_string("Game saved.\n");
 }
 
@@ -526,15 +526,15 @@ static void verb_restore(void)
     glui32 ch;
     frefid_t saveref;
     strid_t savestr;
-    
+
     saveref = glk_fileref_create_by_prompt(
-        fileusage_SavedGame | fileusage_BinaryMode, 
+        fileusage_SavedGame | fileusage_BinaryMode,
         filemode_Read, 0);
     if (!saveref) {
         glk_put_string("Unable to find save file.\n");
         return;
     }
-    
+
     savestr = glk_stream_open_file(saveref, filemode_Read, 0);
     if (!savestr) {
         glk_put_string("Unable to read from save file.\n");
@@ -543,10 +543,10 @@ static void verb_restore(void)
     }
 
     glk_fileref_destroy(saveref); /* We're done with the file ref now. */
-    
+
     /* Read some binary data. */
     err = FALSE;
-    
+
     for (ix=0; ix<256; ix++) {
         ch = glk_get_char_stream(savestr);
         if (ch == (glui32)(-1)) {
@@ -560,14 +560,14 @@ static void verb_restore(void)
             break;
         }
     }
-    
+
     glk_stream_close(savestr, NULL);
-    
+
     if (err) {
         glk_put_string("Failed.\n");
         return;
     }
-    
+
     glk_put_string("Game restored.\n");
 }
 
@@ -602,10 +602,9 @@ static int str_eq(char *s1, char *s2)
         if (*s1 != *s2)
             return FALSE;
     }
-    
+
     if (*s1 || *s2)
         return FALSE;
     else
         return TRUE;
 }
-

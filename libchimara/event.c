@@ -119,14 +119,14 @@ glk_select(event_t *event)
 	glk_tick();
 
 	/* If the event was a line input event, the library must release the buffer */
-	if(event->type == evtype_LineInput && glk_data->unregister_arr) 
+	if(event->type == evtype_LineInput && glk_data->unregister_arr)
 	{
 		if (event->win->last_line_input_was_unicode)
 			(*glk_data->unregister_arr)(event->win->line_input_buffer_unicode, event->win->line_input_buffer_max_len, "&+#!Iu", event->win->buffer_rock);
 		else
             (*glk_data->unregister_arr)(event->win->line_input_buffer, event->win->line_input_buffer_max_len, "&+#!Cn", event->win->buffer_rock);
     }
-	
+
 	/* If an abort event was generated, the thread should have exited by now */
 	g_assert(event->type != evtype_Abort);
 }
@@ -135,10 +135,10 @@ glk_select(event_t *event)
  * glk_select_poll:
  * @event: Return location for an event.
  *
- * You can also inquire if an event is available, without stopping to wait for 
+ * You can also inquire if an event is available, without stopping to wait for
  * one to occur.
- * 
- * This checks if an internally-spawned event is available. If so, it stores it 
+ *
+ * This checks if an internally-spawned event is available. If so, it stores it
  * in the structure pointed to by @event. If not, it sets `event->type` to
  * %evtype_None.
  * Either way, it returns almost immediately.
@@ -156,7 +156,7 @@ glk_select(event_t *event)
  * %evtype_Redraw and %evtype_SoundNotify events.
  * But see [Other Events][chimara-Other-Events].
  *
- * The second question is, what does it mean that glk_select_poll() returns 
+ * The second question is, what does it mean that glk_select_poll() returns
  * “almost immediately”?
  * In some Glk libraries, text that you send to a window is buffered; it does
  * not actually appear until you request player input with glk_select().
@@ -166,8 +166,8 @@ glk_select(event_t *event)
  *
  * Similarly, on multitasking platforms, glk_select() may yield time to other
  * processes; and glk_select_poll() does this as well.
- * 
- * The upshot of this is that you should not call glk_select_poll() very often. 
+ *
+ * The upshot of this is that you should not call glk_select_poll() very often.
  * If you are not doing much work between player inputs, you should not need to
  * call it at all.
  *
@@ -175,16 +175,16 @@ glk_select(event_t *event)
  *  For example, in a virtual machine interpreter, you should not call
  *  glk_select_poll() after every opcode.
  * </para></note>
- * 
+ *
  * However, if you are doing intense computation, you may wish to call
  * glk_select_poll() every so often to yield time to other processes. And if you
  * are printing intermediate results during this computation, you should
- * glk_select_poll() every so often, so that you can be certain your output will 
+ * glk_select_poll() every so often, so that you can be certain your output will
  * be displayed before the next glk_select().
- * 
+ *
  * <note><para>
  *  However, you should call glk_tick() often &mdash; once per opcode in a VM
- *  interpreter. See <link linkend="chimara-The-Tick-Thing">The Tick 
+ *  interpreter. See <link linkend="chimara-The-Tick-Thing">The Tick
  *  Thing</link>.
  * </para></note>
  */

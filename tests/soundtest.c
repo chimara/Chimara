@@ -12,7 +12,7 @@ glk_main(void)
 		fprintf(stderr, "Sound not supported.\n");
 		return;
 	}
-	
+
 	schanid_t sc[NUM_CHANNELS];
 	int count;
 	for(count = 0; count < NUM_CHANNELS; count++) {

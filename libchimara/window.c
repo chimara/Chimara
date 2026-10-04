@@ -28,9 +28,9 @@ window_new_common(glui32 rock)
 	win->librock = g_strdup_printf("%p", win);
 	if(glk_data->register_obj)
 		win->disprock = (*glk_data->register_obj)(win, gidisp_Class_Window);
-	
+
 	win->window_node = g_node_new(win);
-	
+
 	/* Every window has a window stream, but printing to it might have no effect */
 	win->window_stream = stream_new_common(0);
 	win->window_stream->file_mode = filemode_Write;
@@ -46,7 +46,7 @@ window_new_common(glui32 rock)
 
 	/* Initialise hyperlink table */
 	win->hyperlinks = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, g_free);
-	
+
 	return win;
 }
 
@@ -57,15 +57,15 @@ window_close_common(winid_t win, gboolean destroy_node)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
-	if(glk_data->unregister_obj) 
+	if(glk_data->unregister_obj)
 	{
         (*glk_data->unregister_obj)(win, gidisp_Class_Window, win->disprock);
         win->disprock.ptr = NULL;
     }
-	
+
 	if(destroy_node)
 		g_node_destroy(win->window_node);
-	
+
 	win->magic = MAGIC_FREE;
 
 	g_free(win->librock);
@@ -73,7 +73,7 @@ window_close_common(winid_t win, gboolean destroy_node)
 	g_list_free(win->history);
 	g_slist_free(win->extra_line_terminators);
 	g_slist_free(win->current_extra_line_terminators);
-	
+
 	g_string_free(win->buffer, TRUE);
 	g_hash_table_destroy(win->hyperlinks);
 	g_free(win->current_hyperlink);
@@ -114,7 +114,7 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GNode *retnode;
-	
+
 	if(win == NULL)
 		retnode = glk_data->root_window;
 	else
@@ -133,18 +133,18 @@ glk_window_iterate(winid_t win, glui32 *rockptr)
 			retnode = g_node_first_child(node);
 	}
 	winid_t retval = retnode? (winid_t)retnode->data : NULL;
-		
+
 	/* Store the window's rock in rockptr */
 	if(retval && rockptr)
 		*rockptr = glk_window_get_rock(retval);
-		
+
 	return retval;
 }
 
 /**
  * glk_window_get_rock:
  * @win: A window.
- * 
+ *
  * Returns @win's rock value. Pair windows always have rock 0; all other windows
  * return whatever rock value you created them with.
  *
@@ -209,7 +209,7 @@ winid_t
 glk_window_get_sibling(winid_t win)
 {
 	VALID_WINDOW(win, return NULL);
-	
+
 	if(G_NODE_IS_ROOT(win->window_node))
 		return NULL;
 	if(win->window_node->next)
@@ -219,7 +219,7 @@ glk_window_get_sibling(winid_t win)
 
 /**
  * glk_window_get_root:
- * 
+ *
  * Returns the root window. If there are no windows, this returns %NULL.
  *
  * Returns: A window, or %NULL.
@@ -243,7 +243,7 @@ glk_window_get_root()
  * %wintype_Blank, then %winmethod_Fixed is not allowed. May also be OR'ed with
  * %winmethod_Border or %winmethod_NoBorder.
  * @size: Size of the new window, in percentage points if @method is
- * %winmethod_Proportional, otherwise in characters if @wintype is 
+ * %winmethod_Proportional, otherwise in characters if @wintype is
  * %wintype_TextBuffer or %wintype_TextGrid, or pixels if @wintype is
  * %wintype_Graphics.
  * @wintype: Type of the new window. One of %wintype_Blank, %wintype_TextGrid,
@@ -256,7 +256,7 @@ glk_window_get_root()
  * the rock (see [Rocks][chimara-Rocks]).
  *
  * If any windows exist, new windows must be created by splitting existing
- * ones. @split is the window you want to split; this <emphasis>must 
+ * ones. @split is the window you want to split; this <emphasis>must
  * not</emphasis> be zero. @method specifies the direction and the split method
  * (see below). @size is the size of the split. @wintype is the type of window
  * you're creating, and @rock is the rock.
@@ -267,14 +267,14 @@ glk_window_get_root()
  *
  * Remember that it is possible that the library will be unable to create a new
  * window, in which case glk_window_open() will return %NULL.
- * 
+ *
  * <note><para>
  *   It is acceptable to gracefully exit, if the window you are creating is an
  *   important one &mdash; such as your first window. But you should not try to
  *   perform any window operation on the id until you have tested to make sure
  *   it is non-zero.
  * </para></note>
- * 
+ *
  * The examples we've seen so far have the simplest kind of size control. (Yes,
  * this is “below”.)
  * Every pair is a percentage split,
@@ -287,12 +287,12 @@ glk_window_get_root()
  *
  * As I said above, you can also make fixed-size splits. This is a little more
  * complicated, because you have to know how this fixed size is measured.
- * 
+ *
  * Sizes are measured in a way which is different for each window type. For
  * example, a text grid window is measured by the size of its fixed-width font.
  * You can make a text grid window which is fixed at a height of four rows, or
  * ten columns. A text buffer window is measured by the size of its font.
- * 
+ *
  * <note><para>
  *   Remember that different windows may use different size fonts. Even two
  *   text grid windows may use fixed-size fonts of different sizes.
@@ -302,7 +302,7 @@ glk_window_get_root()
  * aren't measured at all; there's no meaningful way to measure them, and
  * therefore you can't create a blank window of a fixed size, only of a
  * proportional (percentage) size.
- * 
+ *
  * So to create a text buffer window which takes the top 40% of the original
  * window's space, you would execute
  * |[<!--language="C"-->
@@ -314,12 +314,12 @@ glk_window_get_root()
  * |[<!--language="C"-->
  * newwin = glk_window_open(win, winmethod_Below | winmethod_Fixed, 5, wintype_TextGrid, 0);
  * ]|
- * 
+ *
  * Note that the meaning of the @size argument depends on the @method argument.
  * If the method is %winmethod_Fixed, it also depends on the @wintype argument.
  * The new window is then called the “key window” of this split, because its
  * window type determines how the split size is computed.
- * 
+ *
  * <note><para>
  *   For %winmethod_Proportional splits, you can still call the new window the
  *   “key window”.
@@ -327,7 +327,7 @@ glk_window_get_root()
  *   size will always be computed as a simple ratio of the available space, not
  *   a fixed size of one child window.
  * </para></note>
- * 
+ *
  * This system is more or less peachy as long as all the constraints work out.
  * What happens when there is a conflict? The rules are simple. Size control
  * always flows down the tree, and the player is at the top. Let's bring out an
@@ -343,12 +343,12 @@ glk_window_get_root()
  *  A   C
  * </literallayout></textobject></mediaobject></entry>
  * </row></tbody></tgroup></informaltable>
- * 
+ *
  * First we split A into A and B, with a 50% proportional split. Then we split
  * A into A and C, with C above, C being a text grid window, and C gets a fixed
  * size of two rows (as measured in its own font size). A gets whatever remains
  * of the 50% it had before.
- * 
+ *
  * Now the player stretches the window vertically.
  *
  * ![stretching window vertically](fig6.png)
@@ -359,7 +359,7 @@ glk_window_get_root()
  * Then it looks at the lower “O”.
  * C gets two rows; A gets the rest.
  * All done.
- * 
+ *
  * Then the user maliciously starts squeezing the window down, in stages:
  * <informaltable xml:id="chimara-Figure-Squeezing-Window" frame="none">
  * <tgroup cols="5"><tbody><row valign="top">
@@ -374,7 +374,7 @@ glk_window_get_root()
  * <entry><mediaobject><imageobject><imagedata fileref="fig7e.png"/>
  * </imageobject></mediaobject></entry>
  * </row></tbody></tgroup></informaltable>
- * 
+ *
  * The logic remains the same. B always gets half the space. At stage 3,
  * there's no room left for A, so it winds up with zero height. Nothing
  * displayed in A will be visible. At stage 4, there isn't even room in the
@@ -387,62 +387,62 @@ glk_window_get_root()
  * the example above, A remembers that it should be two rows; if the user
  * expands the window to the original size, it would return to the original
  * layout.
- * 
+ *
  * The downward flow of control is a bit harsh. After all, in stage 4, there's
  * room for C to have its two rows if only B would give up some of its 50%. But
  * this does not happen.
- * 
+ *
  * <note><para>
  *   This makes life much easier for the Glk library. To determine the
  *   configuration of a window, it only needs to look at the window's
  *   ancestors, never at its descendants. So window layout is a simple
  *   recursive algorithm, no backtracking.
  * </para></note>
- * 
+ *
  * What happens when you split a fixed-size window? The resulting pair window
  * &mdash; that is, the two new parts together &mdash; retain the same size
  * constraint as the original window that was split. The key window for the
  * original split is still the key window for that split, even though it's now
  * a grandchild instead of a child.
- * 
+ *
  * The easy, and correct, way to think about this is that the size constraint
  * is stored by a window's parent, not the window itself; and a constraint
  * consists of a pointer to a key window plus a size value.
- * 
+ *
  * <informaltable frame="none"><tgroup cols="6"><tbody><row>
  * <entry><mediaobject><imageobject><imagedata fileref="fig8a.png"/>
  * </imageobject></mediaobject></entry>
  * <entry><mediaobject><textobject><literallayout class="monospaced">
- *  A   
+ *  A
  * </literallayout></textobject></mediaobject></entry>
  * <entry><mediaobject><imageobject><imagedata fileref="fig8b.png"/>
  * </imageobject></mediaobject></entry>
  * <entry><mediaobject><textobject><literallayout class="monospaced">
- *    O1  
- *   / \  
- *  A   B 
- * </literallayout></textobject></mediaobject></entry> 
+ *    O1
+ *   / \
+ *  A   B
+ * </literallayout></textobject></mediaobject></entry>
  * <entry><mediaobject><imageobject><imagedata fileref="fig8c.png"/>
  * </imageobject></mediaobject></entry>
  * <entry><mediaobject><textobject><literallayout class="monospaced">
- *      O1  
- *     / \  
- *    O2  B 
- *   / \    
- *  A   C   
- * </literallayout></textobject></mediaobject></entry> 
+ *      O1
+ *     / \
+ *    O2  B
+ *   / \
+ *  A   C
+ * </literallayout></textobject></mediaobject></entry>
  * </row></tbody></tgroup></informaltable>
  * The initial window is A. After the first split, the new pair window (O1,
  * which covers the whole screen) knows that its new child (B) is below A, and
  * gets 50% of its own area. (B is the key window for this split, but a
  * proportional split doesn't care about key windows.)
- * 
+ *
  * After the <emphasis>second</emphasis> split, all this remains true; O1 knows
  * that its first child gets 50% of its space, and B is O1's key window. But
  * now O1's first child is O2 instead of A. The newer pair window (O2) knows
  * that its first child (C) is above the second, and gets a fixed size of two
  * rows. (As measured in C's font, because C is O2's key window.)
- * 
+ *
  * If we split C, now, the resulting pair will still be two C-font rows high
  * &mdash; that is, tall enough for two lines of whatever font C displays. For
  * the sake of example, we'll do this vertically.
@@ -457,12 +457,12 @@ glk_window_get_root()
  *  A   O3
  *     / \
  *    C   D
- * </literallayout></textobject></mediaobject></entry> 
+ * </literallayout></textobject></mediaobject></entry>
  * </row></tbody></tgroup></informaltable>
- * 
+ *
  * O3 now knows that its children have a 50-50 left-right split. O2 is still
  * committed to giving its upper child, O3, two C-font rows. Again, this is
- * because C is O2's key window. 
+ * because C is O2's key window.
  *
  * <note><para>
  *   This turns out to be a good idea, because it means that C, the text grid
@@ -474,7 +474,7 @@ glk_window_get_root()
  * Returns: the new window, or %NULL on error.
  */
 winid_t
-glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype, 
+glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
                 glui32 rock)
 {
 	VALID_WINDOW_OR_NULL(split, return NULL);
@@ -507,7 +507,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 			win->background_color = 0x00FFFFFF;
 			win->backing_store = NULL;
 		    break;
-			
+
 		default:
 			ILLEGAL_PARAM("Unknown window type: %u", wintype);
 			g_free(win);
@@ -530,11 +530,11 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 		pair->key_window = win;
 		pair->split_method = method;
 		pair->constraint_size = size;
-		
+
 		/* Insert the new window into the window tree */
 		if(split->window_node->parent == NULL)
 			glk_data->root_window = pair->window_node;
-		else 
+		else
 		{
 			if( split->window_node == g_node_first_sibling(split->window_node) )
 				g_node_prepend(split->window_node->parent, pair->window_node);
@@ -574,7 +574,7 @@ glk_window_open(winid_t split, glui32 method, glui32 size, glui32 wintype,
 /* Internal function: if node's key window is closing_win or one of its
 children, set node's key window to NULL. Must be called with win->lock and
 arrange_lock held. */
-static gboolean 
+static gboolean
 remove_key_windows(GNode *node, winid_t closing_win)
 {
 	winid_t win = (winid_t)node->data;
@@ -632,7 +632,7 @@ free_winids_below(winid_t win)
  *
  * Closes @win, which is pretty much exactly the opposite of opening a window.
  * It is legal to close all your windows, or to close the root window (which is
- * the same thing.) 
+ * the same thing.)
  *
  * The @result argument is filled with the output character count of the window
  * stream.
@@ -651,16 +651,16 @@ free_winids_below(winid_t win)
  *    O2  B
  *   / \
  *  A   C
- * </literallayout></textobject></mediaobject></entry> 
+ * </literallayout></textobject></mediaobject></entry>
  * </row></tbody></tgroup></informaltable>
- * 
+ *
  * Notice what has happened. D is gone. O3 is gone, and its 50-50 left-right
  * split has gone with it. The other size constraints are unchanged; O2 is
  * still committed to giving its upper child two rows, as measured in the font
  * of O2's key window, which is C. Conveniently, O2's upper child is C, just as
  * it was before we created D. In fact, now that D is gone, everything is back
  * to the way it was before we created D.
- * 
+ *
  * But what if we had closed C instead of D? We would have gotten this:
  * <informaltable frame="none"><tgroup cols="2"><tbody><row>
  * <entry><mediaobject><imageobject><imagedata fileref="fig11.png"/>
@@ -671,19 +671,19 @@ free_winids_below(winid_t win)
  *    O2  B
  *   / \
  *  A   D
- * </literallayout></textobject></mediaobject></entry> 
+ * </literallayout></textobject></mediaobject></entry>
  * </row></tbody></tgroup></informaltable>
- * 
+ *
  * Again, O3 is gone. But D has collapsed to zero height. This is because its
  * height is controlled by O2, and O2's key window was C, and C is now gone. O2
  * no longer has a key window at all, so it cannot compute a height for its
  * upper child, so it defaults to zero.
- * 
+ *
  * <note><para>
  *   This may seem to be an inconvenient choice. That is deliberate. You should
  *   not leave a pair window with no key, and the zero-height default reminds
  *   you not to. You can use glk_window_set_arrangement() to set a new split
- *   measurement and key window. See <link 
+ *   measurement and key window. See <link
  *   linkend="chimara-Changing-Window-Constraints">Changing Window
  *   Constraints</link>.
  * </para></note>
@@ -708,14 +708,14 @@ glk_window_close(winid_t win, stream_result_t *result)
 	/* Close all the window streams and destroy the widgets of this window
 	 and below, before trashing the window tree */
 	destroy_windows_below(win, result);
-	
+
 	/* Then free the winid_t structures below this node, but not this one itself */
 	if(win->type == wintype_Pair) {
 		free_winids_below(win->window_node->children->data);
 		free_winids_below(win->window_node->children->next->data);
 	}
-	/* So now we should be left with a skeleton tree hanging off this node */	
-	
+	/* So now we should be left with a skeleton tree hanging off this node */
+
 	/* Parent window changes from a split window into the sibling window */
 	/* The parent of any window is either a pair window or NULL */
 	GNode *pair_node = win->window_node->parent;
@@ -733,12 +733,12 @@ glk_window_close(winid_t win, stream_result_t *result)
 		g_node_unlink(pair_node);
 		g_node_unlink(sibling_node);
 		/* pair_node and sibling_node should now be totally unconnected to the tree */
-		
+
 		if(new_parent_node == NULL)
 		{
 			glk_data->root_window = sibling_node;
-		} 
-		else 
+		}
+		else
 		{
 			if(new_child_on_left)
 				g_node_prepend(new_parent_node, sibling_node);
@@ -799,7 +799,7 @@ glk_window_close(winid_t win, stream_result_t *result)
  * </varlistentry>
  * </variablelist>
  *
- * It is illegal to erase a window which has line input pending. 
+ * It is illegal to erase a window which has line input pending.
  */
 void
 glk_window_clear(winid_t win)
@@ -813,7 +813,7 @@ glk_window_clear(winid_t win)
 		case wintype_Pair:
 			/* do nothing */
 			break;
-		
+
 		case wintype_TextGrid:
 		case wintype_Graphics:
 			/* Wait for the window's size to be updated */
@@ -822,7 +822,7 @@ glk_window_clear(winid_t win)
 		case wintype_TextBuffer:
 			ui_message_queue(ui_message_new(UI_MESSAGE_CLEAR_WINDOW, win));
 			break;
-		
+
 		default:
 			ILLEGAL_PARAM("Unknown window type: %d", win->type);
 	}
@@ -880,10 +880,10 @@ strid_t glk_window_get_stream(winid_t win)
  * @str: A stream to attach to the window, or %NULL.
  *
  * Sets @win's echo stream to @str, which can be any valid output stream. You
- * can reset a window to stop echoing by calling 
+ * can reset a window to stop echoing by calling
  * `glk_window_set_echo_stream(win, NULL)`.
  *
- * It is illegal to set a window's echo stream to be its 
+ * It is illegal to set a window's echo stream to be its
  * <emphasis>own</emphasis> window stream. That would create an infinite loop,
  * and is nearly certain to crash the Glk library. It is similarly illegal to
  * create a longer loop (two or more windows echoing to each other.)
@@ -893,7 +893,7 @@ glk_window_set_echo_stream(winid_t win, strid_t str)
 {
 	VALID_WINDOW(win, return);
 	VALID_STREAM_OR_NULL(str, return);
-	
+
 	/* Test for an infinite loop */
 	strid_t next = str;
 	for(; next && next->type == STREAM_TYPE_WINDOW; next = next->window->echo_stream)
@@ -905,7 +905,7 @@ glk_window_set_echo_stream(winid_t win, strid_t str)
 			return;
 		}
 	}
-	
+
 	win->echo_stream = str;
 }
 
@@ -952,7 +952,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
             if(heightptr != NULL)
                 *heightptr = 0;
             break;
-            
+
         case wintype_TextGrid:
 		case wintype_Graphics:
 			/* Wait until the window's size is current */
@@ -965,7 +965,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
                 *heightptr = win->height;
 			g_mutex_unlock(&win->lock);
             break;
-            
+
         case wintype_TextBuffer:
 			/* Wait until the window's size is current */
 			ui_message_queue_and_await(ui_message_new(UI_MESSAGE_SYNC_ARRANGE, NULL));
@@ -986,18 +986,18 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
 /**
  * glk_window_set_arrangement:
  * @win: a pair window to rearrange.
- * @method: new method of size computation. One of %winmethod_Above, 
- * %winmethod_Below, %winmethod_Left, or %winmethod_Right OR'ed with 
+ * @method: new method of size computation. One of %winmethod_Above,
+ * %winmethod_Below, %winmethod_Left, or %winmethod_Right OR'ed with
  * %winmethod_Fixed or %winmethod_Proportional.
  * @size: new size constraint, in percentage points if @method is
- * %winmethod_Proportional, otherwise in characters if @win's type is 
+ * %winmethod_Proportional, otherwise in characters if @win's type is
  * %wintype_TextBuffer or %wintype_TextGrid, or pixels if @win's type is
  * %wintype_Graphics.
  * @keywin: new key window, or %NULL to leave the key window unchanged.
  *
- * Changes the size of an existing split &mdash; that is, it changes the 
+ * Changes the size of an existing split &mdash; that is, it changes the
  * constraint of a given pair window.
- * 
+ *
  * Consider the example above, where D has collapsed to zero height. Say D was a
  * text buffer window. You could make a more useful layout by doing
  * |[<!--language="C"-->
@@ -1007,7 +1007,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * ]|
  * That would set D (the upper child of O2) to be O2's key window, and give it a
  * fixed size of 3 rows.
- * 
+ *
  * If you later wanted to expand D, you could do
  * |[<!--language="C"-->
  * glk_window_set_arrangement(o2, winmethod_Above | winmethod_Fixed, 5, NULL);
@@ -1016,7 +1016,7 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * to D, it is not necessary to provide the @keywin argument; you can pass %NULL
  * to mean “leave the key window unchanged.”
  *
- * If you do change the key window of a pair window, the new key window 
+ * If you do change the key window of a pair window, the new key window
  * <emphasis>must</emphasis> be a descendant of that pair window. In the current
  * example, you could change O2's key window to be A, but not B. The key window
  * also cannot be a pair window itself.
@@ -1045,15 +1045,15 @@ glk_window_get_size(winid_t win, glui32 *widthptr, glui32 *heightptr)
  * 70&percnt; below. You don't need to specify a key window with a proportional
  * split, so the @keywin argument is %NULL. (You could actually specify either A
  * or D as the key window, but it wouldn't affect the result.)
- * 
- * Whatever constraint you set, glk_window_get_size() will tell you the actual 
+ *
+ * Whatever constraint you set, glk_window_get_size() will tell you the actual
  * window size you got.
- * 
+ *
  * Note that you can resize windows, and alter the Border/NoBorder flag. But you
  * can't flip or rotate them. You can't move A above D, or change O2 to a
  * vertical split where A is left or right of D.
  * <note><para>
- *   To get this effect you could close one of the windows, and re-split the 
+ *   To get this effect you could close one of the windows, and re-split the
  *   other one with glk_window_open().
  * </para></note>
  */
@@ -1124,11 +1124,11 @@ glk_window_get_arrangement(winid_t win, glui32 *methodptr, glui32 *sizeptr, wini
  * @win: A text grid window.
  * @xpos: Horizontal cursor position.
  * @ypos: Vertical cursor position.
- * 
- * Sets the cursor position. If you move the cursor right past the end of a 
+ *
+ * Sets the cursor position. If you move the cursor right past the end of a
  * line, it wraps; the next character which is printed will appear at the
  * beginning of the next line.
- * 
+ *
  * If you move the cursor below the last line, or when the cursor reaches the
  * end of the last line, it goes “off the screen” and further output has no
  * effect.
@@ -1136,7 +1136,7 @@ glk_window_get_arrangement(winid_t win, glui32 *methodptr, glui32 *sizeptr, wini
  * cursor back into the visible region.
  *
  * <note><para>
- *  Note that the arguments of glk_window_move_cursor() are <type>unsigned 
+ *  Note that the arguments of glk_window_move_cursor() are <type>unsigned
  *  int</type>s. This is okay, since there are no negative positions. If you try
  *  to pass a negative value, Glk will interpret it as a huge positive value,
  *  and it will wrap or go off the last line.
