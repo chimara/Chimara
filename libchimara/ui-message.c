@@ -121,6 +121,7 @@ ui_message_queue(UiMessage *msg)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_async_queue_push(glk_data->ui_message_queue, msg);
+	g_source_set_ready_time(glk_data->ui_message_source, 0);
 }
 
 /* Helper function: queues @msg, waits for response as a GVariant */

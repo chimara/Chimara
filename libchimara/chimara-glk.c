@@ -389,6 +389,19 @@ reset_input_queues(ChimaraGlkPrivate *priv)
 	priv->line_input_queue = g_async_queue_new_full(g_free);
 }
 
+static gboolean
+ui_message_source_dispatch(GSource *source, GSourceFunc callback, void *user_data)
+{
+	return callback(user_data);
+}
+
+static GSourceFuncs ui_message_source_funcs = {
+	/* prepare = */ NULL,
+	/* check = */ NULL,
+	ui_message_source_dispatch,
+	/* finalize = */ NULL
+};
+
 static void
 chimara_glk_init(ChimaraGlk *self)
 {
@@ -404,6 +417,14 @@ chimara_glk_init(ChimaraGlk *self)
 	priv->glk_styles = g_new0(StyleSet,1);
 	priv->final_message = g_strdup("[ The game has finished ]");
 	priv->ui_message_queue = g_async_queue_new_full((GDestroyNotify)ui_message_free);
+
+	priv->ui_message_source = g_source_new(&ui_message_source_funcs, sizeof(GSource));
+	g_source_set_name(priv->ui_message_source, "Chimara UI message queue");
+	g_source_set_priority(priv->ui_message_source, G_PRIORITY_DEFAULT_IDLE);
+	g_source_set_ready_time(priv->ui_message_source, -1);
+	g_source_set_callback(priv->ui_message_source, (GSourceFunc)chimara_glk_process_queue, self, NULL);
+	g_source_attach(priv->ui_message_source, NULL);
+
     priv->event_queue = g_queue_new();
 	reset_input_queues(priv);
 
@@ -498,6 +519,8 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->glk_styles->text_buffer);
 	g_hash_table_destroy(priv->glk_styles->text_grid);
 
+	/* Free UI message queue */
+	g_clear_pointer(&priv->ui_message_source, g_source_unref);
 	g_async_queue_unref(priv->ui_message_queue);
 
     /* Free the event queue */
@@ -1434,16 +1457,21 @@ glk_enter(struct StartupData *startup)
 /* Private method. Fetches UI messages from the message queue, and carries out
  * the instructions therein.
  * This function must be called from the UI thread.
- * Always returns %G_SOURCE_CONTINUE (this is meant to be called as an idle
- * function.) */
+ * Always returns %G_SOURCE_CONTINUE (this is the callback of a GSource.) */
 gboolean
 chimara_glk_process_queue(ChimaraGlk *self)
 {
 	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
-	UiMessage *msg;
-	while ((msg = g_async_queue_try_pop(priv->ui_message_queue)) != NULL)
+	g_source_set_ready_time(priv->ui_message_source, -1);
+
+	while (priv->accepting_ui_messages) {
+		UiMessage *msg = g_async_queue_try_pop(priv->ui_message_queue);
+		if (msg == NULL)
+			break;
 		ui_message_perform(self, msg);
+	}
+
 	return G_SOURCE_CONTINUE;
 }
 
@@ -1538,7 +1566,7 @@ chimara_glk_run(ChimaraGlk *self, const gchar *plugin, int argc, char *argv[], G
 	priv->ignore_next_arrange_event = FALSE;
 
 	/* Start listening for UI messages */
-	priv->ui_message_handler_id = gdk_threads_add_timeout(20, (GSourceFunc)chimara_glk_process_queue, self);
+	priv->accepting_ui_messages = TRUE;
 
     /* Run in a separate thread */
 	g_clear_pointer(&priv->thread, g_thread_unref);
@@ -1607,23 +1635,18 @@ chimara_glk_stop(ChimaraGlk *self)
 	}
 }
 
-/* Private method. Processes all the remaining instructions in the message
- * queue, only returning when the shutdown message is received. (If you haven't
- * signalled the Glk program to stop, then this function might not ever return.)
+/* Private method. Blocks until all the remaining instructions in the message
+ * queue are processed by priv->ui_message_source, only returning when the
+ * shutdown message is received. (If you haven't signalled the Glk program to
+ * stop, then this function might not ever return.)
  */
 void
 chimara_glk_drain_queue(ChimaraGlk *self)
 {
 	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
-	while (TRUE) {
-		if (priv->ui_message_handler_id == 0)
-			return;
-		UiMessage *msg = g_async_queue_pop(priv->ui_message_queue);
-		ui_message_perform (self, msg);
-		while (gtk_events_pending())
-			gtk_main_iteration();
-	}
+	while (priv->accepting_ui_messages)
+		gtk_main_iteration();
 }
 
 /**
@@ -1995,11 +2018,7 @@ void
 chimara_glk_stop_processing_queue(ChimaraGlk *self)
 {
 	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
-	if (priv->ui_message_handler_id)
-	{
-		g_source_remove(priv->ui_message_handler_id);
-		priv->ui_message_handler_id = 0;
-	}
+	priv->accepting_ui_messages = FALSE;
 }
 
 /* Helper function: Turn off shutdown key-press-event signal handler */
