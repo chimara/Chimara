@@ -27,15 +27,15 @@ void glk_main(void)
 		return;
 
 	statuswin = glk_window_open(mainwin, winmethod_Above | winmethod_Fixed, 3, wintype_TextGrid, 1);
-    
+
     glk_set_window(mainwin);
-    
+
     char *buffer = calloc(256, sizeof(char));
     assert(buffer);
-    
+
     glk_put_string("Welcome to the style test\n");
     glk_request_line_event(mainwin, buffer, 255, 0);
-    while(strncmp(buffer, "quit", 4)) 
+    while(strncmp(buffer, "quit", 4))
     {
         glk_select(&ev);
         if(ev.type == evtype_LineInput)

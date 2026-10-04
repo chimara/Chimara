@@ -29,4 +29,3 @@ chimara_init(void)
 #endif
 	}
 }
-

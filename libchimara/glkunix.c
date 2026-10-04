@@ -19,8 +19,8 @@ extern GPrivate glk_data_key;
  *
  * Opens an arbitrary file for reading or writing. (You cannot open a file for
  * appending using this call.) Note that this function is
- * <emphasis>only</emphasis> available during glkunix_startup_code(). It is 
- * inherently non-portable; it should not and cannot be called from inside 
+ * <emphasis>only</emphasis> available during glkunix_startup_code(). It is
+ * inherently non-portable; it should not and cannot be called from inside
  * glk_main().
  *
  * Returns: A new stream, or %NULL if the file operation failed.
@@ -45,7 +45,7 @@ glkunix_stream_open_pathname_gen(char *pathname, glui32 writemode, glui32 textmo
 
 /**
  * glkunix_stream_open_pathname:
- * @pathname: A path to a file, in the system filename encoding. 
+ * @pathname: A path to a file, in the system filename encoding.
  * @textmode: 0 for binary mode, 1 for text mode.
  * @rock: The new stream's rock value.
  *
@@ -53,7 +53,7 @@ glkunix_stream_open_pathname_gen(char *pathname, glui32 writemode, glui32 textmo
  * glkunix_stream_open_pathname_gen(), preserved for backwards compatibility.
  *
  * This should be used only by glkunix_startup_code().
- * 
+ *
  * Returns: A new stream, or %NULL if the file operation failed.
  */
 strid_t
@@ -84,7 +84,7 @@ glkunix_stream_open_pathname(char *pathname, glui32 textmode, glui32 rock)
  * If this is not called, the library works in the Unix current working
  * directory, and picks reasonable default defaults.
  */
-void 
+void
 glkunix_set_base_file(char *filename)
 {
 	g_return_if_fail(filename);
@@ -99,7 +99,7 @@ glkunix_set_base_file(char *filename)
 		g_free(dirname);
 		return;
 	}
-	
+
 	glk_data->current_dir = dirname;
 }
 
@@ -111,19 +111,19 @@ parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *a
 {
 	GSList *arglist = NULL, *iter;
 	int arg;
-	
+
 	/* Now some argument-parsing. This is probably going to hurt. */
-    for(arg = 1; arg < argc; arg++) 
+    for(arg = 1; arg < argc; arg++)
 	{
         glkunix_argumentlist_t *argform;
         char *numptr;
-        
-        for(argform = glkunix_arguments; argform->argtype != glkunix_arg_End; argform++) 
+
+        for(argform = glkunix_arguments; argform->argtype != glkunix_arg_End; argform++)
 		{
-            if(argform->name[0] == '\0') 
+            if(argform->name[0] == '\0')
 			{
                 if(((argform->argtype == glkunix_arg_ValueFollows ||
-				    argform->argtype == glkunix_arg_ValueCanFollow) && 
+				    argform->argtype == glkunix_arg_ValueCanFollow) &&
 				    argv[arg][0] != '-') ||
 				    (argform->argtype == glkunix_arg_NumberValue &&
 					(atoi(argv[arg]) != 0 || argv[arg][0] == '0')))
@@ -133,18 +133,18 @@ parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *a
 				else
 					continue;
             }
-			
+
             else if((argform->argtype == glkunix_arg_NumberValue)
                 && !strncmp(argv[arg], argform->name, strlen(argform->name))
                 && (numptr = argv[arg] + strlen(argform->name))
-                && (atoi(numptr) != 0 || numptr[0] == '0')) 
+                && (atoi(numptr) != 0 || numptr[0] == '0'))
 			{
                 arglist = g_slist_prepend(arglist, argv[arg]);
 			}
-			
-            else if(strcmp(argv[arg], argform->name) == 0) 
+
+            else if(strcmp(argv[arg], argform->name) == 0)
 			{
-                if(argform->argtype == glkunix_arg_ValueFollows) 
+                if(argform->argtype == glkunix_arg_ValueFollows)
 				{
                     if(arg + 1 >= argc) {
 						g_slist_free(arglist);
@@ -154,19 +154,19 @@ parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *a
 					arglist = g_slist_prepend(arglist, argv[arg]);
                 }
 
-				else if(argform->argtype == glkunix_arg_NoValue) 
+				else if(argform->argtype == glkunix_arg_NoValue)
                     arglist = g_slist_prepend(arglist, argv[arg]);
 
-                else if(argform->argtype == glkunix_arg_ValueCanFollow) 
+                else if(argform->argtype == glkunix_arg_ValueCanFollow)
 				{
 					arglist = g_slist_prepend(arglist, argv[arg]);
-                    if(arg + 1 < argc && argv[arg + 1][0] != '-') 
+                    if(arg + 1 < argc && argv[arg + 1][0] != '-')
                         arglist = g_slist_prepend(arglist, argv[++arg]);
                 }
-                
-				else if(argform->argtype == glkunix_arg_NumberValue) 
+
+				else if(argform->argtype == glkunix_arg_NumberValue)
 				{
-                    if(arg + 1 >= argc || (atoi(argv[arg + 1]) == 0 && argv[arg + 1][0] != '0')) 
+                    if(arg + 1 >= argc || (atoi(argv[arg + 1]) == 0 && argv[arg + 1][0] != '0'))
 					{
 						g_slist_free(arglist);
 						return FALSE;
@@ -174,7 +174,7 @@ parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *a
                     arglist = g_slist_prepend(arglist, argv[arg++]);
 					arglist = g_slist_prepend(arglist, argv[arg]);
                 }
-                else 
+                else
 				{
 					g_slist_free(arglist);
 					return FALSE;
@@ -193,6 +193,6 @@ parse_command_line(glkunix_argumentlist_t glkunix_arguments[], int argc, char *a
 	for(iter = arglist, arg = 1; iter; iter = g_slist_next(iter), arg++)
 		data->argv[arg] = g_strdup(iter->data);
 	g_slist_free(arglist);
-	
+
 	return TRUE;
 }

@@ -13,9 +13,9 @@ extern GPrivate glk_data_key;
  * This function tells the library that the file is indeed the Blorby source
  * of all resource goodness. Whenever your program calls an image or sound
  * function, such as glk_image_draw(), the library will search this file for
- * the resource you request. 
+ * the resource you request.
  *
- * Do <emphasis>not</emphasis> close the stream after calling this function. 
+ * Do <emphasis>not</emphasis> close the stream after calling this function.
  * The library is responsible for closing the stream at shutdown time.
  *
  * Returns: a Blorb error code.
@@ -47,7 +47,7 @@ giblorb_set_resource_map(strid_t file)
 
 /**
  * giblorb_get_resource_map:
- * 
+ *
  * This function returns the current resource map being used. Returns %NULL
  * if giblorb_set_resource_map() has not been called yet.
  *
@@ -71,11 +71,11 @@ typedef struct giblorb_chunkdesc_struct {
     glui32 len;
     glui32 startpos; /* start of chunk header */
     glui32 datpos; /* start of data (either startpos or startpos+8) */
-    
+
     void *ptr; /* pointer to malloc'd data, if loaded */
     int auxdatnum; /* entry in the auxsound/auxpict array; -1 if none.
         This only applies to chunks that represent resources;  */
-    
+
 } giblorb_chunkdesc_t;
 
 /* giblorb_resdesc_t: Describes one resource in the Blorb file. */
@@ -87,16 +87,16 @@ typedef struct giblorb_resdesc_struct {
 
 /* giblorb_map_t: Holds the complete description of an open Blorb file. */
 struct giblorb_map_struct {
-    glui32 inited; /* holds giblorb_Inited_Magic if the map structure is 
+    glui32 inited; /* holds giblorb_Inited_Magic if the map structure is
         valid */
     strid_t file;
-    
+
     int numchunks;
     giblorb_chunkdesc_t *chunks; /* list of chunk descriptors */
-    
+
     int numresources;
     giblorb_resdesc_t *resources; /* list of resource descriptors */
-    giblorb_resdesc_t **ressorted; /* list of pointers to descriptors 
+    giblorb_resdesc_t **ressorted; /* list of pointers to descriptors
         in map->resources -- sorted by usage and resource number. */
 };
 
@@ -108,7 +108,7 @@ giblorb_print_contents(giblorb_map_t *map)
 	for(i=0; i<map->numresources; i++) {
 		giblorb_resdesc_t *resource = map->ressorted[i];
 		printf("Resource #%d, chunknum: %d\n", resource->resnum, resource->chunknum);
-	}	
+	}
 
 	printf("\n-------\n");
 

@@ -12,7 +12,7 @@ void glk_main(void)
     winid_t mainwin = glk_window_open(0, 0, 0, wintype_TextGrid, 0);
     if(!mainwin)
         return;
-    
+
     glk_set_window(mainwin);
     glui32 width, height, x, y;
     glk_window_get_size(mainwin, &width, &height);
@@ -24,7 +24,7 @@ void glk_main(void)
 
     char *buffer = calloc(256, sizeof(char));
     assert(buffer);
-    
+
 	garglk_set_reversevideo(1);
 	for(y=0; y<height; y++) {
 		snprintf(buffer, 256, "%02d\n", y);
@@ -51,12 +51,12 @@ void glk_main(void)
 
     x = width / 2 - 10;
     y = height / 2;
-    
+
     glk_window_move_cursor(mainwin, x, y - 1);
     glk_put_string("Enter text, or 'quit'");
     glk_window_move_cursor(mainwin, x, y);
     glk_request_line_event(mainwin, buffer, 21, 0);
-    while(strncmp(buffer, "quit", 4)) 
+    while(strncmp(buffer, "quit", 4))
     {
         glk_select(&ev);
         if(ev.type == evtype_LineInput)

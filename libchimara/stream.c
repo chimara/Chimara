@@ -24,7 +24,7 @@ stream_new_common(glui32 rock)
 	str->rock = rock;
 	if(glk_data->register_obj)
 		str->disprock = (*glk_data->register_obj)(str, gidisp_Class_Stream);
-		
+
 	/* Add it to the global stream list */
 	glk_data->stream_list = g_list_prepend(glk_data->stream_list, str);
 	str->stream_list = glk_data->stream_list;
@@ -32,7 +32,7 @@ stream_new_common(glui32 rock)
 	return str;
 }
 
-/* Internal function: Stuff to do upon closing any type of stream. Call only 
+/* Internal function: Stuff to do upon closing any type of stream. Call only
  from Glk thread. */
 void
 stream_close_common(strid_t str, stream_result_t *result)
@@ -44,16 +44,16 @@ stream_close_common(strid_t str, stream_result_t *result)
 		(*glk_data->unregister_obj)(str, gidisp_Class_Stream, str->disprock);
 		str->disprock.ptr = NULL;
 	}
-	
+
 	/* If the stream was one or more windows' echo streams, set those to NULL */
 	winid_t win;
-	for(win = glk_window_iterate(NULL, NULL); win; 
+	for(win = glk_window_iterate(NULL, NULL); win;
 		win = glk_window_iterate(win, NULL))
 		if(win->echo_stream == str)
 			win->echo_stream = NULL;
-	
+
 	/* Return the character counts */
-	if(result) 
+	if(result)
 	{
 		result->readcount = str->read_count;
 		result->writecount = str->write_count;
@@ -61,11 +61,11 @@ stream_close_common(strid_t str, stream_result_t *result)
 
 	/* Remove the stream from the global stream list */
 	glk_data->stream_list = g_list_delete_link(glk_data->stream_list, str->stream_list);
-	
+
 	/* If it was the current output stream, set that to NULL */
 	if(glk_data->current_stream == str)
 		glk_data->current_stream = NULL;
-	
+
 	str->magic = MAGIC_FREE;
 	g_slice_free(struct glk_stream_struct, str);
 }
@@ -88,24 +88,24 @@ glk_stream_iterate(strid_t str, glui32 *rockptr)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
-	
+
 	if(str == NULL)
 		retnode = glk_data->stream_list;
 	else
 		retnode = str->stream_list->next;
 	strid_t retval = retnode? (strid_t)retnode->data : NULL;
-		
+
 	/* Store the stream's rock in rockptr */
 	if(retval && rockptr)
 		*rockptr = glk_stream_get_rock(retval);
-		
+
 	return retval;
 }
 
 /**
  * glk_stream_get_rock:
  * @str: A stream.
- * 
+ *
  * Retrieves the stream @str's rock value.
  * See [Rocks][chimara-Rocks].
  * Window streams always have rock 0; all other streams return whatever rock you
@@ -126,7 +126,7 @@ glk_stream_get_rock(strid_t str)
  *
  * Sets the current stream to @str, which must be an output stream. You may set
  * the current stream to %NULL, which means the current stream is not set to
- * anything. 
+ * anything.
  */
 void
 glk_stream_set_current(strid_t str)
@@ -146,7 +146,7 @@ glk_stream_set_current(strid_t str)
 
 /**
  * glk_stream_get_current:
- * 
+ *
  * Returns the current stream, or %NULL if there is none.
  *
  * Returns: A stream, or %NULL.
@@ -213,7 +213,7 @@ glk_put_string(char *s)
 /**
  * glk_put_string_uni:
  * @s: A zero-terminated string of Unicode code points.
- * 
+ *
  * Prints a string of Unicode characters to the current stream. It is equivalent
  * to a series of glk_put_char_uni() calls. A string ends on a #glui32 whose
  * value is 0.
@@ -267,7 +267,7 @@ glk_put_buffer_uni(glui32 *buf, glui32 len)
  * glk_stream_open_memory:
  * @buf: An allocated buffer, or %NULL.
  * @buflen: Length of @buf.
- * @fmode: Mode in which the buffer will be opened. Must be one of 
+ * @fmode: Mode in which the buffer will be opened. Must be one of
  * %filemode_Read, %filemode_Write, or %filemode_ReadWrite.
  * @rock: The new stream's rock value.
  *
@@ -284,7 +284,7 @@ strid_t
 glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
-	
+
 	strid_t str = stream_new_common(rock);
 	str->file_mode = fmode;
 	str->type = STREAM_TYPE_MEMORY;
@@ -292,15 +292,15 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
 	str->endmark = 0;
 	str->unicode = FALSE;
 
-	if(buf && buflen) 
+	if(buf && buflen)
 	{
 		ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 		str->buffer = buf;
 		str->buflen = buflen;
-		if(glk_data->register_arr) 
+		if(glk_data->register_arr)
 			str->buffer_rock = (*glk_data->register_arr)(buf, buflen, "&+#!Cn");
 	}
-	
+
 	return str;
 }
 
@@ -308,7 +308,7 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
  * glk_stream_open_memory_uni:
  * @buf: An allocated buffer, or %NULL.
  * @buflen: Length of @buf.
- * @fmode: Mode in which the buffer will be opened. Must be one of 
+ * @fmode: Mode in which the buffer will be opened. Must be one of
  * %filemode_Read, %filemode_Write, or %filemode_ReadWrite.
  * @rock: The new stream's rock value.
  *
@@ -316,14 +316,14 @@ glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, glui32 rock)
  * of 32-bit words, instead of bytes. This allows you to write and read any
  * Unicode character. The @buflen is the number of words, not the number of
  * bytes.
- * 
+ *
  * Returns: the new stream, or %NULL on error.
  */
 strid_t
 glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock)
 {
 	g_return_val_if_fail(fmode != filemode_WriteAppend, NULL);
-	
+
 	strid_t str = stream_new_common(rock);
 	str->file_mode = fmode;
 	str->type = STREAM_TYPE_MEMORY;
@@ -331,15 +331,15 @@ glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode, glui32 rock
 	str->endmark = 0;
 	str->unicode = TRUE;
 
-	if(buf && buflen) 
+	if(buf && buflen)
 	{
 		ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 		str->ubuffer = buf;
 		str->buflen = buflen;
-		if(glk_data->register_arr) 
+		if(glk_data->register_arr)
 			str->buffer_rock = (*glk_data->register_arr)(buf, buflen, "&+#!Iu");
 	}
-	
+
 	return str;
 }
 
@@ -348,11 +348,11 @@ strid_t
 file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 {
 	VALID_FILEREF(fileref, return NULL);
-	
+
 	const gchar *modestr;
 	/* Binary mode is 0x000, text mode 0x100 */
 	gboolean binary = !(fileref->usage & fileusage_TextMode);
-	switch(fmode) 
+	switch(fmode)
 	{
 		case filemode_Read:
 			if (!g_file_test(fileref->filename, G_FILE_TEST_EXISTS))
@@ -379,13 +379,13 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 			ILLEGAL_PARAM("Invalid file mode: %u", fmode);
 			return NULL;
 	}
-	
+
 	FILE *fp = g_fopen(fileref->filename, modestr);
 	if(fp == NULL) {
 		IO_WARNING( "Error opening file", fileref->filename, g_strerror(errno) );
 		return NULL;
 	}
-	
+
 	/* Fast-forward to the end if we are appending */
 	if(fmode == filemode_WriteAppend && fseek(fp, 0, SEEK_END) != 0) {
 		IO_WARNING("Error fast-forwarding file to end", fileref->filename, g_strerror(errno));
@@ -404,7 +404,7 @@ file_stream_new(frefid_t fileref, glui32 fmode, glui32 rock, gboolean unicode)
 			return NULL;
 		}
 	}
-	
+
 	strid_t str = stream_new_common(rock);
 	str->file_mode = fmode;
 	str->type = STREAM_TYPE_FILE;
@@ -664,22 +664,22 @@ glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
  * See [Window Opening, Closing, and
  * Constraints][chimara-Window-Opening-Closing-and-Constraints].
  */
-void 
+void
 glk_stream_close(strid_t str, stream_result_t *result)
 {
 	VALID_STREAM(str, return);
-	
+
 	/* Free resources associated with one specific type of stream */
 	switch(str->type)
 	{
 		case STREAM_TYPE_WINDOW:
 			ILLEGAL("Attempted to close a window stream. Use glk_window_close() instead.");
 			return;
-			
+
 		case STREAM_TYPE_MEMORY:
 		{
 			ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
-			if(glk_data->unregister_arr) 
+			if(glk_data->unregister_arr)
 			{
 				if(str->unicode)
 					(*glk_data->unregister_arr)(str->ubuffer, str->buflen, "&+#!Iu", str->buffer_rock);
@@ -688,7 +688,7 @@ glk_stream_close(strid_t str, stream_result_t *result)
             }
 		}
 			break;
-		
+
 		case STREAM_TYPE_FILE:
 			if(fclose(str->file_pointer) != 0)
 				IO_WARNING( "Failed to close file", str->filename, g_strerror(errno) );

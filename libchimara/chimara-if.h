@@ -45,7 +45,7 @@ typedef enum {
  * @CHIMARA_IF_INTERPRETER_GLULXE: Glulxe
  * @CHIMARA_IF_INTERPRETER_GIT: Git
  * @CHIMARA_IF_INTERPRETER_BOCFEL: Bocfel
- * 
+ *
  * Constants representing the available interpreter plugins.
  */
 typedef enum {
@@ -76,7 +76,7 @@ typedef enum {
  * @CHIMARA_IF_ZMACHINE_APPLE_IIC: Apple IIc
  * @CHIMARA_IF_ZMACHINE_APPLE_IIGS: Apple IIgs
  * @CHIMARA_IF_ZMACHINE_TANDY_COLOR: Tandy Color Computer
- * 
+ *
  * Allowed values for the #ChimaraIF:interpreter-number property. All trademarks
  * are the property of their respective owners.
  */
@@ -99,12 +99,12 @@ typedef enum {
 
 /**
  * ChimaraIF:
- * 
+ *
  * This structure contains no public members.
  */
 typedef struct {
 	ChimaraGlk parent_instance;
-	
+
 	/*< public >*/
 } ChimaraIF;
 

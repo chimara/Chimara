@@ -27,7 +27,7 @@ fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 or
 	f->rock = rock;
 	if(glk_data->register_obj)
 		f->disprock = (*glk_data->register_obj)(f, gidisp_Class_Fileref);
-	
+
 	f->filename = g_strdup(filename);
 	if(basename)
 		f->basename = g_strdup(basename);
@@ -35,11 +35,11 @@ fileref_new(char *filename, char *basename, glui32 rock, glui32 usage, glui32 or
 		f->basename = g_path_get_basename(filename);
 	f->usage = usage;
 	f->orig_filemode = orig_filemode;
-	
+
 	/* Add it to the global fileref list */
 	glk_data->fileref_list = g_list_prepend(glk_data->fileref_list, f);
 	f->fileref_list = glk_data->fileref_list;
-	
+
 	return f;
 }
 
@@ -55,10 +55,10 @@ fileref_close_common(frefid_t fref)
 		(*glk_data->unregister_obj)(fref, gidisp_Class_Fileref, fref->disprock);
 		fref->disprock.ptr = NULL;
 	}
-	
+
 	g_free(fref->filename);
 	g_free(fref->basename);
-	
+
 	fref->magic = MAGIC_FREE;
 	g_slice_free(struct glk_fileref_struct, fref);
 }
@@ -81,17 +81,17 @@ glk_fileref_iterate(frefid_t fref, glui32 *rockptr)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	GList *retnode;
-	
+
 	if(fref == NULL)
 		retnode = glk_data->fileref_list;
 	else
 		retnode = fref->fileref_list->next;
 	frefid_t retval = retnode? (frefid_t)retnode->data : NULL;
-		
+
 	/* Store the fileref's rock in rockptr */
 	if(retval && rockptr)
 		*rockptr = glk_fileref_get_rock(retval);
-		
+
 	return retval;
 }
 
@@ -130,7 +130,7 @@ glk_fileref_get_rock(frefid_t fref)
  * deleting it yourself.
  *
  * Returns: A new fileref, or #NULL if the fileref creation failed.
- */ 
+ */
 frefid_t
 glk_fileref_create_temp(glui32 usage, glui32 rock)
 {
@@ -152,7 +152,7 @@ glk_fileref_create_temp(glui32 usage, glui32 rock)
 			g_free(filename);
 		return NULL;
 	}
-	
+
 	/* Pass a basename of "" to ensure that this file can't be repurposed */
 	frefid_t f = fileref_new(filename, "", rock, usage, filemode_Write);
 	g_free(filename);
@@ -348,7 +348,7 @@ glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
  *   So knowing the MIME type doesn't get you much, but we offer them anyway.
  * </para></note>
  *
- * Returns: A new fileref, or %NULL if the fileref creation failed. 
+ * Returns: A new fileref, or %NULL if the fileref creation failed.
  */
 frefid_t
 glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
@@ -357,7 +357,7 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 
-	/* Do any string-munging here to remove illegal Latin-1 characters from 
+	/* Do any string-munging here to remove illegal Latin-1 characters from
 	filename. On ext3, the only illegal characters are '/' and '\0', but the Glk
 	spec calls for removing any other tricky characters. */
 	char *buf = g_malloc(strlen(name) + 1);
@@ -412,14 +412,14 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		WARNING_S("Error during latin1->filename conversion", error->message);
 		return NULL;
 	}
-	
+
 	gchar *path;
 	if(glk_data->current_dir)
 		path = g_build_filename(glk_data->current_dir, osname, NULL);
 	else
 		path = g_strdup(osname);
 	g_free(osname);
-	
+
 	frefid_t f = fileref_new(path, buf, rock, usage, filemode_ReadWrite);
 	g_free(path);
 	g_free(buf);
@@ -451,11 +451,11 @@ glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
  * If you change the mode of a fileref (%fileusage_TextMode,
  * %fileusage_BinaryMode), but leave the rest of the type unchanged, the new
  * fileref will definitely point to the same disk file as the old one.
- * 
- * Obviously, if you write to a file in text mode and then read from it in
- * binary mode, the results are platform-dependent. 
  *
- * Returns: A new fileref, or %NULL if the fileref creation failed. 
+ * Obviously, if you write to a file in text mode and then read from it in
+ * binary mode, the results are platform-dependent.
+ *
+ * Returns: A new fileref, or %NULL if the fileref creation failed.
  */
 frefid_t
 glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
@@ -467,7 +467,7 @@ glk_fileref_create_from_fileref(glui32 usage, frefid_t fref, glui32 rock)
 /**
  * glk_fileref_destroy:
  * @fref: Fileref to destroy.
- * 
+ *
  * Destroys a fileref which you have created. This does <emphasis>not</emphasis>
  * affect the disk file; it just reclaims the resources allocated by the
  * `glk_fileref_create...` function.
@@ -513,7 +513,7 @@ glk_fileref_delete_file(frefid_t fref)
  *
  * Checks whether the file referred to by @fref exists.
  *
- * Returns: %TRUE (1) if @fref refers to an existing file, and %FALSE (0) if 
+ * Returns: %TRUE (1) if @fref refers to an existing file, and %FALSE (0) if
  * not.
  */
 glui32
@@ -524,4 +524,3 @@ glk_fileref_does_file_exist(frefid_t fref)
 		return 1;
 	return 0;
 }
-

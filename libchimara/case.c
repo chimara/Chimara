@@ -20,9 +20,9 @@
  *
  * The case-sensitive characters in Latin-1 are the ranges 0x41..0x5A,
  * 0xC0..0xD6, 0xD8..0xDE (upper case) and the ranges 0x61..0x7A, 0xE0..0xF6,
- * 0xF8..0xFE (lower case). These are arranged in parallel; so 
+ * 0xF8..0xFE (lower case). These are arranged in parallel; so
  * glk_char_to_lower() will add 0x20 to values in the upper-case ranges, and
- * glk_char_to_upper() will subtract 0x20 from values in the lower-case ranges. 
+ * glk_char_to_upper() will subtract 0x20 from values in the lower-case ranges.
  *
  * Returns: A lowercase or non-letter Latin-1 character.
  */
@@ -58,7 +58,7 @@ glk_char_to_upper(unsigned char ch)
  * @numchars: Number of characters in @buf.
  *
  * Unicode character conversion is trickier, and must be applied to character
- * arrays, not single characters. These functions 
+ * arrays, not single characters. These functions
  * (glk_buffer_to_lower_case_uni(), glk_buffer_to_upper_case_uni(), and
  * glk_buffer_to_title_case_uni()) provide two length arguments because a
  * string of Unicode characters may expand when its case changes. The @len
@@ -78,7 +78,7 @@ glk_char_to_upper(unsigned char ch)
  *
  * See the Unicode spec (chapter 3.13, chapter 4.2, etc) for the exact
  * definitions of upper, lower, and title-case mapping.
- * 
+ *
  * <note><para>
  *   Unicode has some strange case cases. For example, a combined character
  *   that looks like “ss” might properly be upper-cased into
@@ -110,11 +110,11 @@ glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len, glui32 numchars)
 	g_free(lowered);
 	if(!outbuf)
 		return numchars;
-	
+
 	/* Copy the output buffer to the original buffer */
 	memcpy(buf, outbuf, MIN(outchars, len) * 4);
 	g_free(outbuf);
-	
+
 	return outchars;
 }
 
@@ -124,7 +124,7 @@ glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len, glui32 numchars)
  * @len: Available length of @buf.
  * @numchars: Number of characters in @buf.
  *
- * Converts the first @numchars characters of @buf to their uppercase 
+ * Converts the first @numchars characters of @buf to their uppercase
  * equivalents, if there is such a thing. See glk_buffer_to_lower_case_uni().
  *
  * Returns: The number of characters after conversion.
@@ -134,9 +134,9 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
 {
 	g_return_val_if_fail(buf != NULL && (len > 0 || numchars > 0), 0);
 	g_return_val_if_fail(numchars <= len, 0);
-	
+
 	long outchars;
-	
+
 	/* Uppercase the string */
 	char *utf8 = convert_ucs4_to_utf8(buf, numchars);
 	if(!utf8)
@@ -160,7 +160,7 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
  * @buf: A character array in UCS-4.
  * @len: Available length of @buf.
  * @numchars: Number of characters in @buf.
- * @lowerrest: %TRUE if the rest of @buf should be lowercased, %FALSE 
+ * @lowerrest: %TRUE if the rest of @buf should be lowercased, %FALSE
  * otherwise.
  *
  * See glk_buffer_to_lower_case_uni(). The `title_case` function has an
@@ -175,7 +175,7 @@ glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len, glui32 numchars)
  *   this out after reading Unicode Standard Annex &num;29, which explains how
  *   to divide a string into words. If you want it, feel free to implement it.
  * </para></note>
- * 
+ *
  * Returns: The number of characters after conversion.
  */
 glui32

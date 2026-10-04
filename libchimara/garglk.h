@@ -23,7 +23,7 @@ extern void garglk_set_program_info(const char *info);
 extern void garglk_set_story_name(const char *name);
 extern void garglk_set_story_title(const char *title);
 /*
- This function is not implemented even in Gargoyle. Looks like it was planned, 
+ This function is not implemented even in Gargoyle. Looks like it was planned,
  but never added.
 extern void garglk_set_config(const char *name);
 */

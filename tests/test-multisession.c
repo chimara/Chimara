@@ -34,14 +34,14 @@ main(int argc, char **argv)
 
 	GtkWidget *hpaned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_paned_set_position(GTK_PANED(hpaned), 400);
-	
+
 	GtkWidget *frotz = chimara_glk_new();
 	chimara_glk_set_css_from_string(CHIMARA_GLK(frotz),
 	    "buffer.normal { font-family: 'Lucida Sans'; font-size: 12; }"
 	    "grid.normal { font-family: 'Lucida Console'; font-size: 12; }");
 	g_signal_connect(frotz, "started", G_CALLBACK(on_started), "Frotz");
 	g_signal_connect(frotz, "stopped", G_CALLBACK(on_stopped), "Frotz");
-	
+
 	GtkWidget *nitfol = chimara_glk_new();
 	chimara_glk_set_css_from_string(CHIMARA_GLK(frotz),
 	    "buffer.normal { font-family: 'Bitstream Charter'; font-size: 12; }"
@@ -72,5 +72,3 @@ main(int argc, char **argv)
 
 	return 0;
 }
-	
-	

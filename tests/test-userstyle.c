@@ -2,13 +2,13 @@
 
 winid_t mainwin;
 
-void 
+void
 glk_main(void)
 {
 	/* Create user style before creating windows */
 	glk_stylehint_set(wintype_AllTypes, style_User1, stylehint_Size, -1);
 	glk_stylehint_set(wintype_AllTypes, style_User2, stylehint_Size, +1);
-	
+
 	mainwin = glk_window_open(0, 0, 0, wintype_TextBuffer, 0);
 	if(!mainwin)
 		return;

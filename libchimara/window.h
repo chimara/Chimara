@@ -66,7 +66,7 @@ struct glk_window_struct
 
 	/* "widget" is the actual widget with the window's functionality */
 	GtkWidget *widget;
-	/* "frame" is the widget that is the child of the ChimaraGlk container, such 
+	/* "frame" is the widget that is the child of the ChimaraGlk container, such
 	as a scroll window. It may be the same as "widget". */
 	GtkWidget *frame;
 	/* In text buffer windows, the scrolled window and the pager are extra

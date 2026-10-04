@@ -23,7 +23,7 @@ void ui_window_set_reverse_video(winid_t win, gboolean reverse);
  *
  * Returns: a string in filename encoding.
  */
-char * 
+char *
 garglk_fileref_get_name(frefid_t fref)
 {
 	VALID_FILEREF(fref, return NULL);
@@ -42,7 +42,7 @@ garglk_fileref_get_name(frefid_t fref)
  * garglk_set_program_name("SuperGlkFrotz 0.1");
  * ]|
  */
-void 
+void
 garglk_set_program_name(const char *name)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -66,7 +66,7 @@ garglk_set_program_name(const char *name)
  *     "Animation, networking, and evil AI by Sven Metcalfe");
  * ]|
  */
-void 
+void
 garglk_set_program_info(const char *info)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -87,7 +87,7 @@ garglk_set_program_info(const char *info)
  * garglk_set_story_name("Lighan Ses Lion, el Zarf");
  * ]|
  */
-void 
+void
 garglk_set_story_name(const char *name)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -122,7 +122,7 @@ garglk_set_story_title(const char *title)
  *
  * <warning><para>This function is not currently implemented.</para></warning>
  */
-void 
+void
 garglk_unput_string(char *str)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -139,12 +139,12 @@ garglk_unput_string(char *str)
  *
  * <warning><para>This function is not currently implemented.</para></warning>
  */
-void 
+void
 garglk_unput_string_uni(glui32 *str)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
 	g_return_if_fail(glk_data->current_stream != NULL);
-	
+
 	WARNING("Not implemented");
 }
 
@@ -180,11 +180,11 @@ garglk_set_zcolors_stream(strid_t str, glui32 fg, glui32 bg)
  * Glk works with styles, not specific colors. This is not quite compatible with
  * the Z-machine, so this Glk extension implements Z-machine style colors.
  *
- * This function changes the foreground color of the current stream to @fg and 
+ * This function changes the foreground color of the current stream to @fg and
  * the background color to @bg. @fg and @bg are encoded the same way as
  * described in %stylehint_TextColor.
  */
-void 
+void
 garglk_set_zcolors(glui32 fg, glui32 bg)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -226,7 +226,7 @@ garglk_set_reversevideo_stream(strid_t str, glui32 reverse)
  * its background and vice versa. If @reverse is zero, changes the colors of the
  * current stream back to normal.
  */
-void 
+void
 garglk_set_reversevideo(glui32 reverse)
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);

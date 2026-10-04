@@ -14,18 +14,18 @@ extern GPrivate glk_data_key;
  * @regi: Function to call whenever an opaque object is created.
  * @unregi: Function to call whenever an opaque object is destroyed.
  *
- * The Glk API refers to opaque objects by pointer; but a VM probably cannot 
+ * The Glk API refers to opaque objects by pointer; but a VM probably cannot
  * store pointers to native memory. Therefore, a VM program will want to keep a
  * VM-accessible collection of opaque objects.
- * 
+ *
  * <note><para>
  *   For example, it might keep a hash table for each opaque object class,
  *   mapping integer identifiers to object pointers.
  * </para></note>
- * 
- * To make this possible, a Glk library must implement 
+ *
+ * To make this possible, a Glk library must implement
  * gidispatch_set_object_registry().
- * 
+ *
  * Your program calls gidispatch_set_object_registry() early (before it begins
  * actually executing VM code.) You pass in two function pointers, matching the
  * following prototypes:
@@ -33,7 +33,7 @@ extern GPrivate glk_data_key;
  * gidispatch_rock_t my_vm_reg_object(void *obj, glui32 objclass);
  * void my_vm_unreg_object(void *obj, glui32 objclass, gidispatch_rock_t objrock);
  * ]|
- * 
+ *
  * Whenever the Glk library creates an object, it will call
  * `my_vm_reg_object<!---->()`.
  * It will pass the object pointer and the class number (from 0
@@ -43,24 +43,24 @@ extern GPrivate glk_data_key;
  *
  * You can return any value in the #gidispatch_rock_t object; the library will
  * stash this away inside the object.
- * 
+ *
  * <note><para>
  *   Note that this is entirely separate from the regular Glk rock, which is
  *   always a #glui32 and can be set independently.
  * </para></note>
- * 
+ *
  * Whenever the Glk library destroys an object, it will call
  * `my_vm_unreg_object<!---->()`.
  * It passes you the object pointer, class number, and the object rock.
  *
  * One significant detail: It is possible that some Glk objects will already
  * exist when your glk_main() function is called.
- * 
+ *
  * <note><para>
  *   For example, MacGlk can open a stream when the user double-clicks a file;
  *   this occurs before glk_main().
  * </para></note>
- * 
+ *
  * So when you call gidispatch_set_object_registry(), it may immediately call
  * your `my_vm_reg_object<!---->()` callback, notifying you of the existing
  * objects.
@@ -71,7 +71,7 @@ extern GPrivate glk_data_key;
  *   gidispatch_set_object_registry().
  * </para></note>
  */
-void 
+void
 gidispatch_set_object_registry(gidispatch_rock_t (*regi)(void *obj, glui32 objclass), void (*unregi)(void *obj, glui32 objclass, gidispatch_rock_t objrock))
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);
@@ -79,11 +79,11 @@ gidispatch_set_object_registry(gidispatch_rock_t (*regi)(void *obj, glui32 objcl
     strid_t str;
     frefid_t fref;
 	schanid_t chan;
-    
+
     glk_data->register_obj = regi;
     glk_data->unregister_obj = unregi;
-    
-    if(glk_data->register_obj) 
+
+    if(glk_data->register_obj)
 	{
         /* It's now necessary to go through all existing objects, and register them. */
         for(win = glk_window_iterate(NULL, NULL); win; win = glk_window_iterate(win, NULL))
@@ -105,20 +105,20 @@ gidispatch_set_object_registry(gidispatch_rock_t (*regi)(void *obj, glui32 objcl
  *
  * You can, at any time, get the object rock of an object. The library
  * implements this function.
- * 
+ *
  * With this and your two callbacks, you can maintain (say) a hash table for
  * each object class, and easily convert back and forth between hash table keys
  * and Glk object pointers. A more sophisticated run-time system (such as Java)
  * could create a typed VM object for every Glk object, thus allowing VM code to
  * manipulate Glk objects intelligently.
  */
-gidispatch_rock_t 
+gidispatch_rock_t
 gidispatch_get_objrock(void *obj, glui32 objclass)
 {
 	g_return_val_if_fail(obj, (gidispatch_rock_t)NULL);
 
-	
-	switch(objclass) 
+
+	switch(objclass)
 	{
 		case gidisp_Class_Window:
 			return ((winid_t)obj)->disprock;
@@ -128,7 +128,7 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
 			return ((frefid_t)obj)->disprock;
 		case gidisp_Class_Schannel:
 			return ((schanid_t)obj)->disprock;
-		default: 
+		default:
 		{
 			gidispatch_rock_t dummy;
 			dummy.num = 0;
@@ -150,9 +150,9 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  * move, or deallocate it. When the library releases it, the contents are in
  * their final form, and you can copy them out (if appropriate) and dispose of
  * the memory as you wish.
- * 
+ *
  * To allow this, the library implements gidispatch_set_retained_registry().
- * 
+ *
  * Again, you pass in two function pointers:
  * |[<!--language="C"-->
  * gidispatch_rock_t my_vm_reg_array(void *array, glui32 len, char *typecode);
@@ -178,10 +178,10 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  *   characters, so the string is <code>"&+#!Cn"</code>. The latter two use
  *   arrays of #glui32, so the string is <code>"&+#!Iu"</code>.
  * </para></note>
- * 
+ *
  * You can return any value in the #gidispatch_rock_t object; the library will
  * stash this away with the array.
- * 
+ *
  * When a Glk function releases a retained array, it will call
  * `my_vm_unreg_array<!---->()`.
  * It passes back the same @array, @len, and @typecode parameters, as well as
@@ -192,7 +192,7 @@ gidispatch_get_objrock(void *obj, glui32 objclass)
  * relocatable memory locked, or prevent a garbage-collection system from
  * deallocating an array while Glk is writing to it.
  */
-void 
+void
 gidispatch_set_retained_registry(gidispatch_rock_t (*regi)(void *array, glui32 len, char *typecode), void (*unregi)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock))
 {
 	ChimaraGlkPrivate *glk_data = g_private_get(&glk_data_key);

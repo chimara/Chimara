@@ -2,9 +2,9 @@
 /*
  * callbacks.c
  * Copyright (C) Philip en Marijn 2008 <>
- * 
+ *
  * preferences.c is free software copyrighted by Philip en Marijn.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -16,7 +16,7 @@
  * 3. Neither the name ``Philip en Marijn'' nor the name of any other
  *    contributor may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * preferences.c IS PROVIDED BY Philip en Marijn ``AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -235,12 +235,12 @@ style_tree_select_callback(GtkTreeSelection *selection, ChimaraGlk *glk)
 		return;
 
 	gtk_tree_model_get(model, &child, 0, &child_name, -1);
-		
+
 	if( !gtk_tree_model_iter_parent(model, &parent, &child) )
 		return;
 
 	gtk_tree_model_get(model, &parent, 0, &parent_name, -1);
-	if( !strcmp(parent_name, "Text buffer") ) 
+	if( !strcmp(parent_name, "Text buffer") )
 		current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_BUFFER, child_name);
 	else
 		current_tag = chimara_glk_get_tag(glk, CHIMARA_GLK_TEXT_GRID, child_name);

@@ -30,4 +30,3 @@ create_window_actions(GActionMap *actionmap, gpointer data)
 	};
 	g_action_map_add_action_entries(actionmap, actions, G_N_ELEMENTS(actions), data);
 }
-

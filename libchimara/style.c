@@ -147,7 +147,7 @@ style_accept_style_selector(GScanner *scanner, ChimaraGlk *glk)
 		if( !style_accept_style_hint(scanner, current_tag) )
 			return FALSE;
 	}
-		
+
 	if( !style_accept(scanner, '}') )
 		return FALSE;
 
@@ -276,7 +276,7 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 			g_scanner_error(scanner, "CSS Error: left/right/center expected");
 			return FALSE;
 		}
-		
+
 		if( !strcmp(value.v_identifier, "left") )
 			g_object_set(current_tag, "justification", GTK_JUSTIFY_LEFT, "justification-set", TRUE, NULL);
 		else if( !strcmp(value.v_identifier, "right") )
@@ -324,7 +324,7 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
 		}
 		g_object_set(current_tag, "pixels-below-lines", value.v_int, "pixels-below-lines-set", TRUE, NULL);
 	}
-		
+
 	else {
 		g_scanner_error(scanner, "CSS Error: invalid style hint %s", hint);
 		return FALSE;
@@ -343,11 +343,11 @@ style_accept_style_hint(GScanner *scanner, GtkTextTag *current_tag)
  * @hint: The type of style hint, one of the `stylehint_` constants.
  * @val: The style hint. The meaning of this depends on @hint.
  *
- * Sets a hint about the appearance of one style for a particular type of 
- * window. You can also set @wintype to %wintype_AllTypes, which sets a hint for 
+ * Sets a hint about the appearance of one style for a particular type of
+ * window. You can also set @wintype to %wintype_AllTypes, which sets a hint for
  * all types of window.
  * <note><para>
- *  There is no equivalent constant to set a hint for all styles of a single 
+ *  There is no equivalent constant to set a hint for all styles of a single
  *  window type.
  * </para></note>
  */
@@ -373,11 +373,11 @@ glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
  * @styl: The style to set a hint for.
  * @hint: The type of style hint, one of the `stylehint_` constants.
  *
- * Clears a hint about the appearance of one style for a particular type of 
- * window to its default value. You can also set @wintype to %wintype_AllTypes, 
+ * Clears a hint about the appearance of one style for a particular type of
+ * window to its default value. You can also set @wintype to %wintype_AllTypes,
  * which clears a hint for all types of window.
  * <note><para>
- *  There is no equivalent constant to reset a hint for all styles of a single 
+ *  There is no equivalent constant to reset a hint for all styles of a single
  *  window type.
  * </para></note>
  */
@@ -401,7 +401,7 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
  * @win: The window in which the styles are to be distinguished.
  * @styl1: The first style to be distinguished from the second style.
  * @styl2: The second style to be distinguished from the first style.
- * 
+ *
  * Decides whether two styles are visually distinguishable in the given window.
  * The exact meaning of this is left for the library to determine.
  *
@@ -409,7 +409,7 @@ glk_stylehint_clear(glui32 wintype, glui32 styl, glui32 hint)
  * > Currently, all styles of one window are assumed to be mutually
  * > distinguishable.
  *
- * Returns: %TRUE (1) if the two styles are visually distinguishable. If they 
+ * Returns: %TRUE (1) if the two styles are visually distinguishable. If they
  * are not, it returns %FALSE (0).
  */
 glui32
@@ -427,11 +427,11 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
  * @styl: The style to perform the measurement on.
  * @hint: The stylehint to measure.
  * @result: Address to write the result to.
- * 
+ *
  * Tries to test an attribute of one style in the given window @win. The library
  * may not be able to determine the attribute; if not, this returns %FALSE (0).
  * If it can, it returns %TRUE (1) and stores the value in the location pointed
- * at by @result. 
+ * at by @result.
  * <note><para>
  *   As usual, it is legal for @result to be %NULL, although fairly pointless.
  * </para></note>
@@ -477,7 +477,7 @@ glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
  * <varlistentry>
  *   <term>%stylehint_TextColor, %stylehint_BackColor</term>
  *   <listitem><para>These are values from 0x00000000 to 0x00FFFFFF, encoded as
- *   described in <link 
+ *   described in <link
  *   linkend="chimara-Suggesting-the-Appearance-of-Styles">Suggesting the
  *   Appearance of Styles</link>.</para></listitem>
  * </varlistentry>

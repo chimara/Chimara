@@ -12,7 +12,7 @@
 
 /**
  * glk_gestalt:
- * @sel: A selector, representing which capability to request information 
+ * @sel: A selector, representing which capability to request information
  * about.
  * @val: Extra information, depending on the value of @sel.
  *
@@ -44,7 +44,7 @@ glk_gestalt(glui32 sel, glui32 val)
  * `glk_gestalt(x, y)` is exactly the same as `glk_gestalt_ext(x, y, NULL, 0)`.
  *
  * The critical point is that if the Glk library has never heard of the selector
- * @sel, it will return 0. It is <emphasis>always</emphasis> safe to call 
+ * @sel, it will return 0. It is <emphasis>always</emphasis> safe to call
  * `glk_gestalt(x, y)` (or `glk_gestalt_ext(x, y, NULL, 0)`).
  * Even if you are using an old library, which was compiled before
  * the given capability was imagined, you can test for the capability by calling
@@ -77,22 +77,22 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 		/* Version number */
 		case gestalt_Version:
 			return (MAJOR_VERSION << 16) + (MINOR_VERSION << 8) + SUB_VERSION;
-		
+
 		/* Which characters can the player type in line input? */
 		case gestalt_LineInput:
 			/* Does not accept control chars */
 			if( val < 32 || (val >= 127 && val <= 159) )
 				return 0;
 			return 1;
-			
+
 		/* Which characters can the player type in char input? */
 		case gestalt_CharInput:
 			/* Does not accept control chars or unknown */
 			if( val < 32 || (val >= 127 && val <= 159) || val == keycode_Unknown )
 				return 0;
 			return 1;
-		
-		/* Which characters can we print? */	
+
+		/* Which characters can we print? */
 		case gestalt_CharOutput:
 			/* All characters are printed as one character, in any case */
 			if(arr && arrlen > 0)
@@ -143,13 +143,12 @@ glk_gestalt_ext(glui32 sel, glui32 val, glui32 *arr, glui32 arrlen)
 #else
 			return 0;
 #endif
-			
+
 		/* Unsupported capabilities */
 			/* None! */
 
-		/* Selector not supported */	
+		/* Selector not supported */
 		default:
 			return 0;
 	}
 }
-

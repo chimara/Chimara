@@ -16,24 +16,24 @@ void glk_main(void)
     if (!mainwin) {
         /* It's possible that the main window failed to open. There's
             nothing we can do without it, so exit. */
-        return; 
+        return;
     }
-	
+
     glui32 buffer[1024];
     int i;
     for(i = 0; i < 512; i++) {
     	buffer[i * 2] = i + 33;
 		buffer[i * 2 + 1] = 32;
 	}
-    
+
 /*    frefid_t f = glk_fileref_create_temp(fileusage_BinaryMode, 0);
-    if(f) 
+    if(f)
     {
 		strid_t s = glk_stream_open_file(f, filemode_ReadWrite, 0);*/
 		glui32 membuf[512];
 		strid_t s = glk_stream_open_memory_uni(membuf, 512, filemode_ReadWrite, 0);
 		glk_stream_set_current(s);
-		
+
 		glk_put_char_uni('X');
 		glk_put_string("Philip en Marijn zijn vet goed.\n");
 		glk_put_buffer_uni(buffer, 1024);
@@ -52,10 +52,10 @@ void glk_main(void)
 		glk_put_string("\n---THE SAME CHARACTERS IN UPPERCASE---\n");
 		int newcount = glk_buffer_to_upper_case_uni(buffer, 1024, 1024);
 		glk_put_buffer_uni(buffer, newcount);
-		
+
 		stream_result_t result;
 		glk_stream_close(s, &result);
-		
+
 		fprintf(stderr, "Read count: %d\nWrite count: %d\n", result.readcount, result.writecount);
 /*		glk_fileref_destroy(f);
 	}*/
@@ -76,7 +76,7 @@ void glk_main(void)
 				printf("Var2: %d\n", ev.val2);
 		}
 	}
-	
+
 	/* Bye bye */
 	glk_exit();
 }

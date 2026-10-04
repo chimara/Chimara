@@ -6,4 +6,3 @@
 G_GNUC_INTERNAL void chimara_init(void);
 
 #endif
-

@@ -2,9 +2,9 @@
 /*
  * main.c
  * Copyright (C) Philip en Marijn 2008 <>
- * 
+ *
  * main.c is free software copyrighted by Philip en Marijn.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -16,7 +16,7 @@
  * 3. Neither the name ``Philip en Marijn'' nor the name of any other
  *    contributor may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * main.c IS PROVIDED BY Philip en Marijn ``AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -123,7 +123,7 @@ create_window(void)
 	GtkWidget *titlebar = GTK_WIDGET(load_object(builder, "titlebar"));
 	g_signal_connect(glk, "notify::program-name", G_CALLBACK(change_window_title), titlebar);
 	g_signal_connect(glk, "notify::story-name", G_CALLBACK(change_window_title), titlebar);
-	
+
 	/* Create preferences window */
 	preferences_create(builder, CHIMARA_GLK(glk));
 

@@ -6,10 +6,10 @@
 void
 on_command(ChimaraIF *glk, gchar *input, gchar *response, GtkWindow *window)
 {
-	GtkWidget *dialog = gtk_message_dialog_new(window, 
+	GtkWidget *dialog = gtk_message_dialog_new(window,
 		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
 		"%s", input);
-	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", 
+	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s",
 		response);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
@@ -35,7 +35,7 @@ main(int argc, char *argv[])
     GtkWidget *window, *vbox, *hbox, *stop, *go, *glk;
 
     gtk_init(&argc, &argv);
-    
+
     /* Construct the window and its contents. We quit the GTK main loop
      * when the window's close button is clicked. */
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -60,11 +60,11 @@ main(int argc, char *argv[])
 	gtk_container_add(GTK_CONTAINER(vbox), glk);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
-    
+
     /* Add a reference to the ChimaraGlk widget, because we want to keep it
     around after gtk_main() exits */
     g_object_ref(glk);
-    
+
     /* Start the plugin */
     g_assert(chimara_if_run_game(CHIMARA_IF(glk), GAME_FILE, NULL));
 

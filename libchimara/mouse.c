@@ -26,7 +26,7 @@ glk_request_mouse_event(winid_t win)
  *
  * Cancels the pending mouse input request on @win.
  */
-void 
+void
 glk_cancel_mouse_event(winid_t win)
 {
 	VALID_WINDOW(win, return);

@@ -63,8 +63,10 @@ struct _ChimaraGlkPrivate {
     /* Thread in which Glk program is run */
     GThread *thread;
 	/* Pipe through which to schedule updates to the UI */
-	unsigned ui_message_handler_id;
 	GAsyncQueue *ui_message_queue;
+	/* Notification machinery for UI updates */
+	GSource *ui_message_source;
+	gboolean accepting_ui_messages;
     /* Event queue and threading stuff */
     GQueue *event_queue;
 	GMutex event_lock;

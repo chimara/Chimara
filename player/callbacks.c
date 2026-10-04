@@ -2,9 +2,9 @@
 /*
  * callbacks.c
  * Copyright (C) Philip en Marijn 2008 <>
- * 
+ *
  * callbacks.c is free software copyrighted by Philip en Marijn.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -16,7 +16,7 @@
  * 3. Neither the name ``Philip en Marijn'' nor the name of any other
  *    contributor may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * callbacks.c IS PROVIDED BY Philip en Marijn ``AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,9 +46,9 @@ static gboolean
 confirm_open_new_game(ChimaraGlk *glk)
 {
 	g_return_val_if_fail(glk && CHIMARA_IS_GLK(glk), FALSE);
-	
+
 	GtkWindow *window = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(glk)));
-	
+
 	if(chimara_glk_get_running(glk)) {
 		GtkWidget *dialog = gtk_message_dialog_new(window,
 		    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -60,7 +60,7 @@ confirm_open_new_game(ChimaraGlk *glk)
 		gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Open"), GTK_RESPONSE_OK);
 		gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
-		
+
 		if(response != GTK_RESPONSE_OK)
 			return FALSE;
 
@@ -152,7 +152,7 @@ on_open_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 			gtk_widget_destroy(dialog);
 			return;
 		}
-		
+
 		path = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
 		if(path) {
 			g_settings_set(state_settings, "last-open-path", "ms", path);
@@ -162,7 +162,7 @@ on_open_activate(GSimpleAction *action, GVariant *param, ChimaraGlk *glk)
 		/* Add file to recent files list */
 		GtkRecentManager *manager = gtk_recent_manager_get_default();
 		gchar *uri;
-		
+
 		if(!(uri = g_filename_to_uri(filename, NULL, &error)))
 			g_warning("Could not convert filename '%s' to URI: %s", filename, error->message);
 		else {
@@ -195,16 +195,16 @@ on_recent_item_activated(GtkRecentChooser *chooser, ChimaraGlk *glk)
 		error_dialog(window, error, _("Could not open game file '%s': "), uri);
 		goto finally;
 	}
-	
+
 	if(!confirm_open_new_game(glk))
 		goto finally2;
-	
+
 	search_for_graphics_file(filename, CHIMARA_IF(glk));
 	if(!chimara_if_run_game(CHIMARA_IF(glk), filename, &error)) {
 		error_dialog(window, error, _("Could not open game file '%s': "), filename);
 		goto finally2;
 	}
-	
+
 	/* Add file to recent files list again, this updates it to most recently used */
 	GtkRecentManager *manager = gtk_recent_manager_get_default();
 	if(!gtk_recent_manager_add_item(manager, uri))
