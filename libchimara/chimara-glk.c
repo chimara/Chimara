@@ -1431,8 +1431,8 @@ glk_enter(struct StartupData *startup)
 	return NULL;
 }
 
-/* Private method. Fetches a UI message from the message queue, and if there is
- * one, carries out the instructions therein.
+/* Private method. Fetches UI messages from the message queue, and carries out
+ * the instructions therein.
  * This function must be called from the UI thread.
  * Always returns %G_SOURCE_CONTINUE (this is meant to be called as an idle
  * function.) */
@@ -1441,11 +1441,9 @@ chimara_glk_process_queue(ChimaraGlk *self)
 {
 	ChimaraGlkPrivate *priv = chimara_glk_get_instance_private(self);
 
-	UiMessage *msg = g_async_queue_try_pop(priv->ui_message_queue);
-	if (msg == NULL)
-		return G_SOURCE_CONTINUE;
-
-	ui_message_perform(self, msg);
+	UiMessage *msg;
+	while ((msg = g_async_queue_try_pop(priv->ui_message_queue)) != NULL)
+		ui_message_perform(self, msg);
 	return G_SOURCE_CONTINUE;
 }
 
