@@ -40,7 +40,7 @@ void
 glk_main(void)
 {
     struct TestDescription *test = tests;
-    int total, tested, failed = 0;
+    int total, tested;
 
     printf("TAP version 13\n");
 
@@ -50,10 +50,8 @@ glk_main(void)
     printf("1..%d\n", total);
 
     for(tested = 0; tested < total; tested++, test++) {
-        if( !test->testfunc() ) {
+        if (!test->testfunc())
             printf("not ");
-            failed++;
-        }
         printf("ok %d %s\n", tested + 1, test->name);
     }
     glk_exit();
