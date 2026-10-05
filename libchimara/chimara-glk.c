@@ -520,6 +520,7 @@ chimara_glk_finalize(GObject *object)
 	g_hash_table_destroy(priv->glk_styles->text_grid);
 
 	/* Free UI message queue */
+	g_source_destroy(priv->ui_message_source);  // unref does not do this
 	g_clear_pointer(&priv->ui_message_source, g_source_unref);
 	g_async_queue_unref(priv->ui_message_queue);
 
